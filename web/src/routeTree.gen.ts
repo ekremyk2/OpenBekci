@@ -19,11 +19,15 @@ import { Route as LoginMagicRouteImport } from './routes/login.magic'
 import { Route as OrgsOrgIdRouteImport } from './routes/orgs.$orgId'
 import { Route as ResetTokenRouteImport } from './routes/reset.$token'
 import { Route as OrgsOrgIdIndexRouteImport } from './routes/orgs.$orgId.index'
+import { Route as OrgsOrgIdAccessRouteImport } from './routes/orgs.$orgId.access'
 import { Route as OrgsOrgIdAllocationKeysRouteImport } from './routes/orgs.$orgId.allocation-keys'
+import { Route as OrgsOrgIdBookingsRouteImport } from './routes/orgs.$orgId.bookings'
 import { Route as OrgsOrgIdClaimsRouteImport } from './routes/orgs.$orgId.claims'
 import { Route as OrgsOrgIdDirectoryRouteImport } from './routes/orgs.$orgId.directory'
+import { Route as OrgsOrgIdFacilitiesRouteImport } from './routes/orgs.$orgId.facilities'
 import { Route as OrgsOrgIdImportRouteImport } from './routes/orgs.$orgId.import'
 import { Route as OrgsOrgIdMeRouteImport } from './routes/orgs.$orgId.me'
+import { Route as OrgsOrgIdMeetingsRouteImport } from './routes/orgs.$orgId.meetings'
 import { Route as OrgsOrgIdMoneyRouteImport } from './routes/orgs.$orgId.money'
 import { Route as OrgsOrgIdNotificationsRouteImport } from './routes/orgs.$orgId.notifications'
 import { Route as OrgsOrgIdPortfolioRouteImport } from './routes/orgs.$orgId.portfolio'
@@ -32,6 +36,10 @@ import { Route as OrgsOrgIdVendorsRouteImport } from './routes/orgs.$orgId.vendo
 import { Route as OrgsOrgIdAnnouncementsIndexRouteImport } from './routes/orgs.$orgId.announcements.index'
 import { Route as OrgsOrgIdAnnouncementsNewRouteImport } from './routes/orgs.$orgId.announcements.new'
 import { Route as OrgsOrgIdDocumentsIndexRouteImport } from './routes/orgs.$orgId.documents.index'
+import { Route as OrgsOrgIdMeetingsIndexRouteImport } from './routes/orgs.$orgId.meetings.index'
+import { Route as OrgsOrgIdMeetingsDecisionsRouteImport } from './routes/orgs.$orgId.meetings.decisions'
+import { Route as OrgsOrgIdMeetingsNewRouteImport } from './routes/orgs.$orgId.meetings.new'
+import { Route as OrgsOrgIdMeetingsSettingsRouteImport } from './routes/orgs.$orgId.meetings.settings'
 import { Route as OrgsOrgIdMoneyIndexRouteImport } from './routes/orgs.$orgId.money.index'
 import { Route as OrgsOrgIdMoneyChargesRouteImport } from './routes/orgs.$orgId.money.charges'
 import { Route as OrgsOrgIdMoneyCollectionsRouteImport } from './routes/orgs.$orgId.money.collections'
@@ -62,9 +70,13 @@ import { Route as OrgsOrgIdTicketsQueueRouteImport } from './routes/orgs.$orgId.
 import { Route as OrgsOrgIdUnitsIndexRouteImport } from './routes/orgs.$orgId.units.index'
 import { Route as OrgsOrgIdUnitsUnitIdRouteImport } from './routes/orgs.$orgId.units.$unitId'
 import { Route as OrgsOrgIdUnitsNewRouteImport } from './routes/orgs.$orgId.units.new'
+import { Route as OrgsOrgIdVisitorsIndexRouteImport } from './routes/orgs.$orgId.visitors.index'
+import { Route as OrgsOrgIdVisitorsGateRouteImport } from './routes/orgs.$orgId.visitors.gate'
 import { Route as OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.index'
 import { Route as OrgsOrgIdAnnouncementsAnnouncementIdEditRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.edit'
 import { Route as OrgsOrgIdDocumentsFFolderIdRouteImport } from './routes/orgs.$orgId.documents.f.$folderId'
+import { Route as OrgsOrgIdMeetingsMeetingIdIndexRouteImport } from './routes/orgs.$orgId.meetings.$meetingId.index'
+import { Route as OrgsOrgIdMeetingsMeetingIdDeskRouteImport } from './routes/orgs.$orgId.meetings.$meetingId.desk'
 import { Route as OrgsOrgIdMoneyBankIndexRouteImport } from './routes/orgs.$orgId.money.bank.index'
 import { Route as OrgsOrgIdMoneyBankImportIdRouteImport } from './routes/orgs.$orgId.money.bank.$importId'
 import { Route as OrgsOrgIdMoneyPaymentsIndexRouteImport } from './routes/orgs.$orgId.money.payments.index'
@@ -126,9 +138,19 @@ const OrgsOrgIdIndexRoute = OrgsOrgIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdAccessRoute = OrgsOrgIdAccessRouteImport.update({
+  id: '/access',
+  path: '/access',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdAllocationKeysRoute = OrgsOrgIdAllocationKeysRouteImport.update({
   id: '/allocation-keys',
   path: '/allocation-keys',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdBookingsRoute = OrgsOrgIdBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
 const OrgsOrgIdClaimsRoute = OrgsOrgIdClaimsRouteImport.update({
@@ -141,6 +163,11 @@ const OrgsOrgIdDirectoryRoute = OrgsOrgIdDirectoryRouteImport.update({
   path: '/directory',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdFacilitiesRoute = OrgsOrgIdFacilitiesRouteImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdImportRoute = OrgsOrgIdImportRouteImport.update({
   id: '/import',
   path: '/import',
@@ -149,6 +176,11 @@ const OrgsOrgIdImportRoute = OrgsOrgIdImportRouteImport.update({
 const OrgsOrgIdMeRoute = OrgsOrgIdMeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdMeetingsRoute = OrgsOrgIdMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
 const OrgsOrgIdMoneyRoute = OrgsOrgIdMoneyRouteImport.update({
@@ -193,6 +225,28 @@ const OrgsOrgIdDocumentsIndexRoute = OrgsOrgIdDocumentsIndexRouteImport.update({
   path: '/documents/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdMeetingsIndexRoute = OrgsOrgIdMeetingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgsOrgIdMeetingsRoute,
+} as any)
+const OrgsOrgIdMeetingsDecisionsRoute =
+  OrgsOrgIdMeetingsDecisionsRouteImport.update({
+    id: '/decisions',
+    path: '/decisions',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
+const OrgsOrgIdMeetingsNewRoute = OrgsOrgIdMeetingsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => OrgsOrgIdMeetingsRoute,
+} as any)
+const OrgsOrgIdMeetingsSettingsRoute =
+  OrgsOrgIdMeetingsSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
 const OrgsOrgIdMoneyIndexRoute = OrgsOrgIdMoneyIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -352,6 +406,16 @@ const OrgsOrgIdUnitsNewRoute = OrgsOrgIdUnitsNewRouteImport.update({
   path: '/units/new',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdVisitorsIndexRoute = OrgsOrgIdVisitorsIndexRouteImport.update({
+  id: '/visitors/',
+  path: '/visitors/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdVisitorsGateRoute = OrgsOrgIdVisitorsGateRouteImport.update({
+  id: '/visitors/gate',
+  path: '/visitors/gate',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute =
   OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport.update({
     id: '/announcements/$announcementId/',
@@ -369,6 +433,18 @@ const OrgsOrgIdDocumentsFFolderIdRoute =
     id: '/documents/f/$folderId',
     path: '/documents/f/$folderId',
     getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdMeetingsMeetingIdIndexRoute =
+  OrgsOrgIdMeetingsMeetingIdIndexRouteImport.update({
+    id: '/$meetingId/',
+    path: '/$meetingId/',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
+const OrgsOrgIdMeetingsMeetingIdDeskRoute =
+  OrgsOrgIdMeetingsMeetingIdDeskRouteImport.update({
+    id: '/$meetingId/desk',
+    path: '/$meetingId/desk',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
   } as any)
 const OrgsOrgIdMoneyBankIndexRoute = OrgsOrgIdMoneyBankIndexRouteImport.update({
   id: '/bank/',
@@ -438,11 +514,15 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
   '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsRouteWithChildren
   '/orgs/$orgId/money': typeof OrgsOrgIdMoneyRouteWithChildren
   '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
@@ -450,6 +530,9 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
   '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
   '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
   '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
@@ -474,16 +557,20 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
   '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/meetings/': typeof OrgsOrgIdMeetingsIndexRoute
   '/orgs/$orgId/money/': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
   '/orgs/$orgId/tickets/': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/visitors/': typeof OrgsOrgIdVisitorsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
   '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
   '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
@@ -491,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
@@ -505,9 +593,12 @@ export interface FileRoutesByTo {
   '/login/magic': typeof LoginMagicRoute
   '/reset/$token': typeof ResetTokenRoute
   '/login': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
   '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
   '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
@@ -515,6 +606,9 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
   '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
   '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
   '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
@@ -539,16 +633,20 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
   '/orgs/$orgId/announcements': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsIndexRoute
   '/orgs/$orgId/money': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites': typeof OrgsOrgIdSitesIndexRoute
   '/orgs/$orgId/tickets': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/visitors': typeof OrgsOrgIdVisitorsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
   '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
   '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
@@ -556,6 +654,7 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/meetings/$meetingId': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans': typeof OrgsOrgIdMoneyPlansIndexRoute
@@ -572,11 +671,15 @@ export interface FileRoutesById {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
   '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsRouteWithChildren
   '/orgs/$orgId/money': typeof OrgsOrgIdMoneyRouteWithChildren
   '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
@@ -584,6 +687,9 @@ export interface FileRoutesById {
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
   '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
   '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
   '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
@@ -608,16 +714,20 @@ export interface FileRoutesById {
   '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
   '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/meetings/': typeof OrgsOrgIdMeetingsIndexRoute
   '/orgs/$orgId/money/': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
   '/orgs/$orgId/tickets/': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/visitors/': typeof OrgsOrgIdVisitorsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
   '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
   '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
@@ -625,6 +735,7 @@ export interface FileRoutesById {
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
@@ -642,11 +753,15 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/bookings'
     | '/orgs/$orgId/claims'
     | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/meetings'
     | '/orgs/$orgId/money'
     | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
@@ -654,6 +769,9 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
     | '/orgs/$orgId/money/charges'
     | '/orgs/$orgId/money/collections'
     | '/orgs/$orgId/money/expense-sharing'
@@ -678,16 +796,20 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/visitors/gate'
     | '/orgs/$orgId/announcements/'
     | '/orgs/$orgId/documents/'
+    | '/orgs/$orgId/meetings/'
     | '/orgs/$orgId/money/'
     | '/orgs/$orgId/people/'
     | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
     | '/orgs/$orgId/tickets/'
     | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/visitors/'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
     | '/orgs/$orgId/money/bank/$importId'
     | '/orgs/$orgId/money/payments/cash-boxes'
     | '/orgs/$orgId/money/payments/new'
@@ -695,6 +817,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
+    | '/orgs/$orgId/meetings/$meetingId/'
     | '/orgs/$orgId/money/bank/'
     | '/orgs/$orgId/money/payments/'
     | '/orgs/$orgId/money/plans/'
@@ -709,9 +832,12 @@ export interface FileRouteTypes {
     | '/login/magic'
     | '/reset/$token'
     | '/login'
+    | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/bookings'
     | '/orgs/$orgId/claims'
     | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
     | '/orgs/$orgId/notifications'
@@ -719,6 +845,9 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
     | '/orgs/$orgId/money/charges'
     | '/orgs/$orgId/money/collections'
     | '/orgs/$orgId/money/expense-sharing'
@@ -743,16 +872,20 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/visitors/gate'
     | '/orgs/$orgId/announcements'
     | '/orgs/$orgId/documents'
+    | '/orgs/$orgId/meetings'
     | '/orgs/$orgId/money'
     | '/orgs/$orgId/people'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/sites'
     | '/orgs/$orgId/tickets'
     | '/orgs/$orgId/units'
+    | '/orgs/$orgId/visitors'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
     | '/orgs/$orgId/money/bank/$importId'
     | '/orgs/$orgId/money/payments/cash-boxes'
     | '/orgs/$orgId/money/payments/new'
@@ -760,6 +893,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId'
+    | '/orgs/$orgId/meetings/$meetingId'
     | '/orgs/$orgId/money/bank'
     | '/orgs/$orgId/money/payments'
     | '/orgs/$orgId/money/plans'
@@ -775,11 +909,15 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/bookings'
     | '/orgs/$orgId/claims'
     | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/meetings'
     | '/orgs/$orgId/money'
     | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
@@ -787,6 +925,9 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
     | '/orgs/$orgId/money/charges'
     | '/orgs/$orgId/money/collections'
     | '/orgs/$orgId/money/expense-sharing'
@@ -811,16 +952,20 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/visitors/gate'
     | '/orgs/$orgId/announcements/'
     | '/orgs/$orgId/documents/'
+    | '/orgs/$orgId/meetings/'
     | '/orgs/$orgId/money/'
     | '/orgs/$orgId/people/'
     | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
     | '/orgs/$orgId/tickets/'
     | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/visitors/'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
     | '/orgs/$orgId/money/bank/$importId'
     | '/orgs/$orgId/money/payments/cash-boxes'
     | '/orgs/$orgId/money/payments/new'
@@ -828,6 +973,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
+    | '/orgs/$orgId/meetings/$meetingId/'
     | '/orgs/$orgId/money/bank/'
     | '/orgs/$orgId/money/payments/'
     | '/orgs/$orgId/money/plans/'
@@ -918,11 +1064,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/access': {
+      id: '/orgs/$orgId/access'
+      path: '/access'
+      fullPath: '/orgs/$orgId/access'
+      preLoaderRoute: typeof OrgsOrgIdAccessRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/allocation-keys': {
       id: '/orgs/$orgId/allocation-keys'
       path: '/allocation-keys'
       fullPath: '/orgs/$orgId/allocation-keys'
       preLoaderRoute: typeof OrgsOrgIdAllocationKeysRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/bookings': {
+      id: '/orgs/$orgId/bookings'
+      path: '/bookings'
+      fullPath: '/orgs/$orgId/bookings'
+      preLoaderRoute: typeof OrgsOrgIdBookingsRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
     '/orgs/$orgId/claims': {
@@ -939,6 +1099,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdDirectoryRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/facilities': {
+      id: '/orgs/$orgId/facilities'
+      path: '/facilities'
+      fullPath: '/orgs/$orgId/facilities'
+      preLoaderRoute: typeof OrgsOrgIdFacilitiesRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/import': {
       id: '/orgs/$orgId/import'
       path: '/import'
@@ -951,6 +1118,13 @@ declare module '@tanstack/react-router' {
       path: '/me'
       fullPath: '/orgs/$orgId/me'
       preLoaderRoute: typeof OrgsOrgIdMeRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/meetings': {
+      id: '/orgs/$orgId/meetings'
+      path: '/meetings'
+      fullPath: '/orgs/$orgId/meetings'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
     '/orgs/$orgId/money': {
@@ -1008,6 +1182,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/orgs/$orgId/documents/'
       preLoaderRoute: typeof OrgsOrgIdDocumentsIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/meetings/': {
+      id: '/orgs/$orgId/meetings/'
+      path: '/'
+      fullPath: '/orgs/$orgId/meetings/'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/decisions': {
+      id: '/orgs/$orgId/meetings/decisions'
+      path: '/decisions'
+      fullPath: '/orgs/$orgId/meetings/decisions'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsDecisionsRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/new': {
+      id: '/orgs/$orgId/meetings/new'
+      path: '/new'
+      fullPath: '/orgs/$orgId/meetings/new'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsNewRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/settings': {
+      id: '/orgs/$orgId/meetings/settings'
+      path: '/settings'
+      fullPath: '/orgs/$orgId/meetings/settings'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsSettingsRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
     }
     '/orgs/$orgId/money/': {
       id: '/orgs/$orgId/money/'
@@ -1219,6 +1421,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdUnitsNewRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/visitors/': {
+      id: '/orgs/$orgId/visitors/'
+      path: '/visitors'
+      fullPath: '/orgs/$orgId/visitors/'
+      preLoaderRoute: typeof OrgsOrgIdVisitorsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/visitors/gate': {
+      id: '/orgs/$orgId/visitors/gate'
+      path: '/visitors/gate'
+      fullPath: '/orgs/$orgId/visitors/gate'
+      preLoaderRoute: typeof OrgsOrgIdVisitorsGateRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/announcements/$announcementId/': {
       id: '/orgs/$orgId/announcements/$announcementId/'
       path: '/announcements/$announcementId'
@@ -1239,6 +1455,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/orgs/$orgId/documents/f/$folderId'
       preLoaderRoute: typeof OrgsOrgIdDocumentsFFolderIdRouteImport
       parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/meetings/$meetingId/': {
+      id: '/orgs/$orgId/meetings/$meetingId/'
+      path: '/$meetingId'
+      fullPath: '/orgs/$orgId/meetings/$meetingId/'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsMeetingIdIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/$meetingId/desk': {
+      id: '/orgs/$orgId/meetings/$meetingId/desk'
+      path: '/$meetingId/desk'
+      fullPath: '/orgs/$orgId/meetings/$meetingId/desk'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsMeetingIdDeskRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
     }
     '/orgs/$orgId/money/bank/': {
       id: '/orgs/$orgId/money/bank/'
@@ -1313,6 +1543,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface OrgsOrgIdMeetingsRouteChildren {
+  OrgsOrgIdMeetingsDecisionsRoute: typeof OrgsOrgIdMeetingsDecisionsRoute
+  OrgsOrgIdMeetingsNewRoute: typeof OrgsOrgIdMeetingsNewRoute
+  OrgsOrgIdMeetingsSettingsRoute: typeof OrgsOrgIdMeetingsSettingsRoute
+  OrgsOrgIdMeetingsIndexRoute: typeof OrgsOrgIdMeetingsIndexRoute
+  OrgsOrgIdMeetingsMeetingIdDeskRoute: typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
+  OrgsOrgIdMeetingsMeetingIdIndexRoute: typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
+}
+
+const OrgsOrgIdMeetingsRouteChildren: OrgsOrgIdMeetingsRouteChildren = {
+  OrgsOrgIdMeetingsDecisionsRoute: OrgsOrgIdMeetingsDecisionsRoute,
+  OrgsOrgIdMeetingsNewRoute: OrgsOrgIdMeetingsNewRoute,
+  OrgsOrgIdMeetingsSettingsRoute: OrgsOrgIdMeetingsSettingsRoute,
+  OrgsOrgIdMeetingsIndexRoute: OrgsOrgIdMeetingsIndexRoute,
+  OrgsOrgIdMeetingsMeetingIdDeskRoute: OrgsOrgIdMeetingsMeetingIdDeskRoute,
+  OrgsOrgIdMeetingsMeetingIdIndexRoute: OrgsOrgIdMeetingsMeetingIdIndexRoute,
+}
+
+const OrgsOrgIdMeetingsRouteWithChildren =
+  OrgsOrgIdMeetingsRoute._addFileChildren(OrgsOrgIdMeetingsRouteChildren)
+
 interface OrgsOrgIdMoneyRouteChildren {
   OrgsOrgIdMoneyChargesRoute: typeof OrgsOrgIdMoneyChargesRoute
   OrgsOrgIdMoneyCollectionsRoute: typeof OrgsOrgIdMoneyCollectionsRoute
@@ -1381,11 +1632,15 @@ const OrgsOrgIdSettingsRouteWithChildren =
   OrgsOrgIdSettingsRoute._addFileChildren(OrgsOrgIdSettingsRouteChildren)
 
 interface OrgsOrgIdRouteChildren {
+  OrgsOrgIdAccessRoute: typeof OrgsOrgIdAccessRoute
   OrgsOrgIdAllocationKeysRoute: typeof OrgsOrgIdAllocationKeysRoute
+  OrgsOrgIdBookingsRoute: typeof OrgsOrgIdBookingsRoute
   OrgsOrgIdClaimsRoute: typeof OrgsOrgIdClaimsRoute
   OrgsOrgIdDirectoryRoute: typeof OrgsOrgIdDirectoryRoute
+  OrgsOrgIdFacilitiesRoute: typeof OrgsOrgIdFacilitiesRoute
   OrgsOrgIdImportRoute: typeof OrgsOrgIdImportRoute
   OrgsOrgIdMeRoute: typeof OrgsOrgIdMeRoute
+  OrgsOrgIdMeetingsRoute: typeof OrgsOrgIdMeetingsRouteWithChildren
   OrgsOrgIdMoneyRoute: typeof OrgsOrgIdMoneyRouteWithChildren
   OrgsOrgIdNotificationsRoute: typeof OrgsOrgIdNotificationsRoute
   OrgsOrgIdPortfolioRoute: typeof OrgsOrgIdPortfolioRoute
@@ -1403,12 +1658,14 @@ interface OrgsOrgIdRouteChildren {
   OrgsOrgIdTicketsQueueRoute: typeof OrgsOrgIdTicketsQueueRoute
   OrgsOrgIdUnitsUnitIdRoute: typeof OrgsOrgIdUnitsUnitIdRoute
   OrgsOrgIdUnitsNewRoute: typeof OrgsOrgIdUnitsNewRoute
+  OrgsOrgIdVisitorsGateRoute: typeof OrgsOrgIdVisitorsGateRoute
   OrgsOrgIdAnnouncementsIndexRoute: typeof OrgsOrgIdAnnouncementsIndexRoute
   OrgsOrgIdDocumentsIndexRoute: typeof OrgsOrgIdDocumentsIndexRoute
   OrgsOrgIdPeopleIndexRoute: typeof OrgsOrgIdPeopleIndexRoute
   OrgsOrgIdSitesIndexRoute: typeof OrgsOrgIdSitesIndexRoute
   OrgsOrgIdTicketsIndexRoute: typeof OrgsOrgIdTicketsIndexRoute
   OrgsOrgIdUnitsIndexRoute: typeof OrgsOrgIdUnitsIndexRoute
+  OrgsOrgIdVisitorsIndexRoute: typeof OrgsOrgIdVisitorsIndexRoute
   OrgsOrgIdAnnouncementsAnnouncementIdEditRoute: typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   OrgsOrgIdDocumentsFFolderIdRoute: typeof OrgsOrgIdDocumentsFFolderIdRoute
   OrgsOrgIdSitesSiteIdQrRoute: typeof OrgsOrgIdSitesSiteIdQrRoute
@@ -1417,11 +1674,15 @@ interface OrgsOrgIdRouteChildren {
 }
 
 const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
+  OrgsOrgIdAccessRoute: OrgsOrgIdAccessRoute,
   OrgsOrgIdAllocationKeysRoute: OrgsOrgIdAllocationKeysRoute,
+  OrgsOrgIdBookingsRoute: OrgsOrgIdBookingsRoute,
   OrgsOrgIdClaimsRoute: OrgsOrgIdClaimsRoute,
   OrgsOrgIdDirectoryRoute: OrgsOrgIdDirectoryRoute,
+  OrgsOrgIdFacilitiesRoute: OrgsOrgIdFacilitiesRoute,
   OrgsOrgIdImportRoute: OrgsOrgIdImportRoute,
   OrgsOrgIdMeRoute: OrgsOrgIdMeRoute,
+  OrgsOrgIdMeetingsRoute: OrgsOrgIdMeetingsRouteWithChildren,
   OrgsOrgIdMoneyRoute: OrgsOrgIdMoneyRouteWithChildren,
   OrgsOrgIdNotificationsRoute: OrgsOrgIdNotificationsRoute,
   OrgsOrgIdPortfolioRoute: OrgsOrgIdPortfolioRoute,
@@ -1439,12 +1700,14 @@ const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
   OrgsOrgIdTicketsQueueRoute: OrgsOrgIdTicketsQueueRoute,
   OrgsOrgIdUnitsUnitIdRoute: OrgsOrgIdUnitsUnitIdRoute,
   OrgsOrgIdUnitsNewRoute: OrgsOrgIdUnitsNewRoute,
+  OrgsOrgIdVisitorsGateRoute: OrgsOrgIdVisitorsGateRoute,
   OrgsOrgIdAnnouncementsIndexRoute: OrgsOrgIdAnnouncementsIndexRoute,
   OrgsOrgIdDocumentsIndexRoute: OrgsOrgIdDocumentsIndexRoute,
   OrgsOrgIdPeopleIndexRoute: OrgsOrgIdPeopleIndexRoute,
   OrgsOrgIdSitesIndexRoute: OrgsOrgIdSitesIndexRoute,
   OrgsOrgIdTicketsIndexRoute: OrgsOrgIdTicketsIndexRoute,
   OrgsOrgIdUnitsIndexRoute: OrgsOrgIdUnitsIndexRoute,
+  OrgsOrgIdVisitorsIndexRoute: OrgsOrgIdVisitorsIndexRoute,
   OrgsOrgIdAnnouncementsAnnouncementIdEditRoute:
     OrgsOrgIdAnnouncementsAnnouncementIdEditRoute,
   OrgsOrgIdDocumentsFFolderIdRoute: OrgsOrgIdDocumentsFFolderIdRoute,

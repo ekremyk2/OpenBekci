@@ -60,6 +60,24 @@ export const ALL_PERMISSIONS = [
   'reports.read',
   'reports.debtors',
   'reports.aggregate',
+  // governance, community and access
+  'meetings.read',
+  'meetings.manage',
+  'decisions.manage',
+  'attendance.manage',
+  'facilities.manage',
+  'bookings.read',
+  'bookings.create',
+  'bookings.manage',
+  'visitors.read',
+  'visitors.manage',
+  'visitors.decide',
+  'gate.operate',
+  'gate.manage',
+  'access.read',
+  'access.manage',
+  'access.open',
+  'access.view_events',
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */
@@ -93,16 +111,43 @@ export const adminHandlers = (permissions?: string[], occupancies?: Me['occupanc
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
 ]
 
-/** A resident of unit A1 who sees only their own statement and may declare payments (portal view). */
-export function residentMe(): Me {
+/** What a signed-in resident of unit A1 may do: own statement, declare payments, take part. */
+const RESIDENT_PERMISSIONS = [
+  'statements.read_own',
+  'payments.declare',
+  'meetings.read',
+  'polls.answer',
+  'bookings.read',
+  'bookings.create',
+  'visitors.manage',
+  'visitors.decide',
+  'deliveries.read',
+]
+/** The guard of the booth: the gate console only. */
+const GUARD_PERMISSIONS = ['gate.operate', 'access.open']
+
+/** A resident (`?mockRole=resident`) or a guard (`?mockRole=guard`), for the portal and gate views. */
+export function roleMe(role: 'resident' | 'guard'): Me {
   const org = adminMe().organizations[0]!
+  const permissions = role === 'resident' ? RESIDENT_PERMISSIONS : GUARD_PERMISSIONS
   return {
     ...meFixture,
     organizations: [
       {
         ...org,
         roles: [],
-        permissions: [{ permission: 'statements.read_own' }, { permission: 'payments.declare' }],
+        permissions: permissions.map((permission) => ({ permission })),
+      },
+    ],
+    occupancies: [
+      {
+        id: 'occ-mock',
+        organization_id: org.id,
+        site_id: 'site-a',
+        unit_id: 'u-a1',
+        unit_label: 'A1',
+        kind: 'owner',
+        may_see_money: true,
       },
     ],
   }

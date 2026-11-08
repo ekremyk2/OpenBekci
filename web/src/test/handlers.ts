@@ -4,6 +4,9 @@ import { peopleHandlers } from './handlers/people'
 import { tenancyHandlers } from './handlers/tenancy'
 import { operationsHandlers } from './handlers/operations'
 import { moneyHandlers, moneyScopedHandlers } from './handlers/money'
+import { accessHandlers } from './handlers/access'
+import { communityHandlers } from './handlers/community'
+import { directoryHandlers, governanceHandlers } from './handlers/governance'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -64,7 +67,9 @@ export const meFixture: Me = {
 }
 
 export const handlers = [
-  ...moneyScopedHandlers, // answer only while a money screen is on display
+  // models that seed their own site answer first, but only while one of their screens is on display
+  ...directoryHandlers,
+  ...moneyScopedHandlers,
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
@@ -73,4 +78,7 @@ export const handlers = [
   ...peopleHandlers,
   ...operationsHandlers,
   ...moneyHandlers,
+  ...governanceHandlers,
+  ...communityHandlers,
+  ...accessHandlers,
 ]

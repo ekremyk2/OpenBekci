@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { parseCsv } from '@/lib/csv'
 import { registerReset } from '../reset'
+import { createScope } from './scope'
 import type { components } from '@/api/draft'
 import {
   CUR,
@@ -35,7 +36,7 @@ let db = createMoneyDb()
 export const getMoneyDb = () => db
 export function resetMoneyDb(today?: string) {
   db = createMoneyDb(today)
-  moneyScope = true
+  scope.force()
   return db
 }
 
@@ -185,19 +186,11 @@ function route(method: Method, path: string, fn: Handler, scoped = false) {
   })
 }
 
-let moneyScope = false
-/** Money tests turn the scope on for the whole test; the browser mock goes by the page URL. */
-export function inMoneyScope(request: Request): boolean {
-  if (moneyScope) return true
-  try {
-    return new URL(request.referrer).pathname.includes('/money')
-  } catch {
-    return false
-  }
-}
+const scope = createScope(['/money'])
+export const inMoneyScope = (request: Request) => scope.has(request)
 registerReset(() => {
   resetMoneyDb()
-  moneyScope = false
+  scope.release()
 })
 
 const scopedRoute = (method: Method, path: string, fn: Handler) => route(method, path, fn, true)

@@ -79,3 +79,18 @@ export async function runWithReauth<T>(fn: (key: string) => Promise<T>): Promise
     return fn(key)
   }
 }
+
+/**
+ * `runWithReauth` for callers where cancelling the dialog simply means "nothing happened": resolves
+ * `undefined` instead of rethrowing the original `reauth_required` error.
+ */
+export async function runWithReauthUnlessCancelled<T>(
+  fn: (key: string) => Promise<T>,
+): Promise<T | undefined> {
+  try {
+    return await runWithReauth(fn)
+  } catch (e) {
+    if (e instanceof AppError && e.isReauthRequired) return undefined
+    throw e
+  }
+}

@@ -15,6 +15,8 @@ const client = api as unknown as Client<paths>
 export type DownloadEndpoint =
   | '/v1/orgs/{org_id}/payments/{payment_id}/receipt'
   | '/v1/orgs/{org_id}/files/{file_id}'
+  | '/v1/orgs/{org_id}/meetings/{meeting_id}/call-letter'
+  | '/v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet'
   | '/v1/orgs/{org_id}/debt-breakdown'
   | '/v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}'
   | '/v1/orgs/{org_id}/persons/{person_id}/statement'

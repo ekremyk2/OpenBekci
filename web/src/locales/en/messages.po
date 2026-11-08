@@ -11,9 +11,21 @@ msgstr ""
 msgid "\"{0}\" will be removed. This cannot be undone."
 msgstr "\"{0}\" will be removed. This cannot be undone."
 
+#. placeholder {0}: v.name
+msgid "{0} admitted."
+msgstr "{0} admitted."
+
 #. placeholder {0}: totals.unreadable
 msgid "{0} amounts could not be read, so no total is shown."
 msgstr "{0} amounts could not be read, so no total is shown."
+
+#. placeholder {0}: a.person_display_name
+msgid "{0} checked in."
+msgstr "{0} checked in."
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "{0} days"
+msgstr "{0} days"
 
 #. placeholder {0}: report.error_rows
 msgid "{0} errors"
@@ -32,23 +44,60 @@ msgstr "{0} in common areas"
 msgid "{0} leaves {1}. The whole month's dues stay with whoever is in the unit on the due date; nothing is pro-rated."
 msgstr "{0} leaves {1}. The whole month's dues stay with whoever is in the unit on the due date; nothing is pro-rated."
 
+#. placeholder {0}: v.name
+msgid "{0} marked as left."
+msgstr "{0} marked as left."
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "{0} min"
+msgstr "{0} min"
+
 #. placeholder {0}: occ.person_display_name
 msgid "{0} moved out"
 msgstr "{0} moved out"
+
+#. placeholder {0}: progress.recorded
+#. placeholder {1}: progress.total
+msgid "{0} of {1} delivered"
+msgstr "{0} of {1} delivered"
 
 #. placeholder {0}: first?.read_count ?? 0
 #. placeholder {1}: first?.audience_count ?? 0
 msgid "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
 msgstr "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
 
+#. placeholder {0}: v.presentCount
+#. placeholder {1}: v.eligibleCount
+#. placeholder {2}: fmt(v.countPct)
+msgid "{0} of {1} owners ({2}%)"
+msgstr "{0} of {1} owners ({2}%)"
+
 #. placeholder {0}: a.read_count
 #. placeholder {1}: a.recipient_count ?? '?'
 msgid "{0} of {1} read"
 msgstr "{0} of {1} read"
 
+#. placeholder {0}: results.units_answered
+#. placeholder {1}: results.units_total
+msgid "{0} of {1} units answered"
+msgstr "{0} of {1} units answered"
+
+#. placeholder {0}: preview.recipient_count
+#. placeholder {1}: preview.sms_count
+msgid "{0} owners will be notified ({1} by SMS)."
+msgstr "{0} owners will be notified ({1} by SMS)."
+
 #. placeholder {0}: ticket.vote_count
 msgid "{0} people confirmed this"
 msgstr "{0} people confirmed this"
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per month"
+msgstr "{0} per month"
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per week"
+msgstr "{0} per week"
 
 #. placeholder {0}: preview.data.recipient_count
 #. placeholder {1}: preview.data.sms_count
@@ -74,9 +123,20 @@ msgstr "{0} units"
 msgid "{0} units have no value yet"
 msgstr "{0} units have no value yet"
 
+#. placeholder {0}: cq.data.pending_approvals.length
+msgid "{0} walk-in visitors are waiting for a resident's answer."
+msgstr "{0} walk-in visitors are waiting for a resident's answer."
+
 #. placeholder {0}: report.warning_rows
 msgid "{0} warnings"
 msgstr "{0} warnings"
+
+#. placeholder {0}: fmt(v.presentSharePct)
+msgid "{0}% present"
+msgstr "{0}% present"
+
+msgid "{n} requests waiting"
+msgstr "{n} requests waiting"
 
 msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
 msgstr "<0/> received, <1/> applied to charges, <2/> kept as credit."
@@ -84,8 +144,21 @@ msgstr "<0/> received, <1/> applied to charges, <2/> kept as credit."
 msgid "A block that still has units cannot be deleted."
 msgstr "A block that still has units cannot be deleted."
 
+#. placeholder {0}: rules.max_duration_minutes
+msgid "A booking can last at most {0} minutes."
+msgstr "A booking can last at most {0} minutes."
+
+msgid "A booking inside these rules is confirmed at once; there is no approval queue."
+msgstr "A booking inside these rules is confirmed at once; there is no approval queue."
+
+msgid "A decision without an agenda item."
+msgstr "A decision without an agenda item."
+
 msgid "A fixed amount per unit"
 msgstr "A fixed amount per unit"
+
+msgid "A gate or door an agent can open. Driver details are configured on the agent computer."
+msgstr "A gate or door an agent can open. Driver details are configured on the agent computer."
 
 msgid "A name is required."
 msgstr "A name is required."
@@ -95,6 +168,9 @@ msgstr "A person"
 
 msgid "A person (carried debt)"
 msgstr "A person (carried debt)"
+
+msgid "A PIN is 4 to 8 digits."
+msgstr "A PIN is 4 to 8 digits."
 
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 msgstr "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
@@ -117,8 +193,26 @@ msgstr "A unit is named by unit_id, or by block together with door_number: door 
 msgid "A unit side"
 msgstr "A unit side"
 
+msgid "Absent"
+msgstr "Absent"
+
+msgid "Abstain"
+msgstr "Abstain"
+
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
+
+msgid "Accepted"
+msgstr "Accepted"
+
+msgid "Access"
+msgstr "Access"
+
+msgid "Access point"
+msgstr "Access point"
+
+msgid "Access points"
+msgstr "Access points"
 
 msgid "Account"
 msgstr "Account"
@@ -177,6 +271,9 @@ msgstr "Add a rate"
 msgid "Add an exception"
 msgstr "Add an exception"
 
+msgid "Add an item"
+msgstr "Add an item"
+
 msgid "Add block"
 msgstr "Add block"
 
@@ -185,6 +282,15 @@ msgstr "Add cash box"
 
 msgid "Add category"
 msgstr "Add category"
+
+msgid "Add dissent"
+msgstr "Add dissent"
+
+msgid "Add hours"
+msgstr "Add hours"
+
+msgid "Add item"
+msgstr "Add item"
 
 msgid "Add key"
 msgstr "Add key"
@@ -204,14 +310,29 @@ msgstr "Add photos"
 msgid "Add rate"
 msgstr "Add rate"
 
+msgid "Add someone who visits on fixed days, such as a cleaner or a carer."
+msgstr "Add someone who visits on fixed days, such as a cleaner or a carer."
+
 msgid "Add stage"
 msgstr "Add stage"
 
 msgid "Add status"
 msgstr "Add status"
 
+msgid "Add the first facility residents can book."
+msgstr "Add the first facility residents can book."
+
+msgid "Add the gates and doors of the site."
+msgstr "Add the gates and doors of the site."
+
+msgid "Add the items to discuss and vote on."
+msgstr "Add the items to discuss and vote on."
+
 msgid "Add the lift service, the plumber, the cleaner: people you pay or assign requests to."
 msgstr "Add the lift service, the plumber, the cleaner: people you pay or assign requests to."
+
+msgid "Add the opening hours."
+msgstr "Add the opening hours."
 
 msgid "Add to this folder"
 msgstr "Add to this folder"
@@ -240,6 +361,24 @@ msgstr "Adjustment"
 msgid "Administrator email (optional)"
 msgstr "Administrator email (optional)"
 
+msgid "Admit"
+msgstr "Admit"
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Agents"
+msgstr "Agents"
+
+msgid "Agents on the gate computers, the gates and doors they open, who may pass, and what happened."
+msgstr "Agents on the gate computers, the gates and doors they open, who may pass, and what happened."
+
+msgid "Ahead"
+msgstr "Ahead"
+
 msgid "All"
 msgstr "All"
 
@@ -252,14 +391,26 @@ msgstr "All blocks"
 msgid "All categories"
 msgstr "All categories"
 
+msgid "All facilities"
+msgstr "All facilities"
+
 msgid "All folders"
 msgstr "All folders"
 
 msgid "All funds"
 msgstr "All funds"
 
+msgid "All gates and doors"
+msgstr "All gates and doors"
+
 msgid "All imports"
 msgstr "All imports"
+
+msgid "All kinds"
+msgstr "All kinds"
+
+msgid "All points"
+msgstr "All points"
 
 msgid "All sites"
 msgstr "All sites"
@@ -285,8 +436,14 @@ msgstr "Allocated <0/> of <1/>"
 msgid "Allocation keys"
 msgstr "Allocation keys"
 
+msgid "Allowed"
+msgstr "Allowed"
+
 msgid "Already entered"
 msgstr "Already entered"
+
+msgid "Also notify owners"
+msgstr "Also notify owners"
 
 msgid "Always on"
 msgstr "Always on"
@@ -302,6 +459,9 @@ msgstr "Amount is"
 
 msgid "Amount per period"
 msgstr "Amount per period"
+
+msgid "Amount per unit"
+msgstr "Amount per unit"
 
 msgid "Amount to waive"
 msgstr "Amount to waive"
@@ -321,6 +481,12 @@ msgstr "Announcement scheduled."
 msgid "Announcements"
 msgstr "Announcements"
 
+msgid "Answered"
+msgstr "Answered"
+
+msgid "Answered recently"
+msgstr "Answered recently"
+
 msgid "Any"
 msgstr "Any"
 
@@ -330,23 +496,54 @@ msgstr "Any account status"
 msgid "Any category"
 msgstr "Any category"
 
+msgid "Any decision"
+msgstr "Any decision"
+
+msgid "Any outcome"
+msgstr "Any outcome"
+
+msgid "Any reason"
+msgstr "Any reason"
+
 msgid "Any status"
 msgstr "Any status"
 
 msgid "Any unit"
 msgstr "Any unit"
 
+msgid "Any year"
+msgstr "Any year"
+
 msgid "Anyone"
 msgstr "Anyone"
+
+msgid "App and email"
+msgstr "App and email"
+
+msgid "App and SMS"
+msgstr "App and SMS"
+
+#. placeholder {0}: labels.effect(decision.effect.kind)
+msgid "Applied: {0}"
+msgstr "Applied: {0}"
 
 msgid "Applies to"
 msgstr "Applies to"
 
+msgid "Apply effect"
+msgstr "Apply effect"
+
 msgid "Apply filters"
 msgstr "Apply filters"
 
+msgid "Apply the decision"
+msgstr "Apply the decision"
+
 msgid "Apply the table"
 msgstr "Apply the table"
+
+msgid "Approvals"
+msgstr "Approvals"
 
 msgid "Approve"
 msgstr "Approve"
@@ -360,6 +557,9 @@ msgstr "Approve claim"
 
 msgid "Approved"
 msgstr "Approved"
+
+msgid "Approved by the resident."
+msgstr "Approved by the resident."
 
 msgid "Appurtenance"
 msgstr "Appurtenance"
@@ -391,6 +591,9 @@ msgstr "As of <0/>"
 msgid "Ask a manager to add the account residents should pay into."
 msgstr "Ask a manager to add the account residents should pay into."
 
+msgid "Ask the resident"
+msgstr "Ask the resident"
+
 msgid "Ask your building manager to invite you."
 msgstr "Ask your building manager to invite you."
 
@@ -400,8 +603,14 @@ msgstr "Ask your manager if you think you should."
 msgid "Asked"
 msgstr "Asked"
 
+msgid "Assemblies"
+msgstr "Assemblies"
+
 msgid "Assembly"
 msgstr "Assembly"
+
+msgid "Assembly settings"
+msgstr "Assembly settings"
 
 msgid "Assigned to"
 msgstr "Assigned to"
@@ -419,11 +628,24 @@ msgstr "Assignee"
 msgid "At least this many months overdue"
 msgstr "At least this many months overdue"
 
+#. placeholder {0}: r.unit_door_number
+msgid "At the gate for {0}"
+msgstr "At the gate for {0}"
+
 msgid "Attach files"
 msgstr "Attach files"
 
 msgid "Attempts"
 msgstr "Attempts"
+
+msgid "Attendance can be recorded only while the assembly is called or in session."
+msgstr "Attendance can be recorded only while the assembly is called or in session."
+
+msgid "Attendance desk"
+msgstr "Attendance desk"
+
+msgid "Attendance list (PDF)"
+msgstr "Attendance list (PDF)"
 
 msgid "Audience"
 msgstr "Audience"
@@ -461,6 +683,9 @@ msgstr "Back to columns"
 
 msgid "Back to sign in"
 msgstr "Back to sign in"
+
+msgid "Back to the assembly"
+msgstr "Back to the assembly"
 
 msgid "Backups"
 msgstr "Backups"
@@ -510,6 +735,9 @@ msgstr "Bank statement import"
 msgid "Bank transfer"
 msgstr "Bank transfer"
 
+msgid "Becomes a charge when the booking is confirmed. Empty: free."
+msgstr "Becomes a charge when the booking is confirmed. Empty: free."
+
 msgid "Belongs to"
 msgstr "Belongs to"
 
@@ -522,8 +750,20 @@ msgstr "Belongs to a flat (no dues of its own)"
 msgid "Belongs to flat"
 msgstr "Belongs to flat"
 
+msgid "Binding"
+msgstr "Binding"
+
 msgid "Block"
 msgstr "Block"
+
+msgid "Block dates"
+msgstr "Block dates"
+
+msgid "Blocked"
+msgstr "Blocked"
+
+msgid "Blocked periods"
+msgstr "Blocked periods"
 
 msgid "Blocks"
 msgstr "Blocks"
@@ -540,14 +780,39 @@ msgstr "Bold"
 msgid "bold text"
 msgstr "bold text"
 
+msgid "Book"
+msgstr "Book"
+
+msgid "Book a facility"
+msgstr "Book a facility"
+
+msgid "Book now"
+msgstr "Book now"
+
 msgid "Booked"
 msgstr "Booked"
+
+msgid "Booked by"
+msgstr "Booked by"
 
 msgid "Booked to date"
 msgstr "Booked to date"
 
+msgid "Booked. Your booking is confirmed."
+msgstr "Booked. Your booking is confirmed."
+
 msgid "Booking fee"
 msgstr "Booking fee"
+
+msgid "Bookings"
+msgstr "Bookings"
+
+#. placeholder {0}: rules.min_notice_minutes ?? 0
+msgid "Bookings need at least {0} minutes of notice."
+msgstr "Bookings need at least {0} minutes of notice."
+
+msgid "Bookings per unit"
+msgstr "Bookings per unit"
 
 msgid "Both"
 msgstr "Both"
@@ -560,6 +825,9 @@ msgstr "Bring units, people and opening balances in from a spreadsheet. Nothing 
 
 msgid "Budget"
 msgstr "Budget"
+
+msgid "Budget marked final"
+msgstr "Budget marked final"
 
 msgid "Budget saved."
 msgstr "Budget saved."
@@ -576,17 +844,65 @@ msgstr "By area"
 msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
 msgstr "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
 
+msgid "By land share (arsa payı)"
+msgstr "By land share (arsa payı)"
+
+msgid "By number of owners"
+msgstr "By number of owners"
+
+msgid "By proxy: {holder}"
+msgstr "By proxy: {holder}"
+
 msgid "By share"
 msgstr "By share"
 
 msgid "Calculating…"
 msgstr "Calculating…"
 
+msgid "Calendar"
+msgstr "Calendar"
+
+msgid "Call"
+msgstr "Call"
+
+msgid "Call letter (PDF)"
+msgstr "Call letter (PDF)"
+
+msgid "Call the assembly"
+msgstr "Call the assembly"
+
+msgid "Call the resident"
+msgstr "Call the resident"
+
+msgid "Called"
+msgstr "Called"
+
+msgid "Calling the assembly freezes who may vote, generates the call letter and creates a delivery checklist with one line per owner."
+msgstr "Calling the assembly freezes who may vote, generates the call letter and creates a delivery checklist with one line per owner."
+
+msgid "Calls, attendance, decisions and minutes of the owners' assembly."
+msgstr "Calls, attendance, decisions and minutes of the owners' assembly."
+
 msgid "Cancel"
 msgstr "Cancel"
 
 msgid "Cancel charge"
 msgstr "Cancel charge"
+
+msgid "Cancel pass"
+msgstr "Cancel pass"
+
+msgid "Cancel the assembly"
+msgstr "Cancel the assembly"
+
+msgid "Cancel the booking"
+msgstr "Cancel the booking"
+
+msgid "Cancel this assembly?"
+msgstr "Cancel this assembly?"
+
+msgid "Cancel this booking?"
+msgstr "Cancel this booking?"
 
 msgid "Cancel this charge?"
 msgstr "Cancel this charge?"
@@ -670,17 +986,29 @@ msgstr "Category saved."
 msgid "Change"
 msgstr "Change"
 
+msgid "Change of use"
+msgstr "Change of use"
+
 msgid "Change status"
 msgstr "Change status"
 
 msgid "Change the filters, or create a dues plan to generate charges."
 msgstr "Change the filters, or create a dues plan to generate charges."
 
+msgid "Change to common areas"
+msgstr "Change to common areas"
+
 msgid "Changed (private data, hashed)"
 msgstr "Changed (private data, hashed)"
 
 msgid "Changes"
 msgstr "Changes"
+
+msgid "Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under."
+msgstr "Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under."
+
+msgid "Channel"
+msgstr "Channel"
 
 msgid "Channels"
 msgstr "Channels"
@@ -693,6 +1021,9 @@ msgstr "Charge adjusted; the difference is posted as a correction."
 
 msgid "Charge cancelled; a reversal was created."
 msgstr "Charge cancelled; a reversal was created."
+
+msgid "Charge to"
+msgstr "Charge to"
 
 msgid "Charge type"
 msgstr "Charge type"
@@ -715,6 +1046,9 @@ msgstr "Check"
 msgid "Check (dry run)"
 msgstr "Check (dry run)"
 
+msgid "Check recipients"
+msgstr "Check recipients"
+
 msgid "Check the file"
 msgstr "Check the file"
 
@@ -724,8 +1058,17 @@ msgstr "Check the table"
 msgid "Check who will be reached before it goes out."
 msgstr "Check who will be reached before it goes out."
 
+msgid "Check-in QR code"
+msgstr "Check-in QR code"
+
+msgid "Checked in"
+msgstr "Checked in"
+
 msgid "Choose a block"
 msgstr "Choose a block"
+
+msgid "Choose a budget"
+msgstr "Choose a budget"
 
 msgid "Choose a category"
 msgstr "Choose a category"
@@ -735,6 +1078,27 @@ msgstr "Choose a channel"
 
 msgid "Choose a CSV or XLSX file"
 msgstr "Choose a CSV or XLSX file"
+
+msgid "Choose a date and time."
+msgstr "Choose a date and time."
+
+msgid "Choose a key"
+msgstr "Choose a key"
+
+msgid "Choose a person"
+msgstr "Choose a person"
+
+msgid "Choose a person."
+msgstr "Choose a person."
+
+msgid "Choose a plan"
+msgstr "Choose a plan"
+
+msgid "Choose a preset"
+msgstr "Choose a preset"
+
+msgid "Choose a start date."
+msgstr "Choose a start date."
 
 msgid "Choose a status"
 msgstr "Choose a status"
@@ -751,6 +1115,9 @@ msgstr "Choose a unit and an amount."
 msgid "Choose a unit to see what was sent to it."
 msgstr "Choose a unit to see what was sent to it."
 
+msgid "Choose a unit."
+msgstr "Choose a unit."
+
 msgid "Choose a valid time zone, for example Europe/Istanbul"
 msgstr "Choose a valid time zone, for example Europe/Istanbul"
 
@@ -762,6 +1129,9 @@ msgstr "Choose an organization"
 
 msgid "Choose another file"
 msgstr "Choose another file"
+
+msgid "Choose at least one day."
+msgstr "Choose at least one day."
 
 msgid "Choose at least one unit"
 msgstr "Choose at least one unit"
@@ -784,12 +1154,27 @@ msgstr "Choose the file, the importer and the bank account."
 msgid "Choose the start date"
 msgstr "Choose the start date"
 
+msgid "Choose the unit"
+msgstr "Choose the unit"
+
 msgid "Choose the unit and the debtor."
 msgstr "Choose the unit and the debtor."
+
+msgid "Choose the unit the visitor is for."
+msgstr "Choose the unit the visitor is for."
+
+msgid "Choose when the visit ends."
+msgstr "Choose when the visit ends."
+
+msgid "Choose when the visit starts."
+msgstr "Choose when the visit starts."
 
 #. placeholder {0}: missing.name
 msgid "Choose where the tickets of \"{0}\" move to."
 msgstr "Choose where the tickets of \"{0}\" move to."
+
+msgid "Choose who may book."
+msgstr "Choose who may book."
 
 msgid "Choose who may open this folder and the documents in it."
 msgstr "Choose who may open this folder and the documents in it."
@@ -820,11 +1205,20 @@ msgstr "Clear"
 msgid "Clear selection"
 msgstr "Clear selection"
 
+msgid "Clock suspect"
+msgstr "Clock suspect"
+
 msgid "Close"
 msgstr "Close"
 
 msgid "Close case"
 msgstr "Close case"
+
+msgid "Close now"
+msgstr "Close now"
+
+msgid "Close the assembly"
+msgstr "Close the assembly"
 
 msgid "Closed"
 msgstr "Closed"
@@ -832,8 +1226,14 @@ msgstr "Closed"
 msgid "Closed-like"
 msgstr "Closed-like"
 
+msgid "Closes"
+msgstr "Closes"
+
 msgid "Closing balance"
 msgstr "Closing balance"
+
+msgid "Closing must be after opening."
+msgstr "Closing must be after opening."
 
 msgid "Closing statement"
 msgstr "Closing statement"
@@ -852,6 +1252,13 @@ msgstr "Codes"
 
 msgid "Collected"
 msgstr "Collected"
+
+msgid "Collected by"
+msgstr "Collected by"
+
+#. placeholder {0}: d.unit_door_number
+msgid "Collected by {0}"
+msgstr "Collected by {0}"
 
 msgid "Collection cases"
 msgstr "Collection cases"
@@ -895,11 +1302,20 @@ msgstr "Common: the whole site"
 msgid "Complete"
 msgstr "Complete"
 
+msgid "Concerns residents"
+msgstr "Concerns residents"
+
+msgid "Concerns residents (tenants can see it)"
+msgstr "Concerns residents (tenants can see it)"
+
 msgid "configured"
 msgstr "configured"
 
 msgid "Confirm"
 msgstr "Confirm"
+
+msgid "Confirm and apply"
+msgstr "Confirm and apply"
 
 msgid "Confirm it is you"
 msgstr "Confirm it is you"
@@ -925,6 +1341,15 @@ msgstr "Confirmed. Please repeat the action."
 #. placeholder {0}: p.receipt_no ?? ''
 msgid "Confirmed. Receipt {0}"
 msgstr "Confirmed. Receipt {0}"
+
+msgid "Copied"
+msgstr "Copied"
+
+msgid "Copy the message"
+msgstr "Copy the message"
+
+msgid "Copy the token"
+msgstr "Copy the token"
 
 msgid "Correspondent"
 msgstr "Correspondent"
@@ -953,8 +1378,20 @@ msgstr "Could not add the stage."
 msgid "Could not adjust the charge."
 msgstr "Could not adjust the charge."
 
+msgid "Could not apply the decision. You can try again; nothing is created twice."
+msgstr "Could not apply the decision. You can try again; nothing is created twice."
+
 msgid "Could not assign the ticket. Please try again."
 msgstr "Could not assign the ticket. Please try again."
+
+msgid "Could not block these dates. Existing bookings may overlap."
+msgstr "Could not block these dates. Existing bookings may overlap."
+
+msgid "Could not book. Please try again."
+msgstr "Could not book. Please try again."
+
+msgid "Could not cancel the booking."
+msgstr "Could not cancel the booking."
 
 msgid "Could not cancel the charge."
 msgstr "Could not cancel the charge."
@@ -968,6 +1405,18 @@ msgstr "Could not change the status. Please try again."
 msgid "Could not change the visibility. Please try again."
 msgstr "Could not change the visibility. Please try again."
 
+msgid "Could not check the code. Try again."
+msgstr "Could not check the code. Try again."
+
+msgid "Could not check the recipients."
+msgstr "Could not check the recipients."
+
+msgid "Could not check this change. Review the values."
+msgstr "Could not check this change. Review the values."
+
+msgid "Could not close the assembly."
+msgstr "Could not close the assembly."
+
 msgid "Could not close the case."
 msgstr "Could not close the case."
 
@@ -977,8 +1426,17 @@ msgstr "Could not confirm the payment."
 msgid "Could not count the recipients."
 msgstr "Could not count the recipients."
 
+msgid "Could not create the agent."
+msgstr "Could not create the agent."
+
+msgid "Could not create the assembly."
+msgstr "Could not create the assembly."
+
 msgid "Could not create the charges."
 msgstr "Could not create the charges."
+
+msgid "Could not create the credential."
+msgstr "Could not create the credential."
 
 msgid "Could not delete the document."
 msgstr "Could not delete the document."
@@ -986,8 +1444,20 @@ msgstr "Could not delete the document."
 msgid "Could not freeze the fees."
 msgstr "Could not freeze the fees."
 
+msgid "Could not generate the minutes."
+msgstr "Could not generate the minutes."
+
+msgid "Could not load the decisions."
+msgstr "Could not load the decisions."
+
+msgid "Could not log the parcel."
+msgstr "Could not log the parcel."
+
 msgid "Could not mark everything as read."
 msgstr "Could not mark everything as read."
+
+msgid "Could not mark the parcel as collected."
+msgstr "Could not mark the parcel as collected."
 
 msgid "Could not match the line."
 msgstr "Could not match the line."
@@ -998,11 +1468,29 @@ msgstr "Could not merge the tickets. Please try again."
 msgid "Could not open the case."
 msgstr "Could not open the case."
 
+msgid "Could not open."
+msgstr "Could not open."
+
 msgid "Could not post the comment. Please try again."
 msgstr "Could not post the comment. Please try again."
 
 msgid "Could not publish. Please try again."
 msgstr "Could not publish. Please try again."
+
+msgid "Could not re-enrol the agent."
+msgstr "Could not re-enrol the agent."
+
+msgid "Could not record the attendance."
+msgstr "Could not record the attendance."
+
+msgid "Could not record the decision."
+msgstr "Could not record the decision."
+
+msgid "Could not record the deliveries."
+msgstr "Could not record the deliveries."
+
+msgid "Could not record the delivery."
+msgstr "Could not record the delivery."
 
 msgid "Could not record the expense."
 msgstr "Could not record the expense."
@@ -1010,20 +1498,44 @@ msgstr "Could not record the expense."
 msgid "Could not record the payment."
 msgstr "Could not record the payment."
 
+msgid "Could not record the proxy."
+msgstr "Could not record the proxy."
+
 msgid "Could not record the refund."
 msgstr "Could not record the refund."
 
 msgid "Could not record the transfer."
 msgstr "Could not record the transfer."
 
+msgid "Could not register the visitor."
+msgstr "Could not register the visitor."
+
 msgid "Could not reject the payment."
 msgstr "Could not reject the payment."
+
+msgid "Could not revoke the agent."
+msgstr "Could not revoke the agent."
+
+msgid "Could not rotate the token."
+msgstr "Could not rotate the token."
+
+msgid "Could not save the access point."
+msgstr "Could not save the access point."
+
+msgid "Could not save the agenda."
+msgstr "Could not save the agenda."
 
 msgid "Could not save the bill."
 msgstr "Could not save the bill."
 
 msgid "Could not save the budget."
 msgstr "Could not save the budget."
+
+msgid "Could not save the counts."
+msgstr "Could not save the counts."
+
+msgid "Could not save the facility."
+msgstr "Could not save the facility."
 
 msgid "Could not save the opening balances."
 msgstr "Could not save the opening balances."
@@ -1034,14 +1546,29 @@ msgstr "Could not save the plan."
 msgid "Could not save the policy."
 msgstr "Could not save the policy."
 
+msgid "Could not save the poll."
+msgstr "Could not save the poll."
+
+msgid "Could not save the recurring visitor."
+msgstr "Could not save the recurring visitor."
+
 msgid "Could not save the settings."
 msgstr "Could not save the settings."
 
 msgid "Could not save your +1. Please try again."
 msgstr "Could not save your +1. Please try again."
 
+msgid "Could not save your answer."
+msgstr "Could not save your answer."
+
 msgid "Could not save your preferences."
 msgstr "Could not save your preferences."
+
+msgid "Could not send the call."
+msgstr "Could not send the call."
+
+msgid "Could not send the decisions."
+msgstr "Could not send the decisions."
 
 msgid "Could not send the receipt."
 msgstr "Could not send the receipt."
@@ -1049,14 +1576,26 @@ msgstr "Could not send the receipt."
 msgid "Could not send the reminders."
 msgstr "Could not send the reminders."
 
+msgid "Could not send the request."
+msgstr "Could not send the request."
+
 msgid "Could not send the statement."
 msgstr "Could not send the statement."
+
+msgid "Could not send your answer. It may already have been answered or expired."
+msgstr "Could not send your answer. It may already have been answered or expired."
 
 msgid "Could not send your declaration."
 msgstr "Could not send your declaration."
 
 msgid "Could not sign out. Please try again."
 msgstr "Could not sign out. Please try again."
+
+msgid "Could not start the assembly."
+msgstr "Could not start the assembly."
+
+msgid "Could not start the rebuild."
+msgstr "Could not start the rebuild."
 
 msgid "Could not update the document."
 msgstr "Could not update the document."
@@ -1082,6 +1621,15 @@ msgstr "Counting recipients"
 msgid "Country"
 msgstr "Country"
 
+msgid "Counts and decisions"
+msgstr "Counts and decisions"
+
+msgid "Counts and decisions are recorded once the assembly is in session."
+msgstr "Counts and decisions are recorded once the assembly is in session."
+
+msgid "Counts saved."
+msgstr "Counts saved."
+
 msgid "Create"
 msgstr "Create"
 
@@ -1090,6 +1638,12 @@ msgstr "Create a folder to start filing documents."
 
 msgid "Create a site"
 msgstr "Create a site"
+
+msgid "Create an agent to connect a gate or door."
+msgstr "Create an agent to connect a gate or door."
+
+msgid "Create assembly"
+msgstr "Create assembly"
 
 msgid "Create budget"
 msgstr "Create budget"
@@ -1103,8 +1657,14 @@ msgstr "Create folder"
 msgid "Create site"
 msgstr "Create site"
 
+msgid "Create the first assembly to start the call."
+msgstr "Create the first assembly to start the call."
+
 msgid "Create the monthly dues plan; you will see what every unit pays before saving."
 msgstr "Create the monthly dues plan; you will see what every unit pays before saving."
+
+msgid "Create the pass"
+msgstr "Create the pass"
 
 msgid "Create unit"
 msgstr "Create unit"
@@ -1117,6 +1677,12 @@ msgstr "Creates a legal-cost charge on the debtor's side."
 
 msgid "Creating a new code stops the old poster from working."
 msgstr "Creating a new code stops the old poster from working."
+
+msgid "Credential created."
+msgstr "Credential created."
+
+msgid "Credentials"
+msgstr "Credentials"
 
 msgid "Credit"
 msgstr "Credit"
@@ -1142,6 +1708,9 @@ msgstr "Dark"
 msgid "Date"
 msgstr "Date"
 
+msgid "Date and place"
+msgstr "Date and place"
+
 msgid "Date you paid"
 msgstr "Date you paid"
 
@@ -1152,8 +1721,18 @@ msgstr "day"
 msgid "Day {0}"
 msgstr "Day {0}"
 
+msgid "days"
+msgstr "days"
+
+msgid "Days"
+msgstr "Days"
+
 msgid "Days after due"
 msgstr "Days after due"
+
+#. placeholder {0}: a.dead_letters
+msgid "Dead letters: {0}"
+msgstr "Dead letters: {0}"
 
 msgid "Debit"
 msgstr "Debit"
@@ -1177,8 +1756,35 @@ msgstr "Debug view of /codes for locale {0}."
 msgid "Decision"
 msgstr "Decision"
 
+#. placeholder {0}: decisionNo(d)
+msgid "Decision {0} recorded."
+msgstr "Decision {0} recorded."
+
+#. placeholder {0}: decision.year
+#. placeholder {1}: decision.sequence_no
+msgid "Decision {0}/{1} can create the change it describes. You confirm each one; the link to the decision is kept for the audit trail."
+msgstr "Decision {0}/{1} can create the change it describes. You confirm each one; the link to the decision is kept for the audit trail."
+
+msgid "Decision history"
+msgstr "Decision history"
+
 msgid "Decision reference (optional)"
 msgstr "Decision reference (optional)"
+
+msgid "Decision text"
+msgstr "Decision text"
+
+msgid "Decision thresholds by topic"
+msgstr "Decision thresholds by topic"
+
+msgid "Decisions"
+msgstr "Decisions"
+
+msgid "Decisions appear here when they are recorded at an assembly."
+msgstr "Decisions appear here when they are recorded at an assembly."
+
+msgid "Decisions are sent to absent owners after the assembly."
+msgstr "Decisions are sent to absent owners after the assembly."
 
 msgid "Declared by residents, awaiting confirmation"
 msgstr "Declared by residents, awaiting confirmation"
@@ -1210,6 +1816,9 @@ msgstr "Default visibility of {0}"
 msgid "Default visibility of the new category"
 msgstr "Default visibility of the new category"
 
+msgid "Default: no quorum on the second call; decisions by majority of those present."
+msgstr "Default: no quorum on the second call; decisions by majority of those present."
+
 msgid "Defaults saved."
 msgstr "Defaults saved."
 
@@ -1221,8 +1830,14 @@ msgstr "Delete"
 msgid "Delete {0}"
 msgstr "Delete {0}"
 
+msgid "Delete a digit"
+msgstr "Delete a digit"
+
 msgid "Delete rate"
 msgstr "Delete rate"
+
+msgid "Delete this access point?"
+msgstr "Delete this access point?"
 
 msgid "Delete this announcement?"
 msgstr "Delete this announcement?"
@@ -1230,14 +1845,42 @@ msgstr "Delete this announcement?"
 msgid "Delete this document?"
 msgstr "Delete this document?"
 
+msgid "Delete this facility?"
+msgstr "Delete this facility?"
+
 msgid "Delete unit"
 msgstr "Delete unit"
+
+msgid "Deliveries recorded."
+msgstr "Deliveries recorded."
+
+msgid "Delivery of the call"
+msgstr "Delivery of the call"
+
+msgid "Delivery of the decisions"
+msgstr "Delivery of the decisions"
 
 msgid "Delivery preview"
 msgstr "Delivery preview"
 
+msgid "Delivery progress"
+msgstr "Delivery progress"
+
+msgid "Delivery recorded."
+msgstr "Delivery recorded."
+
+#. placeholder {0}: notice.person_display_name
+msgid "Delivery to {0}"
+msgstr "Delivery to {0}"
+
 msgid "Delta"
 msgstr "Delta"
+
+msgid "Denied"
+msgstr "Denied"
+
+msgid "Deny"
+msgstr "Deny"
 
 msgid "Deposit"
 msgstr "Deposit"
@@ -1254,14 +1897,35 @@ msgstr "Describe the problem"
 msgid "Description"
 msgstr "Description"
 
+msgid "Description (optional)"
+msgstr "Description (optional)"
+
+msgid "Details"
+msgstr "Details"
+
 msgid "Difference"
 msgstr "Difference"
+
+msgid "Direction"
+msgstr "Direction"
 
 msgid "Directory"
 msgstr "Directory"
 
+msgid "Disabled"
+msgstr "Disabled"
+
 msgid "Dismiss"
 msgstr "Dismiss"
+
+msgid "Dissent text"
+msgstr "Dissent text"
+
+msgid "Dissenting opinions (muhalefet şerhi)"
+msgstr "Dissenting opinions (muhalefet şerhi)"
+
+msgid "Dissenting owner"
+msgstr "Dissenting owner"
 
 msgid "District"
 msgstr "District"
@@ -1314,6 +1978,9 @@ msgstr "Draft saved."
 msgid "Drafts"
 msgstr "Drafts"
 
+msgid "Driver instance"
+msgstr "Driver instance"
+
 msgid "Drop files here or choose files"
 msgstr "Drop files here or choose files"
 
@@ -1335,6 +2002,9 @@ msgstr "Due date"
 msgid "Due day"
 msgstr "Due day"
 
+msgid "Due from"
+msgstr "Due from"
+
 msgid "Dues (aidat)"
 msgstr "Dues (aidat)"
 
@@ -1344,8 +2014,14 @@ msgstr "Dues and charges"
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 
+msgid "Dues plan"
+msgstr "Dues plan"
+
 msgid "Dues plans"
 msgstr "Dues plans"
+
+msgid "Dues rate"
+msgstr "Dues rate"
 
 msgid "Dues reminders"
 msgstr "Dues reminders"
@@ -1362,11 +2038,23 @@ msgstr "Each unit counts by its floor area. Change areas on the unit pages."
 msgid "Edit"
 msgstr "Edit"
 
+msgid "Edit access point"
+msgstr "Edit access point"
+
 msgid "Edit announcement"
 msgstr "Edit announcement"
 
 msgid "Edit bank details"
 msgstr "Edit bank details"
+
+msgid "Edit facility"
+msgstr "Edit facility"
+
+msgid "Edit item"
+msgstr "Edit item"
+
+msgid "Edit rules"
+msgstr "Edit rules"
 
 msgid "Edit the plan, or change the amount by adding a rate that starts on a date."
 msgstr "Edit the plan, or change the amount by adding a rate that starts on a date."
@@ -1376,6 +2064,24 @@ msgstr "Edit vendor"
 
 msgid "Editor mode"
 msgstr "Editor mode"
+
+msgid "Effective from"
+msgstr "Effective from"
+
+msgid "Elected person"
+msgstr "Elected person"
+
+msgid "Elected role with a term"
+msgstr "Elected role with a term"
+
+msgid "Election of the auditor"
+msgstr "Election of the auditor"
+
+msgid "Election of the board"
+msgstr "Election of the board"
+
+msgid "Election of the manager"
+msgstr "Election of the manager"
 
 msgid "Email"
 msgstr "Email"
@@ -1393,14 +2099,24 @@ msgstr "Email or phone"
 msgid "Emails: {0}"
 msgstr "Emails: {0}"
 
+msgid "Empty: no limit"
+msgstr "Empty: no limit"
+
 msgid "Enabled"
 msgstr "Enabled"
 
 msgid "End membership"
 msgstr "End membership"
 
+msgid "End the previous holder's term"
+msgstr "End the previous holder's term"
+
 msgid "Ended"
 msgstr "Ended"
+
+#. placeholder {0}: enrolment.agent.name
+msgid "Enrolment token for {0}"
+msgstr "Enrolment token for {0}"
 
 msgid "Enter a block name"
 msgstr "Enter a block name"
@@ -1417,8 +2133,17 @@ msgstr "Enter a name"
 msgid "Enter a name and the days after the due date."
 msgstr "Enter a name and the days after the due date."
 
+msgid "Enter a name."
+msgstr "Enter a name."
+
+msgid "Enter a number."
+msgstr "Enter a number."
+
 msgid "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
 msgstr "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+
+msgid "Enter a plate like 34 ABC 123."
+msgstr "Enter a plate like 34 ABC 123."
 
 msgid "Enter a rate."
 msgstr "Enter a rate."
@@ -1428,6 +2153,9 @@ msgstr "Enter a share between 1 and 100"
 
 msgid "Enter a short title"
 msgstr "Enter a short title"
+
+msgid "Enter a time."
+msgstr "Enter a time."
 
 msgid "Enter a title"
 msgstr "Enter a title"
@@ -1444,8 +2172,17 @@ msgstr "Enter a valid phone number"
 msgid "Enter a valid phone number, for example +90 555 111 22 33"
 msgstr "Enter a valid phone number, for example +90 555 111 22 33"
 
+msgid "Enter a value from {min} to {max}."
+msgstr "Enter a value from {min} to {max}."
+
 msgid "Enter a weight for each unit, or upload a table with one row per unit."
 msgstr "Enter a weight for each unit, or upload a table with one row per unit."
+
+msgid "Enter a whole number from {min} to {max}."
+msgstr "Enter a whole number from {min} to {max}."
+
+msgid "Enter a whole number."
+msgstr "Enter a whole number."
 
 msgid "Enter an amount greater than zero."
 msgstr "Enter an amount greater than zero."
@@ -1477,11 +2214,17 @@ msgstr "Enter the area in square metres"
 msgid "Enter the code from the SMS"
 msgstr "Enter the code from the SMS"
 
+msgid "Enter the date it was sent."
+msgstr "Enter the date it was sent."
+
 msgid "Enter the door number, for example A-12"
 msgstr "Enter the door number, for example A-12"
 
 msgid "Enter the grace days."
 msgstr "Enter the grace days."
+
+msgid "enter the land share to finish the check"
+msgstr "enter the land share to finish the check"
 
 msgid "Enter the number"
 msgstr "Enter the number"
@@ -1492,6 +2235,12 @@ msgstr "Enter the organization name"
 msgid "Enter the person's name"
 msgstr "Enter the person's name"
 
+msgid "Enter the person's name."
+msgstr "Enter the person's name."
+
+msgid "Enter the place of the assembly."
+msgstr "Enter the place of the assembly."
+
 msgid "Enter the plate, for example 34 ABC 123"
 msgstr "Enter the plate, for example 34 ABC 123"
 
@@ -1501,14 +2250,23 @@ msgstr "Enter the site name"
 msgid "Enter the street address"
 msgstr "Enter the street address"
 
+msgid "Enter the value."
+msgstr "Enter the value."
+
 msgid "Enter the vendor name"
 msgstr "Enter the vendor name"
+
+msgid "Enter the visitor's name."
+msgstr "Enter the visitor's name."
 
 msgid "Enter their name"
 msgstr "Enter their name"
 
 msgid "Enter their phone number or email address"
 msgstr "Enter their phone number or email address"
+
+msgid "Enter this token once when you install the agent on the gate computer. It expires <0/>."
+msgstr "Enter this token once when you install the agent on the gate computer. It expires <0/>."
 
 msgid "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
 msgstr "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
@@ -1524,6 +2282,10 @@ msgstr "Enter your password"
 
 msgid "Enter your phone number"
 msgstr "Enter your phone number"
+
+#. placeholder {0}: guard.displayName
+msgid "Enter your PIN to leave. {0} is on the gate."
+msgstr "Enter your PIN to leave. {0} is on the gate."
 
 msgid "Enter zero or a positive number"
 msgstr "Enter zero or a positive number"
@@ -1561,8 +2323,20 @@ msgstr "Everyone"
 msgid "Everything is matched"
 msgstr "Everything is matched"
 
+msgid "Existing bookings stay in the history."
+msgstr "Existing bookings stay in the history."
+
+msgid "Exit"
+msgstr "Exit"
+
+msgid "Expected"
+msgstr "Expected"
+
 msgid "Expected to date"
 msgstr "Expected to date"
+
+msgid "Expected today"
+msgstr "Expected today"
 
 msgid "Expected visitors today"
 msgstr "Expected visitors today"
@@ -1597,8 +2371,36 @@ msgstr "Export site"
 msgid "Export this site"
 msgstr "Export this site"
 
+msgid "Extraordinary assembly"
+msgstr "Extraordinary assembly"
+
+msgid "Facilities"
+msgstr "Facilities"
+
+msgid "Facilities and rules"
+msgstr "Facilities and rules"
+
+msgid "Facility"
+msgstr "Facility"
+
+msgid "Facility saved."
+msgstr "Facility saved."
+
 msgid "Failed"
 msgstr "Failed"
+
+msgid "Fee"
+msgstr "Fee"
+
+msgid "Fee per booking"
+msgstr "Fee per booking"
+
+msgid "Fee refunded if cancelled this many hours before"
+msgstr "Fee refunded if cancelled this many hours before"
+
+#. placeholder {0}: facility.rules.cancel_refund_cutoff_hours !== null ? ` Refunded if you cancel at least ${facility.rules.cancel_refund_cutoff_hours} hours ahead.` : ''
+msgid "Fee: <0/>, charged to the unit's account when the booking is confirmed.{0}"
+msgstr "Fee: <0/>, charged to the unit's account when the booking is confirmed.{0}"
 
 msgid "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
 msgstr "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
@@ -1624,11 +2426,26 @@ msgstr "Fill in the amount and split rule to see what each unit pays."
 msgid "Fill in the vendor, category and amount."
 msgstr "Fill in the vendor, category and amount."
 
+msgid "Fill the form with this preset"
+msgstr "Fill the form with this preset"
+
 msgid "Final"
 msgstr "Final"
 
 msgid "Finished."
 msgstr "Finished."
+
+msgid "First call"
+msgstr "First call"
+
+msgid "First call: more than this share of owners"
+msgstr "First call: more than this share of owners"
+
+msgid "First call: more than this share of the land"
+msgstr "First call: more than this share of the land"
+
+msgid "First meeting"
+msgstr "First meeting"
 
 msgid "First rows of the file"
 msgstr "First rows of the file"
@@ -1666,6 +2483,21 @@ msgstr "Folders"
 msgid "For"
 msgstr "For"
 
+msgid "For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code."
+msgstr "For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code."
+
+msgid "For discussion"
+msgstr "For discussion"
+
+msgid "For information"
+msgstr "For information"
+
+msgid "Four fifths"
+msgstr "Four fifths"
+
+msgid "free"
+msgstr "free"
+
 msgid "Freeze"
 msgstr "Freeze"
 
@@ -1677,6 +2509,12 @@ msgstr "Frequency"
 
 msgid "From"
 msgstr "From"
+
+msgid "From a vehicle"
+msgstr "From a vehicle"
+
+msgid "From a visitor"
+msgstr "From a visitor"
 
 msgid "Frozen"
 msgstr "Frozen"
@@ -1690,14 +2528,32 @@ msgstr "Fund"
 msgid "Fund balances"
 msgstr "Fund balances"
 
+msgid "Gate"
+msgstr "Gate"
+
 msgid "Gate contact phone"
 msgstr "Gate contact phone"
+
+msgid "Gate control"
+msgstr "Gate control"
+
+msgid "Gates"
+msgstr "Gates"
 
 msgid "Gelir-gider, debtors, budget, aging"
 msgstr "Gelir-gider, debtors, budget, aging"
 
 msgid "General"
 msgstr "General"
+
+msgid "General decision"
+msgstr "General decision"
+
+msgid "Generate again"
+msgstr "Generate again"
+
+msgid "Generate the minutes"
+msgstr "Generate the minutes"
 
 msgid "Generated"
 msgstr "Generated"
@@ -1723,11 +2579,17 @@ msgstr "Give the person a reason"
 msgid "Go home"
 msgstr "Go home"
 
+msgid "Governance sections"
+msgstr "Governance sections"
+
 msgid "Grace days"
 msgstr "Grace days"
 
 msgid "Guard"
 msgstr "Guard"
+
+msgid "Halls, courts and barbecue areas, each with its own booking rules."
+msgstr "Halls, courts and barbecue areas, each with its own booking rules."
 
 msgid "Hand cash over"
 msgstr "Hand cash over"
@@ -1762,6 +2624,9 @@ msgstr "Hide"
 msgid "Home"
 msgstr "Home"
 
+msgid "Hours"
+msgstr "Hours"
+
 msgid "Household member"
 msgstr "Household member"
 
@@ -1775,8 +2640,14 @@ msgstr "Household of {0}"
 msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
 msgstr "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
 
+msgid "How far ahead (days)"
+msgstr "How far ahead (days)"
+
 msgid "How it will be applied"
 msgstr "How it will be applied"
+
+msgid "I have saved it"
+msgstr "I have saved it"
 
 msgid "I've paid"
 msgstr "I've paid"
@@ -1827,6 +2698,12 @@ msgstr "Importer"
 msgid "Importing…"
 msgstr "Importing…"
 
+msgid "In"
+msgstr "In"
+
+msgid "In and out"
+msgstr "In and out"
+
 msgid "In app"
 msgstr "In app"
 
@@ -1835,6 +2712,15 @@ msgstr "In collection"
 
 msgid "In progress"
 msgstr "In progress"
+
+msgid "In session"
+msgstr "In session"
+
+msgid "In the app"
+msgstr "In the app"
+
+msgid "In the app only"
+msgstr "In the app only"
 
 msgid "In-app"
 msgstr "In-app"
@@ -1863,6 +2749,9 @@ msgstr "Independent section number from the title deed (tapu)."
 
 msgid "Independent unit (own owner and charges)"
 msgstr "Independent unit (own owner and charges)"
+
+msgid "Inside the rules, your booking is confirmed immediately."
+msgstr "Inside the rules, your booking is confirmed immediately."
 
 msgid "Instance name"
 msgstr "Instance name"
@@ -1902,14 +2791,23 @@ msgstr "Invited"
 msgid "Issued"
 msgstr "Issued"
 
+msgid "It is too late for a refund: the fee of <0/> is kept."
+msgstr "It is too late for a refund: the fee of <0/> is kept."
+
 msgid "It starts with the visibility of the folder it is in. You can change it after."
 msgstr "It starts with the visibility of the folder it is in. You can change it after."
+
+msgid "It stops opening gates at once."
+msgstr "It stops opening gates at once."
 
 msgid "Italic"
 msgstr "Italic"
 
 msgid "italic text"
 msgstr "italic text"
+
+msgid "Its gates stop opening from the app and it can no longer connect."
+msgstr "Its gates stop opening from the app and it can no longer connect."
 
 msgid "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
 msgstr "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
@@ -1937,6 +2835,12 @@ msgstr "Keep at least one open-like status."
 
 msgid "Keep editing"
 msgstr "Keep editing"
+
+msgid "Keep the booking"
+msgstr "Keep the booking"
+
+msgid "Keep the proof: this record is what counts if a decision is challenged."
+msgstr "Keep the proof: this record is what counts if a decision is challenged."
 
 msgid "Keep the title short"
 msgstr "Keep the title short"
@@ -1971,6 +2875,9 @@ msgstr "Largest balances"
 msgid "Last backup"
 msgstr "Last backup"
 
+msgid "Last seen"
+msgstr "Last seen"
+
 msgid "late fee"
 msgstr "late fee"
 
@@ -1995,8 +2902,14 @@ msgstr "Late fees frozen."
 msgid "Late-fee policy"
 msgstr "Late-fee policy"
 
+msgid "Law 634 default: one third."
+msgstr "Law 634 default: one third."
+
 msgid "Lawyer"
 msgstr "Lawyer"
+
+msgid "Leave"
+msgstr "Leave"
 
 msgid "Leave empty for problems in shared areas."
 msgstr "Leave empty for problems in shared areas."
@@ -2007,6 +2920,9 @@ msgstr "Leave empty to open it as yourself."
 msgid "Leave empty to use the number or address on the person's record."
 msgstr "Leave empty to use the number or address on the person's record."
 
+msgid "Leave the guard console"
+msgstr "Leave the guard console"
+
 msgid "Ledger balance"
 msgstr "Ledger balance"
 
@@ -2015,6 +2931,9 @@ msgstr "Ledger closing"
 
 msgid "Ledger opening"
 msgstr "Ledger opening"
+
+msgid "Left"
+msgstr "Left"
 
 msgid "Legal cost"
 msgstr "Legal cost"
@@ -2027,6 +2946,10 @@ msgstr "Letter"
 
 msgid "Light"
 msgstr "Light"
+
+#. placeholder {0}: proxyLimit(settings, totalUnits)
+msgid "Limit: {0} proxies per person (site settings)."
+msgstr "Limit: {0} proxies per person (site settings)."
 
 msgid "Lines"
 msgstr "Lines"
@@ -2064,6 +2987,9 @@ msgstr "Listed"
 msgid "Listed with phone"
 msgstr "Listed with phone"
 
+msgid "Load a preset"
+msgstr "Load a preset"
+
 msgid "Load more"
 msgstr "Load more"
 
@@ -2088,6 +3014,22 @@ msgstr "Lock everything up to and including"
 msgid "Locked"
 msgstr "Locked"
 
+msgid "Log parcel"
+msgstr "Log parcel"
+
+msgid "Longest"
+msgstr "Longest"
+
+msgid "Longest booking (minutes)"
+msgstr "Longest booking (minutes)"
+
+msgid "Looking up the number…"
+msgstr "Looking up the number…"
+
+#. placeholder {0}: a.lost_events
+msgid "Lost events: {0}"
+msgstr "Lost events: {0}"
+
 #. placeholder {0}: s.mail_configured ? t`configured` : t`not configured`
 #. placeholder {1}: s.sms_configured ? t`configured` : t`not configured`
 msgid "Mail: {0}. SMS: {1}."
@@ -2096,8 +3038,21 @@ msgstr "Mail: {0}. SMS: {1}."
 msgid "Main"
 msgstr "Main"
 
+msgid "Majority by number and by share"
+msgstr "Majority by number and by share"
+
+msgid "Majority of those present"
+msgstr "Majority of those present"
+
+msgid "Manual"
+msgstr "Manual"
+
 msgid "Manual allocation"
 msgstr "Manual allocation"
+
+#. placeholder {0}: o.name
+msgid "Mark {0} present"
+msgstr "Mark {0} present"
 
 msgid "Mark all as read"
 msgstr "Mark all as read"
@@ -2137,6 +3092,9 @@ msgstr "Meaning of status {0}"
 msgid "Meeting notices"
 msgstr "Meeting notices"
 
+msgid "Meetings"
+msgstr "Meetings"
+
 msgid "Merge"
 msgstr "Merge"
 
@@ -2158,8 +3116,26 @@ msgstr "Message (Markdown)"
 msgid "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
 msgstr "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
 
+msgid "met"
+msgstr "met"
+
 msgid "Method"
 msgstr "Method"
+
+msgid "Method for the selected owners"
+msgstr "Method for the selected owners"
+
+msgid "Minutes"
+msgstr "Minutes"
+
+msgid "Minutes (PDF)"
+msgstr "Minutes (PDF)"
+
+msgid "Minutes (tutanak)"
+msgstr "Minutes (tutanak)"
+
+msgid "mock"
+msgstr "mock"
 
 msgid "Money"
 msgstr "Money"
@@ -2169,6 +3145,12 @@ msgstr "Money overview"
 
 msgid "Money sections"
 msgstr "Money sections"
+
+msgid "month"
+msgstr "month"
+
+msgid "Month"
+msgstr "Month"
 
 msgid "Monthly"
 msgstr "Monthly"
@@ -2182,6 +3164,31 @@ msgstr "Monthly recurring expenses"
 msgid "Months overdue"
 msgstr "Months overdue"
 
+#. placeholder {0}: v.requiredCountPct
+#. placeholder {1}: v.moreOwnersNeeded
+msgid "More than {0}% needed; {1} more owners."
+msgstr "More than {0}% needed; {1} more owners."
+
+#. placeholder {0}: v.requiredCountPct
+msgid "More than {0}% needed: met."
+msgstr "More than {0}% needed: met."
+
+#. placeholder {0}: v.requiredSharePct
+msgid "More than {0}% needed."
+msgstr "More than {0}% needed."
+
+msgid "More yes than no among those present"
+msgstr "More yes than no among those present"
+
+msgid "Most uses (optional)"
+msgstr "Most uses (optional)"
+
+msgid "Most votes one person may hold"
+msgstr "Most votes one person may hold"
+
+msgid "Most votes one person may represent by proxy"
+msgstr "Most votes one person may represent by proxy"
+
 #. placeholder {0}: row.name
 msgid "Move {0} down"
 msgstr "Move {0} down"
@@ -2194,6 +3201,9 @@ msgstr "Move {0} to"
 msgid "Move {0} up"
 msgstr "Move {0} up"
 
+msgid "Move down"
+msgstr "Move down"
+
 msgid "Move out"
 msgstr "Move out"
 
@@ -2205,6 +3215,9 @@ msgstr "Move out…"
 
 msgid "Move to…"
 msgstr "Move to…"
+
+msgid "Move up"
+msgstr "Move up"
 
 msgid "Moves out on"
 msgstr "Moves out on"
@@ -2221,14 +3234,26 @@ msgstr "My account"
 msgid "My balance"
 msgstr "My balance"
 
+msgid "My call letter"
+msgstr "My call letter"
+
+msgid "My check-in code"
+msgstr "My check-in code"
+
 msgid "My statement"
 msgstr "My statement"
 
 msgid "My tickets"
 msgstr "My tickets"
 
+msgid "My unit"
+msgstr "My unit"
+
 msgid "My units"
 msgstr "My units"
+
+msgid "My vehicles"
+msgstr "My vehicles"
 
 msgid "Myself"
 msgstr "Myself"
@@ -2236,11 +3261,25 @@ msgstr "Myself"
 msgid "Name"
 msgstr "Name"
 
+msgid "Name of the plan"
+msgstr "Name of the plan"
+
+msgid "Name or plate"
+msgstr "Name or plate"
+
 msgid "National id"
 msgstr "National id"
 
 msgid "Navigation"
 msgstr "Navigation"
+
+#. placeholder {0}: evaln.neededYes
+#. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
+msgid "Needed: at least {0} yes votes{1}"
+msgstr "Needed: at least {0} yes votes{1}"
+
+msgid "Needs"
+msgstr "Needs"
 
 msgid "Needs attention"
 msgstr "Needs attention"
@@ -2251,14 +3290,26 @@ msgstr "Net: <0/>"
 msgid "New"
 msgstr "New"
 
+msgid "New access point"
+msgstr "New access point"
+
+msgid "New agent"
+msgstr "New agent"
+
 msgid "New amount"
 msgstr "New amount"
+
+msgid "New amount per unit"
+msgstr "New amount per unit"
 
 msgid "New announcement"
 msgstr "New announcement"
 
 msgid "New announcements"
 msgstr "New announcements"
+
+msgid "New assembly"
+msgstr "New assembly"
 
 msgid "New bill"
 msgstr "New bill"
@@ -2281,11 +3332,23 @@ msgstr "New custom key"
 msgid "New dues plan"
 msgstr "New dues plan"
 
+msgid "New dues rate"
+msgstr "New dues rate"
+
 msgid "New expense"
 msgstr "New expense"
 
+msgid "New facility"
+msgstr "New facility"
+
 msgid "New folder"
 msgstr "New folder"
+
+msgid "New gate agent"
+msgstr "New gate agent"
+
+msgid "New manual credential"
+msgstr "New manual credential"
 
 msgid "New notifications will appear here."
 msgstr "New notifications will appear here."
@@ -2296,11 +3359,17 @@ msgstr "New organization"
 msgid "New plan"
 msgstr "New plan"
 
+msgid "New recurring visitor"
+msgstr "New recurring visitor"
+
 msgid "New site"
 msgstr "New site"
 
 msgid "New stage"
 msgstr "New stage"
+
+msgid "New tag or PIN"
+msgstr "New tag or PIN"
 
 msgid "New ticket"
 msgstr "New ticket"
@@ -2310,6 +3379,9 @@ msgstr "New unit"
 
 msgid "New vendor bill"
 msgstr "New vendor bill"
+
+msgid "New visitor"
+msgstr "New visitor"
 
 msgid "Next"
 msgstr "Next"
@@ -2326,20 +3398,47 @@ msgstr "Next photo"
 msgid "Next: choose the split"
 msgstr "Next: choose the split"
 
+msgid "No"
+msgstr "No"
+
+msgid "No access points yet"
+msgstr "No access points yet"
+
 msgid "No account"
 msgstr "No account"
 
 msgid "No activity yet."
 msgstr "No activity yet."
 
+msgid "No agenda item is marked \"will be voted\"."
+msgstr "No agenda item is marked \"will be voted\"."
+
+msgid "No agenda items yet"
+msgstr "No agenda items yet"
+
+msgid "No agenda items yet."
+msgstr "No agenda items yet."
+
+msgid "No agent"
+msgstr "No agent"
+
 msgid "No announcements"
 msgstr "No announcements"
+
+msgid "No answer in time. Call the resident."
+msgstr "No answer in time. Call the resident."
+
+msgid "No assemblies yet"
+msgstr "No assemblies yet"
 
 msgid "No bank details yet"
 msgstr "No bank details yet"
 
 msgid "No bills"
 msgstr "No bills"
+
+msgid "No bookings in this period."
+msgstr "No bookings in this period."
 
 msgid "No budget lines yet"
 msgstr "No budget lines yet"
@@ -2359,14 +3458,29 @@ msgstr "No claims waiting"
 msgid "No collectors"
 msgstr "No collectors"
 
+msgid "No credentials found"
+msgstr "No credentials found"
+
 msgid "No credits"
 msgstr "No credits"
 
 msgid "No debtors"
 msgstr "No debtors"
 
+msgid "No decisions found"
+msgstr "No decisions found"
+
+msgid "No decisions recorded yet."
+msgstr "No decisions recorded yet."
+
+msgid "No decisions yet"
+msgstr "No decisions yet"
+
 msgid "No default assignee"
 msgstr "No default assignee"
+
+msgid "No deliveries to record"
+msgstr "No deliveries to record"
 
 msgid "No details recorded."
 msgstr "No details recorded."
@@ -2380,6 +3494,9 @@ msgstr "No events match"
 msgid "No expenses"
 msgstr "No expenses"
 
+msgid "No facilities yet"
+msgstr "No facilities yet"
+
 #. placeholder {0}: accrual.unit_door_number
 msgid "No fee accrues for {0} while it is frozen, for example during legal collection."
 msgstr "No fee accrues for {0} while it is frozen, for example during legal collection."
@@ -2389,6 +3506,15 @@ msgstr "No folders yet"
 
 msgid "No funds"
 msgstr "No funds"
+
+msgid "No gate agents yet"
+msgstr "No gate agents yet"
+
+msgid "No gate is connected to this console."
+msgstr "No gate is connected to this console."
+
+msgid "No guard has a PIN yet. A manager sets guard PINs in the people settings."
+msgstr "No guard has a PIN yet. A manager sets guard PINs in the people settings."
 
 msgid "No imports yet"
 msgstr "No imports yet"
@@ -2408,17 +3534,35 @@ msgstr "No late fees are accruing"
 msgid "No lines are waiting for you."
 msgstr "No lines are waiting for you."
 
+msgid "No match. Use \"Walk-in visitor\" to ask the resident."
+msgstr "No match. Use \"Walk-in visitor\" to ask the resident."
+
 msgid "No matches"
 msgstr "No matches"
 
 msgid "No meeting is scheduled."
 msgstr "No meeting is scheduled."
 
+msgid "No minimum number on this call."
+msgstr "No minimum number on this call."
+
+msgid "No minimum share on this call."
+msgstr "No minimum share on this call."
+
 msgid "No open receivables"
 msgstr "No open receivables"
 
+msgid "No openings match"
+msgstr "No openings match"
+
 msgid "No organizations yet"
 msgstr "No organizations yet"
+
+msgid "No owners found"
+msgstr "No owners found"
+
+msgid "No parcels are waiting."
+msgstr "No parcels are waiting."
 
 msgid "No parking or storage belongs to this unit."
 msgstr "No parking or storage belongs to this unit."
@@ -2432,6 +3576,9 @@ msgstr "No payments yet"
 msgid "No people yet"
 msgstr "No people yet"
 
+msgid "No poll"
+msgstr "No poll"
+
 msgid "No postings yet"
 msgstr "No postings yet"
 
@@ -2443,6 +3590,9 @@ msgstr "No problems found."
 
 msgid "No rates yet"
 msgstr "No rates yet"
+
+msgid "No recurring visitors"
+msgstr "No recurring visitors"
 
 msgid "No refunds"
 msgstr "No refunds"
@@ -2471,8 +3621,14 @@ msgstr "No suggestion"
 msgid "No terms end soon."
 msgstr "No terms end soon."
 
+msgid "No threshold is set for this topic."
+msgstr "No threshold is set for this topic."
+
 msgid "No tickets here"
 msgstr "No tickets here"
+
+msgid "No topic"
+msgstr "No topic"
 
 msgid "No transfers yet"
 msgstr "No transfers yet"
@@ -2492,6 +3648,15 @@ msgstr "No vehicles registered"
 msgid "No vendors yet"
 msgstr "No vendors yet"
 
+msgid "No visitor is waiting"
+msgstr "No visitor is waiting"
+
+msgid "No visitors yet"
+msgstr "No visitors yet"
+
+msgid "No vote"
+msgstr "No vote"
+
 msgid "No waivers"
 msgstr "No waivers"
 
@@ -2500,6 +3665,9 @@ msgstr "No, match to a unit instead"
 
 msgid "Nobody has overdue principal beyond the grace period."
 msgstr "Nobody has overdue principal beyond the grace period."
+
+msgid "Nobody is expected right now."
+msgstr "Nobody is expected right now."
 
 msgid "Nobody is linked to this unit."
 msgstr "Nobody is linked to this unit."
@@ -2510,6 +3678,15 @@ msgstr "Nobody is listed yet. The directory must be switched on in the site sett
 msgid "Nobody owes anything right now."
 msgstr "Nobody owes anything right now."
 
+msgid "Nobody yet."
+msgstr "Nobody yet."
+
+msgid "Non-binding"
+msgstr "Non-binding"
+
+msgid "none"
+msgstr "none"
+
 msgid "None"
 msgstr "None"
 
@@ -2518,6 +3695,9 @@ msgstr "Not available"
 
 msgid "not configured"
 msgstr "not configured"
+
+msgid "Not determined"
+msgstr "Not determined"
 
 msgid "Not in my file"
 msgstr "Not in my file"
@@ -2531,11 +3711,17 @@ msgstr "Not linked to any unit"
 msgid "Not listed"
 msgstr "Not listed"
 
+msgid "not met"
+msgstr "not met"
+
 msgid "Not read"
 msgstr "Not read"
 
 msgid "Not set"
 msgstr "Not set"
+
+msgid "Not voted"
+msgstr "Not voted"
 
 msgid "Not yet booked; shown continuously"
 msgstr "Not yet booked; shown continuously"
@@ -2552,6 +3738,9 @@ msgstr "Note visibility"
 msgid "Note with the status change"
 msgstr "Note with the status change"
 
+msgid "Noted"
+msgstr "Noted"
+
 msgid "Notes (managers only)"
 msgstr "Notes (managers only)"
 
@@ -2560,6 +3749,9 @@ msgstr "Nothing booked yet"
 
 msgid "Nothing dated on or before the lock date can be posted or changed. Moving the date back asks you to confirm it is you."
 msgstr "Nothing dated on or before the lock date can be posted or changed. Moving the date back asks you to confirm it is you."
+
+msgid "Nothing has been scheduled."
+msgstr "Nothing has been scheduled."
 
 msgid "Nothing here yet"
 msgstr "Nothing here yet"
@@ -2585,6 +3777,9 @@ msgstr "Nothing to show"
 msgid "Nothing to show for this period"
 msgstr "Nothing to show for this period"
 
+msgid "Nothing yet."
+msgstr "Nothing yet."
+
 msgid "Notices from your management will appear here."
 msgstr "Notices from your management will appear here."
 
@@ -2602,6 +3797,9 @@ msgstr "Notifications, {unread} unread"
 
 msgid "Number"
 msgstr "Number"
+
+msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
+msgstr "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
 
 msgid "Occupancy"
 msgstr "Occupancy"
@@ -2634,6 +3832,15 @@ msgstr "Offboard this site"
 msgid "Office"
 msgstr "Office"
 
+msgid "Offline"
+msgstr "Offline"
+
+msgid "On site"
+msgstr "On site"
+
+msgid "on the chosen days until you revoke it"
+msgstr "on the chosen days until you revoke it"
+
 msgid "Once"
 msgstr "Once"
 
@@ -2655,6 +3862,12 @@ msgstr "One row per unit side or account, with these columns in the first row:"
 msgid "One-off"
 msgstr "One-off"
 
+msgid "Online"
+msgstr "Online"
+
+msgid "Only owners attend and answer polls. You can read the decisions below."
+msgstr "Only owners attend and answer polls. You can read the decisions below."
+
 msgid "Only the first 1000 rows are listed, errors first."
 msgstr "Only the first 1000 rows are listed, errors first."
 
@@ -2663,6 +3876,10 @@ msgstr "open"
 
 msgid "Open"
 msgstr "Open"
+
+#. placeholder {0}: point.name
+msgid "Open {0}"
+msgstr "Open {0}"
 
 msgid "Open a case"
 msgstr "Open a case"
@@ -2679,11 +3896,20 @@ msgstr "Open case"
 msgid "Open charges"
 msgstr "Open charges"
 
+msgid "Open command sent."
+msgstr "Open command sent."
+
 msgid "Open common tickets"
 msgstr "Open common tickets"
 
+msgid "Open for booking"
+msgstr "Open for booking"
+
 msgid "Open menu"
 msgstr "Open menu"
+
+msgid "Open now"
+msgstr "Open now"
 
 #. placeholder {0}: i + 1
 #. placeholder {1}: images.length
@@ -2695,6 +3921,9 @@ msgstr "Open registration"
 
 msgid "Open requests"
 msgstr "Open requests"
+
+msgid "Open the assembly"
+msgstr "Open the assembly"
 
 msgid "Open ticket"
 msgstr "Open ticket"
@@ -2723,6 +3952,9 @@ msgstr "Opened as {0}"
 msgid "Opened by {0}{1}"
 msgstr "Opened by {0}{1}"
 
+msgid "Opened by hand"
+msgstr "Opened by hand"
+
 msgid "Opened on behalf of"
 msgstr "Opened on behalf of"
 
@@ -2734,6 +3966,18 @@ msgstr "Opening balances"
 
 msgid "Opening balances saved."
 msgstr "Opening balances saved."
+
+msgid "Opening hours"
+msgstr "Opening hours"
+
+msgid "Opening log"
+msgstr "Opening log"
+
+msgid "Opening…"
+msgstr "Opening…"
+
+msgid "Opens"
+msgstr "Opens"
 
 msgid "Operating"
 msgstr "Operating"
@@ -2747,8 +3991,14 @@ msgstr "Optional. Stored encrypted and shown to managers only, for legal follow-
 msgid "or go to"
 msgstr "or go to"
 
+msgid "or type the code"
+msgstr "or type the code"
+
 msgid "Or upload a spreadsheet instead (CSV or XLSX)"
 msgstr "Or upload a spreadsheet instead (CSV or XLSX)"
+
+msgid "Ordinary assembly"
+msgstr "Ordinary assembly"
 
 msgid "Organization"
 msgstr "Organization"
@@ -2767,6 +4017,12 @@ msgstr "Organizations"
 
 msgid "Other"
 msgstr "Other"
+
+msgid "Out"
+msgstr "Out"
+
+msgid "Outcome"
+msgstr "Outcome"
 
 msgid "Overdue"
 msgstr "Overdue"
@@ -2810,11 +4066,17 @@ msgstr "Owner: principal"
 msgid "Owners"
 msgstr "Owners"
 
+msgid "Owners come from the occupancies of the site."
+msgstr "Owners come from the occupancies of the site."
+
 msgid "Owners only"
 msgstr "Owners only"
 
 msgid "Owners see the aggregate income and expense report and the budget. The debtor list stays private."
 msgstr "Owners see the aggregate income and expense report and the budget. The debtor list stays private."
+
+msgid "Owners who were called are not notified automatically; record the cancellation with a reason."
+msgstr "Owners who were called are not notified automatically; record the cancellation with a reason."
 
 msgid "Ownership share (%)"
 msgstr "Ownership share (%)"
@@ -2843,6 +4105,15 @@ msgstr "Paid from"
 
 msgid "Paid on"
 msgstr "Paid on"
+
+msgid "Parcel"
+msgstr "Parcel"
+
+msgid "Parcel logged. The resident is notified."
+msgstr "Parcel logged. The resident is notified."
+
+msgid "Parcels"
+msgstr "Parcels"
 
 msgid "Parking"
 msgstr "Parking"
@@ -2911,11 +4182,23 @@ msgstr "Pays"
 msgid "PDF, images and office documents."
 msgstr "PDF, images and office documents."
 
+msgid "Pedestrian door"
+msgstr "Pedestrian door"
+
+msgid "Pedestrian doors"
+msgstr "Pedestrian doors"
+
+msgid "Pending"
+msgstr "Pending"
+
 msgid "People"
 msgstr "People"
 
 msgid "People in my household"
 msgstr "People in my household"
+
+msgid "per"
+msgstr "per"
 
 msgid "per unit"
 msgstr "per unit"
@@ -2949,11 +4232,20 @@ msgstr "Photo"
 msgid "Photo {0} of {1}"
 msgstr "Photo {0} of {1}"
 
+msgid "PIN"
+msgstr "PIN"
+
 msgid "Pin to the top"
 msgstr "Pin to the top"
 
 msgid "Pinned"
 msgstr "Pinned"
+
+msgid "Place"
+msgstr "Place"
+
+msgid "Plan an assembly"
+msgstr "Plan an assembly"
 
 msgid "Plan saved."
 msgstr "Plan saved."
@@ -2964,6 +4256,12 @@ msgstr "Plan settings"
 msgid "Plate"
 msgstr "Plate"
 
+msgid "Plate (optional)"
+msgstr "Plate (optional)"
+
+msgid "Plates and visitor codes are created from vehicles and visitors. Add a tag or a PIN here."
+msgstr "Plates and visitor codes are created from vehicles and visitors. Add a tag or a PIN here."
+
 msgid "Plates for the camera operator (CSV)"
 msgstr "Plates for the camera operator (CSV)"
 
@@ -2973,11 +4271,23 @@ msgstr "Platform administration"
 msgid "Platform sections"
 msgstr "Platform sections"
 
+msgid "Point"
+msgstr "Point"
+
 msgid "Policy"
 msgstr "Policy"
 
 msgid "Policy saved."
 msgstr "Policy saved."
+
+msgid "Poll saved."
+msgstr "Poll saved."
+
+msgid "Polls"
+msgstr "Polls"
+
+msgid "Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the binding count is recorded in the room."
+msgstr "Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the binding count is recorded in the room."
 
 msgid "Portfolio"
 msgstr "Portfolio"
@@ -2994,6 +4304,15 @@ msgstr "Posted"
 msgid "Poster"
 msgstr "Poster"
 
+msgid "Pre-register a guest to get a QR code for the gate."
+msgstr "Pre-register a guest to get a QR code for the gate."
+
+msgid "Pre-register a visitor"
+msgstr "Pre-register a visitor"
+
+msgid "Pre-register guests, share their QR code, and answer the guard's requests."
+msgstr "Pre-register guests, share their QR code, and answer the guard's requests."
+
 msgid "Preferences"
 msgstr "Preferences"
 
@@ -3005,6 +4324,9 @@ msgstr "Prepayment credit"
 
 msgid "Prepayment credit: <0/>"
 msgstr "Prepayment credit: <0/>"
+
+msgid "Present"
+msgstr "Present"
 
 msgid "Preview"
 msgstr "Preview"
@@ -3058,6 +4380,18 @@ msgstr "Profile"
 msgid "Progress"
 msgstr "Progress"
 
+msgid "Proof"
+msgstr "Proof"
+
+msgid "Proof (photo or PDF)"
+msgstr "Proof (photo or PDF)"
+
+msgid "Proof attached"
+msgstr "Proof attached"
+
+msgid "Proxy"
+msgstr "Proxy"
+
 msgid "Publish"
 msgstr "Publish"
 
@@ -3073,6 +4407,12 @@ msgstr "Publish this announcement?"
 msgid "Published"
 msgstr "Published"
 
+msgid "QR"
+msgstr "QR"
+
+msgid "QR check-in"
+msgstr "QR check-in"
+
 msgid "QR code"
 msgstr "QR code"
 
@@ -3081,6 +4421,28 @@ msgstr "QR code to join {siteName}"
 
 msgid "Quarterly"
 msgstr "Quarterly"
+
+msgid "Question (optional)"
+msgstr "Question (optional)"
+
+#. placeholder {0}: a.queue_depth
+msgid "Queue: {0}"
+msgstr "Queue: {0}"
+
+msgid "Quorum"
+msgstr "Quorum"
+
+msgid "Quorum not reached"
+msgstr "Quorum not reached"
+
+msgid "Quorum reached"
+msgstr "Quorum reached"
+
+msgid "Quorum, thresholds, proxy limits and timing. Law 634 values are the defaults; change them only where your yönetim planı allows it."
+msgstr "Quorum, thresholds, proxy limits and timing. Law 634 values are the defaults; change them only where your yönetim planı allows it."
+
+msgid "Quota"
+msgstr "Quota"
 
 msgid "Rate added."
 msgstr "Rate added."
@@ -3096,6 +4458,9 @@ msgstr "Rates"
 
 msgid "Rates, split rules and live previews"
 msgstr "Rates, split rules and live previews"
+
+msgid "Re-enrol"
+msgstr "Re-enrol"
 
 msgid "Reactivate"
 msgstr "Reactivate"
@@ -3117,6 +4482,9 @@ msgstr "Reason (audited)"
 
 msgid "Reason (optional)"
 msgstr "Reason (optional)"
+
+msgid "Rebuild the allow-list"
+msgstr "Rebuild the allow-list"
 
 msgid "Receipt"
 msgstr "Receipt"
@@ -3151,6 +4519,9 @@ msgstr "Received on"
 msgid "Receives the unit's correspondence"
 msgstr "Receives the unit's correspondence"
 
+msgid "Recent openings"
+msgstr "Recent openings"
+
 msgid "Recent transfers"
 msgstr "Recent transfers"
 
@@ -3164,17 +4535,39 @@ msgstr "Reconciled"
 msgid "Reconciliation balances"
 msgstr "Reconciliation balances"
 
+msgid "Record"
+msgstr "Record"
+
+msgid "Record a note"
+msgstr "Record a note"
+
 msgid "Record a payment"
 msgstr "Record a payment"
+
+#. placeholder {0}: o.name
+msgid "Record a proxy for {0}"
+msgstr "Record a proxy for {0}"
 
 msgid "Record another"
 msgstr "Record another"
 
+msgid "Record anyway"
+msgstr "Record anyway"
+
 msgid "Record cash"
 msgstr "Record cash"
 
+msgid "Record decision"
+msgstr "Record decision"
+
+msgid "Record for selected today"
+msgstr "Record for selected today"
+
 msgid "Record payment"
 msgstr "Record payment"
+
+msgid "Record proxy"
+msgstr "Record proxy"
 
 msgid "Record the first cash receipt, or import a bank statement."
 msgstr "Record the first cash receipt, or import a bank statement."
@@ -3216,6 +4609,15 @@ msgstr "Refunded"
 msgid "Refunds"
 msgstr "Refunds"
 
+msgid "Refused"
+msgstr "Refused"
+
+msgid "Registered mail"
+msgstr "Registered mail"
+
+msgid "Registered mail needs the tracking number."
+msgstr "Registered mail needs the tracking number."
+
 msgid "Registered plates open the gate for this unit."
 msgstr "Registered plates open the gate for this unit."
 
@@ -3241,6 +4643,9 @@ msgstr "Relationship"
 msgid "Reload"
 msgstr "Reload"
 
+msgid "Remind before a term ends"
+msgstr "Remind before a term ends"
+
 msgid "Reminder"
 msgstr "Reminder"
 
@@ -3265,6 +4670,15 @@ msgstr "Remove"
 msgid "Remove {0}"
 msgstr "Remove {0}"
 
+msgid "Remove dissent"
+msgstr "Remove dissent"
+
+msgid "Remove hours"
+msgstr "Remove hours"
+
+msgid "Remove item"
+msgstr "Remove item"
+
 msgid "Remove role"
 msgstr "Remove role"
 
@@ -3285,10 +4699,16 @@ msgstr "Replacement for {0}"
 msgid "Reports"
 msgstr "Reports"
 
+msgid "Represented by"
+msgstr "Represented by"
+
 #. placeholder {0}: event.request_id
 #. placeholder {1}: event.ip ? ` from ${event.ip}` : ''
 msgid "Request {0}{1}"
 msgstr "Request {0}{1}"
+
+msgid "Requests waiting"
+msgstr "Requests waiting"
 
 msgid "Resend"
 msgstr "Resend"
@@ -3299,14 +4719,27 @@ msgstr "Reserve"
 msgid "Reserve contribution"
 msgstr "Reserve contribution"
 
+msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
+msgstr "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
+
 msgid "Reset your password"
 msgstr "Reset your password"
 
 msgid "Resident directory"
 msgstr "Resident directory"
 
+#. placeholder {0}: p.unit_door_number
+msgid "resident vehicle, unit {0}"
+msgstr "resident vehicle, unit {0}"
+
+msgid "Resident vehicles"
+msgstr "Resident vehicles"
+
 msgid "Residents can join with this code"
 msgstr "Residents can join with this code"
+
+msgid "Residents cannot book a blocked period (maintenance, private events)."
+msgstr "Residents cannot book a blocked period (maintenance, private events)."
 
 msgid "Residents see these details when they pay by bank transfer."
 msgstr "Residents see these details when they pay by bank transfer."
@@ -3339,8 +4772,20 @@ msgstr "Retry {0}"
 msgid "Reversal"
 msgstr "Reversal"
 
+msgid "Review"
+msgstr "Review"
+
 msgid "Revoke"
 msgstr "Revoke"
+
+msgid "Revoke this agent?"
+msgstr "Revoke this agent?"
+
+msgid "Revoke this credential?"
+msgstr "Revoke this credential?"
+
+msgid "Revoke this permission?"
+msgstr "Revoke this permission?"
 
 msgid "Revoked"
 msgstr "Revoked"
@@ -3350,6 +4795,16 @@ msgstr "Role"
 
 msgid "Roles"
 msgstr "Roles"
+
+msgid "Rotate QR"
+msgstr "Rotate QR"
+
+#. placeholder {0}: e.name
+msgid "Rotate the QR code of {0}"
+msgstr "Rotate the QR code of {0}"
+
+msgid "Rotate token"
+msgstr "Rotate token"
 
 msgid "Rounding remainder was distributed to the largest shares."
 msgstr "Rounding remainder was distributed to the largest shares."
@@ -3364,8 +4819,18 @@ msgstr "Row {0}"
 msgid "Row-level report"
 msgstr "Row-level report"
 
+msgid "Rule"
+msgstr "Rule"
+
+#. placeholder {0}: labels.topic(th.topic)
+msgid "Rule for {0}"
+msgstr "Rule for {0}"
+
 msgid "Save"
 msgstr "Save"
+
+msgid "Save and show the code"
+msgstr "Save and show the code"
 
 msgid "Save bank details"
 msgstr "Save bank details"
@@ -3378,6 +4843,12 @@ msgstr "Save budget"
 
 msgid "Save changes"
 msgstr "Save changes"
+
+msgid "Save counts"
+msgstr "Save counts"
+
+msgid "Save dates"
+msgstr "Save dates"
 
 msgid "Save defaults"
 msgstr "Save defaults"
@@ -3418,8 +4889,17 @@ msgstr "Saved."
 msgid "Say why the debt is handled differently"
 msgstr "Say why the debt is handled differently"
 
+msgid "Scan a pass"
+msgstr "Scan a pass"
+
+msgid "Scan the code from the owner's phone or from the printed call letter."
+msgstr "Scan the code from the owner's phone or from the printed call letter."
+
 msgid "Scan to join your building's app"
 msgstr "Scan to join your building's app"
+
+msgid "Scan with camera"
+msgstr "Scan with camera"
 
 msgid "Schedule"
 msgstr "Schedule"
@@ -3436,11 +4916,29 @@ msgstr "Search"
 msgid "Search by name"
 msgstr "Search by name"
 
+msgid "Search by name or plate"
+msgstr "Search by name or plate"
+
+msgid "Search credentials"
+msgstr "Search credentials"
+
+msgid "Search decisions"
+msgstr "Search decisions"
+
 msgid "Search door or title deed no."
 msgstr "Search door or title deed no."
 
+msgid "Search name or plate"
+msgstr "Search name or plate"
+
 msgid "Search name, phone or email"
 msgstr "Search name, phone or email"
+
+msgid "Search owner or unit"
+msgstr "Search owner or unit"
+
+msgid "Search owners or units"
+msgstr "Search owners or units"
 
 msgid "Search people"
 msgstr "Search people"
@@ -3454,6 +4952,9 @@ msgstr "Search sites"
 msgid "Search the directory"
 msgstr "Search the directory"
 
+msgid "Search the text"
+msgstr "Search the text"
+
 msgid "Search tickets"
 msgstr "Search tickets"
 
@@ -3463,11 +4964,29 @@ msgstr "Search units"
 msgid "Search vendors"
 msgstr "Search vendors"
 
+msgid "Search visitors"
+msgstr "Search visitors"
+
 msgid "Search…"
 msgstr "Search…"
 
 msgid "Searching…"
 msgstr "Searching…"
+
+msgid "Second call"
+msgstr "Second call"
+
+msgid "Second meeting"
+msgstr "Second meeting"
+
+msgid "Second meeting:"
+msgstr "Second meeting:"
+
+msgid "Second meeting: earliest, days after the first"
+msgstr "Second meeting: earliest, days after the first"
+
+msgid "Second meeting: latest, days after the first"
+msgstr "Second meeting: latest, days after the first"
 
 msgid "Section"
 msgstr "Section"
@@ -3477,6 +4996,10 @@ msgstr "See statement"
 
 msgid "Select"
 msgstr "Select"
+
+#. placeholder {0}: n.person_display_name
+msgid "Select {0}"
+msgstr "Select {0}"
 
 msgid "Send"
 msgstr "Send"
@@ -3499,11 +5022,20 @@ msgstr "Send receipt"
 msgid "Send reminders"
 msgstr "Send reminders"
 
+msgid "Send the call"
+msgstr "Send the call"
+
+msgid "Send the call at least this many days before"
+msgstr "Send the call at least this many days before"
+
 msgid "Send the code again"
 msgstr "Send the code again"
 
 msgid "Send the code again in {cooldown} s"
 msgstr "Send the code again in {cooldown} s"
+
+msgid "Send the decisions"
+msgstr "Send the decisions"
 
 msgid "Send the receipt by SMS"
 msgstr "Send the receipt by SMS"
@@ -3513,6 +5045,12 @@ msgstr "Send to (optional)"
 
 msgid "Send to resident"
 msgstr "Send to resident"
+
+msgid "Sent"
+msgstr "Sent"
+
+msgid "Sent on"
+msgstr "Sent on"
 
 msgid "Sent to"
 msgstr "Sent to"
@@ -3528,14 +5066,26 @@ msgstr "Sent to {0} people, {1} SMS messages."
 msgid "Server {0}. Jobs queued: {1}, failed: {2}."
 msgstr "Server {0}. Jobs queued: {1}, failed: {2}."
 
+msgid "Server evaluation:"
+msgstr "Server evaluation:"
+
 msgid "Set a category budget below to compare it with what was spent."
 msgstr "Set a category budget below to compare it with what was spent."
 
 msgid "Set lock date"
 msgstr "Set lock date"
 
+msgid "Set the date, build the agenda, then send the call from the assembly page."
+msgstr "Set the date, build the agenda, then send the call from the assembly page."
+
+msgid "Set up a site first; assemblies are held per site."
+msgstr "Set up a site first; assemblies are held per site."
+
 msgid "Set up a site first; money is kept per site."
 msgstr "Set up a site first; money is kept per site."
+
+msgid "Set up a site first; this area works per site."
+msgstr "Set up a site first; this area works per site."
 
 msgid "Settings"
 msgstr "Settings"
@@ -3561,11 +5111,20 @@ msgstr "Share %"
 msgid "Share an expense"
 msgstr "Share an expense"
 
+msgid "Share of land present"
+msgstr "Share of land present"
+
+msgid "Share of owners present"
+msgstr "Share of owners present"
+
 msgid "Shop"
 msgstr "Shop"
 
 msgid "Short name (slug)"
 msgstr "Short name (slug)"
+
+msgid "Shortest notice (minutes)"
+msgstr "Shortest notice (minutes)"
 
 msgid "Show"
 msgstr "Show"
@@ -3581,6 +5140,9 @@ msgstr "Show matched and ignored lines too"
 
 msgid "Show only rows with problems"
 msgstr "Show only rows with problems"
+
+msgid "Show this code at the door. It works once per assembly."
+msgstr "Show this code at the door. It works once per assembly."
 
 #. placeholder {0}: (results.data ?? []).length
 msgid "Showing the first {0}: type to refine the search."
@@ -3609,6 +5171,9 @@ msgstr "Sign out"
 
 msgid "Sign-in codes"
 msgstr "Sign-in codes"
+
+msgid "Signed by hand"
+msgstr "Signed by hand"
 
 msgid "Signing you in"
 msgstr "Signing you in"
@@ -3640,8 +5205,17 @@ msgstr "Size"
 msgid "Skip to content"
 msgstr "Skip to content"
 
+msgid "Slots booked by others are shown only as \"taken\"."
+msgstr "Slots booked by others are shown only as \"taken\"."
+
 msgid "Slug"
 msgstr "Slug"
+
+msgid "Small building: most proxies per person"
+msgstr "Small building: most proxies per person"
+
+msgid "Small building: up to this many units"
+msgstr "Small building: up to this many units"
 
 msgid "SMS"
 msgstr "SMS"
@@ -3675,8 +5249,14 @@ msgstr "Something went wrong"
 msgid "Something went wrong. Please try again."
 msgstr "Something went wrong. Please try again."
 
+msgid "Source"
+msgstr "Source"
+
 msgid "Special assessment"
 msgstr "Special assessment"
+
+msgid "Special assessment plan"
+msgstr "Special assessment plan"
 
 msgid "Split by"
 msgstr "Split by"
@@ -3698,6 +5278,12 @@ msgstr "Staff queue"
 
 msgid "Stage"
 msgstr "Stage"
+
+msgid "Start the assembly"
+msgstr "Start the assembly"
+
+msgid "Start the shift"
+msgstr "Start the shift"
 
 msgid "Starts"
 msgstr "Starts"
@@ -3755,11 +5341,17 @@ msgstr "Steps"
 msgid "Still in the box"
 msgstr "Still in the box"
 
+msgid "Stop camera"
+msgstr "Stop camera"
+
 msgid "Stop repeating"
 msgstr "Stop repeating"
 
 msgid "Storage"
 msgstr "Storage"
+
+msgid "Store error"
+msgstr "Store error"
 
 msgid "Street address"
 msgstr "Street address"
@@ -3773,6 +5365,12 @@ msgstr "Suggestion"
 msgid "Suspend"
 msgstr "Suspend"
 
+msgid "Suspended"
+msgstr "Suspended"
+
+msgid "Switch guard"
+msgstr "Switch guard"
+
 msgid "Switch organization"
 msgstr "Switch organization"
 
@@ -3785,14 +5383,26 @@ msgstr "Table file"
 msgid "Tag"
 msgstr "Tag"
 
+msgid "Tag number"
+msgstr "Tag number"
+
+msgid "Tag or card"
+msgstr "Tag or card"
+
 msgid "tagged units"
 msgstr "tagged units"
+
+msgid "Taken"
+msgstr "Taken"
 
 msgid "Target type"
 msgstr "Target type"
 
 msgid "Tax id"
 msgstr "Tax id"
+
+msgid "Tell the absent owners"
+msgstr "Tell the absent owners"
 
 msgid "Tell us about another payment"
 msgstr "Tell us about another payment"
@@ -3812,11 +5422,20 @@ msgstr "Tenant: known late fee"
 msgid "Tenant: principal"
 msgstr "Tenant: principal"
 
+msgid "Tenants"
+msgstr "Tenants"
+
 msgid "Tenants get their own login"
 msgstr "Tenants get their own login"
 
 msgid "Tenants only"
 msgstr "Tenants only"
+
+msgid "Term ends"
+msgstr "Term ends"
+
+msgid "Term starts"
+msgstr "Term starts"
 
 msgid "Terms ending soon"
 msgstr "Terms ending soon"
@@ -3827,11 +5446,35 @@ msgstr "Thank you. Your manager will confirm the payment when it shows up in the
 msgid "That did not work. Check it and try again."
 msgstr "That did not work. Check it and try again."
 
+msgid "That did not work. Check the visitor's status."
+msgstr "That did not work. Check the visitor's status."
+
 msgid "That did not work. Check your details and try again."
 msgstr "That did not work. Check your details and try again."
 
 msgid "That entry changed since the last try. Please check it and save again."
 msgstr "That entry changed since the last try. Please check it and save again."
+
+msgid "That owner is already checked in."
+msgstr "That owner is already checked in."
+
+msgid "That time is already taken or blocked. Choose another slot."
+msgstr "That time is already taken or blocked. Choose another slot."
+
+msgid "The accounting period of this change is locked."
+msgstr "The accounting period of this change is locked."
+
+msgid "The agent is offline."
+msgstr "The agent is offline."
+
+msgid "The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it."
+msgstr "The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it."
+
+msgid "The agent's clock is wrong."
+msgstr "The agent's clock is wrong."
+
+msgid "The allow-list is being rebuilt."
+msgstr "The allow-list is being rebuilt."
 
 msgid "The amount is more than the accrued fee."
 msgstr "The amount is more than the accrued fee."
@@ -3842,17 +5485,54 @@ msgstr "The amounts are more than the payment or a charge's balance."
 msgid "The assembly or board decision this amount comes from."
 msgstr "The assembly or board decision this amount comes from."
 
+msgid "The binding vote happens in the room; this is only a temperature check."
+msgstr "The binding vote happens in the room; this is only a temperature check."
+
+msgid "The booking breaks a rule of this facility."
+msgstr "The booking breaks a rule of this facility."
+
+msgid "The booking was cancelled."
+msgstr "The booking was cancelled."
+
 msgid "The box does not hold that much."
 msgstr "The box does not hold that much."
 
+msgid "The call has been sent."
+msgstr "The call has been sent."
+
+msgid "The call has gone out, so the agenda is fixed."
+msgstr "The call has gone out, so the agenda is fixed."
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The call must go out at least {0} days before the meeting. Move the date or send the call later only if the rules allow it."
+msgstr "The call must go out at least {0} days before the meeting. Move the date or send the call later only if the rules allow it."
+
+msgid "The camera is not available ({error}). Type the code instead."
+msgstr "The camera is not available ({error}). Type the code instead."
+
+msgid "The change has been created."
+msgstr "The change has been created."
+
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
+
+msgid "The checklist appears when the assembly has been called."
+msgstr "The checklist appears when the assembly has been called."
+
+msgid "The code also works for 30 minutes before and after this window, once."
+msgstr "The code also works for 30 minutes before and after this window, once."
 
 msgid "The code is switched off, so there is no poster to print."
 msgstr "The code is switched off, so there is no poster to print."
 
 msgid "The data is in. You can review it on the units and people pages."
 msgstr "The data is in. You can review it on the units and people pages."
+
+msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
+msgstr "The decisions go to the owners who were not present. Each delivery is recorded like the call."
+
+msgid "The decisions were sent."
+msgstr "The decisions were sent."
 
 msgid "The default visibility and assignee role apply when a ticket is opened in the category."
 msgstr "The default visibility and assignee role apply when a ticket is opened in the category."
@@ -3866,11 +5546,20 @@ msgstr "The download failed. Please try again."
 msgid "The dry run failed."
 msgstr "The dry run failed."
 
+msgid "The end must be after the start."
+msgstr "The end must be after the start."
+
 msgid "The entry stays visible as voided. You will be asked to confirm your password."
 msgstr "The entry stays visible as voided. You will be asked to confirm your password."
 
 msgid "The expiry must be after the publish time"
 msgstr "The expiry must be after the publish time"
+
+msgid "The facility is closed at that time."
+msgstr "The facility is closed at that time."
+
+msgid "The fee of <0/> is refunded automatically."
+msgstr "The fee of <0/> is refunded automatically."
 
 msgid "The file could not be checked. Please try again."
 msgstr "The file could not be checked. Please try again."
@@ -3888,6 +5577,19 @@ msgstr "The file is larger than {0}."
 msgid "The first administrator is invited by email."
 msgstr "The first administrator is invited by email."
 
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The first meeting is less than {0} days away. The server will refuse a call that is too late; move the date first."
+msgstr "The first meeting is less than {0} days away. The server will refuse a call that is too late; move the date first."
+
+msgid "The gate agent is offline."
+msgstr "The gate agent is offline."
+
+msgid "The gate agent's clock is wrong; it will not act."
+msgstr "The gate agent's clock is wrong; it will not act."
+
+msgid "The gate did not confirm. Try again or check the gate."
+msgstr "The gate did not confirm. Try again or check the gate."
+
 msgid "The import could not be started. Please try again; a retry never applies it twice."
 msgstr "The import could not be started. Please try again; a retry never applies it twice."
 
@@ -3900,8 +5602,29 @@ msgstr "The import did not finish. Nothing was posted; check the file and try ag
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 
+msgid "The last day must not be before the first."
+msgstr "The last day must not be before the first."
+
+msgid "The latest day must not be before the earliest day."
+msgstr "The latest day must not be before the earliest day."
+
+msgid "The legal timing is not met."
+msgstr "The legal timing is not met."
+
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr "The lines do not add up to the total. Do not save this plan."
+
+msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
+msgstr "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
+
+msgid "The list of units is not available to this account."
+msgstr "The list of units is not available to this account."
+
+msgid "The minutes can be generated once the assembly is closed."
+msgstr "The minutes can be generated once the assembly is closed."
+
+msgid "The minutes were generated and filed in the documents."
+msgstr "The minutes were generated and filed in the documents."
 
 msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
 msgstr "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
@@ -3915,8 +5638,17 @@ msgstr "The number guards may call when a visitor arrives. Leave empty to use th
 msgid "The opening balances were imported."
 msgstr "The opening balances were imported."
 
+msgid "The opening log is not available."
+msgstr "The opening log is not available."
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr "The page you are looking for does not exist or has moved."
+
+msgid "The pass was cancelled."
+msgstr "The pass was cancelled."
+
+msgid "The permission was revoked."
+msgstr "The permission was revoked."
 
 msgid "The person loses the access this role gave them."
 msgstr "The person loses the access this role gave them."
@@ -3924,8 +5656,26 @@ msgstr "The person loses the access this role gave them."
 msgid "The person on the lease sees the tenant side of the unit in the portal."
 msgstr "The person on the lease sees the tenant side of the unit in the portal."
 
+msgid "The PIN could not be checked. Check the connection and try again."
+msgstr "The PIN could not be checked. Check the connection and try again."
+
+msgid "The poll is closed."
+msgstr "The poll is closed."
+
+msgid "The poll is open."
+msgstr "The poll is open."
+
 msgid "The preview is not available for these settings yet."
 msgstr "The preview is not available for these settings yet."
+
+msgid "The QR code could not be rotated."
+msgstr "The QR code could not be rotated."
+
+msgid "The QR code stops working at once."
+msgstr "The QR code stops working at once."
+
+msgid "The QR code was rotated."
+msgstr "The QR code was rotated."
 
 #. placeholder {0}: policy.max_rate_pct_per_month
 msgid "The rate cannot be above the statutory cap of {0}% per month."
@@ -3934,11 +5684,31 @@ msgstr "The rate cannot be above the statutory cap of {0}% per month."
 msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
 msgstr "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
 
+msgid "The request could not be sent by SMS. Call the resident instead."
+msgstr "The request could not be sent by SMS. Call the resident instead."
+
 msgid "The request failed. Please try again."
 msgstr "The request failed. Please try again."
 
+msgid "The resident denied this visitor. Do not admit."
+msgstr "The resident denied this visitor. Do not admit."
+
 msgid "The role could not be removed. Please try again."
 msgstr "The role could not be removed. Please try again."
+
+msgid "The search failed."
+msgstr "The search failed."
+
+msgid "The second call also needs a quorum"
+msgstr "The second call also needs a quorum"
+
+msgid "The second meeting must come after the first."
+msgstr "The second meeting must come after the first."
+
+#. placeholder {0}: settings.data.settings.second_call_min_days
+#. placeholder {1}: settings.data.settings.second_call_max_days
+msgid "The second meeting should be {0} to {1} days after the first."
+msgstr "The second meeting should be {0} to {1} days after the first."
 
 msgid "The side's person"
 msgstr "The side's person"
@@ -3958,11 +5728,23 @@ msgstr "The table could not be read. Check the columns and try again."
 msgid "The table on the right updates as you change the amount or split rule."
 msgstr "The table on the right updates as you change the amount or split rule."
 
+#. placeholder {0}: r.person_display_name
+#. placeholder {1}: labels.role(r.role)
+#. placeholder {2}: r.days_left
+msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
+msgstr "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
+
 msgid "The transfer could not be started. Please try again."
 msgstr "The transfer could not be started. Please try again."
 
+msgid "The values changed after the last attempt. Review them and confirm again."
+msgstr "The values changed after the last attempt. Review them and confirm again."
+
 msgid "The values could not be saved. Check them and try again."
 msgstr "The values could not be saved. Check them and try again."
+
+msgid "The visit must end after it starts."
+msgstr "The visit must end after it starts."
 
 msgid "Theme"
 msgstr "Theme"
@@ -3986,14 +5768,32 @@ msgstr "This accounting period is closed and can no longer be changed."
 msgid "This action is sensitive. Enter your password or a code to continue."
 msgstr "This action is sensitive. Enter your password or a code to continue."
 
+msgid "This assembly was cancelled."
+msgstr "This assembly was cancelled."
+
 msgid "This cannot be undone from here. Type the site name to continue."
 msgstr "This cannot be undone from here. Type the site name to continue."
 
 msgid "This cannot be undone."
 msgstr "This cannot be undone."
 
+msgid "This code is not known."
+msgstr "This code is not known."
+
+msgid "This code is not valid for this assembly."
+msgstr "This code is not valid for this assembly."
+
+msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
+msgstr "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
+
 msgid "This date is on or before the lock date; the period is closed."
 msgstr "This date is on or before the lock date; the period is closed."
+
+msgid "This decision already has an applied change."
+msgstr "This decision already has an applied change."
+
+msgid "This facility is not open to your kind of occupant."
+msgstr "This facility is not open to your kind of occupant."
 
 msgid "This field is required."
 msgstr "This field is required."
@@ -4013,8 +5813,23 @@ msgstr "This file type is not allowed."
 msgid "This folder is empty"
 msgstr "This folder is empty"
 
+msgid "This gate is switched off."
+msgstr "This gate is switched off."
+
 msgid "This number is not valid. Check the digits."
 msgstr "This number is not valid. Check the digits."
+
+msgid "This pass is for another site."
+msgstr "This pass is for another site."
+
+msgid "This pass is not valid at this time."
+msgstr "This pass is not valid at this time."
+
+msgid "This pass was already used."
+msgstr "This pass was already used."
+
+msgid "This pass was cancelled or revoked."
+msgstr "This pass was cancelled or revoked."
 
 msgid "This period is locked."
 msgstr "This period is locked."
@@ -4022,11 +5837,23 @@ msgstr "This period is locked."
 msgid "This person has no management or staff role."
 msgstr "This person has no management or staff role."
 
+msgid "This person would hold more proxies than the limit of {limit} for this site."
+msgstr "This person would hold more proxies than the limit of {limit} for this site."
+
+msgid "This person would hold more than the maximum share of all votes."
+msgstr "This person would hold more than the maximum share of all votes."
+
+msgid "This point is switched off."
+msgstr "This point is switched off."
+
 msgid "This record changed"
 msgstr "This record changed"
 
 msgid "This request was already sent with different details. Reload the form and try again."
 msgstr "This request was already sent with different details. Reload the form and try again."
+
+msgid "This resident did not share a number for the gate."
+msgstr "This resident did not share a number for the gate."
 
 msgid "This role belongs to the site, so you will be asked to confirm it is you."
 msgstr "This role belongs to the site, so you will be asked to confirm it is you."
@@ -4061,11 +5888,18 @@ msgstr "This ticket is private: only your unit and management see it."
 msgid "This ticket was merged into another one."
 msgstr "This ticket was merged into another one."
 
+msgid "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+msgstr "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+
 msgid "This value is not valid"
 msgstr "This value is not valid"
 
 msgid "This will be a common ticket, visible to the whole site."
 msgstr "This will be a common ticket, visible to the whole site."
+
+#. placeholder {0}: labels.effect(kind)
+msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
+msgstr "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 
 msgid "Tick “Repeat every month” on a new expense to add one."
 msgstr "Tick “Repeat every month” on a new expense to add one."
@@ -4099,11 +5933,18 @@ msgstr "Tickets merged."
 msgid "Tickets of \"{0}\" move to \"{1}\"."
 msgstr "Tickets of \"{0}\" move to \"{1}\"."
 
+msgid "Time"
+msgstr "Time"
+
 msgid "Time zone"
 msgstr "Time zone"
 
 msgid "Timeline"
 msgstr "Timeline"
+
+#. placeholder {0}: ctx.timeZone
+msgid "Times are in the site's time zone ({0})."
+msgstr "Times are in the site's time zone ({0})."
 
 msgid "Times are in the site's timezone ({tz}). Empty publishes now."
 msgstr "Times are in the site's timezone ({tz}). Empty publishes now."
@@ -4116,8 +5957,14 @@ msgstr "Timezone {0}, country {1}. Site settings live under <0>Site</0>."
 msgid "Timezone, currency, fiscal year, bank details and late-fee policy."
 msgstr "Timezone, currency, fiscal year, bank details and late-fee policy."
 
+msgid "Timing"
+msgstr "Timing"
+
 msgid "Title"
 msgstr "Title"
+
+msgid "Title (optional)"
+msgstr "Title (optional)"
 
 msgid "Title deed no."
 msgstr "Title deed no."
@@ -4127,6 +5974,9 @@ msgstr "Title deed no. (optional)"
 
 msgid "To"
 msgstr "To"
+
+msgid "To be verified"
+msgstr "To be verified"
 
 msgid "To every unit side with an overdue balance. Select rows first to narrow it down."
 msgstr "To every unit side with an overdue balance. Select rows first to narrow it down."
@@ -4141,6 +5991,12 @@ msgstr "To the {0} selected unit sides with an overdue balance."
 msgid "today"
 msgstr "today"
 
+msgid "Today"
+msgstr "Today"
+
+msgid "Token rotation started."
+msgstr "Token rotation started."
+
 msgid "Too many attempts. Please wait and try again."
 msgstr "Too many attempts. Please wait and try again."
 
@@ -4153,6 +6009,15 @@ msgstr "Too many requests. Please wait a moment and try again."
 #. placeholder {0}: Math.ceil(wait)
 msgid "Too many requests. Try again in {0} seconds."
 msgstr "Too many requests. Try again in {0} seconds."
+
+msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
+msgstr "Too many wrong PINs. This guard is locked for about {minutes} minutes."
+
+msgid "Too many wrong PINs. Try again later."
+msgstr "Too many wrong PINs. Try again later."
+
+msgid "Topic"
+msgstr "Topic"
 
 msgid "Total"
 msgstr "Total"
@@ -4175,6 +6040,15 @@ msgstr "Totals of the lines shown (without cancelled)"
 
 msgid "Track vendor bills with due dates and partial payments"
 msgstr "Track vendor bills with due dates and partial payments"
+
+msgid "Tracking no."
+msgstr "Tracking no."
+
+msgid "Tracking number"
+msgstr "Tracking number"
+
+msgid "Tracking number (optional)"
+msgstr "Tracking number (optional)"
 
 msgid "Transfer recorded."
 msgstr "Transfer recorded."
@@ -4203,8 +6077,18 @@ msgstr "Type"
 msgid "Type the site name exactly to confirm"
 msgstr "Type the site name exactly to confirm"
 
+msgid "Unanimity"
+msgstr "Unanimity"
+
 msgid "Unassigned"
 msgstr "Unassigned"
+
+msgid "Undo"
+msgstr "Undo"
+
+#. placeholder {0}: o.name
+msgid "Undo attendance of {0}"
+msgstr "Undo attendance of {0}"
 
 msgid "Unfreeze"
 msgstr "Unfreeze"
@@ -4252,6 +6136,9 @@ msgstr "Unread"
 msgid "Unread only"
 msgstr "Unread only"
 
+msgid "Until"
+msgstr "Until"
+
 msgid "Until (optional)"
 msgstr "Until (optional)"
 
@@ -4260,6 +6147,9 @@ msgstr "Up to 10 photos. Large photos are reduced and location data is removed."
 
 msgid "Up to 10 photos. Location data is removed."
 msgstr "Up to 10 photos. Location data is removed."
+
+msgid "Upcoming and recent"
+msgstr "Upcoming and recent"
 
 msgid "Upcoming meeting"
 msgstr "Upcoming meeting"
@@ -4328,6 +6218,21 @@ msgstr "Vacant and occupied"
 msgid "Vacant only"
 msgstr "Vacant only"
 
+msgid "Valid"
+msgstr "Valid"
+
+msgid "Valid from"
+msgstr "Valid from"
+
+msgid "Valid pass"
+msgstr "Valid pass"
+
+msgid "Valid until"
+msgstr "Valid until"
+
+msgid "Valid until (optional)"
+msgstr "Valid until (optional)"
+
 msgid "Value"
 msgstr "Value"
 
@@ -4348,6 +6253,12 @@ msgstr "Values saved."
 msgid "Variance"
 msgstr "Variance"
 
+msgid "Vehicle gate"
+msgstr "Vehicle gate"
+
+msgid "Vehicle gates"
+msgstr "Vehicle gates"
+
 msgid "Vehicles"
 msgstr "Vehicles"
 
@@ -4366,6 +6277,9 @@ msgstr "Vendor payable"
 msgid "Vendors"
 msgstr "Vendors"
 
+msgid "View"
+msgstr "View"
+
 msgid "Visibility"
 msgstr "Visibility"
 
@@ -4378,9 +6292,42 @@ msgstr "Visible to the manager and the board only. Never share it publicly."
 msgid "Visible to the reporter"
 msgstr "Visible to the reporter"
 
+msgid "Visiting unit"
+msgstr "Visiting unit"
+
+msgid "Visitor"
+msgstr "Visitor"
+
 #. placeholder {0}: query.data.pending_visitor_approvals
 msgid "Visitor approvals: {0}"
 msgstr "Visitor approvals: {0}"
+
+msgid "Visitor approved."
+msgstr "Visitor approved."
+
+msgid "Visitor code"
+msgstr "Visitor code"
+
+msgid "Visitor denied."
+msgstr "Visitor denied."
+
+msgid "Visitor pass"
+msgstr "Visitor pass"
+
+msgid "Visitor pass for {name}"
+msgstr "Visitor pass for {name}"
+
+msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+msgstr "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+
+msgid "Visitor QR code"
+msgstr "Visitor QR code"
+
+msgid "Visitor's name"
+msgstr "Visitor's name"
+
+msgid "Visitors"
+msgstr "Visitors"
 
 msgid "Void"
 msgstr "Void"
@@ -4407,6 +6354,12 @@ msgstr "Void this opening entry?"
 msgid "Voided"
 msgstr "Voided"
 
+msgid "Voted"
+msgstr "Voted"
+
+msgid "Votes and proxies"
+msgstr "Votes and proxies"
+
 msgid "Waiting"
 msgstr "Waiting"
 
@@ -4417,8 +6370,21 @@ msgstr "Waiting deliveries"
 msgid "Waiting deliveries: {0}"
 msgstr "Waiting deliveries: {0}"
 
+#. placeholder {0}: entry.data?.unit_door_number ?? ''
+msgid "Waiting for {0} to answer. This checks every few seconds."
+msgstr "Waiting for {0} to answer. This checks every few seconds."
+
 msgid "Waiting for a decision"
 msgstr "Waiting for a decision"
+
+msgid "Waiting for approval"
+msgstr "Waiting for approval"
+
+msgid "Waiting for enrolment"
+msgstr "Waiting for enrolment"
+
+msgid "Waiting for the resident"
+msgstr "Waiting for the resident"
 
 msgid "Waive"
 msgstr "Waive"
@@ -4438,11 +6404,20 @@ msgstr "Waivers"
 msgid "Waivers above this ask for re-authentication"
 msgstr "Waivers above this ask for re-authentication"
 
+msgid "Walk-in visitor"
+msgstr "Walk-in visitor"
+
 msgid "We could not find that."
 msgstr "We could not find that."
 
 msgid "We could not send the code. Please try again."
 msgstr "We could not send the code. Please try again."
+
+msgid "week"
+msgstr "week"
+
+msgid "Week"
+msgstr "Week"
 
 msgid "Weight"
 msgstr "Weight"
@@ -4459,6 +6434,9 @@ msgstr "What happens to open charges"
 msgid "What is it for?"
 msgstr "What is it for?"
 
+msgid "What is it? (optional)"
+msgstr "What is it? (optional)"
+
 msgid "What is owed today"
 msgstr "What is owed today"
 
@@ -4467,6 +6445,9 @@ msgstr "What payers should write in the description"
 
 msgid "What people say, for example A-12."
 msgstr "What people say, for example A-12."
+
+msgid "What should be created"
+msgstr "What should be created"
 
 msgid "What to fix"
 msgstr "What to fix"
@@ -4483,17 +6464,32 @@ msgstr "What was spent, from which account"
 msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
 msgstr "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
 
+msgid "What will be created"
+msgstr "What will be created"
+
 msgid "What you owe today, including the late fee accrued so far."
 msgstr "What you owe today, including the late fee accrued so far."
 
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+msgid "When"
+msgstr "When"
+
 msgid "When a resident joins with the site QR code, their claim appears here."
 msgstr "When a resident joins with the site QR code, their claim appears here."
+
+msgid "When the guard asks about an unexpected visitor, the request shows up here and by SMS. This page checks every few seconds."
+msgstr "When the guard asks about an unexpected visitor, the request shows up here and by SMS. This page checks every few seconds."
 
 msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
 msgstr "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
 
 msgid "Where do tickets of removed statuses go?"
 msgstr "Where do tickets of removed statuses go?"
+
+msgid "Where the defaults come from"
+msgstr "Where the defaults come from"
 
 msgid "Where the site stands today: what residents owe, what is in the bank and in cash."
 msgstr "Where the site stands today: what residents owe, what is in the bank and in cash."
@@ -4503,6 +6499,12 @@ msgstr "Whether this person appears in a site's resident directory. They choose 
 
 msgid "Who"
 msgstr "Who"
+
+msgid "Who is on the gate?"
+msgstr "Who is on the gate?"
+
+msgid "Who may book"
+msgstr "Who may book"
 
 msgid "Who pays what on this unit"
 msgstr "Who pays what on this unit"
@@ -4518,6 +6520,15 @@ msgstr "whole site"
 
 msgid "Whole site"
 msgstr "Whole site"
+
+msgid "Will be voted"
+msgstr "Will be voted"
+
+msgid "Will be voted on"
+msgstr "Will be voted on"
+
+msgid "Window"
+msgstr "Window"
 
 msgid "Workflow"
 msgstr "Workflow"
@@ -4540,6 +6551,12 @@ msgstr "Write a comment"
 msgid "Write the announcement"
 msgstr "Write the announcement"
 
+msgid "Write the decision."
+msgstr "Write the decision."
+
+msgid "Write the dissent."
+msgstr "Write the dissent."
+
 msgid "Write the first announcement for this site."
 msgstr "Write the first announcement for this site."
 
@@ -4549,11 +6566,26 @@ msgstr "Write them off"
 msgid "written off"
 msgstr "written off"
 
+msgid "Wrong PIN. Try again."
+msgstr "Wrong PIN. Try again."
+
+msgid "Year"
+msgstr "Year"
+
 msgid "Yearly"
 msgstr "Yearly"
 
+msgid "Yes"
+msgstr "Yes"
+
+msgid "Yes share of land (%)"
+msgstr "Yes share of land (%)"
+
 msgid "You are all caught up"
 msgstr "You are all caught up"
+
+msgid "You are checked in"
+msgstr "You are checked in"
 
 msgid "You are not linked to a unit in this organization."
 msgstr "You are not linked to a unit in this organization."
@@ -4563,6 +6595,10 @@ msgstr "You are not linked to a unit with a balance."
 
 msgid "You are not part of any organization yet"
 msgstr "You are not part of any organization yet"
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "You can book at most {0} days ahead."
+msgstr "You can book at most {0} days ahead."
 
 msgid "You do not have access to announcements"
 msgstr "You do not have access to announcements"
@@ -4591,6 +6627,12 @@ msgstr "You do not have permission to do this."
 msgid "You do not have permission to import this."
 msgstr "You do not have permission to import this."
 
+msgid "You get a QR code to send to your guest. The guard scans it at the gate."
+msgstr "You get a QR code to send to your guest. The guard scans it at the gate."
+
+msgid "You may not open gates."
+msgstr "You may not open gates."
+
 msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr "You see everyone as a manager. Residents only see the people who chose to be listed."
 
@@ -4603,8 +6645,17 @@ msgstr "You will be able to claim your unit here. Your manager approves the requ
 msgid "You will be able to create or link your account here."
 msgstr "You will be able to create or link your account here."
 
+msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
+msgstr "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
+
+msgid "Your answer was saved."
+msgstr "Your answer was saved."
+
 msgid "Your dashboard is on its way"
 msgstr "Your dashboard is on its way"
 
 msgid "Your sign-in link will be completed here."
 msgstr "Your sign-in link will be completed here."
+
+msgid "Your unit has used its bookings for this period."
+msgstr "Your unit has used its bookings for this period."
