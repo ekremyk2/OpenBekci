@@ -7,11 +7,170 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
+#. placeholder {0}: report.error_rows
+msgid "{0} errors"
+msgstr "{0} hata"
+
+#. placeholder {0}: report.ok_rows
+msgid "{0} fine"
+msgstr "{0} sorunsuz"
+
+#. placeholder {0}: occ.person_display_name
+#. placeholder {1}: occ.unit_door_number
+msgid "{0} leaves {1}. The whole month's dues stay with whoever is in the unit on the due date; nothing is pro-rated."
+msgstr "{0}, {1} biriminden ayrılıyor. Ayın tamamının aidatı, vade gününde birimde kim varsa onda kalır; gün hesabıyla bölünmez."
+
+#. placeholder {0}: occ.person_display_name
+msgid "{0} moved out"
+msgstr "{0} taşındı"
+
+#. placeholder {0}: report.total_rows
+msgid "{0} rows"
+msgstr "{0} satır"
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.error_rows
+msgid "{0} rows are fine, {1} have errors."
+msgstr "{0} satır sorunsuz, {1} satırda hata var."
+
+#. placeholder {0}: s.overdue_units
+msgid "{0} units"
+msgstr "{0} birim"
+
+#. placeholder {0}: missing.length
+msgid "{0} units have no value yet"
+msgstr "{0} birim için henüz değer girilmedi"
+
+#. placeholder {0}: report.warning_rows
+msgid "{0} warnings"
+msgstr "{0} uyarı"
+
+msgid "A block that still has units cannot be deleted."
+msgstr "Hâlâ birimi olan bir blok silinemez."
+
+msgid "A site is a building or a complex you manage. Create the first one to start."
+msgstr "Site, yönettiğiniz bir bina veya sitedir. Başlamak için ilkini oluşturun."
+
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
+msgid "Account"
+msgstr "Hesap"
+
+msgid "Account holder"
+msgstr "Hesap sahibi"
+
+msgid "Account status"
+msgstr "Hesap durumu"
+
 msgid "Accountant"
 msgstr "Muhasebeci"
+
+msgid "Actions"
+msgstr "İşlemler"
+
+msgid "Active"
+msgstr "Etkin"
+
+msgid "Add a person"
+msgstr "Kişi ekle"
+
+msgid "Add an exception"
+msgstr "İstisna ekle"
+
+msgid "Add block"
+msgstr "Blok ekle"
+
+msgid "Add key"
+msgstr "Anahtar ekle"
+
+msgid "Add people one by one or import them with the import wizard."
+msgstr "Kişileri tek tek ekleyin veya içe aktarma sihirbazıyla alın."
+
+msgid "Add person"
+msgstr "Kişi ekle"
+
+msgid "Add the lift service, the plumber, the cleaner: people you pay or assign requests to."
+msgstr "Asansör servisini, tesisatçıyı, temizlikçiyi ekleyin: ödeme yaptığınız veya talep atadığınız kişiler."
+
+msgid "Add units one by one or import them from a spreadsheet."
+msgstr "Birimleri tek tek ekleyin veya bir elektronik tablodan içe aktarın."
+
+msgid "Add vehicle"
+msgstr "Araç ekle"
+
+msgid "Add vendor"
+msgstr "Tedarikçi ekle"
+
+msgid "Address line 2"
+msgstr "Adres satırı 2"
+
+msgid "All"
+msgstr "Tümü"
+
+msgid "All blocks"
+msgstr "Tüm bloklar"
+
+msgid "All sites"
+msgstr "Tüm siteler"
+
+msgid "All types"
+msgstr "Tüm türler"
+
+msgid "All your sites at a glance, as of"
+msgstr "Tüm sitelerinize bir bakışta, şu tarih itibarıyla:"
+
+msgid "Allocation keys"
+msgstr "Dağıtım anahtarları"
+
+msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+msgstr "Tutarlar, en küçük para biriminde ve ayraçsız tam sayılardır: {exampleMinor}, {exampleFormatted} demektir."
+
+msgid "Any account status"
+msgstr "Herhangi bir hesap durumu"
+
+msgid "Applies to"
+msgstr "Uygulandığı yer"
+
+msgid "Apply the table"
+msgstr "Tabloyu uygula"
+
+msgid "Approve"
+msgstr "Onayla"
+
+#. placeholder {0}: claim.display_name
+msgid "Approve {0}"
+msgstr "{0} kişisini onayla"
+
+msgid "Approve claim"
+msgstr "Talebi onayla"
+
+msgid "Approved"
+msgstr "Onaylandı"
+
+msgid "Appurtenance"
+msgstr "Müştemilat"
+
+msgid "Appurtenances"
+msgstr "Müştemilatlar"
+
+msgid "Archive"
+msgstr "Arşivle"
+
+msgid "Archive file to import"
+msgstr "İçe aktarılacak arşiv dosyası"
+
+msgid "Archived"
+msgstr "Arşivlendi"
+
+msgid "Area"
+msgstr "Alan"
+
+msgid "Area (m²)"
+msgstr "Alan (m²)"
+
+msgid "Ask a manager to add the account residents should pay into."
+msgstr "Sakinlerin ödeme yapacağı hesabı eklemesi için bir yöneticiye danışın."
 
 msgid "Ask your building manager to invite you."
 msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
@@ -19,32 +178,279 @@ msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
 msgid "Ask your manager if you think you should."
 msgstr "Erişmeniz gerektiğini düşünüyorsanız yöneticinize danışın."
 
+msgid "Asked"
+msgstr "Talep zamanı"
+
 msgid "Auditor"
 msgstr "Denetçi"
+
+#. placeholder {0}: occ.person_display_name
+msgid "Back to {0}"
+msgstr "{0} sayfasına dön"
+
+msgid "Back to columns"
+msgstr "Sütunlara dön"
 
 msgid "Back to sign in"
 msgstr "Girişe dön"
 
+msgid "Balance when they leave"
+msgstr "Ayrılırken bakiye"
+
+msgid "Balances as of"
+msgstr "Bakiyelerin tarihi"
+
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Bakiyeler, açık talepler ve duyurular burada görünecek."
+
+msgid "Bank"
+msgstr "Banka"
+
+msgid "Bank details"
+msgstr "Banka bilgileri"
+
+msgid "Belongs to"
+msgstr "Bağlı olduğu"
+
+msgid "Belongs to (door number)"
+msgstr "Bağlı olduğu (kapı numarası)"
+
+msgid "Belongs to a flat (no dues of its own)"
+msgstr "Bir daireye bağlı (kendi aidatı yok)"
+
+msgid "Belongs to flat"
+msgstr "Bağlı olduğu daire"
+
+msgid "Block"
+msgstr "Blok"
+
+msgid "Blocks"
+msgstr "Bloklar"
 
 msgid "Board member"
 msgstr "Yönetim kurulu üyesi"
 
+msgid "Breadcrumb"
+msgstr "Gezinti yolu"
+
+msgid "Bring units, people and opening balances in from a spreadsheet. Nothing is saved until you have seen the check and confirmed."
+msgstr "Birimleri, kişileri ve açılış bakiyelerini bir elektronik tablodan aktarın. Kontrolü görüp onaylamadan hiçbir şey kaydedilmez."
+
+msgid "By"
+msgstr "Gönderim"
+
+msgid "By area"
+msgstr "Alana göre"
+
+msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
+msgstr "Varsayılan olarak otopark ve depo bir daireye bağlıdır ve kendi aidatı yoktur. Bağımsız bir birim yapmak için bunu temizleyin."
+
+msgid "By share"
+msgstr "Paya göre"
+
+msgid "Cancel"
+msgstr "Vazgeç"
+
+msgid "carried to the person"
+msgstr "kişiye devredildi"
+
+msgid "Carry it to another person instead (optional)"
+msgstr "Bunun yerine başka bir kişiye devret (isteğe bağlı)"
+
+msgid "Carry them to the leaving person's own account"
+msgstr "Ayrılan kişinin kendi hesabına devret"
+
+msgid "Cash"
+msgstr "Nakit"
+
+msgid "Change"
+msgstr "Değiştir"
+
+msgid "Charge type"
+msgstr "Gider türü"
+
+msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
+msgstr "Giderler varsayılan ödeyene gider (olağan aidatta kiracı, olağanüstü tahakkuklarda mal sahibi). Yalnızca bu birimin farklı olduğu durumlarda satır ekleyin."
+
+msgid "Check"
+msgstr "Kontrol"
+
+msgid "Check the file"
+msgstr "Dosyayı kontrol et"
+
+msgid "Check the table"
+msgstr "Tabloyu kontrol et"
+
+msgid "Choose a block"
+msgstr "Blok seçin"
+
+msgid "Choose a CSV or XLSX file"
+msgstr "CSV veya XLSX dosyası seçin"
+
+msgid "Choose a unit"
+msgstr "Birim seçin"
+
+msgid "Choose a valid time zone, for example Europe/Istanbul"
+msgstr "Geçerli bir saat dilimi seçin, örneğin Europe/Istanbul"
+
 msgid "Choose an organization"
 msgstr "Bir kuruluş seçin"
+
+msgid "Choose another file"
+msgstr "Başka dosya seç"
+
+msgid "Choose the start date"
+msgstr "Başlangıç tarihini seçin"
+
+msgid "Choose who to invite"
+msgstr "Kimi davet edeceğinizi seçin"
+
+msgid "City"
+msgstr "Şehir"
+
+#. placeholder {0}: occupancyKindLabel(claim.claimed_role, i18n)
+#. placeholder {1}: claim.unit_door_number
+msgid "Claims {0} of {1}."
+msgstr "{1} biriminin {0} olduğunu iddia ediyor."
+
+msgid "Claims to be"
+msgstr "Olduğunu iddia ettiği"
+
+msgid "Clear selection"
+msgstr "Seçimi temizle"
 
 msgid "Close"
 msgstr "Kapat"
 
+msgid "Closing statement"
+msgstr "Kapanış ekstresi"
+
+msgid "Code"
+msgstr "Kod"
+
 msgid "Code from the SMS"
 msgstr "SMS ile gelen kod"
+
+msgid "Code sent."
+msgstr "Kod gönderildi."
+
+msgid "Collected"
+msgstr "Tahsil edilen"
+
+msgid "Common area"
+msgstr "Ortak alan"
+
+msgid "Complete"
+msgstr "Tamam"
+
+msgid "Confirm"
+msgstr "Onayla"
+
+msgid "Confirm it is you"
+msgstr "Siz olduğunuzu doğrulayın"
+
+msgid "Confirm move-out"
+msgstr "Taşınmayı onayla"
+
+msgid "Confirmed. Please repeat the action."
+msgstr "Doğrulandı. Lütfen işlemi tekrarlayın."
+
+msgid "Correspondent"
+msgstr "Yazışma kişisi"
+
+msgid "Cost groups"
+msgstr "Maliyet grupları"
+
+msgid "Costs can be split among one block's units or across the whole site."
+msgstr "Giderler bir bloğun birimleri arasında ya da tüm site genelinde paylaştırılabilir."
 
 msgid "Could not sign out. Please try again."
 msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
 
+msgid "Country"
+msgstr "Ülke"
+
+msgid "Create a site"
+msgstr "Site oluştur"
+
+msgid "Create site"
+msgstr "Site oluştur"
+
+msgid "Create unit"
+msgstr "Birim oluştur"
+
+msgid "Creating a new code stops the old poster from working."
+msgstr "Yeni bir kod oluşturmak eski afişin çalışmasını durdurur."
+
+msgid "Credit"
+msgstr "Alacak"
+
+msgid "Currency"
+msgstr "Para birimi"
+
+msgid "Current lock date:"
+msgstr "Geçerli kilit tarihi:"
+
+msgid "Custom table"
+msgstr "Özel tablo"
+
 msgid "Dark"
 msgstr "Koyu"
+
+msgid "Debt status certificate"
+msgstr "Borç durum belgesi"
+
+msgid "Decision"
+msgstr "Karar"
+
+msgid "default"
+msgstr "varsayılan"
+
+msgid "Delete"
+msgstr "Sil"
+
+#. placeholder {0}: k.name
+msgid "Delete {0}"
+msgstr "{0} sil"
+
+msgid "Delete unit"
+msgstr "Birimi sil"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "Directory"
+msgstr "Rehber"
+
+msgid "District"
+msgstr "İlçe"
+
+msgid "Documents"
+msgstr "Belgeler"
+
+msgid "Door"
+msgstr "Kapı"
+
+msgid "Door number"
+msgstr "Kapı numarası"
+
+msgid "Download the report"
+msgstr "Raporu indir"
+
+msgid "Dues and charges"
+msgstr "Aidat ve giderler"
+
+msgid "Each unit counts by its floor area. Change areas on the unit pages."
+msgstr "Her birim kendi brüt alanı kadar sayılır. Alanları birim sayfalarından değiştirin."
+
+msgid "Edit"
+msgstr "Düzenle"
+
+msgid "Edit bank details"
+msgstr "Banka bilgilerini düzenle"
+
+msgid "Edit vendor"
+msgstr "Tedarikçiyi düzenle"
 
 msgid "Email"
 msgstr "E-posta"
@@ -58,8 +464,77 @@ msgstr "Bana bağlantı gönder"
 msgid "Email or phone"
 msgstr "E-posta veya telefon"
 
+msgid "End membership"
+msgstr "Üyeliği bitir"
+
+msgid "Enter a block name"
+msgstr "Blok adını girin"
+
+msgid "Enter a date"
+msgstr "Bir tarih girin"
+
+msgid "Enter a name"
+msgstr "Bir ad girin"
+
+msgid "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+msgstr "Uluslararası biçimde bir telefon numarası (+90 555 111 22 33) veya geçerli bir e-posta adresi girin"
+
+msgid "Enter a share between 1 and 100"
+msgstr "1 ile 100 arasında bir pay girin"
+
+msgid "Enter a valid email address"
+msgstr "Geçerli bir e-posta adresi girin"
+
+msgid "Enter a valid IBAN, for example TR33 0006 1005 1978 6457 8413 26"
+msgstr "Geçerli bir IBAN girin, örneğin TR33 0006 1005 1978 6457 8413 26"
+
+msgid "Enter a valid phone number"
+msgstr "Geçerli bir telefon numarası girin"
+
+msgid "Enter a valid phone number, for example +90 555 111 22 33"
+msgstr "Geçerli bir telefon numarası girin, örneğin +90 555 111 22 33"
+
+msgid "Enter a weight for each unit, or upload a table with one row per unit."
+msgstr "Her birim için bir ağırlık girin veya birim başına bir satır içeren bir tablo yükleyin."
+
+msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
+msgstr "Her birimin tapudaki arsa payını girin. Yalnızca oranlar önemlidir: 1000'de 100 ile 100'de 10 aynıdır."
+
+msgid "Enter the account holder"
+msgstr "Hesap sahibini girin"
+
+msgid "Enter the area in square metres"
+msgstr "Alanı metrekare olarak girin"
+
 msgid "Enter the code from the SMS"
 msgstr "SMS ile gelen kodu girin"
+
+msgid "Enter the door number, for example A-12"
+msgstr "Kapı numarasını girin, örneğin A-12"
+
+msgid "Enter the number"
+msgstr "Numarayı girin"
+
+msgid "Enter the person's name"
+msgstr "Kişinin adını girin"
+
+msgid "Enter the plate, for example 34 ABC 123"
+msgstr "Plakayı girin, örneğin 34 ABC 123"
+
+msgid "Enter the site name"
+msgstr "Site adını girin"
+
+msgid "Enter the street address"
+msgstr "Açık adresi girin"
+
+msgid "Enter the vendor name"
+msgstr "Tedarikçi adını girin"
+
+msgid "Enter their name"
+msgstr "Adını girin"
+
+msgid "Enter their phone number or email address"
+msgstr "Telefon numarasını veya e-posta adresini girin"
 
 msgid "Enter your email"
 msgstr "E-posta adresinizi girin"
@@ -73,11 +548,80 @@ msgstr "Parolanızı girin"
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
 
+msgid "Enter zero or a positive number"
+msgstr "Sıfır veya pozitif bir sayı girin"
+
+msgid "Equal"
+msgstr "Eşit"
+
+msgid "Every unit counts the same. There is nothing to enter."
+msgstr "Her birim aynı sayılır. Girilecek bir şey yok."
+
+msgid "Expired"
+msgstr "Süresi doldu"
+
+msgid "Expires"
+msgstr "Son geçerlilik"
+
+msgid "Export and offboard"
+msgstr "Dışa aktarma ve devir"
+
+msgid "Export plates (CSV)"
+msgstr "Plakaları dışa aktar (CSV)"
+
+msgid "Export site"
+msgstr "Siteyi dışa aktar"
+
+msgid "Export this site"
+msgstr "Bu siteyi dışa aktar"
+
+msgid "Finished."
+msgstr "Bitti."
+
+msgid "First rows of the file"
+msgstr "Dosyanın ilk satırları"
+
+msgid "Fiscal year starts in"
+msgstr "Mali yıl şu ayda başlar"
+
+msgid "Fix the errors in your file and upload it again."
+msgstr "Dosyanızdaki hataları düzeltip yeniden yükleyin."
+
+msgid "Flat"
+msgstr "Daire"
+
+msgid "From"
+msgstr "Başlangıç"
+
+msgid "Full name"
+msgstr "Ad soyad"
+
+msgid "Gate contact phone"
+msgstr "Kapı için irtibat telefonu"
+
+msgid "General"
+msgstr "Genel"
+
+msgid "Give a role"
+msgstr "Rol ver"
+
+msgid "Give role"
+msgstr "Rolü ver"
+
+msgid "Give the person a reason"
+msgstr "Kişiye bir gerekçe yazın"
+
 msgid "Go home"
 msgstr "Ana sayfaya git"
 
 msgid "Guard"
 msgstr "Güvenlik görevlisi"
+
+msgid "Hands the site over and removes this organization's access to it. Export it first."
+msgstr "Siteyi devreder ve bu kuruluşun siteye erişimini kaldırır. Önce dışa aktarın."
+
+msgid "Hide"
+msgstr "Gizle"
 
 msgid "Home"
 msgstr "Ana sayfa"
@@ -85,26 +629,165 @@ msgstr "Ana sayfa"
 msgid "Household member"
 msgstr "Hane halkı üyesi"
 
+msgid "Household members"
+msgstr "Hane üyeleri"
+
+#. placeholder {0}: unit.unit_label
+msgid "Household of {0}"
+msgstr "{0} hanesi"
+
+msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
+msgstr "Ortak bir giderin birimler arasında nasıl paylaştırıldığı. Kat Mülkiyeti Kanunu (634 sayılı) uyarınca, yönetim planınız aksini söylemiyorsa varsayılan, her dairenin arsa payıdır; bu yüzden yeni siteler bu anahtarla başlar. Isı sayacı gibi şeyler için özel bir tablo ekleyin."
+
+msgid "IBAN"
+msgstr "IBAN"
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "Bu adres kayıtlıysa giriş bağlantısı yolda. Bağlantı yalnızca bir kez çalışır."
+
+msgid "Import"
+msgstr "İçe aktar"
+
+#. placeholder {0}: report.ok_rows + report.warning_rows
+msgid "Import {0} rows"
+msgstr "{0} satırı içe aktar"
+
+msgid "Import another file"
+msgstr "Başka dosya aktar"
+
+msgid "Import failed"
+msgstr "İçe aktarma başarısız"
+
+msgid "Import finished"
+msgstr "İçe aktarma tamamlandı"
+
+msgid "Import units"
+msgstr "Birimleri içe aktar"
+
+msgid "Importing…"
+msgstr "İçe aktarılıyor…"
+
+msgid "Include documents"
+msgstr "Belgeleri dahil et"
+
+msgid "Include money history"
+msgstr "Para hareketlerini dahil et"
+
+msgid "Independent section number from the title deed (tapu)."
+msgstr "Tapudaki bağımsız bölüm numarası."
+
+msgid "Independent unit (own owner and charges)"
+msgstr "Bağımsız birim (kendi sahibi ve giderleri var)"
+
+msgid "Invitations"
+msgstr "Davetler"
+
+msgid "Invitations I sent"
+msgstr "Gönderdiğim davetler"
+
+msgid "Invite"
+msgstr "Davet et"
+
+#. placeholder {0}: unit.unit_label
+msgid "Invite a household member to {0}"
+msgstr "{0} için bir hane üyesi davet et"
+
+msgid "Invite a person"
+msgstr "Bir kişiyi davet et"
+
+msgid "Invite a person by SMS or email. They set a password and are linked to their unit."
+msgstr "Kişiyi SMS veya e-postayla davet edin. Parola belirler ve biriminize bağlanır."
+
+#. placeholder {0}: unit.unit_label
+msgid "Invite family or flatmates to {0}. They can use requests, announcements and bookings but cannot see money unless you allow it."
+msgstr "Aile üyelerinizi veya ev arkadaşlarınızı {0} birimine davet edin. Talepleri, duyuruları ve rezervasyonları kullanabilirler ancak siz izin vermedikçe parayı göremezler."
+
+msgid "Invited"
+msgstr "Davet edildi"
 
 msgid "Join your building"
 msgstr "Binanıza katılın"
 
+msgid "Joined"
+msgstr "Katıldı"
+
+msgid "Joined?"
+msgstr "Katıldı mı?"
+
 msgid "Keep editing"
 msgstr "Düzenlemeye devam et"
+
+msgid "Keep them on the unit for the next owner or tenant"
+msgstr "Sonraki mal sahibi veya kiracı için birimde bırak"
+
+msgid "kept on the unit"
+msgstr "birimde bırakıldı"
+
+msgid "Kind"
+msgstr "Tür"
 
 msgid "Language"
 msgstr "Dil"
 
+msgid "Late fees"
+msgstr "Gecikme zamları"
+
+msgid "Leave empty to use the number or address on the person's record."
+msgstr "Kişi kaydındaki numarayı veya adresi kullanmak için boş bırakın."
+
 msgid "Light"
 msgstr "Açık"
+
+msgid "Link this person to a unit as owner, tenant or household member."
+msgstr "Bu kişiyi mal sahibi, kiracı veya hane üyesi olarak bir birime bağlayın."
+
+msgid "Link to a unit"
+msgstr "Bir birime bağla"
+
+msgid "Link to unit"
+msgstr "Birime bağla"
+
+msgid "Listed"
+msgstr "Listede"
+
+msgid "Listed with phone"
+msgstr "Telefonuyla listede"
+
+msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
+msgstr "Tüm bağımsız bölümler ve değerler yükleniyor: şimdiye kadar {loadedUnits} bölüm, {loadedValues} değer."
+
+msgid "Lock date"
+msgstr "Kilit tarihi"
+
+msgid "Lock everything up to and including"
+msgstr "Şu tarihe kadar her şeyi kilitle (o gün dahil)"
 
 msgid "Main"
 msgstr "Ana"
 
+msgid "Match columns"
+msgstr "Sütunları eşleştir"
+
+msgid "Match each field to a column of your file. Your choices are remembered for next time."
+msgstr "Her alanı dosyanızdaki bir sütunla eşleştirin. Seçimleriniz bir sonraki sefer için hatırlanır."
+
+msgid "May see money"
+msgstr "Parayı görebilir"
+
 msgid "Money"
 msgstr "Para"
+
+msgid "Move out"
+msgstr "Taşınma"
+
+msgid "Move out or sale"
+msgstr "Taşınma veya satış"
+
+msgid "Move out…"
+msgstr "Taşındır…"
+
+msgid "Moves out on"
+msgstr "Taşınma tarihi"
 
 msgid "My account"
 msgstr "Hesabım"
@@ -112,14 +795,177 @@ msgstr "Hesabım"
 msgid "My units"
 msgstr "Bağımsız bölümlerim"
 
+msgid "Name"
+msgstr "Ad"
+
+msgid "National id"
+msgstr "Kimlik numarası"
+
 msgid "Navigation"
 msgstr "Gezinme"
+
+msgid "New block"
+msgstr "Yeni blok"
+
+msgid "New code"
+msgstr "Yeni kod"
+
+msgid "New custom key"
+msgstr "Yeni özel anahtar"
+
+msgid "New site"
+msgstr "Yeni site"
+
+msgid "New unit"
+msgstr "Yeni birim"
+
+msgid "Next"
+msgstr "Sonraki"
+
+msgid "No account"
+msgstr "Hesap yok"
+
+msgid "No bank details yet"
+msgstr "Henüz banka bilgisi yok"
+
+msgid "No claims waiting"
+msgstr "Bekleyen talep yok"
+
+msgid "No invitations yet"
+msgstr "Henüz davet yok"
+
+msgid "No matches"
+msgstr "Eşleşme yok"
+
+msgid "No parking or storage belongs to this unit."
+msgstr "Bu birime bağlı otopark veya depo yok."
+
+msgid "No people yet"
+msgstr "Henüz kişi yok"
+
+msgid "No preference"
+msgstr "Tercih yok"
+
+msgid "No problems found."
+msgstr "Sorun bulunamadı."
+
+msgid "No results"
+msgstr "Sonuç yok"
+
+msgid "No roles"
+msgstr "Rol yok"
+
+msgid "No sites to show"
+msgstr "Gösterilecek site yok"
+
+msgid "No sites yet"
+msgstr "Henüz site yok"
+
+msgid "No units yet"
+msgstr "Henüz birim yok"
+
+msgid "No vehicles registered"
+msgstr "Kayıtlı araç yok"
+
+msgid "No vendors yet"
+msgstr "Henüz tedarikçi yok"
+
+msgid "Nobody is linked to this unit."
+msgstr "Bu birime bağlı kimse yok."
+
+msgid "Nobody is listed yet. The directory must be switched on in the site settings and people choose to appear in it."
+msgstr "Henüz kimse listede değil. Rehberin site ayarlarından açılması ve kişilerin listede yer almayı seçmesi gerekir."
+
+msgid "Not in my file"
+msgstr "Dosyamda yok"
+
+msgid "Not linked to any unit"
+msgstr "Hiçbir birime bağlı değil"
+
+msgid "Not listed"
+msgstr "Listede değil"
+
+msgid "Not set"
+msgstr "Ayarlanmadı"
+
+msgid "Note"
+msgstr "Not"
+
+msgid "Note (optional)"
+msgstr "Not (isteğe bağlı)"
+
+msgid "Notes (managers only)"
+msgstr "Notlar (yalnızca yöneticiler)"
+
+msgid "Nothing dated on or before the lock date can be posted or changed. Moving the date back asks you to confirm it is you."
+msgstr "Kilit tarihinde ve öncesinde tarihlenen hiçbir şey kaydedilemez veya değiştirilemez. Tarihi geriye almak, siz olduğunuzu doğrulamanızı ister."
+
+msgid "Nothing matches these filters. Try removing some."
+msgstr "Hiçbir şey bu filtrelerle eşleşmiyor. Bazılarını kaldırmayı deneyin."
 
 msgid "Notifications"
 msgstr "Bildirimler"
 
+msgid "Number"
+msgstr "Numara"
+
+msgid "Occupancy"
+msgstr "Doluluk"
+
+msgid "Occupancy timeline"
+msgstr "Doluluk geçmişi"
+
+msgid "Occupied"
+msgstr "Dolu"
+
+msgid "Occupied only"
+msgstr "Yalnızca dolu"
+
+#. placeholder {0}: site.name
+msgid "Offboard {0}?"
+msgstr "{0} devredilsin mi?"
+
+msgid "Offboard site"
+msgstr "Siteyi devret"
+
+msgid "Offboard site…"
+msgstr "Siteyi devret…"
+
+msgid "Offboard this site"
+msgstr "Bu siteyi devret"
+
+msgid "Office"
+msgstr "Ofis"
+
+msgid "One archive with people, occupancies, money history, documents and decisions. You will be asked to confirm it is you."
+msgstr "Kişiler, ikametler, para hareketleri, belgeler ve kararlar tek bir arşivde. Siz olduğunuzu doğrulamanız istenecek."
+
+msgid "One currency per site."
+msgstr "Site başına tek para birimi."
+
+msgid "Only the first 1000 rows are listed, errors first."
+msgstr "Yalnızca ilk 1000 satır listelenir, önce hatalılar."
+
+msgid "Open charges"
+msgstr "Açık giderler"
+
 msgid "Open menu"
 msgstr "Menüyü aç"
+
+msgid "Open requests"
+msgstr "Açık talepler"
+
+msgid "open-ended"
+msgstr "süresiz"
+
+msgid "Opening balances"
+msgstr "Açılış bakiyeleri"
+
+msgid "Optional. Stored encrypted and shown to managers only, for legal follow-up and formal notices."
+msgstr "İsteğe bağlı. Şifreli saklanır ve yalnızca yöneticilere gösterilir; hukuki takip ve resmî bildirimler içindir."
+
+msgid "or go to"
+msgstr "veya şu adrese gidin"
 
 msgid "Organization admin"
 msgstr "Kurum yöneticisi"
@@ -127,39 +973,349 @@ msgstr "Kurum yöneticisi"
 msgid "Organizations, health and backup status will appear here."
 msgstr "Kuruluşlar, sistem durumu ve yedekleme durumu burada görünecek."
 
+msgid "Other"
+msgstr "Diğer"
+
+msgid "Overdue"
+msgstr "Gecikmiş"
+
+msgid "Overdue (all sites)"
+msgstr "Gecikmiş (tüm siteler)"
+
+msgid "Owned by the site"
+msgstr "Siteye ait"
+
 msgid "Owner"
 msgstr "Mal sahibi"
+
+msgid "Owner or tenant"
+msgstr "Mal sahibi veya kiracı"
+
+msgid "Owner side"
+msgstr "Mal sahibi tarafı"
+
+msgid "Owner: debt"
+msgstr "Mal sahibi: borç"
+
+msgid "Owner: known late fee"
+msgstr "Mal sahibi: bilinen gecikme zammı"
+
+msgid "Owners see the aggregate income and expense report and the budget. The debtor list stays private."
+msgstr "Mal sahipleri toplu gelir-gider raporunu ve bütçeyi görür. Borçlu listesi gizli kalır."
+
+msgid "Ownership share (%)"
+msgstr "Hisse oranı (%)"
+
+#. placeholder {0}: pager.page
+msgid "Page {0}"
+msgstr "Sayfa {0}"
 
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
 
+msgid "Pagination"
+msgstr "Sayfalama"
+
+msgid "Parking"
+msgstr "Otopark"
+
+msgid "Parking and storage default"
+msgstr "Otopark ve depo varsayılanı"
+
 msgid "Password"
 msgstr "Parola"
+
+#. placeholder {0}: unmatched.length
+msgid "Pasted {count} values. {0} rows did not match a unit and were skipped: {shown}. Check them, then save."
+msgstr "{count} değer yapıştırıldı. {0} satır hiçbir bölümle eşleşmedi ve atlandı: {shown}. Kontrol edin, sonra kaydedin."
+
+msgid "Pasted {count} values. Check them, then save."
+msgstr "{count} değer yapıştırıldı. Kontrol edin, sonra kaydedin."
+
+msgid "Payers should write"
+msgstr "Ödeme yapanın yazması gereken"
+
+msgid "Pays"
+msgstr "Öder"
 
 msgid "People"
 msgstr "Kişiler"
 
+msgid "People in my household"
+msgstr "Hanemdeki kişiler"
+
+msgid "Person"
+msgstr "Kişi"
+
+msgid "Persons"
+msgstr "Kişiler"
+
+msgid "Phone"
+msgstr "Telefon"
+
 msgid "Phone number"
 msgstr "Telefon numarası"
+
+msgid "Phone or email"
+msgstr "Telefon veya e-posta"
+
+msgid "Plate"
+msgstr "Plaka"
+
+msgid "Plates for the camera operator (CSV)"
+msgstr "Kamera operatörü için plakalar (CSV)"
 
 msgid "Platform administration"
 msgstr "Platform yönetimi"
 
-msgid "Please confirm it is you before continuing."
-msgstr "Devam etmeden önce lütfen kimliğinizi doğrulayın."
+msgid "Portfolio"
+msgstr "Portföy"
+
+msgid "Postal code"
+msgstr "Posta kodu"
+
+msgid "Poster"
+msgstr "Afiş"
+
+msgid "Preferred channel"
+msgstr "Tercih edilen kanal"
+
+msgid "Previous"
+msgstr "Önceki"
+
+msgid "Print poster"
+msgstr "Afişi yazdır"
+
+msgid "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
+msgstr "Bu afişi ilan panosu için yazdırın veya bağlantıyı sakinlerin grubunda paylaşın. Okutan kişiler kaydolup biriminin kendisine ait olduğunu bildirir; her talebi siz onaylarsınız."
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Progress"
+msgstr "İlerleme"
+
+msgid "QR code"
+msgstr "QR kod"
+
+msgid "QR code to join {siteName}"
+msgstr "{siteName} sitesine katılmak için QR kod"
+
+msgid "Reason"
+msgstr "Gerekçe"
+
+msgid "Reason (audited)"
+msgstr "Gerekçe (denetlenir)"
+
+msgid "Reason (optional)"
+msgstr "Gerekçe (isteğe bağlı)"
+
+msgid "Receives the unit's correspondence"
+msgstr "Birimin yazışmalarını alır"
+
+msgid "Recent transfers"
+msgstr "Son devirler"
 
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
 msgstr "Referans: {0}"
 
+msgid "Registered plates open the gate for this unit."
+msgstr "Kayıtlı plakalar bu birim için kapıyı açar."
+
+msgid "Reject"
+msgstr "Reddet"
+
+#. placeholder {0}: claim.display_name
+msgid "Reject {0}"
+msgstr "{0} kişisini reddet"
+
+msgid "Reject claim"
+msgstr "Talebi reddet"
+
+msgid "Rejected"
+msgstr "Reddedildi"
+
+msgid "Relationship"
+msgstr "İlişki"
+
 msgid "Reload"
 msgstr "Yeniden yükle"
+
+msgid "Remove"
+msgstr "Kaldır"
+
+msgid "Remove role"
+msgstr "Rolü kaldır"
+
+msgid "Remove this role?"
+msgstr "Bu rol kaldırılsın mı?"
+
+msgid "Resend"
+msgstr "Yeniden gönder"
 
 msgid "Reset your password"
 msgstr "Parolanızı sıfırlayın"
 
+msgid "Resident directory"
+msgstr "Sakin rehberi"
+
+msgid "Residents can join with this code"
+msgstr "Sakinler bu kodla katılabilir"
+
+msgid "Residents see these details when they pay by bank transfer."
+msgstr "Sakinler banka havalesiyle ödeme yaparken bu bilgileri görür."
+
+msgid "Residents who joined with the site QR code and say they live in a unit. A claim takes effect only when you approve it."
+msgstr "Site QR koduyla katılıp bir birimde oturduğunu söyleyen sakinler. Talep, siz onaylayınca geçerli olur."
+
+msgid "Residents who opt in appear in a directory. Managers and the board always see everyone."
+msgstr "Katılmayı seçen sakinler rehberde görünür. Yöneticiler ve kurul her zaman herkesi görür."
+
+msgid "Restore"
+msgstr "Geri yükle"
+
+msgid "Result"
+msgstr "Sonuç"
+
+msgid "Revoke"
+msgstr "İptal et"
+
+msgid "Revoked"
+msgstr "İptal edildi"
+
+msgid "Role"
+msgstr "Rol"
+
+msgid "Roles"
+msgstr "Roller"
+
+msgid "Row"
+msgstr "Satır"
+
+#. placeholder {0}: r.row
+msgid "Row {0}"
+msgstr "Satır {0}"
+
+msgid "Row-level report"
+msgstr "Satır bazlı rapor"
+
+msgid "Save bank details"
+msgstr "Banka bilgilerini kaydet"
+
+msgid "Save changes"
+msgstr "Değişiklikleri kaydet"
+
+msgid "Save number"
+msgstr "Numarayı kaydet"
+
+msgid "Save settings"
+msgstr "Ayarları kaydet"
+
+msgid "Save values"
+msgstr "Değerleri kaydet"
+
+msgid "Save vendor"
+msgstr "Tedarikçiyi kaydet"
+
+msgid "Saved."
+msgstr "Kaydedildi."
+
+msgid "Say why the debt is handled differently"
+msgstr "Borcun neden farklı ele alındığını yazın"
+
+msgid "Scan to join your building's app"
+msgstr "Binanızın uygulamasına katılmak için okutun"
+
+msgid "Search by name"
+msgstr "Ada göre ara"
+
+msgid "Search door or title deed no."
+msgstr "Kapı veya tapu numarası ara"
+
+msgid "Search name, phone or email"
+msgstr "Ad, telefon veya e-posta ara"
+
+msgid "Search people"
+msgstr "Kişi ara"
+
+msgid "Search results"
+msgstr "Arama sonuçları"
+
+msgid "Search sites"
+msgstr "Site ara"
+
+msgid "Search the directory"
+msgstr "Rehberde ara"
+
+msgid "Search units"
+msgstr "Birim ara"
+
+msgid "Search vendors"
+msgstr "Tedarikçi ara"
+
+msgid "Search…"
+msgstr "Ara…"
+
+msgid "Searching…"
+msgstr "Aranıyor…"
+
+msgid "Section"
+msgstr "Bölüm"
+
+msgid "Send by"
+msgstr "Gönderim yolu"
+
+msgid "Send invitation"
+msgstr "Daveti gönder"
+
 msgid "Send me a code"
 msgstr "Bana kod gönder"
+
+msgid "Send me a code instead"
+msgstr "Bunun yerine bana kod gönder"
+
+msgid "Send the code again"
+msgstr "Kodu yeniden gönder"
+
+msgid "Send the code again in {cooldown} s"
+msgstr "Kodu {cooldown} sn sonra yeniden gönder"
+
+msgid "Send to (optional)"
+msgstr "Gönderilecek yer (isteğe bağlı)"
+
+msgid "Sent to"
+msgstr "Gönderilen yer"
+
+msgid "Set lock date"
+msgstr "Kilit tarihini ayarla"
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Setup"
+msgstr "Kurulum"
+
+msgid "Share"
+msgstr "Pay"
+
+msgid "Share %"
+msgstr "Pay %"
+
+msgid "Shop"
+msgstr "Dükkân"
+
+msgid "Show"
+msgstr "Göster"
+
+msgid "Show archived"
+msgstr "Arşivlenenleri göster"
+
+msgid "Show income and expenses to owners"
+msgstr "Mal sahiplerine gelir ve giderleri göster"
+
+msgid "Show only rows with problems"
+msgstr "Yalnızca sorunlu satırları göster"
 
 msgid "Sign in"
 msgstr "Giriş yap"
@@ -173,11 +1329,23 @@ msgstr "Çıkış yap"
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
 
+msgid "Site"
+msgstr "Site"
+
 msgid "Site manager"
 msgstr "Site yöneticisi"
 
+msgid "Site name"
+msgstr "Site adı"
+
+msgid "Site QR code"
+msgstr "Site QR kodu"
+
 msgid "Sites"
 msgstr "Siteler"
+
+msgid "Sites you manage appear here with their overdue amounts, cash and open requests."
+msgstr "Yönettiğiniz siteler, gecikmiş tutarları, nakitleri ve açık talepleriyle burada görünür."
 
 msgid "Skip to content"
 msgstr "İçeriğe geç"
@@ -197,8 +1365,26 @@ msgstr "Bir şeyler ters gitti"
 msgid "Something went wrong. Please try again."
 msgstr "Bir şeyler ters gitti. Lütfen tekrar deneyin."
 
+msgid "Spreadsheet file"
+msgstr "Elektronik tablo dosyası"
+
 msgid "Staff"
 msgstr "Personel"
+
+msgid "Starts on"
+msgstr "Başlangıç tarihi"
+
+msgid "Status"
+msgstr "Durum"
+
+msgid "Steps"
+msgstr "Adımlar"
+
+msgid "Storage"
+msgstr "Depo"
+
+msgid "Street address"
+msgstr "Açık adres"
 
 msgid "Switch organization"
 msgstr "Kuruluş değiştir"
@@ -206,23 +1392,117 @@ msgstr "Kuruluş değiştir"
 msgid "System"
 msgstr "Sistem"
 
+msgid "Table file"
+msgstr "Tablo dosyası"
+
+msgid "Tax id"
+msgstr "Vergi numarası"
+
 msgid "Tenant"
 msgstr "Kiracı"
+
+msgid "Tenant side"
+msgstr "Kiracı tarafı"
+
+msgid "Tenant: debt"
+msgstr "Kiracı: borç"
+
+msgid "Tenant: known late fee"
+msgstr "Kiracı: bilinen gecikme zammı"
+
+msgid "Tenants get their own login"
+msgstr "Kiracılar kendi girişlerine sahip olur"
+
+msgid "That did not work. Check it and try again."
+msgstr "Olmadı. Kontrol edip yeniden deneyin."
 
 msgid "That did not work. Check your details and try again."
 msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
 
+msgid "The code is switched off, so there is no poster to print."
+msgstr "Kod kapalı, bu yüzden yazdırılacak afiş yok."
+
+msgid "The data is in. You can review it on the units and people pages."
+msgstr "Veriler alındı. Birimler ve kişiler sayfalarından inceleyebilirsiniz."
+
+msgid "The directory is empty"
+msgstr "Rehber boş"
+
+msgid "The file could not be checked. Please try again."
+msgstr "Dosya kontrol edilemedi. Lütfen yeniden deneyin."
+
+msgid "The import could not be started. Please try again; a retry never applies it twice."
+msgstr "İçe aktarma başlatılamadı. Lütfen yeniden deneyin; yeniden deneme iki kez uygulanmaz."
+
+msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
+msgstr "İçe aktarma tamamlanmadı. Bazı satırlar uygulanmış olabilir: bağımsız bölümler ve kişiler sayfalarını kontrol edin, dosyayı düzeltip yeniden deneyin."
+
+msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
+msgstr "İş tamamlanmadı. Bazı satırlar uygulanmış olabilir: yeniden denemeden önce bağımsız bölümler ve kişiler sayfalarını kontrol edin."
+
+msgid "The move-out is recorded. The documents were also filed with the unit."
+msgstr "Taşınma kaydedildi. Belgeler birimin dosyasına da eklendi."
+
+msgid "The number guards may call when a visitor arrives. Leave empty to use the phone above."
+msgstr "Bir ziyaretçi geldiğinde güvenliğin arayabileceği numara. Yukarıdaki telefonu kullanmak için boş bırakın."
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
+
+msgid "The person loses the access this role gave them."
+msgstr "Kişi, bu rolün verdiği erişimi kaybeder."
+
+msgid "The person on the lease sees the tenant side of the unit in the portal."
+msgstr "Kira sözleşmesindeki kişi, portalda birimin kiracı tarafını görür."
 
 msgid "The request failed. Please try again."
 msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
 
+msgid "The role could not be removed. Please try again."
+msgstr "Rol kaldırılamadı. Lütfen yeniden deneyin."
+
+msgid "The table could not be read. Check the columns and try again."
+msgstr "Tablo okunamadı. Sütunları kontrol edip yeniden deneyin."
+
+msgid "The transfer could not be started. Please try again."
+msgstr "Devir başlatılamadı. Lütfen yeniden deneyin."
+
+msgid "The values could not be saved. Check them and try again."
+msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
+
 msgid "Theme"
 msgstr "Tema"
 
+#. placeholder {0}: badMoney.join(', ')
+msgid "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
+msgstr "Bu sütunlarda tam sayı olmayan değerler var: {0}. Tutarları en küçük birimde yazın, örneğin {exampleFormatted} için {exampleMinor}."
+
+msgid "These neighbours chose to be listed."
+msgstr "Bu komşular listede yer almayı seçti."
+
+msgid "They receive a link to set a password and join the site."
+msgstr "Parola belirleyip siteye katılmaları için bir bağlantı alırlar."
+
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
+
+msgid "This action is sensitive. Enter your password or a code to continue."
+msgstr "Bu işlem hassastır. Devam etmek için parolanızı veya bir kod girin."
+
+msgid "This cannot be undone from here. Type the site name to continue."
+msgstr "Buradan geri alınamaz. Devam etmek için site adını yazın."
+
+msgid "This file could not be read. Use a CSV or XLSX file with a header row."
+msgstr "Bu dosya okunamadı. Başlık satırı olan bir CSV veya XLSX dosyası kullanın."
+
+msgid "This file is too large."
+msgstr "Bu dosya çok büyük."
+
+msgid "This number is not valid. Check the digits."
+msgstr "Bu numara geçerli değil. Rakamları kontrol edin."
+
+msgid "This person has no management or staff role."
+msgstr "Bu kişinin yönetim veya personel rolü yok."
 
 msgid "This record changed"
 msgstr "Bu kayıt değişti"
@@ -230,8 +1510,17 @@ msgstr "Bu kayıt değişti"
 msgid "This request was already sent with different details. Reload the form and try again."
 msgstr "Bu istek daha önce farklı bilgilerle gönderilmişti. Formu yenileyip tekrar deneyin."
 
+msgid "This role belongs to the site, so you will be asked to confirm it is you."
+msgstr "Bu rol siteye aittir, bu yüzden siz olduğunuzu doğrulamanız istenecek."
+
 msgid "This server offers no sign-in method this app can use."
 msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
+
+msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
+msgstr "Bu site tek bir binadır, bu yüzden tek bloğu her yerde gizlenir. Çok bloklu bir siteye dönüştürmek için bir blok ekleyin."
+
+msgid "This site treats parking and storage as independent units. Choose a flat only if this one is an appurtenance."
+msgstr "Bu site otopark ve depoyu bağımsız birim sayar. Bunun bir müştemilat olduğu durumda yalnızca bir daire seçin."
 
 msgid "This step is not available in this build yet."
 msgstr "Bu adım henüz bu sürümde kullanılamıyor."
@@ -241,6 +1530,18 @@ msgstr "Bu değer geçerli değil"
 
 msgid "Tickets"
 msgstr "Talepler"
+
+msgid "Time zone"
+msgstr "Saat dilimi"
+
+msgid "Title deed no."
+msgstr "Tapu numarası"
+
+msgid "Title deed no. (optional)"
+msgstr "Tapu numarası (isteğe bağlı)"
+
+msgid "today"
+msgstr "bugün"
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
@@ -252,11 +1553,142 @@ msgstr "Çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin."
 msgid "Too many requests. Try again in {0} seconds."
 msgstr "Çok fazla istek gönderildi. {0} saniye sonra tekrar deneyin."
 
+msgid "Total"
+msgstr "Toplam"
+
+msgid "Totals"
+msgstr "Toplamlar"
+
 msgid "Try again"
 msgstr "Tekrar dene"
 
+msgid "Type"
+msgstr "Tür"
+
+msgid "Type the site name exactly to confirm"
+msgstr "Onaylamak için site adını tam olarak yazın"
+
+msgid "Unit"
+msgstr "Birim"
+
+msgid "Unit claims"
+msgstr "Birim talepleri"
+
+msgid "Unit column"
+msgstr "Birim sütunu"
+
+msgid "Units"
+msgstr "Birimler"
+
+msgid "Until (optional)"
+msgstr "Bitiş (isteğe bağlı)"
+
+msgid "Upload"
+msgstr "Yükle"
+
+msgid "Upload a per-unit table"
+msgstr "Birim başına tablo yükle"
+
+msgid "Use a three-letter currency code, for example TRY"
+msgstr "Üç harfli bir para birimi kodu kullanın, örneğin TRY"
+
+msgid "Use a two-letter country code, for example TR"
+msgstr "İki harfli bir ülke kodu kullanın, örneğin TR"
+
+msgid "Use lowercase letters, digits and underscores, for example heating"
+msgstr "Küçük harf, rakam ve alt çizgi kullanın, örneğin isitma"
+
+msgid "Use my password"
+msgstr "Parolamı kullan"
+
+msgid "Vacant"
+msgstr "Boş"
+
+msgid "Vacant and occupied"
+msgstr "Boş ve dolu"
+
+msgid "Vacant only"
+msgstr "Yalnızca boş"
+
+msgid "Value"
+msgstr "Değer"
+
+msgid "Value column"
+msgstr "Değer sütunu"
+
+#. placeholder {0}: p.unit.door_number
+msgid "Value for {0}"
+msgstr "{0} için değer"
+
+#. placeholder {0}: allocationKey.name
+msgid "Values for {0}"
+msgstr "{0} değerleri"
+
+msgid "Values saved."
+msgstr "Değerler kaydedildi."
+
+msgid "Vehicles"
+msgstr "Araçlar"
+
+msgid "Vendors"
+msgstr "Tedarikçiler"
+
+msgid "Waiting"
+msgstr "Bekliyor"
+
+msgid "Waiting for a decision"
+msgstr "Karar bekleyen"
+
 msgid "We could not find that."
 msgstr "Bulunamadı."
+
+msgid "We could not send the code. Please try again."
+msgstr "Kod gönderemedik. Lütfen yeniden deneyin."
+
+msgid "What happens to open charges"
+msgstr "Açık giderlere ne olur"
+
+msgid "What payers should write in the description"
+msgstr "Ödeme yapanın açıklamaya yazması gereken"
+
+msgid "What people say, for example A-12."
+msgstr "İnsanların söylediği, örneğin A-12."
+
+msgid "What to fix"
+msgstr "Düzeltilecekler"
+
+msgid "What to import"
+msgstr "Ne içe aktarılacak"
+
+msgid "When a resident joins with the site QR code, their claim appears here."
+msgstr "Bir sakin site QR koduyla katıldığında talebi burada görünür."
+
+msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
+msgstr "Onayladığınızda ayrılan kişi için bir kapanış ekstresi ve bir borç durum belgesi oluşturulur ve birimin dosyasına eklenir."
+
+msgid "Whether this person appears in a site's resident directory. They choose this themselves under My account."
+msgstr "Bu kişinin bir sitenin sakin rehberinde görünüp görünmediği. Bunu kendisi Hesabım altından seçer."
+
+msgid "Who"
+msgstr "Kim"
+
+msgid "Who pays what on this unit"
+msgstr "Bu birimde kim neyi öder"
+
+msgid "Who was invited and who has joined."
+msgstr "Kimin davet edildiği ve kimin katıldığı."
+
+msgid "Whole organization"
+msgstr "Tüm kuruluş"
+
+msgid "Working… {pct}%"
+msgstr "Çalışıyor… %{pct}"
+
+msgid "Write them off"
+msgstr "Zarar olarak yaz"
+
+msgid "written off"
+msgstr "zarar yazıldı"
 
 msgid "You are not linked to a unit in this organization."
 msgstr "Bu kuruluşta bir bağımsız bölümle ilişkiniz yok."
@@ -272,6 +1704,12 @@ msgstr "Bu sayfaya erişim yetkiniz yok"
 
 msgid "You do not have permission to do this."
 msgstr "Bunu yapma yetkiniz yok."
+
+msgid "You do not have permission to import this."
+msgstr "Bunu içe aktarma izniniz yok."
+
+msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
+msgstr "Yönetici olarak herkesi görürsünüz. Sakinler yalnızca listede yer almayı seçenleri görür."
 
 msgid "You will be able to choose a new password here."
 msgstr "Yeni parolanızı burada seçebileceksiniz."

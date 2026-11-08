@@ -85,10 +85,10 @@ describe('ErrorEffects', () => {
     expect(await screen.findByText(/Try again in 5 seconds/)).toBeInTheDocument()
   })
 
-  it('toasts a re-authentication prompt on reauth_required', async () => {
+  it('opens the re-authentication dialog on reauth_required', async () => {
     server.use(expired())
     await mount('/login')
     act(() => emitApiEvent({ type: 'reauth-required', error: error(403, 'reauth_required') }))
-    expect(await screen.findByText(/confirm it is you/)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /confirm it is you/i })).toBeInTheDocument()
   })
 })

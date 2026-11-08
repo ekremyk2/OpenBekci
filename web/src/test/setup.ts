@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { afterEach } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { i18n } from '@lingui/core'
 import { setupServer } from 'msw/node'
 import { handlers } from './handlers'
@@ -20,6 +20,9 @@ if (!window.matchMedia) {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia
 }
+
+// the full suite runs many jsdom workers in parallel; single findBy*/waitFor calls need headroom
+configure({ asyncUtilTimeout: 4000 })
 
 i18n.load('en', {})
 i18n.activate('en')

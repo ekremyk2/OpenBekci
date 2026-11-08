@@ -1,0 +1,85 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: tenancy.listBlocks
+  summary: List blocks
+  description: |-
+    **Release 0.1.** Cursor-paginated list of blocks.
+
+    Permission: `sites.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - sites.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/BlockList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: tenancy.createBlock
+  summary: Create block
+  description: |-
+    **Release 0.1.** Creates a block.
+
+    Permission: `sites.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/BlockCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/Block
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

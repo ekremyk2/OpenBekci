@@ -15,6 +15,7 @@ export default tseslint.config(
       'src/routeTree.gen.ts',
       'src/api/clients-ts-generated',
       'public',
+      'src/mocks/sw',
     ],
   },
   js.configs.recommended,
@@ -35,6 +36,20 @@ export default tseslint.config(
         },
       ],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    // our own form primitives wrap native controls: count them as controls for label association
+    files: ['src/**/*.tsx'],
+    rules: {
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        {
+          controlComponents: ['Input', 'Select', 'Checkbox', 'Textarea'],
+          assert: 'either',
+          depth: 3,
+        },
+      ],
     },
   },
   {

@@ -8,6 +8,32 @@ export type DateKind = 'date' | 'datetime' | 'time'
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
 
+/** Today's calendar date (`YYYY-MM-DD`) in the given time zone, not the browser's or UTC's. */
+export function todayInZone(timeZone: string, now: Date = new Date()): string {
+  let zone = timeZone
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: zone })
+  } catch {
+    zone = 'UTC'
+  }
+  // the en-CA locale writes dates as YYYY-MM-DD
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: zone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+}
+
+/** Time zone of the site with this id (falls back to `fallback`). */
+export function zoneOfSite(
+  sites: readonly { id: string; timezone: string }[] | undefined,
+  siteId: string | null | undefined,
+  fallback = 'UTC',
+): string {
+  return sites?.find((s) => s.id === siteId)?.timezone ?? fallback
+}
+
 export function formatSiteDate(
   value: string | Date,
   timeZone: string,

@@ -1,0 +1,51 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: governance.listGovernancePresets
+  summary: List national governance presets
+  description: |-
+    **Release 0.2.** Presets come from packs (the generic core ships Law 634 defaults); `verify` notes are shown until confirmed.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - meetings.read
+    site_manager:
+      - meetings.read
+    board_member:
+      - meetings.read
+    auditor:
+      - meetings.read
+    owner:
+      - meetings.read
+    tenant:
+      - meetings.read
+  x-stability: preview
+  parameters:
+    - name: country_code
+      in: query
+      schema:
+        type: string
+      description: Filter by `country_code`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/GovernancePresetList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

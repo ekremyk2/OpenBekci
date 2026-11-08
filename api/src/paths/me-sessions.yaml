@@ -1,0 +1,36 @@
+get:
+  operationId: me.listSessions
+  summary: List the caller's open sessions
+  tags: [me]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Open sessions, most recently used first.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/SessionList'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'
+delete:
+  operationId: me.revokeAllSessions
+  summary: Sign out everywhere
+  description: Revokes every session of the caller, the current one included.
+  tags: [me]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  responses:
+    '204':
+      description: All sessions were revoked.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

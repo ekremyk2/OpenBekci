@@ -1,0 +1,101 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: tenancy.listUnitTags
+  summary: List unit tags
+  description: |-
+    **Release 0.1.** Cursor-paginated list of unit tags.
+
+    Permission: `units.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.read
+    site_manager:
+      - units.read
+    board_member:
+      - units.read
+    auditor:
+      - units.read
+    accountant:
+      - units.read
+    staff:
+      - units.read
+    owner:
+      - units.read
+    tenant:
+      - units.read
+    household:
+      - units.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/UnitTagList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: tenancy.createUnitTag
+  summary: Create unit tag
+  description: |-
+    **Release 0.1.** Creates a unit tag.
+
+    Permission: `sites.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/UnitTagCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/UnitTag
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

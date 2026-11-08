@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: access.listGuardEvents
+  summary: Live "who just arrived" feed for the guard console
+  description: |-
+    **Release 0.3.** The guard sees the last 24 hours only. The console polls every 2 seconds with the last `sync_seq` as `after`.
+
+    Permission: `gate.operate`.
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: after
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Filter by `after`.
+    - name: point_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `point_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/GuardAccessEventList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,40 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: codes.listCodes
+  summary: Labels for enums, error codes and site statuses
+  description: |-
+    **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+
+    Permission: `codes.read`.
+  tags:
+    - codes
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - codes.read
+  x-stability: stable
+  parameters:
+    - name: locale
+      in: query
+      schema:
+        type: string
+      description: Filter by `locale`.
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/codes.yaml#/schemas/Codes
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

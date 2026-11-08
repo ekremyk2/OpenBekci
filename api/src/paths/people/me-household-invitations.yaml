@@ -1,0 +1,49 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: me.listHouseholdInvitations
+  summary: List the household invitations I sent
+  description: |-
+    **Release 0.1.** The pending, accepted, expired and revoked household invitations the caller sent for their own unit(s). Owners and tenants manage their own household; managers use `people.listInvitations`.
+
+    Permission: `invitations.household` (own unit only; invitations sent by someone else for the same unit are not listed).
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - invitations.household
+    tenant:
+      - invitations.household
+  x-stability: stable
+  parameters:
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Only invitations for this unit of the caller.
+    - name: status
+      in: query
+      schema:
+        type: string
+      description: "Filter by `status` (open enum: `pending`, `accepted`, `expired`, `revoked`)."
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/InvitationList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

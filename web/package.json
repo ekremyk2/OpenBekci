@@ -21,7 +21,8 @@
     "e2e": "playwright test",
     "i18n:extract": "lingui extract --clean",
     "i18n:compile": "lingui compile --typescript",
-    "size": "size-limit"
+    "size": "size-limit",
+    "dev:mock": "vite --mode mock --port 5175 --strictPort"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.3",
@@ -35,13 +36,16 @@
     "@radix-ui/react-toast": "^1.3.1",
     "@tanstack/react-query": "^5.107.0",
     "@tanstack/react-router": "^1.170.46",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.70.0",
     "openapi-fetch": "^0.17.0",
+    "qrcode": "^1.5.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-hook-form": "^7.91.0",
+    "read-excel-file": "^9.3.14",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"
   },
@@ -61,6 +65,7 @@
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
     "@types/node": "^26.6.6",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",

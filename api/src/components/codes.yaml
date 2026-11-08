@@ -1,0 +1,40 @@
+schemas:
+  CodeLabel:
+    type: object
+    required:
+      - code
+      - label
+    properties:
+      code:
+        type: string
+      label:
+        type: string
+      description:
+        type: string
+  Codes:
+    type: object
+    required:
+      - locale
+      - enums
+      - errors
+      - ticket_statuses
+    properties:
+      locale:
+        type: string
+      enums:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            $ref: "#/schemas/CodeLabel"
+        description: Labels per open enum, keyed by enum name (for example `charge_type`, `occupancy_kind`), pack labels included.
+      errors:
+        type: array
+        items:
+          $ref: "#/schemas/CodeLabel"
+        description: Problem codes.
+      ticket_statuses:
+        type: array
+        items:
+          $ref: "#/schemas/CodeLabel"
+        description: Site-defined ticket statuses when `site_id` is given.

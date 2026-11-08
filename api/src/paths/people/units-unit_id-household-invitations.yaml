@@ -1,0 +1,63 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: unit_id
+    in: path
+    required: true
+    description: Id of the unit.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: people.createHouseholdInvitation
+  summary: Invite a household member to my unit
+  description: |-
+    **Release 0.1.** Invite a household member to my unit.
+
+    Listing and revoking what the caller sent: `me.listHouseholdInvitations`, `me.revokeHouseholdInvitation`; removing a member: `me.endHouseholdOccupancy`.
+
+    Permission: `invitations.household` (own unit only).
+
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - invitations.household
+    tenant:
+      - invitations.household
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/HouseholdInvitationCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Invitation
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "503":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

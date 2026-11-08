@@ -1,0 +1,52 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: facility_id
+    in: path
+    required: true
+    description: Id of the facility.
+    schema:
+      type: string
+      format: uuid
+  - name: block_id
+    in: path
+    required: true
+    description: Id of the block.
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: community.deleteFacilityBlock
+  summary: Remove a block
+  description: |-
+    **Release 0.3.** Remove a block.
+
+    Permission: `facilities.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - facilities.manage
+    site_manager:
+      - facilities.manage
+    board_member:
+      - facilities.manage
+  x-idempotent: optional
+  x-stability: preview
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

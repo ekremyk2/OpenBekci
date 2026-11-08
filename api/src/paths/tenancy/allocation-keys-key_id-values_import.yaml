@@ -1,0 +1,77 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: key_id
+    in: path
+    required: true
+    description: Id of the key.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: tenancy.importAllocationKeyValues
+  summary: Import a per-unit value table
+  description: |-
+    **Release 0.1.** For example the heating-meter company's monthly sheet (M2).
+
+    Permission: `sites.manage`.
+
+    Problems: `payload_too_large` (413), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+            mapping:
+              type: object
+              additionalProperties: true
+          required:
+            - file
+  responses:
+    "200":
+      description: The dry-run report.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "202":
+      description: Committed.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "413":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

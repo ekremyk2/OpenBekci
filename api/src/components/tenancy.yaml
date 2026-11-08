@@ -1,0 +1,1301 @@
+schemas:
+  Organization:
+    type: object
+    description: The access boundary (D2).
+    required:
+      - id
+      - slug
+      - name
+      - default_locale
+      - timezone
+      - country_code
+      - status
+      - settings
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      slug:
+        type: string
+      name:
+        type: string
+      default_locale:
+        type: string
+      timezone:
+        type: string
+      country_code:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - suspended
+          - archived
+        x-open-enum: true
+      settings:
+        type: object
+        additionalProperties: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+  OrganizationUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      default_locale:
+        type: string
+      timezone:
+        type: string
+      country_code:
+        type: string
+      settings:
+        type: object
+        additionalProperties: true
+  AccessSettings:
+    type: object
+    description: Gate-control settings (`site.settings.access`), release 0.3.
+    required:
+      - offline_grace_hours
+      - agent_silent_minutes
+      - plate_match
+      - maintenance_hour
+    properties:
+      offline_grace_hours:
+        type: integer
+        format: int64
+        description: Hours an offline agent keeps deciding locally before it stops (1 to 336, default 72). Sent to the agent as `update_config.settings.offline_grace_hours`.
+        minimum: 1
+        maximum: 336
+      agent_silent_minutes:
+        type: integer
+        format: int64
+        description: Silence before the agent_silent notification (default 5).
+      plate_match:
+        type: string
+        description: Open enum.
+        enum:
+          - exact
+          - tolerant
+        x-open-enum: true
+      maintenance_hour:
+        type: integer
+        format: int64
+        nullable: true
+        description: Local hour for agent updates.
+  SiteSettings:
+    type: object
+    description: Site settings. Late-fee policy, lock date and bank details have their own resources; governance thresholds are `governance.getGovernanceSettings`.
+    required:
+      - tenants_are_portal_users
+      - directory_enabled
+      - owner_financial_transparency
+      - parking_storage_default
+      - bills_enabled
+      - announcement_publishers
+      - ticket_archive_months
+      - visitor_log_retention_days
+      - legal_preset
+      - access
+      - extra
+    properties:
+      tenants_are_portal_users:
+        type: boolean
+        description: Tenants get a portal login (S3).
+      directory_enabled:
+        type: boolean
+        description: Opt-in resident directory is on (S8).
+      owner_financial_transparency:
+        type: boolean
+        description: Owners see aggregate gelir-gider and budget vs actual.
+      parking_storage_default:
+        type: string
+        description: Default for parking and storage units (S2). Open enum.
+        enum:
+          - appurtenance
+          - independent
+        x-open-enum: true
+      bills_enabled:
+        type: boolean
+        description: Vendor bills with due dates and partial payments are switched on (M6).
+      announcement_publishers:
+        type: string
+        description: Open enum.
+        enum:
+          - manager_only
+          - manager_and_board
+        x-open-enum: true
+      ticket_archive_months:
+        type: integer
+        format: int64
+        nullable: true
+        description: "Archive closed tickets after N months; null: never."
+      visitor_log_retention_days:
+        type: integer
+        format: int64
+        description: Default 90 (C2).
+      legal_preset:
+        type: string
+        nullable: true
+        description: National preset id supplied by a pack, for example `tr`.
+      access:
+        $ref: "#/schemas/AccessSettings"
+      extra:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: Pack-defined settings (schema-driven in 0.4).
+  SiteSettingsUpdate:
+    type: object
+    description: Partial update of the site settings.
+    properties:
+      tenants_are_portal_users:
+        type: boolean
+        description: Tenants get a portal login (S3).
+      directory_enabled:
+        type: boolean
+        description: Opt-in resident directory is on (S8).
+      owner_financial_transparency:
+        type: boolean
+        description: Owners see aggregate gelir-gider and budget vs actual.
+      parking_storage_default:
+        type: string
+        description: Default for parking and storage units (S2). Open enum.
+        enum:
+          - appurtenance
+          - independent
+        x-open-enum: true
+      bills_enabled:
+        type: boolean
+        description: Vendor bills with due dates and partial payments are switched on (M6).
+      announcement_publishers:
+        type: string
+        description: Open enum.
+        enum:
+          - manager_only
+          - manager_and_board
+        x-open-enum: true
+      ticket_archive_months:
+        type: integer
+        format: int64
+        nullable: true
+        description: "Archive closed tickets after N months; null: never."
+      visitor_log_retention_days:
+        type: integer
+        format: int64
+        description: Default 90 (C2).
+      legal_preset:
+        type: string
+        nullable: true
+        description: National preset id supplied by a pack, for example `tr`.
+      access:
+        $ref: "#/schemas/AccessSettings"
+      extra:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: Pack-defined settings (schema-driven in 0.4).
+  Site:
+    type: object
+    description: The data-owning unit.
+    required:
+      - id
+      - org_id
+      - name
+      - address
+      - timezone
+      - currency
+      - fiscal_year_start_month
+      - lock_date
+      - status
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      address:
+        $ref: ./draft-common.yaml#/schemas/Address
+      timezone:
+        type: string
+        description: IANA zone
+      currency:
+        type: string
+        description: ISO 4217; one per site
+      fiscal_year_start_month:
+        type: integer
+        format: int64
+        description: 1..12, default 1
+      lock_date:
+        type: string
+        format: date
+        nullable: true
+        description: Postings dated on or before this are rejected (`locked_period`).
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - offboarded
+        x-open-enum: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      name: Ali Veli
+      address:
+        line1: line1
+        line2: null
+        district: null
+        city: null
+        postal_code: null
+        country_code: country code
+      timezone: timezone
+      currency: currency
+      fiscal_year_start_month: 1
+      lock_date: null
+      status: active
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  SiteCreate:
+    type: object
+    required:
+      - name
+      - timezone
+      - currency
+    properties:
+      name:
+        type: string
+      address:
+        $ref: ./draft-common.yaml#/schemas/Address
+      timezone:
+        type: string
+      currency:
+        type: string
+      fiscal_year_start_month:
+        type: integer
+        format: int64
+  SiteUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      address:
+        $ref: ./draft-common.yaml#/schemas/Address
+      timezone:
+        type: string
+      currency:
+        type: string
+      fiscal_year_start_month:
+        type: integer
+        format: int64
+  SiteList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Site"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          name: Ali Veli
+          address:
+            line1: line1
+            line2: null
+            district: null
+            city: null
+            postal_code: null
+            country_code: country code
+          timezone: timezone
+          currency: currency
+          fiscal_year_start_month: 1
+          lock_date: null
+          status: active
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  BankDetails:
+    type: object
+    description: Shown to payers (M5).
+    required:
+      - iban
+      - holder
+      - bank_name
+      - reference_hint
+      - suggested_reference
+    properties:
+      iban:
+        type: string
+      holder:
+        type: string
+      bank_name:
+        type: string
+        nullable: true
+      reference_hint:
+        type: string
+        nullable: true
+        description: Text payers should put in the transfer description.
+      suggested_reference:
+        type: string
+        nullable: true
+        description: "Only when `unit_id` and `debtor_kind` were given: the reference for that unit side."
+  BankDetailsUpdate:
+    type: object
+    required:
+      - iban
+      - holder
+    properties:
+      iban:
+        type: string
+      holder:
+        type: string
+      bank_name:
+        type: string
+        nullable: true
+      reference_hint:
+        type: string
+        nullable: true
+  Block:
+    type: object
+    description: A building within a site (S1).
+    required:
+      - id
+      - org_id
+      - site_id
+      - name
+      - is_default
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      is_default:
+        type: boolean
+        description: The auto-created block of a single building; hidden by clients when it is the only one.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      is_default: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  BlockCreate:
+    type: object
+    required:
+      - site_id
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+  BlockUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+  BlockList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Block"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          is_default: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  OccupancySummary:
+    type: object
+    required:
+      - owners
+      - tenants
+      - household
+    properties:
+      owners:
+        type: integer
+        format: int64
+      tenants:
+        type: integer
+        format: int64
+      household:
+        type: integer
+        format: int64
+  Unit:
+    type: object
+    description: A unit of a site.
+    required:
+      - id
+      - org_id
+      - site_id
+      - block_id
+      - door_number
+      - legal_ref
+      - type
+      - area_m2
+      - parent_unit_id
+      - status
+      - vacant
+      - occupancy
+      - created_at
+      - updated_at
+      - version
+      - payer_overrides
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      block_id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+        description: What people say, for example A-12.
+      legal_ref:
+        type: string
+        nullable: true
+        description: Tapu bagimsiz bolum no.
+      type:
+        type: string
+        description: Open enum.
+        enum:
+          - flat
+          - shop
+          - office
+          - parking
+          - storage
+          - common
+          - other
+        x-open-enum: true
+      area_m2:
+        type: number
+        nullable: true
+      parent_unit_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: "Set: an appurtenance of that unit (S2); null: an independent unit."
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - merged
+          - split
+        x-open-enum: true
+      vacant:
+        type: boolean
+        description: Derived from occupancies; never set.
+      occupancy:
+        $ref: "#/schemas/OccupancySummary"
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+      payer_overrides: &a1
+        type: object
+        description: "Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed."
+        additionalProperties:
+          type: string
+          enum:
+            - owner
+            - tenant
+        example: &a2
+          dues: owner
+          utility: tenant
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      block_id: 0192a3f0-1000-7000-8000-000000000003
+      door_number: A-12
+      legal_ref: 12/34
+      type: flat
+      area_m2: 96.5
+      parent_unit_id: null
+      status: active
+      vacant: false
+      occupancy:
+        owners: 1
+        tenants: 1
+        household: 1
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+      payer_overrides: {}
+  UnitCreate:
+    type: object
+    required:
+      - site_id
+      - block_id
+      - door_number
+      - type
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      block_id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+      legal_ref:
+        type: string
+        nullable: true
+      type:
+        type: string
+        description: Open enum.
+        enum:
+          - flat
+          - shop
+          - office
+          - parking
+          - storage
+          - common
+          - other
+        x-open-enum: true
+      area_m2:
+        type: number
+        nullable: true
+      parent_unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      payer_overrides: *a1
+  UnitUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      block_id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+      legal_ref:
+        type: string
+        nullable: true
+      type:
+        type: string
+        description: Open enum.
+        enum:
+          - flat
+          - shop
+          - office
+          - parking
+          - storage
+          - common
+          - other
+        x-open-enum: true
+      area_m2:
+        type: number
+        nullable: true
+      parent_unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      payer_overrides:
+        type: object
+        description: "Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed. PATCH merges by key; a `null` value removes that override."
+        additionalProperties:
+          type: string
+          enum:
+            - owner
+            - tenant
+          nullable: true
+        example: *a2
+  UnitList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Unit"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          block_id: 0192a3f0-1000-7000-8000-000000000003
+          door_number: A-12
+          legal_ref: 12/34
+          type: flat
+          area_m2: 96.5
+          parent_unit_id: null
+          status: active
+          vacant: false
+          occupancy:
+            owners: 1
+            tenants: 1
+            household: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+          payer_overrides: {}
+      next_cursor: null
+  AllocationKey:
+    type: object
+    description: How a cost is split (M2).
+    required:
+      - id
+      - org_id
+      - site_id
+      - code
+      - name
+      - kind
+      - is_system
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      code:
+        type: string
+        description: "`arsa_payi`, `equal`, `area` or custom."
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - share
+          - equal
+          - area
+          - table
+        x-open-enum: true
+      is_system:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      kind: share
+      is_system: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  AllocationKeyCreate:
+    type: object
+    required:
+      - site_id
+      - code
+      - name
+      - kind
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      code:
+        type: string
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - share
+          - equal
+          - area
+          - table
+        x-open-enum: true
+  AllocationKeyUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - share
+          - equal
+          - area
+          - table
+        x-open-enum: true
+  AllocationKeyList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AllocationKey"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          kind: share
+          is_system: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  AllocationKeyValue:
+    type: object
+    required:
+      - unit_id
+      - value
+      - computed
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      value:
+        type: number
+        description: Weight; for `equal` and `area` computed, for `share` and `table` stored.
+      computed:
+        type: boolean
+    example:
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      value: 1.5
+      computed: false
+  AllocationKeyValueList:
+    type: object
+    required:
+      - items
+      - next_cursor
+      - total
+      - complete
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AllocationKeyValue"
+      next_cursor:
+        type: string
+        nullable: true
+      total:
+        type: number
+        description: Sum of all weights.
+      complete:
+        type: boolean
+        description: Every active unit in scope has a value.
+    example:
+      items:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000002
+          value: 1.5
+          computed: false
+      next_cursor: null
+      total: 1.5
+      complete: false
+  AllocationKeyValuesPut:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AllocationKeyValue"
+  AllocationKeyValuesSummary:
+    type: object
+    required:
+      - count
+      - total
+    properties:
+      count:
+        type: integer
+        format: int64
+      total:
+        type: number
+  UnitTag:
+    type: object
+    description: Cost-group tag such as `lift` or `pool`.
+    required:
+      - id
+      - org_id
+      - site_id
+      - code
+      - name
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      code:
+        type: string
+      name:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  UnitTagCreate:
+    type: object
+    required:
+      - site_id
+      - code
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      code:
+        type: string
+      name:
+        type: string
+  UnitTagUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+  UnitTagList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/UnitTag"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  UnitTagMembers:
+    type: object
+    required:
+      - unit_ids
+      - version
+    properties:
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
+  Vehicle:
+    type: object
+    description: A plate registered to a unit (D6).
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - plate
+      - plate_normalized
+      - description
+      - archived
+      - warning
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      plate:
+        type: string
+        description: As entered.
+      plate_normalized:
+        type: string
+        description: Canonical form used for matching and gate control.
+      description:
+        type: string
+        nullable: true
+      archived:
+        type: boolean
+      warning:
+        type: string
+        nullable: true
+        description: Set when the plate normalizes to empty and projects nothing.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      plate: plate
+      plate_normalized: plate normalized
+      description: null
+      archived: false
+      warning: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  VehicleCreate:
+    type: object
+    required:
+      - site_id
+      - unit_id
+      - plate
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      plate:
+        type: string
+      description:
+        type: string
+        nullable: true
+      archived:
+        type: boolean
+  VehicleUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      plate:
+        type: string
+      description:
+        type: string
+        nullable: true
+      archived:
+        type: boolean
+  VehicleList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Vehicle"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          plate: plate
+          plate_normalized: plate normalized
+          description: null
+          archived: false
+          warning: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  SiteTransfer:
+    type: object
+    description: Record of a site export, import or offboarding (D2).
+    required:
+      - id
+      - org_id
+      - direction
+      - site_id
+      - archive_file_id
+      - source_org_id
+      - target_org_id
+      - status
+      - job_id
+      - at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      direction:
+        type: string
+        description: Open enum.
+        enum:
+          - export
+          - import
+          - offboard
+        x-open-enum: true
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      archive_file_id:
+        type: string
+        format: uuid
+        nullable: true
+      source_org_id:
+        type: string
+        format: uuid
+        nullable: true
+      target_org_id:
+        type: string
+        format: uuid
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - queued
+          - running
+          - succeeded
+          - failed
+        x-open-enum: true
+      job_id:
+        type: string
+        format: uuid
+        nullable: true
+      at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      direction: export
+      site_id: null
+      archive_file_id: null
+      source_org_id: null
+      target_org_id: null
+      status: queued
+      job_id: null
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  SiteTransferList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/SiteTransfer"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          direction: export
+          site_id: null
+          archive_file_id: null
+          source_org_id: null
+          target_org_id: null
+          status: queued
+          job_id: null
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  SiteExportRequest:
+    type: object
+    properties:
+      include_documents:
+        type: boolean
+      include_money_history:
+        type: boolean
+  SiteOffboardRequest:
+    type: object
+    required:
+      - confirm_site_name
+    properties:
+      confirm_site_name:
+        type: string
+        description: Must equal the site name.
+      reason:
+        type: string
+  UnitTagMembersSet:
+    type: object
+    required:
+      - unit_ids
+    properties:
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid

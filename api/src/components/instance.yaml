@@ -1,0 +1,117 @@
+schemas:
+  DiscoveryDocument:
+    type: object
+    description: Unauthenticated instance discovery document (overview section 6.8).
+    required:
+      - instance_id
+      - instance_name
+      - api_base_url
+      - api_versions
+      - server_version
+      - sdk_version
+      - min_app_version
+      - auth_methods
+      - push
+      - packs
+      - branding
+      - relay_enrollment
+    properties:
+      instance_id:
+        type: string
+        format: uuid
+        description: Stable for the life of the instance.
+      instance_name:
+        type: string
+      api_base_url:
+        type: string
+        example: https://example.org/v1
+      api_versions:
+        type: array
+        items:
+          type: string
+        example: [v1]
+      server_version:
+        type: string
+        example: 0.1.0
+      sdk_version:
+        type: string
+        nullable: true
+        description: Pack SDK version, null until packs exist.
+      min_app_version:
+        $ref: '#/schemas/MinAppVersion'
+      auth_methods:
+        type: array
+        items:
+          $ref: '#/schemas/AuthMethod'
+      push:
+        $ref: '#/schemas/PushInfo'
+      packs:
+        type: array
+        items:
+          type: string
+      branding:
+        $ref: '#/schemas/Branding'
+      relay_enrollment:
+        $ref: '#/schemas/RelayEnrollment'
+  MinAppVersion:
+    type: object
+    required: [android, ios]
+    properties:
+      android:
+        type: string
+        example: 1.0.0
+      ios:
+        type: string
+        example: 1.0.0
+  AuthMethod:
+    type: object
+    required: [id]
+    properties:
+      id:
+        type: string
+        description: |
+          Open string. Known: `password`, `sms_otp`, `magic_link`, `oidc:<provider>`.
+        x-known-values: [password, sms_otp, magic_link, 'oidc:<provider>']
+      label_key:
+        type: string
+      icon:
+        type: string
+  PushInfo:
+    type: object
+    required: [relay_ids, unified_push]
+    properties:
+      relay_ids:
+        type: array
+        items:
+          type: string
+      unified_push:
+        type: boolean
+  Branding:
+    type: object
+    properties:
+      logo_url:
+        type: string
+      primary_color:
+        type: string
+        example: '#1a73e8'
+  RelayEnrollment:
+    type: object
+    required: [challenge]
+    properties:
+      challenge:
+        type: string
+        nullable: true
+        description: Ephemeral challenge for push relay enrollment; null when not enrolling.
+  InstancePolicies:
+    type: object
+    description: Instance policies. Empty until later phases add some.
+    additionalProperties: true
+  Instance:
+    description: Authenticated twin of the discovery document, with policies.
+    allOf:
+      - $ref: '#/schemas/DiscoveryDocument'
+      - type: object
+        required: [policies]
+        properties:
+          policies:
+            $ref: '#/schemas/InstancePolicies'

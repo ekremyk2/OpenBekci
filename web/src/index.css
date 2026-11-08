@@ -126,3 +126,12 @@
 [dir='rtl'] .rtl-flip {
   transform: scaleX(-1);
 }
+
+/* Printable site poster (features/people/SiteQrPage): hide the app chrome while printing. */
+@media print {
+  body[data-print-poster] aside,
+  body[data-print-poster] header,
+  body[data-print-poster] [data-no-print] {
+    display: none !important;
+  }
+}

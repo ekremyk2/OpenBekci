@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatSiteDate } from './dates'
+import { formatSiteDate, todayInZone, zoneOfSite } from './dates'
 
 const norm = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ')
 
@@ -28,5 +28,20 @@ describe('formatSiteDate', () => {
 
   it('returns an empty string for invalid input', () => {
     expect(formatSiteDate('not a date', 'UTC', 'en-US')).toBe('')
+  })
+})
+
+describe('todayInZone', () => {
+  it("is the site's calendar date, not the UTC date", () => {
+    const now = new Date('2026-12-31T22:30:00Z')
+    expect(todayInZone('Europe/Istanbul', now)).toBe('2027-01-01')
+    expect(todayInZone('America/New_York', now)).toBe('2026-12-31')
+    expect(todayInZone('UTC', now)).toBe('2026-12-31')
+    expect(todayInZone('Not/AZone', now)).toBe('2026-12-31')
+  })
+  it('picks the zone of a site by id', () => {
+    const sites = [{ id: 'a', timezone: 'Europe/Istanbul' }]
+    expect(zoneOfSite(sites, 'a')).toBe('Europe/Istanbul')
+    expect(zoneOfSite(sites, 'zzz', 'UTC')).toBe('UTC')
   })
 })

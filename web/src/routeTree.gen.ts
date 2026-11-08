@@ -19,7 +19,25 @@ import { Route as LoginMagicRouteImport } from './routes/login.magic'
 import { Route as OrgsOrgIdRouteImport } from './routes/orgs.$orgId'
 import { Route as ResetTokenRouteImport } from './routes/reset.$token'
 import { Route as OrgsOrgIdIndexRouteImport } from './routes/orgs.$orgId.index'
+import { Route as OrgsOrgIdAllocationKeysRouteImport } from './routes/orgs.$orgId.allocation-keys'
+import { Route as OrgsOrgIdClaimsRouteImport } from './routes/orgs.$orgId.claims'
+import { Route as OrgsOrgIdDirectoryRouteImport } from './routes/orgs.$orgId.directory'
+import { Route as OrgsOrgIdImportRouteImport } from './routes/orgs.$orgId.import'
 import { Route as OrgsOrgIdMeRouteImport } from './routes/orgs.$orgId.me'
+import { Route as OrgsOrgIdPortfolioRouteImport } from './routes/orgs.$orgId.portfolio'
+import { Route as OrgsOrgIdVendorsRouteImport } from './routes/orgs.$orgId.vendors'
+import { Route as OrgsOrgIdMoveOutOccupancyIdRouteImport } from './routes/orgs.$orgId.move-out.$occupancyId'
+import { Route as OrgsOrgIdPeopleIndexRouteImport } from './routes/orgs.$orgId.people.index'
+import { Route as OrgsOrgIdPeoplePersonIdRouteImport } from './routes/orgs.$orgId.people.$personId'
+import { Route as OrgsOrgIdPeopleInvitationsRouteImport } from './routes/orgs.$orgId.people.invitations'
+import { Route as OrgsOrgIdPeopleNewRouteImport } from './routes/orgs.$orgId.people.new'
+import { Route as OrgsOrgIdSitesIndexRouteImport } from './routes/orgs.$orgId.sites.index'
+import { Route as OrgsOrgIdSitesNewRouteImport } from './routes/orgs.$orgId.sites.new'
+import { Route as OrgsOrgIdUnitsIndexRouteImport } from './routes/orgs.$orgId.units.index'
+import { Route as OrgsOrgIdUnitsUnitIdRouteImport } from './routes/orgs.$orgId.units.$unitId'
+import { Route as OrgsOrgIdUnitsNewRouteImport } from './routes/orgs.$orgId.units.new'
+import { Route as OrgsOrgIdSitesSiteIdIndexRouteImport } from './routes/orgs.$orgId.sites.$siteId.index'
+import { Route as OrgsOrgIdSitesSiteIdQrRouteImport } from './routes/orgs.$orgId.sites.$siteId.qr'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,9 +89,102 @@ const OrgsOrgIdIndexRoute = OrgsOrgIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdAllocationKeysRoute = OrgsOrgIdAllocationKeysRouteImport.update({
+  id: '/allocation-keys',
+  path: '/allocation-keys',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdClaimsRoute = OrgsOrgIdClaimsRouteImport.update({
+  id: '/claims',
+  path: '/claims',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdDirectoryRoute = OrgsOrgIdDirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdImportRoute = OrgsOrgIdImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdMeRoute = OrgsOrgIdMeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdPortfolioRoute = OrgsOrgIdPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdVendorsRoute = OrgsOrgIdVendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdMoveOutOccupancyIdRoute =
+  OrgsOrgIdMoveOutOccupancyIdRouteImport.update({
+    id: '/move-out/$occupancyId',
+    path: '/move-out/$occupancyId',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdPeopleIndexRoute = OrgsOrgIdPeopleIndexRouteImport.update({
+  id: '/people/',
+  path: '/people/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdPeoplePersonIdRoute = OrgsOrgIdPeoplePersonIdRouteImport.update({
+  id: '/people/$personId',
+  path: '/people/$personId',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdPeopleInvitationsRoute =
+  OrgsOrgIdPeopleInvitationsRouteImport.update({
+    id: '/people/invitations',
+    path: '/people/invitations',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdPeopleNewRoute = OrgsOrgIdPeopleNewRouteImport.update({
+  id: '/people/new',
+  path: '/people/new',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdSitesIndexRoute = OrgsOrgIdSitesIndexRouteImport.update({
+  id: '/sites/',
+  path: '/sites/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdSitesNewRoute = OrgsOrgIdSitesNewRouteImport.update({
+  id: '/sites/new',
+  path: '/sites/new',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdUnitsIndexRoute = OrgsOrgIdUnitsIndexRouteImport.update({
+  id: '/units/',
+  path: '/units/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdUnitsUnitIdRoute = OrgsOrgIdUnitsUnitIdRouteImport.update({
+  id: '/units/$unitId',
+  path: '/units/$unitId',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdUnitsNewRoute = OrgsOrgIdUnitsNewRouteImport.update({
+  id: '/units/new',
+  path: '/units/new',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdSitesSiteIdIndexRoute =
+  OrgsOrgIdSitesSiteIdIndexRouteImport.update({
+    id: '/sites/$siteId/',
+    path: '/sites/$siteId/',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdSitesSiteIdQrRoute = OrgsOrgIdSitesSiteIdQrRouteImport.update({
+  id: '/sites/$siteId/qr',
+  path: '/sites/$siteId/qr',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
 
@@ -87,8 +198,26 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
+  '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
+  '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
+  '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
+  '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
+  '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
+  '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,8 +228,26 @@ export interface FileRoutesByTo {
   '/login/magic': typeof LoginMagicRoute
   '/reset/$token': typeof ResetTokenRoute
   '/login': typeof LoginIndexRoute
+  '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
+  '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
+  '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
+  '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
+  '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
+  '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
+  '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/people': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/sites': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/units': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/sites/$siteId': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,8 +260,26 @@ export interface FileRoutesById {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
+  '/orgs/$orgId/claims': typeof OrgsOrgIdClaimsRoute
+  '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
+  '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
+  '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
+  '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
+  '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
+  '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
+  '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,8 +293,26 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/claims'
+    | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/portfolio'
+    | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/move-out/$occupancyId'
+    | '/orgs/$orgId/people/$personId'
+    | '/orgs/$orgId/people/invitations'
+    | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/units/$unitId'
+    | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/people/'
+    | '/orgs/$orgId/sites/'
+    | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/sites/$siteId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,8 +323,26 @@ export interface FileRouteTypes {
     | '/login/magic'
     | '/reset/$token'
     | '/login'
+    | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/claims'
+    | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/portfolio'
+    | '/orgs/$orgId/vendors'
     | '/orgs/$orgId'
+    | '/orgs/$orgId/move-out/$occupancyId'
+    | '/orgs/$orgId/people/$personId'
+    | '/orgs/$orgId/people/invitations'
+    | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/units/$unitId'
+    | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/people'
+    | '/orgs/$orgId/sites'
+    | '/orgs/$orgId/units'
+    | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/sites/$siteId'
   id:
     | '__root__'
     | '/'
@@ -153,8 +354,26 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/allocation-keys'
+    | '/orgs/$orgId/claims'
+    | '/orgs/$orgId/directory'
+    | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/portfolio'
+    | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/move-out/$occupancyId'
+    | '/orgs/$orgId/people/$personId'
+    | '/orgs/$orgId/people/invitations'
+    | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/units/$unitId'
+    | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/people/'
+    | '/orgs/$orgId/sites/'
+    | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/sites/$siteId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,6 +460,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/allocation-keys': {
+      id: '/orgs/$orgId/allocation-keys'
+      path: '/allocation-keys'
+      fullPath: '/orgs/$orgId/allocation-keys'
+      preLoaderRoute: typeof OrgsOrgIdAllocationKeysRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/claims': {
+      id: '/orgs/$orgId/claims'
+      path: '/claims'
+      fullPath: '/orgs/$orgId/claims'
+      preLoaderRoute: typeof OrgsOrgIdClaimsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/directory': {
+      id: '/orgs/$orgId/directory'
+      path: '/directory'
+      fullPath: '/orgs/$orgId/directory'
+      preLoaderRoute: typeof OrgsOrgIdDirectoryRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/import': {
+      id: '/orgs/$orgId/import'
+      path: '/import'
+      fullPath: '/orgs/$orgId/import'
+      preLoaderRoute: typeof OrgsOrgIdImportRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/me': {
       id: '/orgs/$orgId/me'
       path: '/me'
@@ -248,17 +495,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdMeRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/portfolio': {
+      id: '/orgs/$orgId/portfolio'
+      path: '/portfolio'
+      fullPath: '/orgs/$orgId/portfolio'
+      preLoaderRoute: typeof OrgsOrgIdPortfolioRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/vendors': {
+      id: '/orgs/$orgId/vendors'
+      path: '/vendors'
+      fullPath: '/orgs/$orgId/vendors'
+      preLoaderRoute: typeof OrgsOrgIdVendorsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/move-out/$occupancyId': {
+      id: '/orgs/$orgId/move-out/$occupancyId'
+      path: '/move-out/$occupancyId'
+      fullPath: '/orgs/$orgId/move-out/$occupancyId'
+      preLoaderRoute: typeof OrgsOrgIdMoveOutOccupancyIdRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/people/': {
+      id: '/orgs/$orgId/people/'
+      path: '/people'
+      fullPath: '/orgs/$orgId/people/'
+      preLoaderRoute: typeof OrgsOrgIdPeopleIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/people/$personId': {
+      id: '/orgs/$orgId/people/$personId'
+      path: '/people/$personId'
+      fullPath: '/orgs/$orgId/people/$personId'
+      preLoaderRoute: typeof OrgsOrgIdPeoplePersonIdRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/people/invitations': {
+      id: '/orgs/$orgId/people/invitations'
+      path: '/people/invitations'
+      fullPath: '/orgs/$orgId/people/invitations'
+      preLoaderRoute: typeof OrgsOrgIdPeopleInvitationsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/people/new': {
+      id: '/orgs/$orgId/people/new'
+      path: '/people/new'
+      fullPath: '/orgs/$orgId/people/new'
+      preLoaderRoute: typeof OrgsOrgIdPeopleNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/sites/': {
+      id: '/orgs/$orgId/sites/'
+      path: '/sites'
+      fullPath: '/orgs/$orgId/sites/'
+      preLoaderRoute: typeof OrgsOrgIdSitesIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/sites/new': {
+      id: '/orgs/$orgId/sites/new'
+      path: '/sites/new'
+      fullPath: '/orgs/$orgId/sites/new'
+      preLoaderRoute: typeof OrgsOrgIdSitesNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/units/': {
+      id: '/orgs/$orgId/units/'
+      path: '/units'
+      fullPath: '/orgs/$orgId/units/'
+      preLoaderRoute: typeof OrgsOrgIdUnitsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/units/$unitId': {
+      id: '/orgs/$orgId/units/$unitId'
+      path: '/units/$unitId'
+      fullPath: '/orgs/$orgId/units/$unitId'
+      preLoaderRoute: typeof OrgsOrgIdUnitsUnitIdRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/units/new': {
+      id: '/orgs/$orgId/units/new'
+      path: '/units/new'
+      fullPath: '/orgs/$orgId/units/new'
+      preLoaderRoute: typeof OrgsOrgIdUnitsNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/sites/$siteId/': {
+      id: '/orgs/$orgId/sites/$siteId/'
+      path: '/sites/$siteId'
+      fullPath: '/orgs/$orgId/sites/$siteId/'
+      preLoaderRoute: typeof OrgsOrgIdSitesSiteIdIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/sites/$siteId/qr': {
+      id: '/orgs/$orgId/sites/$siteId/qr'
+      path: '/sites/$siteId/qr'
+      fullPath: '/orgs/$orgId/sites/$siteId/qr'
+      preLoaderRoute: typeof OrgsOrgIdSitesSiteIdQrRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
   }
 }
 
 interface OrgsOrgIdRouteChildren {
+  OrgsOrgIdAllocationKeysRoute: typeof OrgsOrgIdAllocationKeysRoute
+  OrgsOrgIdClaimsRoute: typeof OrgsOrgIdClaimsRoute
+  OrgsOrgIdDirectoryRoute: typeof OrgsOrgIdDirectoryRoute
+  OrgsOrgIdImportRoute: typeof OrgsOrgIdImportRoute
   OrgsOrgIdMeRoute: typeof OrgsOrgIdMeRoute
+  OrgsOrgIdPortfolioRoute: typeof OrgsOrgIdPortfolioRoute
+  OrgsOrgIdVendorsRoute: typeof OrgsOrgIdVendorsRoute
   OrgsOrgIdIndexRoute: typeof OrgsOrgIdIndexRoute
+  OrgsOrgIdMoveOutOccupancyIdRoute: typeof OrgsOrgIdMoveOutOccupancyIdRoute
+  OrgsOrgIdPeoplePersonIdRoute: typeof OrgsOrgIdPeoplePersonIdRoute
+  OrgsOrgIdPeopleInvitationsRoute: typeof OrgsOrgIdPeopleInvitationsRoute
+  OrgsOrgIdPeopleNewRoute: typeof OrgsOrgIdPeopleNewRoute
+  OrgsOrgIdSitesNewRoute: typeof OrgsOrgIdSitesNewRoute
+  OrgsOrgIdUnitsUnitIdRoute: typeof OrgsOrgIdUnitsUnitIdRoute
+  OrgsOrgIdUnitsNewRoute: typeof OrgsOrgIdUnitsNewRoute
+  OrgsOrgIdPeopleIndexRoute: typeof OrgsOrgIdPeopleIndexRoute
+  OrgsOrgIdSitesIndexRoute: typeof OrgsOrgIdSitesIndexRoute
+  OrgsOrgIdUnitsIndexRoute: typeof OrgsOrgIdUnitsIndexRoute
+  OrgsOrgIdSitesSiteIdQrRoute: typeof OrgsOrgIdSitesSiteIdQrRoute
+  OrgsOrgIdSitesSiteIdIndexRoute: typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 
 const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
+  OrgsOrgIdAllocationKeysRoute: OrgsOrgIdAllocationKeysRoute,
+  OrgsOrgIdClaimsRoute: OrgsOrgIdClaimsRoute,
+  OrgsOrgIdDirectoryRoute: OrgsOrgIdDirectoryRoute,
+  OrgsOrgIdImportRoute: OrgsOrgIdImportRoute,
   OrgsOrgIdMeRoute: OrgsOrgIdMeRoute,
+  OrgsOrgIdPortfolioRoute: OrgsOrgIdPortfolioRoute,
+  OrgsOrgIdVendorsRoute: OrgsOrgIdVendorsRoute,
   OrgsOrgIdIndexRoute: OrgsOrgIdIndexRoute,
+  OrgsOrgIdMoveOutOccupancyIdRoute: OrgsOrgIdMoveOutOccupancyIdRoute,
+  OrgsOrgIdPeoplePersonIdRoute: OrgsOrgIdPeoplePersonIdRoute,
+  OrgsOrgIdPeopleInvitationsRoute: OrgsOrgIdPeopleInvitationsRoute,
+  OrgsOrgIdPeopleNewRoute: OrgsOrgIdPeopleNewRoute,
+  OrgsOrgIdSitesNewRoute: OrgsOrgIdSitesNewRoute,
+  OrgsOrgIdUnitsUnitIdRoute: OrgsOrgIdUnitsUnitIdRoute,
+  OrgsOrgIdUnitsNewRoute: OrgsOrgIdUnitsNewRoute,
+  OrgsOrgIdPeopleIndexRoute: OrgsOrgIdPeopleIndexRoute,
+  OrgsOrgIdSitesIndexRoute: OrgsOrgIdSitesIndexRoute,
+  OrgsOrgIdUnitsIndexRoute: OrgsOrgIdUnitsIndexRoute,
+  OrgsOrgIdSitesSiteIdQrRoute: OrgsOrgIdSitesSiteIdQrRoute,
+  OrgsOrgIdSitesSiteIdIndexRoute: OrgsOrgIdSitesSiteIdIndexRoute,
 }
 
 const OrgsOrgIdRouteWithChildren = OrgsOrgIdRoute._addFileChildren(

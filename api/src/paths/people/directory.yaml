@@ -1,0 +1,60 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: people.listDirectory
+  summary: List the resident directory
+  description: |-
+    **Release 0.1.** Empty unless the site enabled the directory; residents see only people who opted in; managers and board see everyone (S8).
+
+    Permission: `directory.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - directory.read
+    site_manager:
+      - directory.read
+    board_member:
+      - directory.read
+    auditor:
+      - directory.read
+    owner:
+      - directory.read
+    tenant:
+      - directory.read
+    household:
+      - directory.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/DirectoryEntryList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

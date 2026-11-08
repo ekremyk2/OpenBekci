@@ -1,0 +1,50 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: money.previewDunningRun
+  summary: Preview a reminder run
+  description: |-
+    **Release 0.1.** Recipient and SMS counts before anything is sent.
+
+    Permission: `collections.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - collections.manage
+    site_manager:
+      - collections.manage
+    board_member:
+      - collections.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/DunningRunRequest
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/DunningRunPreview
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -8,13 +8,13 @@ const ctx = { me: meFixture, orgId: 'org-1' }
 
 describe('filterNav', () => {
   it('hides planned items until their route exists', () => {
-    expect(ids(filterNav(NAV_ITEMS, ctx))).toEqual(['home', 'me'])
+    expect(ids(filterNav(NAV_ITEMS, ctx))).toEqual(['home', 'sites', 'me'])
   })
 
   it('filters by permission when planned items are included', () => {
     const all = ids(filterNav(NAV_ITEMS, ctx, { includePlanned: true }))
-    expect(all).toContain('sites') // site.read granted
-    expect(all).not.toContain('people') // person.read missing
+    expect(all).toContain('sites') // sites.read granted
+    expect(all).not.toContain('people') // people.read missing
     expect(all).not.toContain('tickets')
     expect(all).toContain('money') // ledger.read granted (scoped)
   })

@@ -1,0 +1,41 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: announcement_id
+    in: path
+    required: true
+    description: Id of the announcement.
+    schema:
+      type: string
+      format: uuid
+put:
+  operationId: operations.markAnnouncementRead
+  summary: Mark an announcement read
+  description: |-
+    **Release 0.1.** Counted when the announcement is opened in the web or app.
+
+    Permission: `announcements.read`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - announcements.read
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
