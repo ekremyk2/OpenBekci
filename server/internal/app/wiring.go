@@ -11,6 +11,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
@@ -88,12 +89,12 @@ func peopleHooks(comm *community.Service) people.Hooks {
 	}
 }
 
-// newCommunity builds the community service. The money, notifications and QR
-// modules are not wired yet, so the booking charger and the notifier are the
-// no-op defaults (a booking stores its fee, a notification is dropped); a later
-// phase passes the real ones here.
+// newCommunity builds the community service. Booking fees are charged by the
+// money module (bookingCharger, billing's one-off charge path); the notifier is
+// the late-bound one, and the QR renderer stays unset (QR images are draft-only).
 func newCommunity(cfg Config, log *slog.Logger, d *db.DB, notify jobs.Notifier) (*community.Service, error) {
 	return community.NewService(d, community.Config{
+		Charger:       bookingCharger{bill: billing.NewService(d, tenancy.NewService(d), nil)},
 		Notifier:      notify,
 		Hooks:         communityHooks(),
 		EncryptionKey: cfg.EncryptionKey,
