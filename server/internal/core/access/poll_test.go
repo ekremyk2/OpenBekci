@@ -131,9 +131,10 @@ func TestIntegrationConcurrentPollsDeliverInOrder(t *testing.T) {
 	}
 	// versions arrive one by one while both polls wait
 	const n = 8
+	changed := 0
 	for i := 0; i < n; i++ {
 		e.vehicle(e.site, e.unit, "34XYZ"+string(rune('1'+i)))
-		e.project(e.site)
+		changed += e.project(e.site).Changed // each new plate takes one version
 		time.Sleep(120 * time.Millisecond)
 	}
 	time.Sleep(2500 * time.Millisecond)
@@ -181,12 +182,17 @@ func TestIntegrationConcurrentPollsDeliverInOrder(t *testing.T) {
 			versions = append(versions, d.FromVersion, d.ToVersion)
 		}
 	}
-	if len(versions) != 2*n {
-		t.Fatalf("%d deltas delivered by the two polls, want %d (versions %v)", len(versions)/2, n, versions)
+	// A poll that reaches the server after a version has already landed (the
+	// first request on a fresh connection is slow) is answered with one delta
+	// spanning every version it missed, so the number of deltas is not fixed.
+	// What is fixed: they chain from version 0 (the hello snapshot) with no hole,
+	// no repeat and no reordering, up to the last version projected.
+	if len(versions) == 0 || versions[0] != 0 || versions[len(versions)-1] != int64(changed) {
+		t.Fatalf("the deltas do not run from version 0 to %d: %v", changed, versions)
 	}
 	for i := 0; i < len(versions); i += 2 {
-		if versions[i+1] != versions[i]+1 || (i > 0 && versions[i] != versions[i-1]) {
-			t.Fatalf("deltas out of order or with a hole: %v", versions)
+		if versions[i+1] <= versions[i] || (i > 0 && versions[i] != versions[i-1]) {
+			t.Fatalf("deltas out of order, repeated or with a hole: %v", versions)
 		}
 	}
 }

@@ -179,6 +179,9 @@ func (s *Service) handlePoll(w http.ResponseWriter, r *http.Request) {
 	wait := time.Duration(min(req.WaitSeconds, int(MaxPollWait/time.Second))) * time.Second
 	deadline := time.Now().Add(wait)
 	for {
+		// take the wake channel before looking for work: a signal that arrives
+		// between the look and the wait would otherwise be lost
+		wake := sess.Wake()
 		if err := sess.Tick(ctx); err != nil {
 			s.cfg.Log.WarnContext(ctx, "poll sync failed", "agent", p.AgentID, "error", err)
 		}
@@ -196,7 +199,7 @@ func (s *Service) handlePoll(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		select {
-		case <-sess.Wake():
+		case <-wake:
 		case <-time.After(min(s.hub.SyncEvery(), time.Until(deadline))):
 		case <-ctx.Done():
 			return
@@ -278,6 +281,8 @@ func (s *Service) handleWS(w http.ResponseWriter, r *http.Request) {
 	ping := time.NewTicker(wsPingEvery)
 	defer ping.Stop()
 	for {
+		// the wake channel is taken before looking for work so a signal in between is not lost
+		wake := sess.Wake()
 		if err := sess.Tick(ctx); err != nil {
 			s.cfg.Log.WarnContext(ctx, "websocket sync failed", "agent", p.AgentID, "error", err)
 		}
@@ -292,7 +297,7 @@ func (s *Service) handleWS(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		select {
-		case <-sess.Wake():
+		case <-wake:
 		case <-tick.C:
 		case <-ping.C:
 			pctx, pcancel := context.WithTimeout(ctx, wsPongWithin)
