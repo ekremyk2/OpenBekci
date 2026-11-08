@@ -83,6 +83,9 @@ func TestAddrAllowed(t *testing.T) {
 		"192.0.2.1": false, "198.51.100.1": false, "203.0.113.1": false, "198.18.0.1": false, "2001:db8::1": false,
 		"::ffff:127.0.0.1": false, "::ffff:10.1.2.3": false, "::ffff:8.8.8.8": true,
 		"64:ff9b::7f00:1": false, "64:ff9b::808:808": true,
+		// IPv6 forms that carry an IPv4 address: 6to4 of 127.0.0.1 and 8.8.8.8, Teredo, IPv4-compatible, SIIT, local-use NAT64
+		"2002:7f00:1::1": false, "2002:808:808::1": false, "2001:0:4136:e378:8000:63bf:3fff:fdd2": false, "::7f00:1": false, "::a00:1": false,
+		"::ffff:0:7f00:1": false, "64:ff9b:1::7f00:1": false, "192.88.99.1": false, "5f00::1": false,
 		"172.32.0.1": true, "11.0.0.1": true,
 	} {
 		if got := AddrAllowed(netip.MustParseAddr(addr), nil); got != want {

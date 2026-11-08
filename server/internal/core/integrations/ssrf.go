@@ -28,8 +28,10 @@ var ErrForbiddenTarget = errors.New("webhook target address is not allowed")
 
 // blockedRanges are special-purpose ranges a webhook must never reach unless
 // the operator lists them in WEBHOOK_ALLOWED_CIDRS (self-hosted receivers on
-// the LAN). IPv4-mapped IPv6 addresses are unmapped before the check, and the
-// IPv4 embedded in a NAT64 address is checked too.
+// the LAN). IPv4-mapped IPv6 addresses are unmapped before the check, the
+// IPv4 embedded in a well-known NAT64 address is checked too, and the other
+// IPv6 forms that carry an IPv4 address (6to4, Teredo, IPv4-compatible,
+// IPv4-translated, local-use NAT64) are refused outright.
 var blockedRanges = mustPrefixes(
 	"0.0.0.0/8",       // "this network"
 	"10.0.0.0/8",      // private
@@ -45,11 +47,17 @@ var blockedRanges = mustPrefixes(
 	"203.0.113.0/24",  // documentation
 	"224.0.0.0/4",     // multicast
 	"240.0.0.0/4",     // reserved, broadcast
-	"::/128",          // unspecified
-	"::1/128",         // loopback
+	"192.88.99.0/24",  // 6to4 relay anycast (deprecated)
+	"::/96",           // unspecified, loopback and deprecated IPv4-compatible addresses (::127.0.0.1)
+	"::ffff:0:0:0/96", // IPv4-translated (SIIT) addresses
 	"64:ff9b::/96",    // NAT64 (the embedded IPv4 is checked as well)
+	"64:ff9b:1::/48",  // local-use NAT64
 	"100::/64",        // discard-only
+	"2001::/23",       // IETF protocol assignments, including Teredo (2001::/32)
 	"2001:db8::/32",   // documentation
+	"2002::/16",       // 6to4: embeds an IPv4 address the host may tunnel to; deprecated, refused outright
+	"3fff::/20",       // documentation
+	"5f00::/16",       // SRv6 segment identifiers
 	"fc00::/7",        // unique local
 	"fe80::/10",       // link-local
 	"ff00::/8",        // multicast
