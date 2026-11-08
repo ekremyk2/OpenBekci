@@ -52,6 +52,14 @@ export const ALL_PERMISSIONS = [
   'audit.read',
   'dashboard.site',
   'codes.read',
+  // money
+  'money.manage',
+  'payments.record',
+  'collections.manage',
+  'statements.read',
+  'reports.read',
+  'reports.debtors',
+  'reports.aggregate',
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */
@@ -84,3 +92,18 @@ export const adminHandlers = (permissions?: string[], occupancies?: Me['occupanc
   http.get('*/v1/me', () => HttpResponse.json(adminMe(permissions, occupancies))),
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
 ]
+
+/** A resident of unit A1 who sees only their own statement and may declare payments (portal view). */
+export function residentMe(): Me {
+  const org = adminMe().organizations[0]!
+  return {
+    ...meFixture,
+    organizations: [
+      {
+        ...org,
+        roles: [],
+        permissions: [{ permission: 'statements.read_own' }, { permission: 'payments.declare' }],
+      },
+    ],
+  }
+}

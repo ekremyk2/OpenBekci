@@ -8,7 +8,7 @@ const ctx = { me: meFixture, orgId: 'org-1' }
 
 describe('filterNav', () => {
   it('hides planned items until their route exists', () => {
-    expect(ids(filterNav(NAV_ITEMS, ctx))).toEqual(['home', 'sites', 'me'])
+    expect(ids(filterNav(NAV_ITEMS, ctx))).toEqual(['home', 'sites', 'money', 'me'])
   })
 
   it('filters by permission when planned items are included', () => {

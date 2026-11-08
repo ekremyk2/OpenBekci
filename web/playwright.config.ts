@@ -2,9 +2,13 @@ import { defineConfig, devices } from '@playwright/test'
 
 // Smoke tests run against the Vite dev server with the API mocked in the tests themselves, so no
 // backend is needed. Browsers: `pnpm exec playwright install chromium` once.
+// The `mock` project runs against a second dev server in mock mode (`vite --mode mock`, :5175): the
+// in-memory MSW handlers answer, so whole flows chain without a backend. A project that needs its
+// own mock server gets its own port (5176, ...) and must not share a port with another server.
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
+  timeout: 15_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',

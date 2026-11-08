@@ -10,6 +10,7 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "msw init public --no-save && vite --mode mock",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -22,7 +23,8 @@
     "i18n:extract": "lingui extract --clean",
     "i18n:compile": "lingui compile --typescript",
     "size": "size-limit",
-    "dev:mock": "vite --mode mock --port 5175 --strictPort"
+    "dev:mock": "vite --mode mock --port 5175 --strictPort",
+    "gen:idempotent": "node scripts/gen-idempotent.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.3",

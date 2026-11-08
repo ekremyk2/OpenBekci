@@ -24,6 +24,7 @@ import { Route as OrgsOrgIdClaimsRouteImport } from './routes/orgs.$orgId.claims
 import { Route as OrgsOrgIdDirectoryRouteImport } from './routes/orgs.$orgId.directory'
 import { Route as OrgsOrgIdImportRouteImport } from './routes/orgs.$orgId.import'
 import { Route as OrgsOrgIdMeRouteImport } from './routes/orgs.$orgId.me'
+import { Route as OrgsOrgIdMoneyRouteImport } from './routes/orgs.$orgId.money'
 import { Route as OrgsOrgIdNotificationsRouteImport } from './routes/orgs.$orgId.notifications'
 import { Route as OrgsOrgIdPortfolioRouteImport } from './routes/orgs.$orgId.portfolio'
 import { Route as OrgsOrgIdSettingsRouteImport } from './routes/orgs.$orgId.settings'
@@ -31,6 +32,16 @@ import { Route as OrgsOrgIdVendorsRouteImport } from './routes/orgs.$orgId.vendo
 import { Route as OrgsOrgIdAnnouncementsIndexRouteImport } from './routes/orgs.$orgId.announcements.index'
 import { Route as OrgsOrgIdAnnouncementsNewRouteImport } from './routes/orgs.$orgId.announcements.new'
 import { Route as OrgsOrgIdDocumentsIndexRouteImport } from './routes/orgs.$orgId.documents.index'
+import { Route as OrgsOrgIdMoneyIndexRouteImport } from './routes/orgs.$orgId.money.index'
+import { Route as OrgsOrgIdMoneyChargesRouteImport } from './routes/orgs.$orgId.money.charges'
+import { Route as OrgsOrgIdMoneyCollectionsRouteImport } from './routes/orgs.$orgId.money.collections'
+import { Route as OrgsOrgIdMoneyExpenseSharingRouteImport } from './routes/orgs.$orgId.money.expense-sharing'
+import { Route as OrgsOrgIdMoneyExpensesRouteImport } from './routes/orgs.$orgId.money.expenses'
+import { Route as OrgsOrgIdMoneyLateFeesRouteImport } from './routes/orgs.$orgId.money.late-fees'
+import { Route as OrgsOrgIdMoneyOpeningBalancesRouteImport } from './routes/orgs.$orgId.money.opening-balances'
+import { Route as OrgsOrgIdMoneyPayRouteImport } from './routes/orgs.$orgId.money.pay'
+import { Route as OrgsOrgIdMoneyReportsRouteImport } from './routes/orgs.$orgId.money.reports'
+import { Route as OrgsOrgIdMoneyStatementsRouteImport } from './routes/orgs.$orgId.money.statements'
 import { Route as OrgsOrgIdMoveOutOccupancyIdRouteImport } from './routes/orgs.$orgId.move-out.$occupancyId'
 import { Route as OrgsOrgIdPeopleIndexRouteImport } from './routes/orgs.$orgId.people.index'
 import { Route as OrgsOrgIdPeoplePersonIdRouteImport } from './routes/orgs.$orgId.people.$personId'
@@ -54,6 +65,14 @@ import { Route as OrgsOrgIdUnitsNewRouteImport } from './routes/orgs.$orgId.unit
 import { Route as OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.index'
 import { Route as OrgsOrgIdAnnouncementsAnnouncementIdEditRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.edit'
 import { Route as OrgsOrgIdDocumentsFFolderIdRouteImport } from './routes/orgs.$orgId.documents.f.$folderId'
+import { Route as OrgsOrgIdMoneyBankIndexRouteImport } from './routes/orgs.$orgId.money.bank.index'
+import { Route as OrgsOrgIdMoneyBankImportIdRouteImport } from './routes/orgs.$orgId.money.bank.$importId'
+import { Route as OrgsOrgIdMoneyPaymentsIndexRouteImport } from './routes/orgs.$orgId.money.payments.index'
+import { Route as OrgsOrgIdMoneyPaymentsCashBoxesRouteImport } from './routes/orgs.$orgId.money.payments.cash-boxes'
+import { Route as OrgsOrgIdMoneyPaymentsNewRouteImport } from './routes/orgs.$orgId.money.payments.new'
+import { Route as OrgsOrgIdMoneyPlansIndexRouteImport } from './routes/orgs.$orgId.money.plans.index'
+import { Route as OrgsOrgIdMoneyPlansPlanIdRouteImport } from './routes/orgs.$orgId.money.plans.$planId'
+import { Route as OrgsOrgIdMoneyPlansNewRouteImport } from './routes/orgs.$orgId.money.plans.new'
 import { Route as OrgsOrgIdSitesSiteIdIndexRouteImport } from './routes/orgs.$orgId.sites.$siteId.index'
 import { Route as OrgsOrgIdSitesSiteIdQrRouteImport } from './routes/orgs.$orgId.sites.$siteId.qr'
 
@@ -132,6 +151,11 @@ const OrgsOrgIdMeRoute = OrgsOrgIdMeRouteImport.update({
   path: '/me',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdMoneyRoute = OrgsOrgIdMoneyRouteImport.update({
+  id: '/money',
+  path: '/money',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdNotificationsRoute = OrgsOrgIdNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -169,6 +193,60 @@ const OrgsOrgIdDocumentsIndexRoute = OrgsOrgIdDocumentsIndexRouteImport.update({
   path: '/documents/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdMoneyIndexRoute = OrgsOrgIdMoneyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyChargesRoute = OrgsOrgIdMoneyChargesRouteImport.update({
+  id: '/charges',
+  path: '/charges',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyCollectionsRoute =
+  OrgsOrgIdMoneyCollectionsRouteImport.update({
+    id: '/collections',
+    path: '/collections',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyExpenseSharingRoute =
+  OrgsOrgIdMoneyExpenseSharingRouteImport.update({
+    id: '/expense-sharing',
+    path: '/expense-sharing',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyExpensesRoute = OrgsOrgIdMoneyExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyLateFeesRoute = OrgsOrgIdMoneyLateFeesRouteImport.update({
+  id: '/late-fees',
+  path: '/late-fees',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyOpeningBalancesRoute =
+  OrgsOrgIdMoneyOpeningBalancesRouteImport.update({
+    id: '/opening-balances',
+    path: '/opening-balances',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPayRoute = OrgsOrgIdMoneyPayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyReportsRoute = OrgsOrgIdMoneyReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyStatementsRoute =
+  OrgsOrgIdMoneyStatementsRouteImport.update({
+    id: '/statements',
+    path: '/statements',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
 const OrgsOrgIdMoveOutOccupancyIdRoute =
   OrgsOrgIdMoveOutOccupancyIdRouteImport.update({
     id: '/move-out/$occupancyId',
@@ -292,6 +370,52 @@ const OrgsOrgIdDocumentsFFolderIdRoute =
     path: '/documents/f/$folderId',
     getParentRoute: () => OrgsOrgIdRoute,
   } as any)
+const OrgsOrgIdMoneyBankIndexRoute = OrgsOrgIdMoneyBankIndexRouteImport.update({
+  id: '/bank/',
+  path: '/bank/',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
+const OrgsOrgIdMoneyBankImportIdRoute =
+  OrgsOrgIdMoneyBankImportIdRouteImport.update({
+    id: '/bank/$importId',
+    path: '/bank/$importId',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPaymentsIndexRoute =
+  OrgsOrgIdMoneyPaymentsIndexRouteImport.update({
+    id: '/payments/',
+    path: '/payments/',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPaymentsCashBoxesRoute =
+  OrgsOrgIdMoneyPaymentsCashBoxesRouteImport.update({
+    id: '/payments/cash-boxes',
+    path: '/payments/cash-boxes',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPaymentsNewRoute =
+  OrgsOrgIdMoneyPaymentsNewRouteImport.update({
+    id: '/payments/new',
+    path: '/payments/new',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPlansIndexRoute =
+  OrgsOrgIdMoneyPlansIndexRouteImport.update({
+    id: '/plans/',
+    path: '/plans/',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPlansPlanIdRoute =
+  OrgsOrgIdMoneyPlansPlanIdRouteImport.update({
+    id: '/plans/$planId',
+    path: '/plans/$planId',
+    getParentRoute: () => OrgsOrgIdMoneyRoute,
+  } as any)
+const OrgsOrgIdMoneyPlansNewRoute = OrgsOrgIdMoneyPlansNewRouteImport.update({
+  id: '/plans/new',
+  path: '/plans/new',
+  getParentRoute: () => OrgsOrgIdMoneyRoute,
+} as any)
 const OrgsOrgIdSitesSiteIdIndexRoute =
   OrgsOrgIdSitesSiteIdIndexRouteImport.update({
     id: '/sites/$siteId/',
@@ -319,12 +443,22 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/money': typeof OrgsOrgIdMoneyRouteWithChildren
   '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
   '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsRouteWithChildren
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
+  '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
+  '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
+  '/orgs/$orgId/money/expenses': typeof OrgsOrgIdMoneyExpensesRoute
+  '/orgs/$orgId/money/late-fees': typeof OrgsOrgIdMoneyLateFeesRoute
+  '/orgs/$orgId/money/opening-balances': typeof OrgsOrgIdMoneyOpeningBalancesRoute
+  '/orgs/$orgId/money/pay': typeof OrgsOrgIdMoneyPayRoute
+  '/orgs/$orgId/money/reports': typeof OrgsOrgIdMoneyReportsRoute
+  '/orgs/$orgId/money/statements': typeof OrgsOrgIdMoneyStatementsRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
@@ -342,6 +476,7 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
   '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/money/': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
@@ -349,8 +484,16 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
+  '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
+  '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
+  '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
+  '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
+  '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
+  '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -372,6 +515,15 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
+  '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
+  '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
+  '/orgs/$orgId/money/expenses': typeof OrgsOrgIdMoneyExpensesRoute
+  '/orgs/$orgId/money/late-fees': typeof OrgsOrgIdMoneyLateFeesRoute
+  '/orgs/$orgId/money/opening-balances': typeof OrgsOrgIdMoneyOpeningBalancesRoute
+  '/orgs/$orgId/money/pay': typeof OrgsOrgIdMoneyPayRoute
+  '/orgs/$orgId/money/reports': typeof OrgsOrgIdMoneyReportsRoute
+  '/orgs/$orgId/money/statements': typeof OrgsOrgIdMoneyStatementsRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
@@ -389,6 +541,7 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
   '/orgs/$orgId/announcements': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/money': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites': typeof OrgsOrgIdSitesIndexRoute
@@ -396,8 +549,16 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/units': typeof OrgsOrgIdUnitsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
+  '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
+  '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
+  '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
+  '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/money/bank': typeof OrgsOrgIdMoneyBankIndexRoute
+  '/orgs/$orgId/money/payments': typeof OrgsOrgIdMoneyPaymentsIndexRoute
+  '/orgs/$orgId/money/plans': typeof OrgsOrgIdMoneyPlansIndexRoute
   '/orgs/$orgId/sites/$siteId': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesById {
@@ -416,12 +577,22 @@ export interface FileRoutesById {
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/money': typeof OrgsOrgIdMoneyRouteWithChildren
   '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
   '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsRouteWithChildren
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
   '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
+  '/orgs/$orgId/money/charges': typeof OrgsOrgIdMoneyChargesRoute
+  '/orgs/$orgId/money/collections': typeof OrgsOrgIdMoneyCollectionsRoute
+  '/orgs/$orgId/money/expense-sharing': typeof OrgsOrgIdMoneyExpenseSharingRoute
+  '/orgs/$orgId/money/expenses': typeof OrgsOrgIdMoneyExpensesRoute
+  '/orgs/$orgId/money/late-fees': typeof OrgsOrgIdMoneyLateFeesRoute
+  '/orgs/$orgId/money/opening-balances': typeof OrgsOrgIdMoneyOpeningBalancesRoute
+  '/orgs/$orgId/money/pay': typeof OrgsOrgIdMoneyPayRoute
+  '/orgs/$orgId/money/reports': typeof OrgsOrgIdMoneyReportsRoute
+  '/orgs/$orgId/money/statements': typeof OrgsOrgIdMoneyStatementsRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
@@ -439,6 +610,7 @@ export interface FileRoutesById {
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
   '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
   '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
+  '/orgs/$orgId/money/': typeof OrgsOrgIdMoneyIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
   '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
@@ -446,8 +618,16 @@ export interface FileRoutesById {
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
   '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
   '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
+  '/orgs/$orgId/money/bank/$importId': typeof OrgsOrgIdMoneyBankImportIdRoute
+  '/orgs/$orgId/money/payments/cash-boxes': typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
+  '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
+  '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
+  '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
+  '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
+  '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
+  '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -467,12 +647,22 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/directory'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/money'
     | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/money/charges'
+    | '/orgs/$orgId/money/collections'
+    | '/orgs/$orgId/money/expense-sharing'
+    | '/orgs/$orgId/money/expenses'
+    | '/orgs/$orgId/money/late-fees'
+    | '/orgs/$orgId/money/opening-balances'
+    | '/orgs/$orgId/money/pay'
+    | '/orgs/$orgId/money/reports'
+    | '/orgs/$orgId/money/statements'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
@@ -490,6 +680,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units/new'
     | '/orgs/$orgId/announcements/'
     | '/orgs/$orgId/documents/'
+    | '/orgs/$orgId/money/'
     | '/orgs/$orgId/people/'
     | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
@@ -497,8 +688,16 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units/'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/money/bank/$importId'
+    | '/orgs/$orgId/money/payments/cash-boxes'
+    | '/orgs/$orgId/money/payments/new'
+    | '/orgs/$orgId/money/plans/$planId'
+    | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
+    | '/orgs/$orgId/money/bank/'
+    | '/orgs/$orgId/money/payments/'
+    | '/orgs/$orgId/money/plans/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -520,6 +719,15 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/money/charges'
+    | '/orgs/$orgId/money/collections'
+    | '/orgs/$orgId/money/expense-sharing'
+    | '/orgs/$orgId/money/expenses'
+    | '/orgs/$orgId/money/late-fees'
+    | '/orgs/$orgId/money/opening-balances'
+    | '/orgs/$orgId/money/pay'
+    | '/orgs/$orgId/money/reports'
+    | '/orgs/$orgId/money/statements'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
@@ -537,6 +745,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units/new'
     | '/orgs/$orgId/announcements'
     | '/orgs/$orgId/documents'
+    | '/orgs/$orgId/money'
     | '/orgs/$orgId/people'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/sites'
@@ -544,8 +753,16 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/money/bank/$importId'
+    | '/orgs/$orgId/money/payments/cash-boxes'
+    | '/orgs/$orgId/money/payments/new'
+    | '/orgs/$orgId/money/plans/$planId'
+    | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId'
+    | '/orgs/$orgId/money/bank'
+    | '/orgs/$orgId/money/payments'
+    | '/orgs/$orgId/money/plans'
     | '/orgs/$orgId/sites/$siteId'
   id:
     | '__root__'
@@ -563,12 +780,22 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/directory'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/money'
     | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
     | '/orgs/$orgId/announcements/new'
+    | '/orgs/$orgId/money/charges'
+    | '/orgs/$orgId/money/collections'
+    | '/orgs/$orgId/money/expense-sharing'
+    | '/orgs/$orgId/money/expenses'
+    | '/orgs/$orgId/money/late-fees'
+    | '/orgs/$orgId/money/opening-balances'
+    | '/orgs/$orgId/money/pay'
+    | '/orgs/$orgId/money/reports'
+    | '/orgs/$orgId/money/statements'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
@@ -586,6 +813,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units/new'
     | '/orgs/$orgId/announcements/'
     | '/orgs/$orgId/documents/'
+    | '/orgs/$orgId/money/'
     | '/orgs/$orgId/people/'
     | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
@@ -593,8 +821,16 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/units/'
     | '/orgs/$orgId/announcements/$announcementId/edit'
     | '/orgs/$orgId/documents/f/$folderId'
+    | '/orgs/$orgId/money/bank/$importId'
+    | '/orgs/$orgId/money/payments/cash-boxes'
+    | '/orgs/$orgId/money/payments/new'
+    | '/orgs/$orgId/money/plans/$planId'
+    | '/orgs/$orgId/money/plans/new'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
+    | '/orgs/$orgId/money/bank/'
+    | '/orgs/$orgId/money/payments/'
+    | '/orgs/$orgId/money/plans/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesById: FileRoutesById
 }
@@ -717,6 +953,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdMeRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/money': {
+      id: '/orgs/$orgId/money'
+      path: '/money'
+      fullPath: '/orgs/$orgId/money'
+      preLoaderRoute: typeof OrgsOrgIdMoneyRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/notifications': {
       id: '/orgs/$orgId/notifications'
       path: '/notifications'
@@ -765,6 +1008,76 @@ declare module '@tanstack/react-router' {
       fullPath: '/orgs/$orgId/documents/'
       preLoaderRoute: typeof OrgsOrgIdDocumentsIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/money/': {
+      id: '/orgs/$orgId/money/'
+      path: '/'
+      fullPath: '/orgs/$orgId/money/'
+      preLoaderRoute: typeof OrgsOrgIdMoneyIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/charges': {
+      id: '/orgs/$orgId/money/charges'
+      path: '/charges'
+      fullPath: '/orgs/$orgId/money/charges'
+      preLoaderRoute: typeof OrgsOrgIdMoneyChargesRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/collections': {
+      id: '/orgs/$orgId/money/collections'
+      path: '/collections'
+      fullPath: '/orgs/$orgId/money/collections'
+      preLoaderRoute: typeof OrgsOrgIdMoneyCollectionsRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/expense-sharing': {
+      id: '/orgs/$orgId/money/expense-sharing'
+      path: '/expense-sharing'
+      fullPath: '/orgs/$orgId/money/expense-sharing'
+      preLoaderRoute: typeof OrgsOrgIdMoneyExpenseSharingRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/expenses': {
+      id: '/orgs/$orgId/money/expenses'
+      path: '/expenses'
+      fullPath: '/orgs/$orgId/money/expenses'
+      preLoaderRoute: typeof OrgsOrgIdMoneyExpensesRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/late-fees': {
+      id: '/orgs/$orgId/money/late-fees'
+      path: '/late-fees'
+      fullPath: '/orgs/$orgId/money/late-fees'
+      preLoaderRoute: typeof OrgsOrgIdMoneyLateFeesRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/opening-balances': {
+      id: '/orgs/$orgId/money/opening-balances'
+      path: '/opening-balances'
+      fullPath: '/orgs/$orgId/money/opening-balances'
+      preLoaderRoute: typeof OrgsOrgIdMoneyOpeningBalancesRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/pay': {
+      id: '/orgs/$orgId/money/pay'
+      path: '/pay'
+      fullPath: '/orgs/$orgId/money/pay'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPayRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/reports': {
+      id: '/orgs/$orgId/money/reports'
+      path: '/reports'
+      fullPath: '/orgs/$orgId/money/reports'
+      preLoaderRoute: typeof OrgsOrgIdMoneyReportsRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/statements': {
+      id: '/orgs/$orgId/money/statements'
+      path: '/statements'
+      fullPath: '/orgs/$orgId/money/statements'
+      preLoaderRoute: typeof OrgsOrgIdMoneyStatementsRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
     }
     '/orgs/$orgId/move-out/$occupancyId': {
       id: '/orgs/$orgId/move-out/$occupancyId'
@@ -927,6 +1240,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdDocumentsFFolderIdRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/money/bank/': {
+      id: '/orgs/$orgId/money/bank/'
+      path: '/bank'
+      fullPath: '/orgs/$orgId/money/bank/'
+      preLoaderRoute: typeof OrgsOrgIdMoneyBankIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/bank/$importId': {
+      id: '/orgs/$orgId/money/bank/$importId'
+      path: '/bank/$importId'
+      fullPath: '/orgs/$orgId/money/bank/$importId'
+      preLoaderRoute: typeof OrgsOrgIdMoneyBankImportIdRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/payments/': {
+      id: '/orgs/$orgId/money/payments/'
+      path: '/payments'
+      fullPath: '/orgs/$orgId/money/payments/'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPaymentsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/payments/cash-boxes': {
+      id: '/orgs/$orgId/money/payments/cash-boxes'
+      path: '/payments/cash-boxes'
+      fullPath: '/orgs/$orgId/money/payments/cash-boxes'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPaymentsCashBoxesRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/payments/new': {
+      id: '/orgs/$orgId/money/payments/new'
+      path: '/payments/new'
+      fullPath: '/orgs/$orgId/money/payments/new'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPaymentsNewRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/plans/': {
+      id: '/orgs/$orgId/money/plans/'
+      path: '/plans'
+      fullPath: '/orgs/$orgId/money/plans/'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPlansIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/plans/$planId': {
+      id: '/orgs/$orgId/money/plans/$planId'
+      path: '/plans/$planId'
+      fullPath: '/orgs/$orgId/money/plans/$planId'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPlansPlanIdRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
+    '/orgs/$orgId/money/plans/new': {
+      id: '/orgs/$orgId/money/plans/new'
+      path: '/plans/new'
+      fullPath: '/orgs/$orgId/money/plans/new'
+      preLoaderRoute: typeof OrgsOrgIdMoneyPlansNewRouteImport
+      parentRoute: typeof OrgsOrgIdMoneyRoute
+    }
     '/orgs/$orgId/sites/$siteId/': {
       id: '/orgs/$orgId/sites/$siteId/'
       path: '/sites/$siteId'
@@ -943,6 +1312,52 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface OrgsOrgIdMoneyRouteChildren {
+  OrgsOrgIdMoneyChargesRoute: typeof OrgsOrgIdMoneyChargesRoute
+  OrgsOrgIdMoneyCollectionsRoute: typeof OrgsOrgIdMoneyCollectionsRoute
+  OrgsOrgIdMoneyExpenseSharingRoute: typeof OrgsOrgIdMoneyExpenseSharingRoute
+  OrgsOrgIdMoneyExpensesRoute: typeof OrgsOrgIdMoneyExpensesRoute
+  OrgsOrgIdMoneyLateFeesRoute: typeof OrgsOrgIdMoneyLateFeesRoute
+  OrgsOrgIdMoneyOpeningBalancesRoute: typeof OrgsOrgIdMoneyOpeningBalancesRoute
+  OrgsOrgIdMoneyPayRoute: typeof OrgsOrgIdMoneyPayRoute
+  OrgsOrgIdMoneyReportsRoute: typeof OrgsOrgIdMoneyReportsRoute
+  OrgsOrgIdMoneyStatementsRoute: typeof OrgsOrgIdMoneyStatementsRoute
+  OrgsOrgIdMoneyIndexRoute: typeof OrgsOrgIdMoneyIndexRoute
+  OrgsOrgIdMoneyBankImportIdRoute: typeof OrgsOrgIdMoneyBankImportIdRoute
+  OrgsOrgIdMoneyPaymentsCashBoxesRoute: typeof OrgsOrgIdMoneyPaymentsCashBoxesRoute
+  OrgsOrgIdMoneyPaymentsNewRoute: typeof OrgsOrgIdMoneyPaymentsNewRoute
+  OrgsOrgIdMoneyPlansPlanIdRoute: typeof OrgsOrgIdMoneyPlansPlanIdRoute
+  OrgsOrgIdMoneyPlansNewRoute: typeof OrgsOrgIdMoneyPlansNewRoute
+  OrgsOrgIdMoneyBankIndexRoute: typeof OrgsOrgIdMoneyBankIndexRoute
+  OrgsOrgIdMoneyPaymentsIndexRoute: typeof OrgsOrgIdMoneyPaymentsIndexRoute
+  OrgsOrgIdMoneyPlansIndexRoute: typeof OrgsOrgIdMoneyPlansIndexRoute
+}
+
+const OrgsOrgIdMoneyRouteChildren: OrgsOrgIdMoneyRouteChildren = {
+  OrgsOrgIdMoneyChargesRoute: OrgsOrgIdMoneyChargesRoute,
+  OrgsOrgIdMoneyCollectionsRoute: OrgsOrgIdMoneyCollectionsRoute,
+  OrgsOrgIdMoneyExpenseSharingRoute: OrgsOrgIdMoneyExpenseSharingRoute,
+  OrgsOrgIdMoneyExpensesRoute: OrgsOrgIdMoneyExpensesRoute,
+  OrgsOrgIdMoneyLateFeesRoute: OrgsOrgIdMoneyLateFeesRoute,
+  OrgsOrgIdMoneyOpeningBalancesRoute: OrgsOrgIdMoneyOpeningBalancesRoute,
+  OrgsOrgIdMoneyPayRoute: OrgsOrgIdMoneyPayRoute,
+  OrgsOrgIdMoneyReportsRoute: OrgsOrgIdMoneyReportsRoute,
+  OrgsOrgIdMoneyStatementsRoute: OrgsOrgIdMoneyStatementsRoute,
+  OrgsOrgIdMoneyIndexRoute: OrgsOrgIdMoneyIndexRoute,
+  OrgsOrgIdMoneyBankImportIdRoute: OrgsOrgIdMoneyBankImportIdRoute,
+  OrgsOrgIdMoneyPaymentsCashBoxesRoute: OrgsOrgIdMoneyPaymentsCashBoxesRoute,
+  OrgsOrgIdMoneyPaymentsNewRoute: OrgsOrgIdMoneyPaymentsNewRoute,
+  OrgsOrgIdMoneyPlansPlanIdRoute: OrgsOrgIdMoneyPlansPlanIdRoute,
+  OrgsOrgIdMoneyPlansNewRoute: OrgsOrgIdMoneyPlansNewRoute,
+  OrgsOrgIdMoneyBankIndexRoute: OrgsOrgIdMoneyBankIndexRoute,
+  OrgsOrgIdMoneyPaymentsIndexRoute: OrgsOrgIdMoneyPaymentsIndexRoute,
+  OrgsOrgIdMoneyPlansIndexRoute: OrgsOrgIdMoneyPlansIndexRoute,
+}
+
+const OrgsOrgIdMoneyRouteWithChildren = OrgsOrgIdMoneyRoute._addFileChildren(
+  OrgsOrgIdMoneyRouteChildren,
+)
 
 interface OrgsOrgIdSettingsRouteChildren {
   OrgsOrgIdSettingsAuditRoute: typeof OrgsOrgIdSettingsAuditRoute
@@ -971,6 +1386,7 @@ interface OrgsOrgIdRouteChildren {
   OrgsOrgIdDirectoryRoute: typeof OrgsOrgIdDirectoryRoute
   OrgsOrgIdImportRoute: typeof OrgsOrgIdImportRoute
   OrgsOrgIdMeRoute: typeof OrgsOrgIdMeRoute
+  OrgsOrgIdMoneyRoute: typeof OrgsOrgIdMoneyRouteWithChildren
   OrgsOrgIdNotificationsRoute: typeof OrgsOrgIdNotificationsRoute
   OrgsOrgIdPortfolioRoute: typeof OrgsOrgIdPortfolioRoute
   OrgsOrgIdSettingsRoute: typeof OrgsOrgIdSettingsRouteWithChildren
@@ -1006,6 +1422,7 @@ const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
   OrgsOrgIdDirectoryRoute: OrgsOrgIdDirectoryRoute,
   OrgsOrgIdImportRoute: OrgsOrgIdImportRoute,
   OrgsOrgIdMeRoute: OrgsOrgIdMeRoute,
+  OrgsOrgIdMoneyRoute: OrgsOrgIdMoneyRouteWithChildren,
   OrgsOrgIdNotificationsRoute: OrgsOrgIdNotificationsRoute,
   OrgsOrgIdPortfolioRoute: OrgsOrgIdPortfolioRoute,
   OrgsOrgIdSettingsRoute: OrgsOrgIdSettingsRouteWithChildren,

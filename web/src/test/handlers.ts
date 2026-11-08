@@ -3,6 +3,7 @@ import type { DiscoveryDocument, Me } from '@/api/schema'
 import { peopleHandlers } from './handlers/people'
 import { tenancyHandlers } from './handlers/tenancy'
 import { operationsHandlers } from './handlers/operations'
+import { moneyHandlers, moneyScopedHandlers } from './handlers/money'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -43,6 +44,7 @@ export const meFixture: Me = {
         { permission: 'site.read' },
         { permission: 'sites.read' },
         { permission: 'ledger.read', site_ids: ['site-a'] },
+        { permission: 'money.read', site_ids: ['site-a'] },
       ],
       sites: [{ id: 'site-a', name: 'Güneş Sitesi', timezone: 'Europe/Istanbul', currency: 'TRY' }],
     },
@@ -62,6 +64,7 @@ export const meFixture: Me = {
 }
 
 export const handlers = [
+  ...moneyScopedHandlers, // answer only while a money screen is on display
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
@@ -69,4 +72,5 @@ export const handlers = [
   ...tenancyHandlers,
   ...peopleHandlers,
   ...operationsHandlers,
+  ...moneyHandlers,
 ]

@@ -347,7 +347,6 @@ export const tenancyHandlers = [
     }
     db.sites.push(site as never)
     db.settings[site.id] = { ...db.settings[SITE]!, directory_enabled: false }
-    db.lockDates[site.id] = null
     db.blocks.push({
       id: newId('block'),
       org_id: ORG,
@@ -428,36 +427,7 @@ export const tenancyHandlers = [
     return HttpResponse.json(saved)
   }),
 
-  // money.getLockDate / setLockDate live in the money module; the sites screen needs them
-  http.get(o('sites/:siteId/lock-date'), ({ params }) =>
-    HttpResponse.json({
-      site_id: String(params.siteId),
-      lock_date: db.lockDates[String(params.siteId)] ?? null,
-      changed_by: null,
-      changed_at: null,
-      version: 1,
-    }),
-  ),
-  http.put(o('sites/:siteId/lock-date'), async ({ params, request }) => {
-    const body = (await request.json()) as { lock_date: string | null }
-    const current = db.lockDates[String(params.siteId)] ?? null
-    // moving the date back is sensitive (web plan §7)
-    if (current && (!body.lock_date || body.lock_date < current)) {
-      const r = requireReauth()
-      if (r) return r
-    }
-    db.lockDates[String(params.siteId)] = body.lock_date
-    const s = db.sites.find((x) => x.id === params.siteId)
-    if (s) s.lock_date = body.lock_date
-    return HttpResponse.json({
-      site_id: String(params.siteId),
-      lock_date: body.lock_date,
-      changed_by: null,
-      changed_at: nowIso(),
-      version: 2,
-    })
-  }),
-
+  // money.getLockDate / setLockDate: answered by the money model (handlers/money.ts)
   // blocks
   http.get(o('blocks'), ({ request }) => {
     const url = new URL(request.url)

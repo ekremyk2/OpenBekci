@@ -5,6 +5,7 @@ export default defineConfig((env) =>
   mergeConfig(
     viteConfig(env),
     defineConfig({
+      server: { fs: { allow: ['..'] } },
       test: {
         environment: 'jsdom',
         globals: true,

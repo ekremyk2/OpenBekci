@@ -34,6 +34,8 @@ export function EntityPicker({
   placeholder,
   disabled,
   invalid,
+  'aria-label': ariaLabel,
+  pageSize,
 }: {
   id: string
   /** Distinguishes the cache entries (include the site or org id). */
@@ -44,6 +46,9 @@ export function EntityPicker({
   placeholder?: string
   disabled?: boolean
   invalid?: boolean
+  'aria-label'?: string
+  /** The page size `search` asks for: a full page means the server has more, and the list says so. */
+  pageSize?: number
 }) {
   const { t } = useLingui()
   const [text, setText] = useState('')
@@ -59,9 +64,9 @@ export function EntityPicker({
   if (value) {
     return (
       <div className="flex h-9 items-center justify-between gap-2 rounded-md border px-3 text-sm">
-        <span id={id} className="truncate">
+        <output id={id} aria-label={ariaLabel} className="truncate">
           {value.label}
-        </span>
+        </output>
         {disabled ? null : (
           <Button
             type="button"
@@ -87,9 +92,11 @@ export function EntityPicker({
         value={text}
         disabled={disabled}
         aria-invalid={invalid || undefined}
+        aria-label={ariaLabel}
         placeholder={placeholder ?? t`Search…`}
         autoComplete="off"
         onFocus={() => setOpen(true)}
+        onClick={() => setOpen(true)}
         onChange={(e) => {
           setText(e.target.value)
           setOpen(true)
@@ -121,6 +128,11 @@ export function EntityPicker({
               </li>
             ))
           )}
+          {pageSize && (results.data ?? []).length >= pageSize ? (
+            <li className="border-t px-2 py-1.5 text-xs text-muted-foreground">
+              {t`Showing the first ${(results.data ?? []).length}: type to refine the search.`}
+            </li>
+          ) : null}
         </ul>
       ) : null}
     </div>
@@ -139,6 +151,7 @@ export function UnitPicker({
   return (
     <EntityPicker
       {...rest}
+      pageSize={20}
       queryKey={['unit-picker', orgId, siteId]}
       search={async (q) => {
         const { data } = await draftApi.GET('/v1/orgs/{org_id}/units', {
@@ -165,6 +178,7 @@ export function PersonPicker({
   return (
     <EntityPicker
       {...rest}
+      pageSize={20}
       queryKey={['person-picker', orgId, siteId ?? null]}
       search={async (q) => {
         const { data } = await draftApi.GET('/v1/orgs/{org_id}/persons', {

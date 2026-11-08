@@ -25,7 +25,6 @@ export interface Db {
   sites: Sites[]
   settings: Record<string, Schema<'SiteSettings'>>
   bank: Record<string, Schema<'BankDetails'>>
-  lockDates: Record<string, string | null>
   blocks: Schema<'Block'>[]
   units: Unit[]
   keys: Schema<'AllocationKey'>[]
@@ -217,7 +216,6 @@ export function seed(): Db {
         suggested_reference: null,
       },
     },
-    lockDates: { [SITE]: null },
     blocks: [
       {
         id: 'block-a',

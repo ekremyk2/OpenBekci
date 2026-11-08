@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getMoneyDb } from '@/test/handlers/money'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -85,7 +86,9 @@ describe('site detail', () => {
       }),
     )
     await mountApp('/orgs/org-1/sites/site-a?tab=lock', {
-      seed: (d) => (d.lockDates['site-a'] = '2026-02-28'),
+      seed: () => {
+        getMoneyDb().lockDate = '2026-02-28' // the lock date lives in the money model
+      },
     })
     const input = await screen.findByLabelText('Lock everything up to and including')
     await userEvent.clear(input)
