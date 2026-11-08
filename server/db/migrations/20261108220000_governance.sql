@@ -281,8 +281,17 @@ CREATE UNIQUE INDEX decision_one_per_item ON decision (org_id, agenda_item_id) W
 CREATE INDEX decision_org_site_year ON decision (org_id, site_id, year, sequence_no);
 SELECT openbekci_enable_rls('decision');
 
+-- agenda_item and decision point at each other; deferred so that a site archive
+-- can load both in any order within its transaction
 ALTER TABLE agenda_item
-    ADD CONSTRAINT agenda_item_decision_fk FOREIGN KEY (org_id, site_id, decision_id) REFERENCES decision (org_id, site_id, id);
+    ADD CONSTRAINT agenda_item_decision_fk FOREIGN KEY (org_id, site_id, decision_id) REFERENCES decision (org_id, site_id, id)
+    DEFERRABLE INITIALLY DEFERRED;
+
+-- The election that created an elected-role membership (G5). Deferred: a site
+-- archive carries memberships before decisions and checks at commit.
+ALTER TABLE membership
+    ADD CONSTRAINT membership_decision_fk FOREIGN KEY (org_id, decision_id) REFERENCES decision (org_id, id)
+    DEFERRABLE INITIALLY DEFERRED;
 
 -- Reminders before an elected term ends (G6), one per membership and lead time.
 CREATE TABLE term_reminder (
@@ -308,6 +317,7 @@ SELECT openbekci_enable_rls('term_reminder');
 
 -- +goose Down
 DROP TABLE term_reminder;
+ALTER TABLE membership DROP CONSTRAINT membership_decision_fk;
 ALTER TABLE agenda_item DROP CONSTRAINT agenda_item_decision_fk;
 DROP TABLE decision;
 DROP TABLE decision_counter;
