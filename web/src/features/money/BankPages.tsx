@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Money } from '@/components/data/Money'
@@ -20,6 +21,7 @@ import { toast } from '@/lib/toast'
 import {
   idemHeader,
   moneyApi,
+  moneyKey,
   unwrap,
   useMoneyCtx,
   useMoneyMutation,
@@ -29,7 +31,7 @@ import {
 } from './api'
 import { useIdempotencyKeys } from './forms'
 import { DebtorPicker, debtorRef, emptyTarget, type DebtorTarget } from './DebtorPicker'
-import { AccountPicker } from './pickers'
+import { AccountPicker, useAllUnits } from './pickers'
 import { Field, FormRootError, Gate, PageHeader, QueryBoundary, Select, StatusBadge } from './ui'
 import { Input } from '@/components/ui/input'
 
@@ -328,32 +330,57 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
   const [cursor, setCursor] = useState(0)
   const [manualFor, setManualFor] = useState<string | null>(null)
   const keys = useIdempotencyKeys()
-  const q = useMoneyQuery(['bank-tx', importId], () =>
+  // A statement of a few hundred lines is normal: page by cursor, never above the contract cap (200).
+  const q = useInfiniteQuery({
+    queryKey: moneyKey(ctx.orgId, 'bank-tx', importId),
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) =>
+      unwrap(
+        moneyApi.GET('/v1/orgs/{org_id}/bank-transactions', {
+          params: {
+            path: { org_id: ctx.orgId },
+            query: { site_id: ctx.siteId, import_id: importId, limit: 200, cursor: pageParam },
+          },
+        }),
+      ),
+    getNextPageParam: (last) => last.next_cursor ?? undefined,
+    staleTime: 0,
+  })
+  const lines = useMemo(() => q.data?.pages.flatMap((p) => p.items) ?? [], [q.data])
+  // Declared transfers awaiting confirmation belong on this screen: matching a line to one confirms
+  // that payment with the line, so the money is booked once (contract: `payment_id` on the match).
+  const declared = useMoneyQuery(['declared-payments', ctx.siteId], () =>
     unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/bank-transactions', {
+      moneyApi.GET('/v1/orgs/{org_id}/payments', {
         params: {
           path: { org_id: ctx.orgId },
-          query: { site_id: ctx.siteId, import_id: importId, limit: 500 },
+          query: { site_id: ctx.siteId, status: 'pending_declared', limit: 200 },
         },
       }),
     ).then((r) => r.items),
   )
+  const candidatesFor = (tx: S['BankTransaction']) => declaredCandidates(declared.data ?? [], tx)
   const rows = useMemo(
     () =>
-      (q.data ?? []).filter(
+      lines.filter(
         (x) => showAll || x.match_status === 'suggested' || x.match_status === 'unmatched',
       ),
-    [q.data, showAll],
+    [lines, showAll],
   )
   const current = rows[Math.min(cursor, rows.length - 1)]
   const match = useMoneyMutation(
-    async (a: { tx: S['BankTransaction']; debtor: ReturnType<typeof debtorRef> }) => {
+    async (a: {
+      tx: S['BankTransaction']
+      debtor?: ReturnType<typeof debtorRef>
+      paymentId?: string
+    }) => {
       await moneyApi.POST('/v1/orgs/{org_id}/bank-transactions/{transaction_id}:match', {
         params: {
           path: { org_id: ctx.orgId, transaction_id: a.tx.id },
           header: idemHeader(keys.get(a.tx.id)),
         },
-        body: { debtor: a.debtor },
+        // a declared payment replaces the debtor: the payment already says who paid
+        body: a.paymentId ? { payment_id: a.paymentId } : { debtor: a.debtor },
       })
       keys.done(a.tx.id)
     },
@@ -381,6 +408,15 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
 
   function confirm(tx: S['BankTransaction']) {
     const s = tx.suggestions[0]
+    const dp = candidatesFor(tx).find((c) => c.exact)
+    if (dp)
+      return match.mutate(
+        { tx, paymentId: dp.payment.id },
+        {
+          onSuccess: () => toast.info(t`Linked to the declared payment.`),
+          onError: () => toast.error(t`Could not match the line.`),
+        },
+      )
     if (!s) return setManualFor(tx.id)
     match.mutate(
       { tx, debtor: { unit_id: s.unit_id, debtor_kind: s.debtor_kind } },
@@ -392,8 +428,9 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    const target = e.target as HTMLElement
-    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) return
+    // Only the grid itself reacts. A focused button, link, field or anything inside a dialog keeps
+    // its own keys: Enter on "Ignore" must never confirm a different row.
+    if (!isGridKey(e)) return
     if (e.key === 'j') {
       e.preventDefault()
       setCursor((c) => Math.min(c + 1, rows.length - 1))
@@ -425,7 +462,13 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
         <Trans>Show matched and ignored lines too</Trans>
       </label>
       <QueryBoundary
-        query={q}
+        query={{
+          isPending: q.isPending,
+          isError: q.isError,
+          error: q.error,
+          refetch: q.refetch as never,
+          data: lines,
+        }}
         isEmpty={() => rows.length === 0}
         emptyTitle={t`Everything is matched`}
         emptyDescription={t`No lines are waiting for you.`}
@@ -490,6 +533,16 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
                           <StatusBadge status="matched" />
                         ) : tx.match_status === 'ignored' ? (
                           <StatusBadge status="ignored" />
+                        ) : candidatesFor(tx).some((c) => c.exact) ? (
+                          <span>
+                            <Badge variant="warning">
+                              <Trans>Declared transfer</Trans>
+                            </Badge>{' '}
+                            <span className="text-xs text-muted-foreground">
+                              {candidatesFor(tx).find((c) => c.exact)!.payment.payer_display_name ??
+                                ''}
+                            </span>
+                          </span>
                         ) : s ? (
                           <span>
                             <Badge variant="info">{s.unit_door_number}</Badge>{' '}
@@ -539,15 +592,27 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
           </div>
         )}
       </QueryBoundary>
+      {q.hasNextPage ? (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            onClick={() => void q.fetchNextPage()}
+            disabled={q.isFetchingNextPage}
+          >
+            <Trans>Load more lines</Trans>
+          </Button>
+        </div>
+      ) : null}
       {manualFor ? (
         <ManualMatch
           ctx={ctx}
+          declared={candidatesFor(lines.find((x) => x.id === manualFor)!)}
           onCancel={() => setManualFor(null)}
-          onMatch={(debtor) => {
-            const tx = q.data?.find((x) => x.id === manualFor)
+          onMatch={(choice) => {
+            const tx = lines.find((x) => x.id === manualFor)
             if (!tx) return
             match.mutate(
-              { tx, debtor },
+              { tx, ...choice },
               {
                 onSuccess: () => setManualFor(null),
                 onError: () => toast.error(t`Could not match the line.`),
@@ -560,17 +625,60 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
   )
 }
 
+/** True only when the key event comes from the grid element itself, not from a control inside it. */
+export function isGridKey(e: React.KeyboardEvent): boolean {
+  if (e.target !== e.currentTarget) return false
+  const el = e.target as HTMLElement
+  if (el.closest('[role="dialog"],[role="alertdialog"],dialog')) return false
+  if (
+    el.matches(
+      'input,select,textarea,button,a[href],[contenteditable="true"],[tabindex]:not([role="grid"])',
+    )
+  )
+    return false
+  return !(e.metaKey || e.ctrlKey || e.altKey)
+}
+
+/**
+ * Declared transfers that could belong to a bank line, best first: same amount and the unit side
+ * the line is suggested for; then the same amount; then the rest. `exact` is safe to pre-select.
+ */
+export function declaredCandidates(declared: S['Payment'][], tx: S['BankTransaction']) {
+  if (tx.amount.amount <= 0) return []
+  const suggestion = tx.suggestions[0]
+  return declared
+    .map((payment) => {
+      const sameAmount = payment.gross.amount === tx.amount.amount
+      const sameUnit =
+        !!suggestion &&
+        payment.unit_id === suggestion.unit_id &&
+        payment.debtor_kind === suggestion.debtor_kind
+      return {
+        payment,
+        exact: sameAmount && (sameUnit || !suggestion),
+        rank: (sameAmount ? 0 : 2) + (sameUnit ? 0 : 1),
+      }
+    })
+    .sort((a, b) => a.rank - b.rank)
+}
+
 function ManualMatch({
   ctx,
+  declared,
   onMatch,
   onCancel,
 }: {
   ctx: MoneyCtx
-  onMatch: (debtor: ReturnType<typeof debtorRef>) => void
+  declared: ReturnType<typeof declaredCandidates>
+  onMatch: (choice: { debtor?: ReturnType<typeof debtorRef>; paymentId?: string }) => void
   onCancel: () => void
 }) {
+  const { t } = useLingui()
   const [target, setTarget] = useState<DebtorTarget>(emptyTarget())
-  const ready = target.mode === 'unit' ? !!target.unitId : !!target.personId
+  const [paymentId, setPaymentId] = useState('')
+  const ready = paymentId !== '' || (target.mode === 'unit' ? !!target.unitId : !!target.personId)
+  const units = useAllUnits(ctx)
+  const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
   return (
     <Card>
       <CardHeader>
@@ -578,14 +686,38 @@ function ManualMatch({
           <Trans>Match manually</Trans>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-wrap items-end gap-4">
-        <DebtorPicker ctx={ctx} idPrefix="mm" value={target} onChange={setTarget} />
-        <Button disabled={!ready} onClick={() => onMatch(debtorRef(target))}>
-          <Trans>Match</Trans>
-        </Button>
-        <Button variant="ghost" onClick={onCancel}>
-          <Trans>Cancel</Trans>
-        </Button>
+      <CardContent className="flex flex-col gap-4">
+        {declared.length > 0 ? (
+          <Field label={t`Link to declared payment`} htmlFor="mm-declared">
+            <Select
+              id="mm-declared"
+              value={paymentId}
+              onChange={(e) => setPaymentId(e.target.value)}
+            >
+              <option value="">{t`No, match to a unit instead`}</option>
+              {declared.map(({ payment: p, exact }) => (
+                <option key={p.id} value={p.id}>
+                  {door(p.unit_id)} · {p.payer_display_name ?? '–'} · {p.gross.amount}
+                  {exact ? ' ✓' : ''}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        ) : null}
+        <div className="flex flex-wrap items-end gap-4">
+          {paymentId === '' ? (
+            <DebtorPicker ctx={ctx} idPrefix="mm" value={target} onChange={setTarget} />
+          ) : null}
+          <Button
+            disabled={!ready}
+            onClick={() => onMatch(paymentId ? { paymentId } : { debtor: debtorRef(target) })}
+          >
+            <Trans>Match</Trans>
+          </Button>
+          <Button variant="ghost" onClick={onCancel}>
+            <Trans>Cancel</Trans>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )
