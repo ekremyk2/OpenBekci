@@ -499,9 +499,11 @@ func (s *apiServer) GovernanceSetPoll(ctx context.Context, req gen.GovernanceSet
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
-	if err != nil {
-		return nil, err
+	ver := governance.NoVersion // the first creation needs no If-Match
+	if req.Params.IfMatch != nil {
+		if ver, err = ifMatchVersion(req.Params.IfMatch); err != nil {
+			return nil, err
+		}
 	}
 	if err := hasBody(req.Body == nil); err != nil {
 		return nil, err

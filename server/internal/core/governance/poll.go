@@ -25,6 +25,10 @@ type Poll struct {
 	Version      int       `json:"version"`
 }
 
+// NoVersion is passed as expectedVersion when the caller sent no If-Match:
+// allowed for the first creation of a poll, refused for any later change.
+const NoVersion = -1
+
 func pollStatus(now, opens, closes time.Time) string {
 	switch {
 	case now.Before(opens):
@@ -108,9 +112,18 @@ func (s *Service) SetPoll(ctx context.Context, orgID, itemID uuid.UUID, expected
 		if perr != nil && !isNotFound(perr) {
 			return perr
 		}
+		if have && cur.Status == "closed" {
+			return problem.Conflict("the poll is closed; closing is final and it cannot be reopened or changed")
+		}
 		ver := 0
 		if have {
 			ver = cur.Version
+		}
+		switch {
+		case expectedVersion == NoVersion && have:
+			return problem.Validation(problem.Field{Field: "If-Match", Code: "required"}) // only the first creation may omit it
+		case expectedVersion == NoVersion:
+			expectedVersion = 0
 		}
 		if ver != expectedVersion {
 			return errVersion

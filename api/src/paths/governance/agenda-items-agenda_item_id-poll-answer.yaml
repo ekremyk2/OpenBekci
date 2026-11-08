@@ -23,6 +23,8 @@ put:
     - bearerAuth: []
   x-openbekci-roles: [polls.answer]
   x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   x-stability: preview
   requestBody:
     required: true

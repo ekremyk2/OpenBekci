@@ -2243,7 +2243,7 @@ export interface paths {
          * Create or change the poll
          * @description **Release 0.2.** Create or change the poll.
          *
-         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *     The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
          *
          *     Permission: `meetings.manage`.
          *
@@ -9102,7 +9102,10 @@ export interface operations {
     "governance.answerPoll": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId-2"];
