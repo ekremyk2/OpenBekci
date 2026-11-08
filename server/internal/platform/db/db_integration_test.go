@@ -488,3 +488,43 @@ func TestIntegrationMigrationsApplyInVersionOrder(t *testing.T) {
 		}
 	}
 }
+
+func TestIntegrationSidePoolHonoursConfiguredCap(t *testing.T) {
+	base := newTestDB(t)
+	ctx := context.Background()
+	appURL := withDatabase(t, base.superURL, base.name, "openbekci_app", "openbekci")
+
+	for _, c := range []struct{ configured, want int }{{0, DefaultSidePoolMax}, {2, 2}} {
+		d, err := Open(ctx, Options{AppURL: appURL, SidePoolMax: c.configured})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := int(d.side.Config().MaxConns); got != c.want {
+			t.Errorf("SidePoolMax %d: side pool MaxConns = %d, want %d", c.configured, got, c.want)
+		}
+		if c.configured == 2 {
+			// both side connections held: a third independent tx cannot start
+			org := id.New()
+			hold, release := make(chan struct{}), make(chan struct{})
+			for i := 0; i < 2; i++ {
+				go func() {
+					_ = d.InIndependentTenantTx(ctx, org, func(pgx.Tx) error { hold <- struct{}{}; <-release; return nil })
+				}()
+			}
+			<-hold
+			<-hold
+			short, cancel := context.WithTimeout(ctx, 300*time.Millisecond)
+			err := d.InIndependentTenantTx(short, org, func(pgx.Tx) error { return nil })
+			cancel()
+			if err == nil {
+				t.Error("a third independent transaction started past the cap")
+			}
+			// the app pool is unaffected
+			if err := d.InTenantTx(ctx, org, func(pgx.Tx) error { return nil }); err != nil {
+				t.Errorf("app pool blocked by side pool: %v", err)
+			}
+			close(release)
+		}
+		d.Close()
+	}
+}

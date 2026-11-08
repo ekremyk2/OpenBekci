@@ -159,6 +159,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		AppURL:      cfg.DatabaseURL,
 		PlatformURL: cfg.PlatformDatabaseURL,
 		Pooled:      pooler.Detected,
+		SidePoolMax: cfg.DatabaseSidePoolMax,
 	})
 	if err != nil {
 		return nil, err
