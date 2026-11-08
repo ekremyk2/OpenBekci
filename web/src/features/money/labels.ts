@@ -61,6 +61,12 @@ export function useLabels() {
     adjustment: t`Adjustment`,
     reversal: t`Reversal`,
   }
+  const openingKind: Record<string, string> = {
+    unit_receivable: t`Unit receivable`,
+    bank: t`Bank balance`,
+    cash: t`Cash balance`,
+    vendor: t`Vendor payable`,
+  }
   const channel: Record<string, string> = {
     in_app: t`In app`,
     email: t`Email`,
@@ -69,5 +75,5 @@ export function useLabels() {
   }
   const side = (s: string | null | undefined) =>
     s === 'tenant' ? t`Tenant` : s === 'owner' ? t`Owner` : ''
-  return { chargeType, frequency, keyKind, method, stmtKind, channel, side }
+  return { chargeType, frequency, keyKind, method, stmtKind, openingKind, channel, side }
 }

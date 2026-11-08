@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw'
+import { parseCsv } from '@/lib/csv'
 import type { components } from '@/api/draft'
 import {
   CUR,
@@ -73,6 +74,57 @@ interface Ctx {
 
 type Handler = (c: Ctx) => Reply | Promise<Reply>
 
+/** The contract caps `limit` (components/parameters/Limit) at 200. */
+export const MAX_LIMIT = 200
+const RFC3339 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
+
+/**
+ * Spec-validation layer: the model is hand-written, so the rules a real server enforces from the
+ * OpenAPI document are checked here, where every request passes. Returns a 422 reply or null.
+ */
+export function validateRequest(query: URLSearchParams, body: unknown): Reply | null {
+  const errors: { field: string; code: string; message?: string }[] = []
+  const limit = query.get('limit')
+  if (limit !== null) {
+    const n = Number(limit)
+    if (!Number.isInteger(n) || n < 1 || n > MAX_LIMIT)
+      errors.push({
+        field: 'limit',
+        code: 'out_of_range',
+        message: `limit must be 1..${MAX_LIMIT}`,
+      })
+  }
+  // Request fields are checked against the contract types: `*_at` is `date-time` (RFC 3339 with an
+  // offset), `*_on` is `date`. A bare `YYYY-MM-DD` in a `date-time` field is what a strict server
+  // rejects, so it is rejected here too.
+  if (body && typeof body === 'object') {
+    for (const [field, value] of Object.entries(body as Record<string, unknown>)) {
+      if (typeof value !== 'string') continue
+      if (field.endsWith('_at') && !RFC3339.test(value))
+        errors.push({ field, code: 'invalid_date_time', message: 'expected an RFC 3339 date-time' })
+      if (field.endsWith('_on') && !DATE_ONLY.test(value))
+        errors.push({ field, code: 'invalid_date', message: 'expected a YYYY-MM-DD date' })
+    }
+  }
+  if (errors.length > 0) return fail(422, 'validation_failed', errors)
+  return null
+}
+
+/** Applies `limit` and `cursor` (an offset token) to a list reply, like the real cursor paging. */
+function paginate(r: Reply, query: URLSearchParams): Reply {
+  const limit = query.get('limit')
+  const b = r.body as { items?: unknown[]; next_cursor?: string | null } | null
+  if (limit === null || r.status !== 200 || !b || !Array.isArray(b.items)) return r
+  const start = Number(query.get('cursor') ?? 0) || 0
+  const end = start + Number(limit)
+  return new Reply(200, {
+    ...b,
+    items: b.items.slice(start, end),
+    next_cursor: end < b.items.length ? String(end) : null,
+  })
+}
+
 function reply(r: Reply) {
   if (r.status === 204) return new HttpResponse(null, { status: 204 })
   return HttpResponse.json(r.body as never, {
@@ -104,19 +156,24 @@ function route(method: 'get' | 'post' | 'patch' | 'put' | 'delete', path: string
         }
       }
     }
+    const invalid = validateRequest(url.searchParams, body)
+    if (invalid) return reply(invalid)
     const key = request.headers.get('Idempotency-Key')
     if (method === 'post' && key) {
       db.idemKeysSeen.push(key)
       const cached = db.idemCache.get(key)
       if (cached) return reply(new Reply(cached.status, cached.body))
     }
-    const r = await fn({
-      params: params as Record<string, string>,
-      query: url.searchParams,
-      body,
-      form,
-      request,
-    })
+    const r = paginate(
+      await fn({
+        params: params as Record<string, string>,
+        query: url.searchParams,
+        body,
+        form,
+        request,
+      }),
+      url.searchParams,
+    )
     if (method === 'post' && key && r.status < 400)
       db.idemCache.set(key, { status: r.status, body: r.body })
     return reply(r)
@@ -192,6 +249,34 @@ function toPayment(c: Ctx, status: S['Payment']['status']): S['Payment'] {
   return pay
 }
 
+/** Confirms a declared payment; with a bank line the pair is linked in both directions. */
+function confirmDeclared(
+  p: S['Payment'],
+  accountId: string,
+  allocations: S['AllocationInput'][] | undefined,
+  line?: S['BankTransaction'],
+): void {
+  const auto = autoAllocate(db, p.unit_id!, p.debtor_kind as Side, p.gross.amount)
+  p.asset_account_id = accountId
+  p.allocations = allocations?.length
+    ? allocations.map((a) => ({
+        charge_id: a.charge_id,
+        charge_description: null,
+        amount: a.amount,
+      }))
+    : auto.allocations
+  p.allocated = m(p.allocations.reduce((a, x) => a + x.amount.amount, 0))
+  p.unallocated = m(p.gross.amount - p.allocated.amount)
+  p.status = 'confirmed'
+  p.receipt_no = lastReceipt()
+  postPayment(p)
+  if (line) {
+    p.bank_transaction_id = line.id
+    line.payment_id = p.id
+    line.match_status = 'matched'
+  }
+}
+
 function postPayment(p: S['Payment']) {
   for (const a of p.allocations) {
     const ch = db.charges.find((x) => x.id === a.charge_id)
@@ -261,7 +346,7 @@ function statementFor(
     if (p.status !== 'confirmed' || !p.unit_id || !p.debtor_kind) continue
     if (!matches(p.unit_id, p.debtor_kind, p.payer_person_id)) continue
     rows.push({
-      date: p.received_at,
+      date: p.received_at.slice(0, 10),
       kind: 'payment',
       description: `Payment ${p.receipt_no ?? ''}`.trim(),
       principal: -p.allocated.amount,
@@ -451,24 +536,44 @@ function bankBalance() {
   )
 }
 
-function parseCsv(text: string) {
-  const [head, ...rest] = text.trim().split(/\r?\n/)
-  const cols = (head ?? '').split(',').map((s) => s.trim())
-  return rest
-    .filter(Boolean)
-    .map((l) => Object.fromEntries(l.split(',').map((v, i) => [cols[i] ?? `c${i}`, v.trim()])))
+/** The contract's `q` filter: case-insensitive substring of the entity's display text. */
+function searched<T>(items: T[], query: URLSearchParams, text: (x: T) => string): T[] {
+  const q = query.get('q')?.toLowerCase()
+  return q ? items.filter((x) => text(x).toLowerCase().includes(q)) : items
 }
 
+/** Which unit a CSV row names: by `unit_id`, else by `block` + `door_number` (door numbers repeat). */
+function unitOfRow(r: Record<string, string>): { unit?: S['Unit']; reason?: string } {
+  if (r.unit_id) {
+    const unit = db.units.find((u) => u.id === r.unit_id)
+    return unit ? { unit } : { reason: `Unknown unit_id ${r.unit_id}` }
+  }
+  const door = r.door_number ?? r.unit
+  const hits = db.units.filter(
+    (u) =>
+      u.door_number === door &&
+      (!r.block || db.blocks.find((b) => b.id === u.block_id)?.name === r.block),
+  )
+  if (hits.length === 1) return { unit: hits[0] }
+  return {
+    reason: hits.length === 0 ? `Unknown unit ${door}` : `Ambiguous door ${door}: add block`,
+  }
+}
+
+/** Import jobs: the first poll says running, later ones succeeded (like a real queue). */
+const jobPolls = new Map<string, number>()
+
 export const moneyHandlers = [
+  http.post('*/v1/auth/otp', () => new HttpResponse(null, { status: 202 })),
   http.post('*/v1/auth/reauth', () => {
     db.reauthUntil = Date.now() + 10 * 60_000
     return HttpResponse.json({ reauth_until: new Date(db.reauthUntil).toISOString() })
   }),
 
   // ---- reference data the pickers need (owned by other modules, minimal here)
-  route('get', 'units', () => list(db.units)),
-  route('get', 'persons', () => list(db.persons)),
-  route('get', 'vendors', () => list(db.vendors)),
+  route('get', 'units', ({ query }) => list(searched(db.units, query, (u) => u.door_number))),
+  route('get', 'persons', ({ query }) => list(searched(db.persons, query, (x) => x.display_name))),
+  route('get', 'vendors', ({ query }) => list(searched(db.vendors, query, (v) => v.name))),
   route('get', 'blocks', () => list(db.blocks)),
   route('get', 'unit-tags', () => list(db.tags)),
   route('get', 'allocation-keys', () => list(db.keys)),
@@ -497,7 +602,11 @@ export const moneyHandlers = [
     const sub = query.get('subtype')
     return list(
       db.accounts.filter(
-        (a) => (!sub || a.subtype === sub) && (query.get('archived') !== 'false' || !a.archived),
+        (a) =>
+          (!sub || a.subtype === sub) &&
+          (query.get('archived') !== 'false' || !a.archived) &&
+          (!query.get('q') ||
+            `${a.code} ${a.name}`.toLowerCase().includes(query.get('q')!.toLowerCase())),
       ),
     )
   }),
@@ -1025,7 +1134,7 @@ export const moneyHandlers = [
     if (e) return e
     if (b.amount.amount <= 0)
       return fail(422, 'validation_failed', [{ field: 'amount', code: 'must_be_positive' }])
-    if (db.lockDate && b.received_at <= db.lockDate) return fail(409, 'locked_period')
+    if (db.lockDate && b.received_at.slice(0, 10) <= db.lockDate) return fail(409, 'locked_period')
     const p = toPayment(c, 'confirmed')
     postPayment(p)
     db.payments.push(p)
@@ -1108,7 +1217,7 @@ export const moneyHandlers = [
       gross: body.amount,
       fee: m(0),
       net: body.amount,
-      received_at: body.paid_on,
+      received_at: `${body.paid_on}T00:00:00+03:00`,
       recorded_by: null,
       asset_account_id: 'a-bank',
       reference: body.reference ?? null,
@@ -1130,20 +1239,14 @@ export const moneyHandlers = [
   route('post', 'payments/:id\\:confirm', ({ params, body }) => {
     const p = db.payments.find((x) => x.id === params.id)
     if (!p) return fail(404, 'not_found')
-    const auto = autoAllocate(db, p.unit_id!, p.debtor_kind as Side, p.gross.amount)
-    p.asset_account_id = body.asset_account_id
-    p.allocations = body.allocations?.length
-      ? body.allocations.map((a: S['AllocationInput']) => ({
-          charge_id: a.charge_id,
-          charge_description: null,
-          amount: a.amount,
-        }))
-      : auto.allocations
-    p.allocated = m(p.allocations.reduce((a, x) => a + x.amount.amount, 0))
-    p.unallocated = m(p.gross.amount - p.allocated.amount)
-    p.status = 'confirmed'
-    p.receipt_no = lastReceipt()
-    postPayment(p)
+    if (p.status !== 'pending_declared') return fail(409, 'payment_not_pending')
+    let line: S['BankTransaction'] | undefined
+    if (body.bank_transaction_id) {
+      line = db.bankTx.find((x) => x.id === body.bank_transaction_id)
+      if (!line) return fail(404, 'not_found')
+      if (line.match_status === 'matched') return fail(409, 'already_matched')
+    }
+    confirmDeclared(p, body.asset_account_id, body.allocations, line)
     return ok(p)
   }),
   route('post', 'payments/:id\\:reject', ({ params, body }) => {
@@ -1288,6 +1391,15 @@ export const moneyHandlers = [
   route('post', 'bank-transactions/:id\\:match', ({ params, body }) => {
     const t = db.bankTx.find((x) => x.id === params.id)
     if (!t) return fail(404, 'not_found')
+    if (t.match_status === 'matched') return fail(409, 'already_matched')
+    if (body.payment_id) {
+      // confirm the declared payment WITH the line: one booking, both sides linked
+      const dp = db.payments.find((x) => x.id === body.payment_id)
+      if (!dp) return fail(404, 'not_found')
+      if (dp.status !== 'pending_declared') return fail(409, 'payment_not_pending')
+      confirmDeclared(dp, 'a-bank', undefined, t)
+      return ok(t)
+    }
     if (body.expense_id || t.amount.amount < 0) {
       t.match_status = 'matched'
       return ok(t)
@@ -1306,7 +1418,7 @@ export const moneyHandlers = [
         debtor_kind: s,
         method: 'bank_transfer',
         amount: t.amount,
-        received_at: t.booked_on,
+        received_at: `${t.booked_on}T00:00:00+03:00`,
         asset_account_id: 'a-bank',
         payer_person_id: body.payer_person_id ?? d.id,
         allocations: body.allocations,
@@ -1820,13 +1932,16 @@ export const moneyHandlers = [
     const rows = parseCsv(text).map((r, i) => {
       const errors: S['ImportRowError'][] = []
       const kind = r.kind ?? 'unit_receivable'
-      if (kind === 'unit_receivable' && !db.units.some((u) => u.door_number === r.unit))
-        errors.push({
-          field: 'unit',
-          code: 'unknown_unit',
-          message: `Unknown unit ${r.unit}`,
-          params: null,
-        })
+      if (kind === 'unit_receivable') {
+        const hit = unitOfRow(r)
+        if (!hit.unit)
+          errors.push({
+            field: 'unit',
+            code: 'unknown_unit',
+            message: hit.reason ?? 'Unknown unit',
+            params: null,
+          })
+      }
       if (!/^\d+(\.\d+)?$/.test(r.principal ?? ''))
         errors.push({
           field: 'principal',
@@ -1852,6 +1967,12 @@ export const moneyHandlers = [
       rows_truncated: false,
       job_id: dry ? null : 'job-1',
     }
+    // the whole operation is sensitive (M7), the dry run included
+    if (Date.now() > db.reauthUntil)
+      return HttpResponse.json(
+        { status: 403, code: 'reauth_required' },
+        { status: 403, headers: { 'content-type': 'application/problem+json' } },
+      )
     if (dry) return HttpResponse.json(report)
     if (Date.now() > db.reauthUntil)
       return HttpResponse.json(
@@ -1865,7 +1986,7 @@ export const moneyHandlers = [
       )
     for (const r of rows) {
       const d = r.data as Record<string, string>
-      const u = db.units.find((x) => x.door_number === d.unit)
+      const u = d.kind && d.kind !== 'unit_receivable' ? undefined : unitOfRow(d).unit
       db.openings.push({
         id: nextId(db, 'ob'),
         org_id: db.orgId,
@@ -1888,7 +2009,27 @@ export const moneyHandlers = [
         void_reason: null,
       })
     }
+    jobPolls.set('job-1', 0)
     return HttpResponse.json(report, { status: 202 })
+  }),
+  route('get', 'jobs/:id', ({ params }) => {
+    const polls = (jobPolls.get(params.id!) ?? 0) + 1
+    jobPolls.set(params.id!, polls)
+    return ok({
+      id: params.id!,
+      org_id: db.orgId,
+      kind: 'import',
+      status: polls < 2 ? 'running' : 'succeeded',
+      progress: polls < 2 ? 0.5 : 1,
+      result_file_id: null,
+      result: null,
+      error: null,
+      started_at: stamp(),
+      finished_at: polls < 2 ? null : stamp(),
+      created_by: 'u1',
+      created_at: stamp(),
+      updated_at: stamp(),
+    } satisfies S['Job'])
   }),
 
   // ---- budgets
@@ -1939,7 +2080,12 @@ export const moneyHandlers = [
     const from = query.get('from') ?? '2026-01-01'
     const to = query.get('to') ?? db.today
     const dues = db.payments
-      .filter((p) => p.status === 'confirmed' && p.received_at >= from && p.received_at <= to)
+      .filter(
+        (p) =>
+          p.status === 'confirmed' &&
+          p.received_at.slice(0, 10) >= from &&
+          p.received_at.slice(0, 10) <= to,
+      )
       .reduce((a, p) => a + p.allocated.amount, 0)
     const byCat = new Map<string, number>()
     for (const e of db.expenses.filter(
@@ -2068,16 +2214,16 @@ export const moneyHandlers = [
           (p) =>
             p.asset_account_id === cb.account_id &&
             p.status === 'confirmed' &&
-            p.received_at >= from &&
-            p.received_at <= to,
+            p.received_at.slice(0, 10) >= from &&
+            p.received_at.slice(0, 10) <= to,
         )
         .reduce((a, p) => a + p.gross.amount, 0)
       const handed = db.transfers
         .filter(
           (t) =>
             t.from_account_id === cb.account_id &&
-            t.transferred_at >= from &&
-            t.transferred_at <= to,
+            t.transferred_at.slice(0, 10) >= from &&
+            t.transferred_at.slice(0, 10) <= to,
         )
         .reduce((a, t) => a + t.amount.amount, 0)
       return {

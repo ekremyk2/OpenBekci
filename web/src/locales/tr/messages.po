@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
+#. placeholder {0}: totals.unreadable
+msgid "{0} amounts could not be read, so no total is shown."
+msgstr "{0} tutar okunamadı, bu yüzden toplam gösterilmiyor."
+
 #. placeholder {0}: preview.data.recipient_count
 #. placeholder {1}: preview.data.sms_count
 #. placeholder {2}: preview.data.skipped_frozen
@@ -36,6 +40,12 @@ msgstr "Bir gerekçe gerekli."
 
 msgid "A total split between units"
 msgstr "Birimler arasında bölünen toplam"
+
+msgid "A transfer goes into a bank account, not a cash box."
+msgstr "Havale bir banka hesabına girer, kasaya değil."
+
+msgid "A unit is named by unit_id, or by block together with door_number: door numbers repeat across blocks."
+msgstr "Bağımsız bölüm unit_id ile ya da blok ve door_number birlikte ile belirtilir: kapı numaraları bloklar arasında tekrar eder."
 
 msgid "A unit side"
 msgstr "Bir birim tarafı"
@@ -190,6 +200,9 @@ msgstr "Banka"
 msgid "Bank account"
 msgstr "Banka hesabı"
 
+msgid "Bank balance"
+msgstr "Banka bakiyesi"
+
 msgid "Bank deposit"
 msgstr "Bankaya yatırma"
 
@@ -198,6 +211,9 @@ msgstr "Banka bilgileri"
 
 msgid "Bank import"
 msgstr "Banka aktarımı"
+
+msgid "Bank line it arrived as"
+msgstr "Geldiği banka satırı"
 
 msgid "Bank lines"
 msgstr "Banka satırları"
@@ -268,17 +284,26 @@ msgstr "Dosya açıldı; bu birim tarafı için gecikme tazminatı donduruldu."
 msgid "Cash"
 msgstr "Nakit"
 
+msgid "Cash balance"
+msgstr "Kasa bakiyesi"
+
 msgid "Cash box added."
 msgstr "Kasa eklendi."
 
 msgid "Cash boxes"
 msgstr "Kasalar"
 
+msgid "Cash goes into a cash box, not a bank account."
+msgstr "Nakit bir kasaya girer, banka hesabına değil."
+
 msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
 msgstr "Aldığınız nakit veya havale. Başka türlü seçmezseniz en eski borca, önce anapara sonra tazminat olacak şekilde uygulanır."
 
 msgid "Cash receipts, cash boxes, declared transfers"
 msgstr "Nakit tahsilatlar, kasalar, bildirilen havaleler"
+
+msgid "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
+msgstr "Tahsil ettiğiniz nakit. Kendi kasanıza girer ve önce en eski borca uygulanır."
 
 msgid "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
 msgstr "Nakit esaslı gelir ve gider, borçlular, bütçe ve muhasebeci görünümleri. Her rapor CSV ve Excel olarak dışa aktarılır."
@@ -549,6 +574,9 @@ msgstr "Karar referansı (isteğe bağlı)"
 msgid "Declared by residents, awaiting confirmation"
 msgstr "Sakinlerin bildirdiği, onay bekleyenler"
 
+msgid "Declared transfer"
+msgstr "Bildirilen havale"
+
 msgid "Declared transfers"
 msgstr "Bildirilen havaleler"
 
@@ -575,6 +603,9 @@ msgstr "Açıklama"
 
 msgid "Difference"
 msgstr "Fark"
+
+msgid "Dismiss"
+msgstr "Kapat"
 
 msgid "Document"
 msgstr "Belge"
@@ -675,6 +706,9 @@ msgstr "Açılış bakiyelerini girin"
 msgid "Enter the code from the SMS"
 msgstr "SMS ile gelen kodu girin"
 
+msgid "Enter the code."
+msgstr "Kodu girin."
+
 msgid "Enter the grace days."
 msgstr "Gecikme gün sayısını girin."
 
@@ -737,6 +771,9 @@ msgstr "Tazminatlar donduruldu"
 
 msgid "File (CSV or XLSX)"
 msgstr "Dosya (CSV veya XLSX)"
+
+msgid "File layout for a spreadsheet upload"
+msgstr "Tablo yüklemesi için dosya düzeni"
 
 msgid "File no."
 msgstr "Dosya no."
@@ -819,6 +856,9 @@ msgstr "Hane halkı üyesi"
 msgid "How it will be applied"
 msgstr "Nasıl uygulanacak"
 
+msgid "How to confirm"
+msgstr "Nasıl doğrulanacak"
+
 msgid "I've paid"
 msgstr "Ödedim"
 
@@ -840,8 +880,14 @@ msgstr "Yok sayıldı"
 msgid "Ihtarname"
 msgstr "İhtarname"
 
+msgid "Import progress"
+msgstr "İçe aktarma durumu"
+
 msgid "Importer"
 msgstr "Aktarıcı"
+
+msgid "Importing…"
+msgstr "İçe aktarılıyor…"
 
 msgid "In app"
 msgstr "Uygulama içi"
@@ -872,6 +918,9 @@ msgstr "Alacak olarak tutuldu"
 
 msgid "Kind"
 msgstr "Tür"
+
+msgid "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
+msgstr "kind: <0>unit_receivable</0>, <1>bank</1> veya <2>cash</2>."
 
 msgid "Land share (arsa payı)"
 msgstr "Arsa payı"
@@ -933,8 +982,23 @@ msgstr "Açık"
 msgid "Lines"
 msgstr "Satırlar"
 
+msgid "Link to declared payment"
+msgstr "Bildirilen ödemeye bağla"
+
+msgid "Linked to the declared payment."
+msgstr "Bildirilen ödemeye bağlandı."
+
+msgid "Linking the line marks it reconciled, so it cannot be matched a second time."
+msgstr "Satırı bağlamak mutabık işaretler, böylece ikinci kez eşleştirilemez."
+
+msgid "Load more lines"
+msgstr "Daha fazla satır yükle"
+
 msgid "Loading charges…"
 msgstr "Tahakkuklar yükleniyor…"
+
+msgid "Loading…"
+msgstr "Yükleniyor…"
 
 msgid "Lock date: <0/>"
 msgstr "Kilit tarihi: <0/>"
@@ -1121,6 +1185,9 @@ msgstr "Henüz virman yok"
 msgid "No waivers"
 msgstr "Affetme yok"
 
+msgid "No, match to a unit instead"
+msgstr "Hayır, bunun yerine bir bağımsız bölümle eşleştir"
+
 msgid "Nobody has overdue principal beyond the grace period."
 msgstr "Hiç kimsenin ek gün süresini aşan gecikmiş anaparası yok."
 
@@ -1129,6 +1196,9 @@ msgstr "Şu anda kimsenin borcu yok."
 
 msgid "None"
 msgstr "Yok"
+
+msgid "Not linked"
+msgstr "Bağlı değil"
 
 msgid "Not yet booked; shown continuously"
 msgstr "Henüz kaydedilmedi; sürekli gösterilir"
@@ -1141,6 +1211,9 @@ msgstr "Not (isteğe bağlı)"
 
 msgid "Nothing booked yet"
 msgstr "Henüz kayıt yok"
+
+msgid "Nothing found"
+msgstr "Bulunamadı"
 
 msgid "Nothing here yet"
 msgstr "Henüz burada bir şey yok"
@@ -1171,6 +1244,9 @@ msgstr "bir blok"
 
 msgid "One block"
 msgstr "Bir blok"
+
+msgid "One row per unit side or account, with these columns in the first row:"
+msgstr "Her bağımsız bölüm tarafı veya hesap için bir satır; ilk satırda şu sütunlar bulunur:"
 
 msgid "One-off"
 msgstr "Tek seferlik"
@@ -1355,6 +1431,9 @@ msgstr "Anapara"
 msgid "Principal <0/> plus late fee <1/>"
 msgstr "Anapara <0/> artı gecikme tazminatı <1/>"
 
+msgid "principal and late_fee are plain decimals such as 1234.50. A cell with a comma goes in double quotes."
+msgstr "principal ve late_fee 1234.50 gibi düz ondalıklardır. Virgül içeren hücre çift tırnak içine alınır."
+
 msgid "Quarterly"
 msgstr "Üç aylık"
 
@@ -1394,6 +1473,9 @@ msgstr "Makbuz gönderildi."
 msgid "Receivables aging"
 msgstr "Alacak yaşlandırma"
 
+msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
+msgstr "Bu dosyadaki alacaklar: <0/>. Banka ve kasa bakiyeleri: <1/>."
+
 msgid "Received"
 msgstr "Alınan"
 
@@ -1406,6 +1488,9 @@ msgstr "Alındığı hesap"
 msgid "Received on"
 msgstr "Alındığı tarih"
 
+msgid "Reconciled"
+msgstr "Mutabık"
+
 msgid "Reconciliation balances"
 msgstr "Mutabakat bakiyeleri"
 
@@ -1414,6 +1499,9 @@ msgstr "Ödeme kaydet"
 
 msgid "Record another"
 msgstr "Bir tane daha kaydet"
+
+msgid "Record cash"
+msgstr "Nakit kaydet"
 
 msgid "Record payment"
 msgstr "Ödemeyi kaydet"
@@ -1550,6 +1638,12 @@ msgstr "Seçin…"
 msgid "Send"
 msgstr "Gönder"
 
+msgid "Send again"
+msgstr "Tekrar gönder"
+
+msgid "Send code"
+msgstr "Kod gönder"
+
 msgid "Send me a code"
 msgstr "Bana kod gönder"
 
@@ -1580,11 +1674,21 @@ msgstr "Bir gideri paylaştır"
 msgid "Show matched and ignored lines too"
 msgstr "Eşleşen ve yok sayılan satırları da göster"
 
+#. placeholder {0}: items.length
+msgid "Showing the first {0}: type to refine the search."
+msgstr "İlk {0} gösteriliyor: aramayı daraltmak için yazın."
+
 msgid "Showing the first 200 charges. Narrow the filters to see the rest."
 msgstr "İlk 200 tahakkuk gösteriliyor. Gerisini görmek için filtreleri daraltın."
 
+msgid "Showing the first 200 payments. Filter by status to narrow the list."
+msgstr "İlk 200 ödeme gösteriliyor. Listeyi daraltmak için duruma göre süzün."
+
 msgid "Side"
 msgstr "Taraf"
+
+msgid "side: owner or tenant. Accounts use account_id instead of a unit."
+msgstr "side: owner veya tenant. Hesaplar bağımsız bölüm yerine account_id kullanır."
 
 msgid "Sign in"
 msgstr "Giriş yap"
@@ -1720,8 +1824,14 @@ msgstr "Kiracı: anapara"
 msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
 msgstr "Teşekkürler. Ödeme bankada göründüğünde yöneticiniz onaylayacak."
 
+msgid "That code is not correct."
+msgstr "Bu kod doğru değil."
+
 msgid "That did not work. Check your details and try again."
 msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
+
+msgid "That entry changed since the last try. Please check it and save again."
+msgstr "Bu kayıt son denemeden beri değişti. Lütfen kontrol edip yeniden kaydedin."
 
 msgid "That password is not correct."
 msgstr "Bu parola doğru değil."
@@ -1741,6 +1851,9 @@ msgstr "Kasada o kadar para yok."
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr "<0/> tutarındaki tahakkuk kayıtlarda kalır. Gerekçenizle bir ters kayıt oluşturulur, hiçbir şey kaybolmaz."
 
+msgid "The code could not be sent."
+msgstr "Kod gönderilemedi."
+
 msgid "The download failed. Please try again."
 msgstr "İndirme başarısız oldu. Lütfen tekrar deneyin."
 
@@ -1753,8 +1866,17 @@ msgstr "Kayıt iptal edildi olarak görünür kalır. Parolanızı onaylamanız 
 msgid "The file could not be imported."
 msgstr "Dosya aktarılamadı."
 
+msgid "The import did not finish. Nothing was posted; check the file and try again."
+msgstr "İçe aktarma tamamlanmadı. Hiçbir şey işlenmedi; dosyayı kontrol edip tekrar deneyin."
+
+msgid "The lines do not add up to the total. Do not save this plan."
+msgstr "Satırlar toplamla tutmuyor. Bu planı kaydetmeyin."
+
 msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
 msgstr "Para bankaya ulaştı: <0/>. En eski borca uygulanır ve bir makbuz numarası alır."
+
+msgid "The opening balances were imported."
+msgstr "Açılış bakiyeleri içe aktarıldı."
 
 msgid "The page you are looking for does not exist or has moved."
 msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
@@ -1790,8 +1912,8 @@ msgstr "Bu yıl için henüz bütçe yok. Aidatı belirlemez; yalnızca harcamal
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
 
-msgid "This action needs a recent sign-in. Enter your password to continue."
-msgstr "Bu işlem yakın zamanda giriş yapmanızı gerektirir. Devam etmek için parolanızı girin."
+msgid "This action needs a recent sign-in."
+msgstr "Bu işlem yakın zamanda oturum açmayı gerektirir."
 
 msgid "This date is on or before the lock date; the period is closed."
 msgstr "Bu tarih kilit tarihinde veya öncesinde; dönem kapalı."
@@ -1862,11 +1984,11 @@ msgstr "{0} birim için toplam <0/>"
 msgid "Total amount"
 msgstr "Toplam tutar"
 
-msgid "Total principal in this file: <0/>"
-msgstr "Bu dosyadaki toplam anapara: <0/>"
-
 msgid "Totals (without cancelled)"
 msgstr "Toplamlar (iptaller hariç)"
+
+msgid "Totals of the lines shown (without cancelled)"
+msgstr "Gösterilen satırların toplamı (iptaller hariç)"
 
 msgid "Track vendor bills with due dates and partial payments"
 msgstr "Satıcı faturalarını vade ve kısmi ödemelerle takip et"
@@ -1897,6 +2019,9 @@ msgstr "Dondurmayı kaldır"
 
 msgid "Unit"
 msgstr "Birim"
+
+msgid "Unit receivable"
+msgstr "Bağımsız bölüm alacağı"
 
 msgid "Units with a tag"
 msgstr "Etiketli birimler"
@@ -1948,6 +2073,9 @@ msgstr "Satıcı (isteğe bağlı)"
 
 msgid "Vendor bills"
 msgstr "Satıcı faturaları"
+
+msgid "Vendor payable"
+msgstr "Tedarikçi borcu"
 
 msgid "Visible to the manager and the board only. Never share it publicly."
 msgstr "Yalnızca yönetici ve kurul görür. Asla herkese açık paylaşmayın."

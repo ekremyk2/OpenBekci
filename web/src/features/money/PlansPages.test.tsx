@@ -48,9 +48,7 @@ describe('new dues plan', () => {
     await screen.findByRole('heading', { name: 'New dues plan' })
     await userEvent.type(screen.getByLabelText('Name'), 'Elevator fund')
     await userEvent.type(screen.getByLabelText('Amount per period'), '1200')
-    await waitFor(() =>
-      expect((screen.getByLabelText('Split rule') as HTMLSelectElement).value).not.toBe(''),
-    )
+    await waitFor(() => expect(screen.getByLabelText('Split rule')).not.toHaveValue(''))
 
     await userEvent.click(screen.getByRole('button', { name: 'Save plan' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save|unavailable/i)

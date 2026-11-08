@@ -15,16 +15,16 @@ pnpm dev            # http://localhost:5173
 
 From the repo root: `tools/task.ps1 web:dev` and `tools/task.ps1 web:check` (lint, typecheck, unit tests), or `go tool task ...` / `tools/task.sh ...`.
 
-| Command          | What it does                                                                                                                           |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Command          | What it does                                                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm dev:mock`  | Vite in mock mode: in-memory MSW handlers (the money module so far) answer instead of a backend. Signed in as a site manager; add `?mockRole=resident` for the portal view. |
-| `pnpm lint`      | ESLint flat config: `typescript-eslint`, `react-hooks`, `jsx-a11y`, no `dangerouslySetInnerHTML`, and `openbekci/logical-properties`   |
-| `pnpm typecheck` | `tsc -b --noEmit`                                                                                                                      |
-| `pnpm test`      | Vitest + Testing Library + MSW                                                                                                         |
-| `pnpm e2e`       | Playwright smoke tests (needs `pnpm exec playwright install chromium` once; starts its own Vite server on :5174 and mocks the API)     |
-| `pnpm build`     | typecheck, then Vite build to `web/dist`                                                                                               |
-| `pnpm size`      | `size-limit`: initial route JS (entry, modulepreloads, login route chunk, largest locale catalog) must stay at or below 250 kB gzipped |
-| `pnpm format`    | Prettier                                                                                                                               |
+| `pnpm lint`      | ESLint flat config: `typescript-eslint`, `react-hooks`, `jsx-a11y`, no `dangerouslySetInnerHTML`, and `openbekci/logical-properties`                                        |
+| `pnpm typecheck` | `tsc -b --noEmit`                                                                                                                                                           |
+| `pnpm test`      | Vitest + Testing Library + MSW                                                                                                                                              |
+| `pnpm e2e`       | Playwright smoke tests (needs `pnpm exec playwright install chromium` once; starts its own Vite server on :5174 and mocks the API)                                          |
+| `pnpm build`     | typecheck, then Vite build to `web/dist`                                                                                                                                    |
+| `pnpm size`      | `size-limit`: initial route JS (entry, modulepreloads, login route chunk, largest locale catalog) must stay at or below 250 kB gzipped                                      |
+| `pnpm format`    | Prettier                                                                                                                                                                    |
 
 ### Rules worth knowing
 

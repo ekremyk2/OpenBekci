@@ -276,6 +276,11 @@ export function PreviewTable({
           </span>
         ) : null}
       </p>
+      {preview.lines.reduce((acc, l) => acc + l.amount.amount, 0) !== preview.total.amount ? (
+        <p role="alert" className="text-sm text-destructive">
+          <Trans>The lines do not add up to the total. Do not save this plan.</Trans>
+        </p>
+      ) : null}
     </div>
   )
 }

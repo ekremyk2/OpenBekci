@@ -265,7 +265,11 @@ export function ChargesPage() {
                 <TableFooter>
                   <TableRow>
                     <TableCell colSpan={6}>
-                      <Trans>Totals (without cancelled)</Trans>
+                      {data.next_cursor ? (
+                        <Trans>Totals of the lines shown (without cancelled)</Trans>
+                      ) : (
+                        <Trans>Totals (without cancelled)</Trans>
+                      )}
                     </TableCell>
                     <TableCell className="text-end">
                       <Money minor={sum((c) => c.amount.amount)} currency={ctx.currency} />

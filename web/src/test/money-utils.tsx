@@ -72,3 +72,11 @@ export function recordKeys() {
   })
   return seen
 }
+
+/** Chooses an option in a searchable EntityPicker: focus the combobox, then click the option. */
+export async function pick(combobox: HTMLElement, option: string | RegExp) {
+  const { default: userEvent } = await import('@testing-library/user-event')
+  const { screen } = await import('@testing-library/react')
+  await userEvent.click(combobox)
+  await userEvent.click(await screen.findByRole('option', { name: option }))
+}

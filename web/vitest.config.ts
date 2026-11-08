@@ -4,14 +4,15 @@ import viteConfig from './vite.config.ts'
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    server: { fs: { allow: ['..'] } },
     test: {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.test.{ts,tsx}'],
       css: false,
-      // Route chunks and feature code are transformed on first use; a cold parallel run is slow.
-      testTimeout: 60_000,
+      // 15 s per test; a test that really needs more says so itself.
+      testTimeout: 15_000,
     },
   }),
 )

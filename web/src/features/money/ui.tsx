@@ -22,7 +22,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { downloadFile, exportUrl, type ExportFormat, type MoneyCtx } from './api'
+import {
+  downloadFile,
+  useMoneyCtx,
+  type DownloadEndpoint,
+  type ExportFormat,
+  type MoneyCtx,
+} from './api'
 
 export const selectClass =
   'flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive md:text-sm'
@@ -148,7 +154,9 @@ export function QueryBoundary<T>({
   skeleton = 'table',
   children,
 }: {
-  query: UseQueryResult<T>
+  query: Pick<UseQueryResult<T>, 'isPending' | 'isError' | 'error' | 'refetch'> & {
+    data: T | undefined
+  }
   isEmpty?: (data: T) => boolean
   emptyTitle?: React.ReactNode
   emptyDescription?: React.ReactNode
@@ -158,7 +166,7 @@ export function QueryBoundary<T>({
 }) {
   if (query.isPending) return skeleton === 'page' ? <PageSkeleton /> : <TableSkeleton />
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
-  if (isEmpty?.(query.data)) {
+  if (isEmpty?.(query.data as T)) {
     return (
       <EmptyState
         title={emptyTitle ?? <Trans>Nothing here yet</Trans>}
@@ -167,7 +175,7 @@ export function QueryBoundary<T>({
       />
     )
   }
-  return <>{children(query.data)}</>
+  return <>{children(query.data as T)}</>
 }
 
 export function Stat({
@@ -287,22 +295,29 @@ export function FormRootError({ message }: { message?: string }) {
 
 /** CSV / XLSX (and PDF) export buttons for a report or statement endpoint. */
 export function ExportButtons({
-  path,
+  endpoint,
+  pathParams,
   query,
   basename,
   formats = ['csv', 'xlsx'],
 }: {
-  path: string
+  endpoint: DownloadEndpoint
+  /** Path parameters other than `org_id`, which comes from the current organization. */
+  pathParams?: Record<string, string>
   query: Record<string, string | undefined>
   basename: string
   formats?: ExportFormat[]
 }) {
   const { t } = useLingui()
+  const ctx = useMoneyCtx()!
   const [busy, setBusy] = useState<ExportFormat | null>(null)
   async function go(f: ExportFormat) {
     setBusy(f)
     try {
-      await downloadFile(exportUrl(path, query, f), `${basename}.${f}`)
+      await downloadFile(
+        { endpoint, path: { org_id: ctx.orgId, ...pathParams }, query, format: f },
+        `${basename}.${f}`,
+      )
     } catch {
       toast.error(t`The download failed. Please try again.`)
     } finally {

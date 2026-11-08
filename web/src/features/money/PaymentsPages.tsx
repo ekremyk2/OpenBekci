@@ -5,6 +5,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { downloadFile } from '@/api/download'
+import { AppError } from '@/api/errors'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
@@ -29,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { toContractDate } from '@/lib/contract-dates'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import {
@@ -46,7 +48,16 @@ import {
 import { isoDate, MoneyFormField, positiveMinor, useDebounced, useZodMessages } from './forms'
 import { DebtorPicker, debtorRef, emptyTarget, targetId, type DebtorTarget } from './DebtorPicker'
 import { useLabels } from './labels'
-import { CashOrBankPicker, PersonPicker, useAccounts, useCashBoxes, useUnits } from './pickers'
+import { useSession } from '@/app/session'
+import {
+  AccountPicker,
+  CashOrBankPicker,
+  PersonPicker,
+  useAccounts,
+  useCashBoxes,
+  useMyCashBox,
+  useAllUnits,
+} from './pickers'
 import {
   applyServerErrors,
   Checkbox,
@@ -84,7 +95,11 @@ export function ReceiptActions({ ctx, payment }: { ctx: MoneyCtx; payment: S['Pa
         size="sm"
         onClick={() =>
           downloadFile(
-            `/v1/orgs/${ctx.orgId}/payments/${payment.id}/receipt`,
+            {
+              endpoint: '/v1/orgs/{org_id}/payments/{payment_id}/receipt',
+              path: { org_id: ctx.orgId, payment_id: payment.id },
+              format: 'pdf',
+            },
             `receipt-${payment.receipt_no!.replace('/', '-')}.pdf`,
           ).catch(() => toast.error(t`The download failed. Please try again.`))
         }
@@ -120,7 +135,7 @@ export function PaymentsPage() {
   const [rejectFor, setRejectFor] = useState<S['Payment'] | null>(null)
   const [confirmFor, setConfirmFor] = useState<S['Payment'] | null>(null)
   const [voidFor, setVoidFor] = useState<S['Payment'] | null>(null)
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
   const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
   const q = useMoneyQuery(['payments', ctx.siteId, status], () =>
     unwrap(
@@ -128,6 +143,18 @@ export function PaymentsPage() {
         params: {
           path: { org_id: ctx.orgId },
           query: { site_id: ctx.siteId, status: status || undefined, limit: 200 },
+        },
+      }),
+    ),
+  )
+  // The declared-transfers card has its own query: an old declaration must not hide behind newer
+  // confirmed rows in a truncated all-status page.
+  const declaredQ = useMoneyQuery(['payments-declared', ctx.siteId], () =>
+    unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/payments', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: { site_id: ctx.siteId, status: 'pending_declared', limit: 200 },
         },
       }),
     ).then((r) => r.items),
@@ -160,12 +187,12 @@ export function PaymentsPage() {
       />
       <QueryBoundary
         query={q}
-        isEmpty={(d) => d.length === 0 && status === ''}
+        isEmpty={(d) => d.items.length === 0 && status === '' && !declaredQ.data?.length}
         emptyTitle={t`No payments yet`}
         emptyDescription={t`Record the first cash receipt, or import a bank statement.`}
       >
-        {(items) => {
-          const declared = items.filter((p) => p.status === 'pending_declared')
+        {({ items, next_cursor }) => {
+          const declared = declaredQ.data ?? []
           return (
             <>
               {declared.length > 0 ? (
@@ -224,6 +251,13 @@ export function PaymentsPage() {
                   </Select>
                 </Field>
               </div>
+              {next_cursor ? (
+                <p className="text-sm text-muted-foreground">
+                  <Trans>
+                    Showing the first 200 payments. Filter by status to narrow the list.
+                  </Trans>
+                </p>
+              ) : null}
               {items.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   <Trans>No payments match.</Trans>
@@ -277,6 +311,11 @@ export function PaymentsPage() {
                         </TableCell>
                         <TableCell>
                           <StatusBadge status={p.status} />
+                          {p.bank_transaction_id ? (
+                            <Badge variant="outline" className="ms-1">
+                              <Trans>Reconciled</Trans>
+                            </Badge>
+                          ) : null}
                         </TableCell>
                         <TableCell className="text-end whitespace-nowrap">
                           {p.status === 'confirmed' ? (
@@ -286,7 +325,11 @@ export function PaymentsPage() {
                                 size="sm"
                                 onClick={() =>
                                   downloadFile(
-                                    `/v1/orgs/${ctx.orgId}/payments/${p.id}/receipt`,
+                                    {
+                                      endpoint: '/v1/orgs/{org_id}/payments/{payment_id}/receipt',
+                                      path: { org_id: ctx.orgId, payment_id: p.id },
+                                      format: 'pdf',
+                                    },
                                     `receipt-${(p.receipt_no ?? p.id).replace('/', '-')}.pdf`,
                                   ).catch(() =>
                                     toast.error(t`The download failed. Please try again.`),
@@ -326,21 +369,42 @@ export function PaymentsPage() {
 function ConfirmDeclaredDialog({
   ctx,
   payment,
+  bankTransactionId,
   onClose,
 }: {
   ctx: MoneyCtx
   payment: S['Payment']
+  bankTransactionId?: string
   onClose: () => void
 }) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
   const banks = useAccounts(ctx, 'bank')
   const [account, setAccount] = useState('')
+  const [lineId, setLineId] = useState(bankTransactionId ?? '')
+  // Unmatched incoming bank lines of the same amount: confirming with one books the money once and
+  // marks the line reconciled (contract: `bank_transaction_id`), instead of matching it again later.
+  const lines = useMoneyQuery(['declared-lines', ctx.siteId, payment.id], () =>
+    unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/bank-transactions', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: { site_id: ctx.siteId, limit: 200 },
+        },
+      }),
+    ).then((r) =>
+      r.items.filter(
+        (x) =>
+          x.amount.amount === payment.gross.amount &&
+          (x.match_status === 'unmatched' || x.match_status === 'suggested'),
+      ),
+    ),
+  )
   const acct = account || banks.data?.[0]?.id || payment.asset_account_id
   const m = useMoneyMutation(async () => {
     const res = await moneyApi.POST('/v1/orgs/{org_id}/payments/{payment_id}:confirm', {
       params: { path: { org_id: ctx.orgId, payment_id: payment.id }, header: idemHeader(idem.key) },
-      body: { asset_account_id: acct },
+      body: { asset_account_id: acct, bank_transaction_id: lineId || undefined },
     })
     return res.data!
   })
@@ -361,8 +425,24 @@ function ConfirmDeclaredDialog({
           </DialogDescription>
         </DialogHeader>
         <Field label={t`Received in`} htmlFor="cd-acct">
-          <CashOrBankPicker ctx={ctx} id="cd-acct" value={acct} onChange={setAccount} />
+          <AccountPicker ctx={ctx} subtype="bank" id="cd-acct" value={acct} onChange={setAccount} />
         </Field>
+        {(lines.data ?? []).length > 0 ? (
+          <Field
+            label={t`Bank line it arrived as`}
+            htmlFor="cd-line"
+            hint={t`Linking the line marks it reconciled, so it cannot be matched a second time.`}
+          >
+            <Select id="cd-line" value={lineId} onChange={(e) => setLineId(e.target.value)}>
+              <option value="">{t`Not linked`}</option>
+              {(lines.data ?? []).map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.booked_on} · {l.counterparty ?? '–'} · {l.description ?? ''}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        ) : null}
         <FormRootError message={err} />
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
@@ -476,6 +556,16 @@ export function NewPaymentPage() {
   )
 }
 
+/** Account subtype that can take each payment method: cash goes to a cash box, transfers to a bank. */
+/** The server says a box is short with a field error on `amount` coded `insufficient_balance`. */
+function transferShortfall(e: AppError): boolean {
+  return (
+    e.isValidation && (e.fieldErrors.amount ?? []).some((i) => i.code === 'insufficient_balance')
+  )
+}
+
+export const METHOD_SUBTYPE = { cash: 'cash_box', bank_transfer: 'bank' } as const
+
 type AllocRow = {
   charge_id: string
   description: string | null
@@ -488,7 +578,12 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   const labels = useLabels()
   const msg = useZodMessages()
   const idem = useIdempotencyKey()
-  const cashBoxes = useCashBoxes(ctx)
+  const { can } = useSession()
+  // A collector (payments.record without money.read) sees a minimal page: cash into their own box.
+  const collector = !can('money.read')
+  const mine = useMyCashBox(ctx)
+  const banks = useAccounts(ctx, 'bank')
+  const allAccounts = useAccounts(ctx)
   const [target, setTarget] = useState<DebtorTarget>(emptyTarget())
   const [manual, setManual] = useState(false)
   const [edits, setEdits] = useState<Record<string, bigint | null>>({})
@@ -523,11 +618,17 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
     },
   })
   const v = useWatch({ control: form.control })
-  const defaultAccount = cashBoxes.data?.[0]?.account_id ?? ''
+  const method = v.method ?? 'cash'
+  // Defaults follow the method: cash lands in the caller's own box (never someone else's), a
+  // transfer in the site's bank account. A manager who collects no cash picks the box.
+  const defaultAccount =
+    method === 'cash' ? (mine.box?.account_id ?? '') : (banks.data?.[0]?.id ?? '')
   useEffect(() => {
-    if (defaultAccount && !form.getValues('asset_account_id'))
-      form.setValue('asset_account_id', defaultAccount)
-  }, [defaultAccount, form])
+    const current = form.getValues('asset_account_id')
+    const subtype = allAccounts.data?.find((a) => a.id === current)?.subtype
+    const fits = !current || subtype === undefined || subtype === METHOD_SUBTYPE[method]
+    if (!current || !fits) form.setValue('asset_account_id', defaultAccount)
+  }, [defaultAccount, method, allAccounts.data, form])
   const account = v.asset_account_id || defaultAccount
   const amount = typeof v.amount === 'bigint' && v.amount > 0n ? v.amount : null
   const key = useDebounced(v.unit_id && amount ? { ref: debtorRef(target), amount } : null)
@@ -600,7 +701,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
         payer_person_id: values.payer_person_id || undefined,
         method: values.method,
         amount: minorMoney(values.amount, ctx.currency),
-        received_at: values.received_at,
+        ...toContractDate('received', values.received_at, ctx.timeZone),
         asset_account_id: values.asset_account_id || account,
         reference: values.reference || undefined,
         note: values.note || undefined,
@@ -616,6 +717,16 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   })
   async function onSubmit(values: V) {
     if (rowError) return
+    const chosen = allAccounts.data?.find((a) => a.id === (values.asset_account_id || account))
+    if (chosen && chosen.subtype !== METHOD_SUBTYPE[values.method]) {
+      form.setError('asset_account_id', {
+        message:
+          values.method === 'cash'
+            ? t`Cash goes into a cash box, not a bank account.`
+            : t`A transfer goes into a bank account, not a cash box.`,
+      })
+      return
+    }
     try {
       const p = await create.mutateAsync(values)
       idem.renew()
@@ -687,8 +798,12 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
-        title={t`Record a payment`}
-        description={t`Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise.`}
+        title={collector ? t`Record cash` : t`Record a payment`}
+        description={
+          collector
+            ? t`Cash you collected. It goes into your own cash box and is applied to the oldest debt first.`
+            : t`Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise.`
+        }
       />
       <div className="grid gap-6 lg:grid-cols-2">
         <form
@@ -731,19 +846,23 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
             </Field>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t`Method`} htmlFor="pay-method">
-              <Select id="pay-method" {...form.register('method')}>
-                <option value="cash">{labels.method.cash}</option>
-                <option value="bank_transfer">{labels.method.bank_transfer}</option>
-              </Select>
-            </Field>
+            {collector ? null : (
+              <Field label={t`Method`} htmlFor="pay-method">
+                <Select id="pay-method" {...form.register('method')}>
+                  <option value="cash">{labels.method.cash}</option>
+                  <option value="bank_transfer">{labels.method.bank_transfer}</option>
+                </Select>
+              </Field>
+            )}
             <Field
               label={t`Received into`}
               htmlFor="pay-account"
               error={err.asset_account_id?.message}
             >
-              <CashOrBankPicker
+              <AccountPicker
                 ctx={ctx}
+                subtype={METHOD_SUBTYPE[method]}
+                only={collector && mine.box ? [mine.box.account_id] : undefined}
                 id="pay-account"
                 value={account}
                 onChange={(id) => form.setValue('asset_account_id', id, { shouldValidate: true })}
@@ -912,7 +1031,7 @@ export function CashBoxesPage() {
     ).then((r) => r.items),
   )
   const accounts = useAccounts(ctx)
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
   const acctName = (id: string) => accounts.data?.find((a) => a.id === id)?.name ?? id
   const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
   const [transferFor, setTransferFor] = useState<{
@@ -1167,7 +1286,7 @@ function TransferDialog({
         from_account_id: from,
         to_account_id: target,
         amount: minorMoney(amount!, ctx.currency),
-        transferred_at: date,
+        ...toContractDate('transferred', date, ctx.timeZone),
         kind,
       },
     })
@@ -1189,9 +1308,13 @@ function TransferDialog({
               },
               (er) =>
                 setError(
-                  er instanceof Error && 'fieldErrors' in er
+                  er instanceof AppError && transferShortfall(er)
                     ? t`The box does not hold that much.`
-                    : t`Could not record the transfer.`,
+                    : er instanceof AppError && er.code === 'locked_period'
+                      ? t`This period is locked.`
+                      : er instanceof AppError && er.code === 'idempotency_mismatch'
+                        ? t`That entry changed since the last try. Please check it and save again.`
+                        : t`Could not record the transfer.`,
                 ),
             )
           }}
@@ -1275,7 +1398,7 @@ function RefundDialog({
         reason,
         kind: 'overpayment',
         paid_from_account_id: from,
-        refunded_at: todayIn(ctx.timeZone),
+        ...toContractDate('refunded', todayIn(ctx.timeZone), ctx.timeZone),
         credit_id: credit.id,
       },
     })

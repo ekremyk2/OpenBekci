@@ -21,8 +21,8 @@ if (!window.matchMedia) {
   })) as unknown as typeof window.matchMedia
 }
 
-// Route chunks are transformed on first use; a cold, parallel run needs more than the 1s default.
-configure({ asyncUtilTimeout: 30_000 })
+// Lazy route chunks are transformed on first use: allow 5 s for an element to appear.
+configure({ asyncUtilTimeout: 5_000 })
 
 i18n.load('en', {})
 i18n.activate('en')

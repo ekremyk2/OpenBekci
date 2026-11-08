@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
+#. placeholder {0}: totals.unreadable
+msgid "{0} amounts could not be read, so no total is shown."
+msgstr ""
+
 #. placeholder {0}: preview.data.recipient_count
 #. placeholder {1}: preview.data.sms_count
 #. placeholder {2}: preview.data.skipped_frozen
@@ -35,6 +39,12 @@ msgid "A reason is required."
 msgstr ""
 
 msgid "A total split between units"
+msgstr ""
+
+msgid "A transfer goes into a bank account, not a cash box."
+msgstr ""
+
+msgid "A unit is named by unit_id, or by block together with door_number: door numbers repeat across blocks."
 msgstr ""
 
 msgid "A unit side"
@@ -190,6 +200,9 @@ msgstr ""
 msgid "Bank account"
 msgstr ""
 
+msgid "Bank balance"
+msgstr ""
+
 msgid "Bank deposit"
 msgstr ""
 
@@ -197,6 +210,9 @@ msgid "Bank details"
 msgstr ""
 
 msgid "Bank import"
+msgstr ""
+
+msgid "Bank line it arrived as"
 msgstr ""
 
 msgid "Bank lines"
@@ -268,16 +284,25 @@ msgstr ""
 msgid "Cash"
 msgstr ""
 
+msgid "Cash balance"
+msgstr ""
+
 msgid "Cash box added."
 msgstr ""
 
 msgid "Cash boxes"
 msgstr ""
 
+msgid "Cash goes into a cash box, not a bank account."
+msgstr ""
+
 msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
 msgstr ""
 
 msgid "Cash receipts, cash boxes, declared transfers"
+msgstr ""
+
+msgid "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
 msgstr ""
 
 msgid "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
@@ -549,6 +574,9 @@ msgstr ""
 msgid "Declared by residents, awaiting confirmation"
 msgstr ""
 
+msgid "Declared transfer"
+msgstr ""
+
 msgid "Declared transfers"
 msgstr ""
 
@@ -574,6 +602,9 @@ msgid "Description"
 msgstr ""
 
 msgid "Difference"
+msgstr ""
+
+msgid "Dismiss"
 msgstr ""
 
 msgid "Document"
@@ -675,6 +706,9 @@ msgstr ""
 msgid "Enter the code from the SMS"
 msgstr ""
 
+msgid "Enter the code."
+msgstr ""
+
 msgid "Enter the grace days."
 msgstr ""
 
@@ -736,6 +770,9 @@ msgid "Fees frozen"
 msgstr ""
 
 msgid "File (CSV or XLSX)"
+msgstr ""
+
+msgid "File layout for a spreadsheet upload"
 msgstr ""
 
 msgid "File no."
@@ -819,6 +856,9 @@ msgstr ""
 msgid "How it will be applied"
 msgstr ""
 
+msgid "How to confirm"
+msgstr ""
+
 msgid "I've paid"
 msgstr ""
 
@@ -840,7 +880,13 @@ msgstr ""
 msgid "Ihtarname"
 msgstr ""
 
+msgid "Import progress"
+msgstr ""
+
 msgid "Importer"
+msgstr ""
+
+msgid "Importing…"
 msgstr ""
 
 msgid "In app"
@@ -871,6 +917,9 @@ msgid "Kept as credit"
 msgstr ""
 
 msgid "Kind"
+msgstr ""
+
+msgid "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
 msgstr ""
 
 msgid "Land share (arsa payı)"
@@ -933,7 +982,22 @@ msgstr ""
 msgid "Lines"
 msgstr ""
 
+msgid "Link to declared payment"
+msgstr ""
+
+msgid "Linked to the declared payment."
+msgstr ""
+
+msgid "Linking the line marks it reconciled, so it cannot be matched a second time."
+msgstr ""
+
+msgid "Load more lines"
+msgstr ""
+
 msgid "Loading charges…"
+msgstr ""
+
+msgid "Loading…"
 msgstr ""
 
 msgid "Lock date: <0/>"
@@ -1121,6 +1185,9 @@ msgstr ""
 msgid "No waivers"
 msgstr ""
 
+msgid "No, match to a unit instead"
+msgstr ""
+
 msgid "Nobody has overdue principal beyond the grace period."
 msgstr ""
 
@@ -1128,6 +1195,9 @@ msgid "Nobody owes anything right now."
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "Not linked"
 msgstr ""
 
 msgid "Not yet booked; shown continuously"
@@ -1140,6 +1210,9 @@ msgid "Note (optional)"
 msgstr ""
 
 msgid "Nothing booked yet"
+msgstr ""
+
+msgid "Nothing found"
 msgstr ""
 
 msgid "Nothing here yet"
@@ -1170,6 +1243,9 @@ msgid "one block"
 msgstr ""
 
 msgid "One block"
+msgstr ""
+
+msgid "One row per unit side or account, with these columns in the first row:"
 msgstr ""
 
 msgid "One-off"
@@ -1355,6 +1431,9 @@ msgstr ""
 msgid "Principal <0/> plus late fee <1/>"
 msgstr ""
 
+msgid "principal and late_fee are plain decimals such as 1234.50. A cell with a comma goes in double quotes."
+msgstr ""
+
 msgid "Quarterly"
 msgstr ""
 
@@ -1394,6 +1473,9 @@ msgstr ""
 msgid "Receivables aging"
 msgstr ""
 
+msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
+msgstr ""
+
 msgid "Received"
 msgstr ""
 
@@ -1406,6 +1488,9 @@ msgstr ""
 msgid "Received on"
 msgstr ""
 
+msgid "Reconciled"
+msgstr ""
+
 msgid "Reconciliation balances"
 msgstr ""
 
@@ -1413,6 +1498,9 @@ msgid "Record a payment"
 msgstr ""
 
 msgid "Record another"
+msgstr ""
+
+msgid "Record cash"
 msgstr ""
 
 msgid "Record payment"
@@ -1550,6 +1638,12 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
+msgid "Send again"
+msgstr ""
+
+msgid "Send code"
+msgstr ""
+
 msgid "Send me a code"
 msgstr ""
 
@@ -1580,10 +1674,20 @@ msgstr ""
 msgid "Show matched and ignored lines too"
 msgstr ""
 
+#. placeholder {0}: items.length
+msgid "Showing the first {0}: type to refine the search."
+msgstr ""
+
 msgid "Showing the first 200 charges. Narrow the filters to see the rest."
 msgstr ""
 
+msgid "Showing the first 200 payments. Filter by status to narrow the list."
+msgstr ""
+
 msgid "Side"
+msgstr ""
+
+msgid "side: owner or tenant. Accounts use account_id instead of a unit."
 msgstr ""
 
 msgid "Sign in"
@@ -1720,7 +1824,13 @@ msgstr ""
 msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
 msgstr ""
 
+msgid "That code is not correct."
+msgstr ""
+
 msgid "That did not work. Check your details and try again."
+msgstr ""
+
+msgid "That entry changed since the last try. Please check it and save again."
 msgstr ""
 
 msgid "That password is not correct."
@@ -1741,6 +1851,9 @@ msgstr ""
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr ""
 
+msgid "The code could not be sent."
+msgstr ""
+
 msgid "The download failed. Please try again."
 msgstr ""
 
@@ -1753,7 +1866,16 @@ msgstr ""
 msgid "The file could not be imported."
 msgstr ""
 
+msgid "The import did not finish. Nothing was posted; check the file and try again."
+msgstr ""
+
+msgid "The lines do not add up to the total. Do not save this plan."
+msgstr ""
+
 msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
+msgstr ""
+
+msgid "The opening balances were imported."
 msgstr ""
 
 msgid "The page you are looking for does not exist or has moved."
@@ -1790,7 +1912,7 @@ msgstr ""
 msgid "This accounting period is closed and can no longer be changed."
 msgstr ""
 
-msgid "This action needs a recent sign-in. Enter your password to continue."
+msgid "This action needs a recent sign-in."
 msgstr ""
 
 msgid "This date is on or before the lock date; the period is closed."
@@ -1862,10 +1984,10 @@ msgstr ""
 msgid "Total amount"
 msgstr ""
 
-msgid "Total principal in this file: <0/>"
+msgid "Totals (without cancelled)"
 msgstr ""
 
-msgid "Totals (without cancelled)"
+msgid "Totals of the lines shown (without cancelled)"
 msgstr ""
 
 msgid "Track vendor bills with due dates and partial payments"
@@ -1896,6 +2018,9 @@ msgid "Unfreeze"
 msgstr ""
 
 msgid "Unit"
+msgstr ""
+
+msgid "Unit receivable"
 msgstr ""
 
 msgid "Units with a tag"
@@ -1947,6 +2072,9 @@ msgid "Vendor (optional)"
 msgstr ""
 
 msgid "Vendor bills"
+msgstr ""
+
+msgid "Vendor payable"
 msgstr ""
 
 msgid "Visible to the manager and the board only. Never share it publicly."

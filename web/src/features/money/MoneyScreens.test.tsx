@@ -3,14 +3,14 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { server } from '@/test/setup'
-import { mountMoney, recordKeys } from '@/test/money-utils'
+import { mountMoney, pick, recordKeys } from '@/test/money-utils'
 
 afterEach(() => server.events.removeAllListeners())
 
 describe('statements', () => {
   it('renders the running balance, the accrued late fee and what is owed today', async () => {
     mountMoney('/orgs/org-1/money/statements?unit=u-a3&side=owner')
-    const table = await screen.findByRole('table', { name: 'Statement' })
+    const table = await screen.findByRole('table', { name: 'Statement' }, { timeout: 12_000 })
     const rows = within(table).getAllByRole('row')
     expect(rows[1]).toHaveTextContent('Opening balance')
     expect(within(table).getAllByText(/Monthly dues/).length).toBe(4)
@@ -101,15 +101,9 @@ describe('expenses', () => {
     expect(within(dialog).getByText('Enter an amount greater than zero.')).toBeInTheDocument()
 
     await userEvent.type(within(dialog).getByLabelText('What was it for?'), 'Lobby light bulbs')
-    await userEvent.selectOptions(
-      within(dialog).getByLabelText('Category'),
-      await within(dialog).findByRole('option', { name: /Electricity/ }),
-    )
+    await pick(within(dialog).getByLabelText('Category'), /Electricity/)
     await userEvent.type(within(dialog).getByLabelText('Amount'), '250')
-    await userEvent.selectOptions(
-      within(dialog).getByLabelText('Paid from'),
-      await within(dialog).findByRole('option', { name: /Cash box – Ali/ }),
-    )
+    await pick(within(dialog).getByLabelText('Paid from'), /Cash box – Ali/)
     await userEvent.click(within(dialog).getByRole('button', { name: 'Save expense' }))
 
     await waitFor(() => expect(db.expenses).toHaveLength(1))
@@ -156,14 +150,13 @@ describe('opening balances', () => {
     const { db } = mountMoney('/orgs/org-1/money/opening-balances')
     await userEvent.type(await screen.findByLabelText('A1 Owner principal'), '1500')
     await userEvent.click(screen.getByRole('button', { name: 'Check (dry run)' }))
+    // the whole operation needs a fresh sign-in, the dry run included; it is replayed afterwards
+    const reauth = await screen.findByRole('dialog', { name: 'Confirm it is you' })
+    await userEvent.type(within(reauth).getByLabelText('Password'), 'secret')
+    await userEvent.click(within(reauth).getByRole('button', { name: 'Confirm' }))
     expect(await screen.findByText(/Dry run: 1 of 1 rows are fine/)).toBeInTheDocument()
     expect(db.openings).toHaveLength(0) // nothing saved by a dry run
     await userEvent.click(screen.getByRole('button', { name: 'Save opening balances' }))
-    // creating opening entries needs a fresh sign-in; the import is replayed after the challenge
-    const reauth = await screen.findByRole('dialog', { name: 'Confirm it is you' })
-    expect(db.openings).toHaveLength(0)
-    await userEvent.type(within(reauth).getByLabelText('Password'), 'secret')
-    await userEvent.click(within(reauth).getByRole('button', { name: 'Confirm' }))
     await waitFor(() => expect(db.openings.length).toBe(1))
     expect(db.openings[0]!.principal.amount).toBe(150_000)
   })

@@ -148,7 +148,7 @@ export function createMoneyDb(today = '2026-11-07'): MoneyDb {
     persons: Object.entries(personNames).map(([id, name]) => ({
       id,
       org_id: orgId,
-      user_id: null,
+      user_id: id === 'p-ayse' ? 'u1' : null,
       display_name: name,
       contact: {} as S['PersonContact'],
       national_id_masked: null,
@@ -367,7 +367,7 @@ export function createMoneyDb(today = '2026-11-07'): MoneyDb {
     gross: m(90_000),
     fee: m(0),
     net: m(90_000),
-    received_at: '2026-11-04',
+    received_at: '2026-11-04T00:00:00+03:00',
     recorded_by: null,
     asset_account_id: 'a-bank',
     reference: 'A3 October dues',

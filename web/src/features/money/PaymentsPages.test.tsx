@@ -1,13 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { mountMoney } from '@/test/money-utils'
+import { mountMoney, pick } from '@/test/money-utils'
 
 async function fillPayment(unit: string, amount: string) {
-  await userEvent.selectOptions(
-    await screen.findByLabelText('Unit'),
-    await screen.findByRole('option', { name: unit }),
-  )
+  await pick(await screen.findByLabelText('Unit'), unit)
   await userEvent.type(screen.getByLabelText('Amount'), amount)
 }
 
@@ -15,9 +12,7 @@ describe('record a payment', () => {
   it('shows the automatic allocation (oldest first) and the gap-free receipt number', async () => {
     const { db } = mountMoney('/orgs/org-1/money/payments/new')
     await screen.findByRole('heading', { name: 'Record a payment' })
-    await waitFor(() =>
-      expect((screen.getByLabelText('Received into') as HTMLSelectElement).value).not.toBe(''),
-    )
+    await waitFor(() => expect(screen.getByLabelText('Received into')).not.toHaveValue(''))
 
     await fillPayment('A3', '1000')
     const table = await screen.findByRole(
@@ -54,9 +49,7 @@ describe('record a payment', () => {
   it('lets the manager pick the charge to pay by hand and rejects over-allocation', async () => {
     const { db } = mountMoney('/orgs/org-1/money/payments/new')
     await screen.findByRole('heading', { name: 'Record a payment' })
-    await waitFor(() =>
-      expect((screen.getByLabelText('Received into') as HTMLSelectElement).value).not.toBe(''),
-    )
+    await waitFor(() => expect(screen.getByLabelText('Received into')).not.toHaveValue(''))
     await fillPayment('A3', '900')
     await screen.findByRole('table', { name: 'Automatic allocation' }, { timeout: 4000 })
     await userEvent.click(screen.getByRole('button', { name: 'Choose charges myself' }))
@@ -85,15 +78,10 @@ describe('record a payment', () => {
   it('records a payment against a person (carried debt), not a unit side', async () => {
     const { db } = mountMoney('/orgs/org-1/money/payments/new')
     await screen.findByRole('heading', { name: 'Record a payment' })
-    await waitFor(() =>
-      expect((screen.getByLabelText('Received into') as HTMLSelectElement).value).not.toBe(''),
-    )
+    await waitFor(() => expect(screen.getByLabelText('Received into')).not.toHaveValue(''))
     await userEvent.selectOptions(screen.getByLabelText('For'), 'person')
     const person = await screen.findByLabelText('Person')
-    await userEvent.selectOptions(
-      person,
-      await within(person).findByRole('option', { name: 'Deniz Çelik' }),
-    )
+    await pick(person, 'Deniz Çelik')
     await userEvent.type(screen.getByLabelText('Amount'), '900')
     const table = await screen.findByRole(
       'table',
