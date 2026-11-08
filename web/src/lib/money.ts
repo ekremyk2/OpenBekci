@@ -44,8 +44,14 @@ export function formatMoney(
   return nf.format(minorToDecimalString(minor, digits) as unknown as number)
 }
 
-function separators(locale: string) {
-  const parts = new Intl.NumberFormat(locale, { useGrouping: true }).formatToParts(1234567.5)
+/** The locale's group and decimal separator characters. */
+export function separators(locale: string) {
+  let parts: Intl.NumberFormatPart[]
+  try {
+    parts = new Intl.NumberFormat(locale, { useGrouping: true }).formatToParts(1234567.5)
+  } catch {
+    parts = new Intl.NumberFormat('en', { useGrouping: true }).formatToParts(1234567.5)
+  }
   return {
     group: parts.find((p) => p.type === 'group')?.value ?? ',',
     decimal: parts.find((p) => p.type === 'decimal')?.value ?? '.',

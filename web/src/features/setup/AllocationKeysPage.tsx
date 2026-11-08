@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatch } from '@/api/draft'
+import { draftApi, ifMatchOf } from '@/api/draft'
 import { runWithReauth } from '@/app/reauth'
 import { useSession } from '@/app/session'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
@@ -82,7 +82,7 @@ export function AllocationKeysPage({ search }: { search: { site?: string; key?: 
       draftApi.DELETE('/v1/orgs/{org_id}/allocation-keys/{key_id}', {
         params: {
           path: { org_id: orgId, key_id: id },
-          header: ifMatch(keys.find((k) => k.id === id)?.version ?? '*'),
+          header: ifMatchOf(keys.find((k) => k.id === id)?.version),
         },
       }),
     onSuccess: () =>

@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import { draftApi } from '@/api/draft'
+import { fetchAllPages } from '@/lib/paging'
 
 export interface UnitFilters {
   siteId: string
@@ -35,6 +36,21 @@ export const unitQueries = {
         })
         return data!
       },
+    }),
+  /** Every unit of a site (cursor followed to the end, never truncated). */
+  all: (orgId: string, siteId: string, onProgress?: (loaded: number) => void) =>
+    queryOptions({
+      queryKey: ['tenancy.listUnits', orgId, 'all', siteId],
+      queryFn: () =>
+        fetchAllPages(
+          async (cursor) => {
+            const { data } = await draftApi.GET('/v1/orgs/{org_id}/units', {
+              params: { path: { org_id: orgId }, query: { site_id: siteId, cursor, limit: 200 } },
+            })
+            return data!
+          },
+          { onProgress },
+        ),
     }),
   one: (orgId: string, unitId: string) =>
     queryOptions({

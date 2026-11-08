@@ -21,7 +21,8 @@ import {
 } from '@/components/ui/table'
 import { parseFile, type ParsedTable } from '@/features/import/parse'
 import { unitQueries } from '@/features/units/queries'
-import { keyQueries, parsePasted, parseWeight } from './keys'
+import { useLocale } from '@/app/locale'
+import { formatWeight, keyQueries, parsePasted, parseWeight } from './keys'
 
 /** Per-unit value grid of one allocation key: inline edit, paste from a spreadsheet, CSV upload. */
 export function KeyValuesEditor({
@@ -36,11 +37,14 @@ export function KeyValuesEditor({
   canEdit: boolean
 }) {
   const { t } = useLingui()
+  const { intl } = useLocale()
   const queryClient = useQueryClient()
   const idem = useIdempotencyKey()
   const computed = allocationKey.kind === 'equal' || allocationKey.kind === 'area'
-  const valuesQ = useQuery(keyQueries.values(orgId, allocationKey.id))
-  const unitsQ = useQuery(unitQueries.list(orgId, { siteId }, 200))
+  const [loadedValues, setLoadedValues] = useState(0)
+  const [loadedUnits, setLoadedUnits] = useState(0)
+  const valuesQ = useQuery(keyQueries.values(orgId, allocationKey.id, setLoadedValues))
+  const unitsQ = useQuery(unitQueries.all(orgId, siteId, setLoadedUnits))
   // appurtenances have no weight of their own: they ride with their flat
   const units = useMemo(
     () => (unitsQ.data?.items ?? []).filter((u) => !u.parent_unit_id && u.status === 'active'),
@@ -54,14 +58,16 @@ export function KeyValuesEditor({
   const [syncedAt, setSyncedAt] = useState(0)
   if (valuesQ.data && valuesQ.dataUpdatedAt !== syncedAt) {
     setSyncedAt(valuesQ.dataUpdatedAt)
-    setDraft(Object.fromEntries(valuesQ.data.items.map((v) => [v.unit_id, String(v.value)])))
+    setDraft(
+      Object.fromEntries(valuesQ.data.items.map((v) => [v.unit_id, formatWeight(v.value, intl)])),
+    )
     setDirty(false)
   }
 
   const parsed = units.map((u) => ({
     unit: u,
     text: draft[u.id] ?? '',
-    n: parseWeight(draft[u.id] ?? ''),
+    n: parseWeight(draft[u.id] ?? '', intl),
   }))
   const invalid = parsed.filter((p) => p.text.trim() !== '' && (Number.isNaN(p.n) || p.n < 0))
   const missing = parsed.filter((p) => p.text.trim() === '')
@@ -77,15 +83,23 @@ export function KeyValuesEditor({
     if (rows.length <= 1 && !rows[0]?.door) return // a single value: normal paste
     e.preventDefault()
     const next: Record<string, string> = {}
+    const unmatched: string[] = []
     rows.forEach((r, i) => {
       const target = r.door
         ? units.find((u) => u.door_number.toLowerCase() === r.door!.toLowerCase())
         : units[index + i]
       if (target) next[target.id] = r.value
+      else unmatched.push(r.door ?? `#${i + 1}`)
     })
     setDraft((d) => ({ ...d, ...next }))
     setDirty(true)
-    setNotice(t`Pasted ${Object.keys(next).length} values. Check them, then save.`)
+    const count = Object.keys(next).length
+    const shown = unmatched.slice(0, 10).join(', ') + (unmatched.length > 10 ? ', …' : '')
+    setNotice(
+      unmatched.length === 0
+        ? t`Pasted ${count} values. Check them, then save.`
+        : t`Pasted ${count} values. ${unmatched.length} rows did not match a unit and were skipped: ${shown}. Check them, then save.`,
+    )
   }
 
   const save = useMutation({
@@ -114,7 +128,17 @@ export function KeyValuesEditor({
     },
   })
 
-  if (valuesQ.isLoading || unitsQ.isLoading) return <TableSkeleton rows={6} columns={3} />
+  if (valuesQ.isLoading || unitsQ.isLoading)
+    return (
+      <div className="grid gap-2">
+        <p role="status" className="text-sm text-muted-foreground">
+          <Trans>
+            Loading all units and values: {loadedUnits} units, {loadedValues} values so far.
+          </Trans>
+        </p>
+        <TableSkeleton rows={6} columns={3} />
+      </div>
+    )
   if (valuesQ.error || unitsQ.error)
     return (
       <ErrorState

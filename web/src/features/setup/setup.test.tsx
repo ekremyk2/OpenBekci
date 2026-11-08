@@ -39,15 +39,45 @@ describe('allocation keys editor', () => {
     await mountApp('/orgs/org-1/allocation-keys?key=key-heat')
     const first = await screen.findByLabelText('Value for A-1')
     first.focus()
-    fireEvent.paste(first, { clipboardData: { getData: () => 'A-1\t10,5\nB-1\t20\nZ-9\t5\n' } })
-    expect(await screen.findByLabelText('Value for A-1')).toHaveValue('10,5')
+    fireEvent.paste(first, { clipboardData: { getData: () => 'A-1\t10.5\nB-1\t20\nZ-9\t5\n' } })
+    expect(await screen.findByLabelText('Value for A-1')).toHaveValue('10.5')
     expect(screen.getByLabelText('Value for B-1')).toHaveValue('20')
-    expect(screen.getByText(/Pasted 2 values/)).toBeInTheDocument()
+    // the door number that matched no unit is reported, not dropped silently
+    expect(
+      screen.getByText(/Pasted 2 values\. 1 rows did not match a unit and were skipped: Z-9/),
+    ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Save values' }))
     await waitFor(() =>
       expect(db.keyValues['key-heat']).toEqual({ 'unit-a1': 10.5, 'unit-b1': 20 }),
     )
   })
+
+  it('pages through more than 200 units and saves a value for every one', async () => {
+    const total = 450
+    await mountApp('/orgs/org-1/allocation-keys?key=key-heat', {
+      seed: (d) => {
+        const template = d.units[0]!
+        for (let i = 0; i < total; i++)
+          d.units.push({ ...template, id: `bulk-${i}`, door_number: `Z${i}`, parent_unit_id: null })
+        d.keyValues['key-heat'] = Object.fromEntries(d.units.map((u) => [u.id, 1]))
+      },
+    })
+    const last = await screen.findByLabelText(`Value for Z${total - 1}`, undefined, {
+      timeout: 10000,
+    })
+    expect(last).toHaveValue('1')
+    expect(screen.getByLabelText('Value for Z199')).toBeInTheDocument()
+    expect(screen.getByLabelText('Value for Z200')).toBeInTheDocument()
+    await userEvent.clear(last)
+    await userEvent.type(last, '7')
+    await userEvent.click(screen.getByRole('button', { name: 'Save values' }))
+    await waitFor(() =>
+      expect(Object.keys(db.keyValues['key-heat']!).length).toBe(
+        db.units.filter((u) => !u.parent_unit_id && u.status === 'active').length,
+      ),
+    )
+    expect(db.keyValues['key-heat']![`bulk-${total - 1}`]).toBe(7)
+  }, 30000)
 
   it('uploads a per-unit table: dry run first, then apply', async () => {
     await mountApp('/orgs/org-1/allocation-keys?key=key-heat')
