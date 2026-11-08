@@ -1,23 +1,25 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { ArchiveIcon, ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react'
-import { apiDraft, ifMatch } from '@/api/draft'
+import { apiDraft, ifMatch, type Channel } from '@/api/draft'
 import { useSession } from '@/app/session'
+import { ConfirmDialog } from '@/components/data/ConfirmDialog'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { SiteDate } from '@/components/data/SiteDate'
-import { AttachmentGallery } from '@/components/files/AttachmentGallery'
+import { AttachmentGallery, type GalleryItem } from '@/components/files/AttachmentGallery'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSite } from '@/features/dashboard/site'
-import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
+import { usePayloadKeys, withIdempotencyKey } from '@/lib/idempotency'
 import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
 import { StatusLabel } from './AnnouncementsPage'
+import { PublishConfirmDialog } from './PublishConfirmDialog'
 
 const MarkdownView = lazy(() => import('./Markdown'))
 
@@ -95,6 +97,19 @@ function Reads({
   )
 }
 
+/**
+ * Gallery entries for an announcement. The contract lists `file_ids` only; when it grows inline
+ * file info (`files: [{ id, name, mime }]`) the names and thumbnails appear, until then each file
+ * is shown by id as a download.
+ */
+function galleryItems(x: { file_ids: string[] }): GalleryItem[] {
+  const files = (x as { files?: { id: string; name?: string; mime?: string }[] }).files
+  return x.file_ids.map((id) => {
+    const f = files?.find((candidate) => candidate.id === id)
+    return { id, fileId: id, mime: f?.mime ?? 'application/octet-stream', name: f?.name }
+  })
+}
+
 export function AnnouncementDetailPage({ announcementId }: { announcementId: string }) {
   const { t } = useLingui()
   const { org, can } = useSession()
@@ -104,7 +119,9 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
   const orgId = org?.id ?? ''
   const tz = site?.timezone ?? 'UTC'
   const canPublish = can('announcements.publish')
-  const publishKey = useIdempotencyKey()
+  const keyFor = usePayloadKeys()
+  const [confirmPublish, setConfirmPublish] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const query = useQuery({
     queryKey: ['operations.getAnnouncement', orgId, announcementId],
@@ -138,18 +155,22 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
     ])
 
   const publish = useMutation({
-    mutationFn: async () =>
+    // the channels the confirm dialog previewed are the channels sent
+    mutationFn: async (channels: Channel[]) =>
       must(
         await apiDraft.POST('/v1/orgs/{org_id}/announcements/{announcement_id}:publish', {
           params: {
             path: { org_id: orgId, announcement_id: announcementId },
-            // x-idempotent: required; one key per publish click (retries reuse it)
-            header: { 'Idempotency-Key': publishKey.key },
+            // x-idempotent: required; a retry of the same publish reuses the key
+            header: { 'Idempotency-Key': keyFor('publish', { announcementId, channels }) },
           },
-          body: {},
+          body: { channels },
         }),
       ),
-    onSuccess: refresh,
+    onSuccess: async () => {
+      setConfirmPublish(false)
+      await refresh()
+    },
     onError: () => toast.error(t`Could not publish. Please try again.`),
   })
   const archive = useMutation({
@@ -167,7 +188,7 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
       apiDraft.DELETE('/v1/orgs/{org_id}/announcements/{announcement_id}', {
         params: {
           path: { org_id: orgId, announcement_id: announcementId },
-          header: ifMatch(a?.version ?? 0),
+          header: ifMatch(a!.version),
         },
       }),
     onSuccess: async () => {
@@ -205,7 +226,7 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
       {canPublish ? (
         <div className="flex flex-wrap gap-2">
           {x.status === 'draft' ? (
-            <Button disabled={publish.isPending} onClick={() => publish.mutate()}>
+            <Button onClick={() => setConfirmPublish(true)}>
               <Trans>Publish now</Trans>
             </Button>
           ) : null}
@@ -228,10 +249,8 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
           {x.status === 'draft' || x.status === 'scheduled' ? (
             <Button
               variant="ghost"
-              disabled={remove.isPending}
-              onClick={() => {
-                if (window.confirm(t`Delete this announcement?`)) remove.mutate()
-              }}
+              disabled={remove.isPending || !a}
+              onClick={() => setConfirmDelete(true)}
             >
               <Trash2Icon aria-hidden="true" />
               <Trans>Delete</Trans>
@@ -245,12 +264,32 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
           <Suspense fallback={<Skeleton className="h-24 w-full" />}>
             <MarkdownView source={x.body_md} />
           </Suspense>
-          <AttachmentGallery
-            orgId={orgId}
-            items={x.file_ids.map((id) => ({ id, fileId: id, mime: 'application/octet-stream' }))}
-          />
+          <AttachmentGallery orgId={orgId} items={galleryItems(x)} />
         </CardContent>
       </Card>
+
+      {canPublish ? (
+        <>
+          <PublishConfirmDialog
+            open={confirmPublish}
+            onOpenChange={setConfirmPublish}
+            orgId={orgId}
+            announcement={x}
+            busy={publish.isPending}
+            onConfirm={(channels) => publish.mutate(channels)}
+          />
+          <ConfirmDialog
+            open={confirmDelete}
+            onOpenChange={setConfirmDelete}
+            title={<Trans>Delete this announcement?</Trans>}
+            description={<Trans>This cannot be undone.</Trans>}
+            confirmLabel={<Trans>Delete</Trans>}
+            destructive
+            busy={remove.isPending}
+            onConfirm={() => remove.mutate(undefined, { onSettled: () => setConfirmDelete(false) })}
+          />
+        </>
+      ) : null}
 
       {canPublish && x.status === 'published' ? (
         <>
