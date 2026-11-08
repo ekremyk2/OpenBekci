@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/httpapi"
 )
 
 // govMoney implements governance.DecisionEffects with the money module: adopting
@@ -23,6 +24,11 @@ import (
 type govMoney struct {
 	billing.GovernanceEffects
 	budgets money.BudgetFinalizer
+}
+
+// newDecisionEffects is the decision effects the server installs: the money module's.
+func newDecisionEffects(mny httpapi.MoneyDeps) governance.DecisionEffects {
+	return govMoney{GovernanceEffects: billing.GovernanceEffects{Billing: mny.Billing}, budgets: mny.Treasury}
 }
 
 // FinalizeBudget implements governance.DecisionEffects.
