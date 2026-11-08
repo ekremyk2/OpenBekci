@@ -59,19 +59,19 @@ func (s *Service) ListDirectory(ctx context.Context, orgID, siteID uuid.UUID, q 
 			return err
 		}
 		full := authz.Has(ctx, PermPersonRead, sc)
-		if !full && !site.TypedSettings().DirectoryEnabled && len(authz.GrantsFromContext(ctx).Current()) == 0 {
+		if !full && !site.TypedSettings().DirectoryEnabled {
 			return nil
 		}
-		var own []uuid.UUID
+		var own []string // "unit|side": own-unit entries cover the caller's own side only
 		for _, o := range authz.GrantsFromContext(ctx).Current() {
 			if o.SiteID == siteID {
-				own = append(own, o.UnitID)
+				own = append(own, o.UnitID.String()+"|"+string(o.Side))
 			}
 		}
 		qq := "%" + strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(strings.ToLower(strings.TrimSpace(q))) + "%"
 		rows, err := tx.Query(ctx, `
 			SELECT p.id, p.display_name, p.contact->>'phone', u.id, u.door_number, o.kind,
-			       COALESCE(c.share_name, false), COALESCE(c.share_phone, false), COALESCE(u.id = ANY($3), false)
+			       COALESCE(c.share_name, false), COALESCE(c.share_phone, false), COALESCE((u.id::text || '|' || o.side) = ANY($3::text[]), false)
 			FROM occupancy o
 			JOIN person p ON p.org_id = o.org_id AND p.id = o.person_id
 			JOIN unit u ON u.org_id = o.org_id AND u.id = o.unit_id

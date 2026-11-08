@@ -208,7 +208,7 @@ func (s *Service) GetPerson(ctx context.Context, orgID, personID uuid.UUID) (Per
 			return err
 		}
 		if !ok {
-			return problem.Forbidden("you do not have the person.read permission for this person")
+			return problem.NotFound("no such person")
 		}
 		out = s.finish(pr)
 		return nil

@@ -730,6 +730,11 @@ func (s *Service) MoveOutOccupancy(ctx context.Context, orgID, occID uuid.UUID, 
 				orgID, occ.UnitID, occ.Side, in.AsOf); err != nil {
 				return err
 			}
+		} else if _, err := tx.Exec(ctx, `UPDATE occupancy SET may_see_money = false, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND kind = 'household' AND may_see_money AND (valid_to IS NULL OR valid_to > $4)`,
+			orgID, occ.UnitID, occ.Side, in.AsOf); err != nil {
+			// household members who stay do not keep the previous holder's grant of money access
+			return err
 		}
 		var succ *uuid.UUID
 		if in.SuccessorPersonID != nil {

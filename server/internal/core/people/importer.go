@@ -111,7 +111,7 @@ type ImportReport struct {
 // with or without BOM) or XLSX (first sheet) file.
 func ParseSheet(filename string, data []byte) ([][]string, error) {
 	if strings.EqualFold(filepath.Ext(filename), ".xlsx") {
-		f, err := excelize.OpenReader(bytes.NewReader(data))
+		f, err := excelize.OpenReader(bytes.NewReader(data), excelize.Options{UnzipSizeLimit: 64 << 20, UnzipXMLSizeLimit: 32 << 20})
 		if err != nil {
 			return nil, problem.Validation(problem.Field{Field: "file", Code: "invalid_format"})
 		}
@@ -582,8 +582,9 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 			return err
 		}
 		type parsed struct {
-			row  *importRow
-			unit uuid.UUID
+			row    *importRow
+			unit   uuid.UUID
+			action string
 		}
 		var done []parsed
 		rep := ImportReport{DryRun: req.DryRun, Columns: used, Rows: []ImportRowReport{}}
@@ -647,7 +648,7 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 				msgs = []ImportMessage{}
 			}
 			rep.Rows = append(rep.Rows, ImportRowReport{Row: r.no, DoorNumber: r.door, Status: status, Action: action, Messages: msgs})
-			done = append(done, parsed{r, uid})
+			done = append(done, parsed{r, uid, action})
 		}
 		hasErrors := st.sum["rows_error"] > 0
 		rep.Summary = st.sum
@@ -691,6 +692,12 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 				if _, err := tx.Exec(ctx, `INSERT INTO import_row (id, org_id, site_id, batch_id, row_no, status, data, opening, unit_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 					id.New(), orgID, siteID, rep.BatchID, d.row.no, status, data, opening, d.unit); err != nil {
 					return err
+				}
+				if d.action == "create" || d.action == "update" {
+					rowDiff := audit.Changes{"row": audit.Change{After: json.RawMessage(strconv.Itoa(d.row.no))}, "batch_id": audit.Change{After: json.RawMessage(strconv.Quote(rep.BatchID.String()))}}
+					if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &siteID, Action: "unit.import_" + d.action, TargetType: "unit", TargetID: d.unit, Diff: rowDiff}); err != nil {
+						return err
+					}
 				}
 			}
 			diff := audit.Changes{}

@@ -209,6 +209,8 @@ CREATE INDEX unit_claim_org_site_status ON unit_claim (org_id, site_id, status);
 SELECT openbekci_enable_rls('unit_claim');
 
 -- +goose Down
+-- UNSUPPORTED after a site hand-over: ADD PRIMARY KEY (id) below fails once the same person or
+-- membership id exists in two organizations (identifiers are preserved across hand-overs). Restore from backup instead.
 DROP TABLE unit_claim;
 DROP TABLE invitation;
 DROP TABLE vendor;

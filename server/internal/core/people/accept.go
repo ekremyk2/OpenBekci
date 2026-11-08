@@ -198,7 +198,24 @@ func (s *Service) AcceptInvitation(ctx context.Context, token string, in AcceptI
 		err = tx.QueryRow(ctx, `SELECT id FROM person WHERE org_id = $1 AND user_id = $2`, orgID, res.UserID).Scan(&existing)
 		switch {
 		case err == nil:
-			personID = existing // the account already has a person here: the occupancy goes to it
+			// the account already has a person here: the occupancy goes to it and the
+			// invited person row (a duplicate holding the same contact details) is merged away
+			if personID != existing {
+				orphan := personID
+				personID = existing
+				if _, err := tx.Exec(ctx, `UPDATE invitation SET person_id = $3 WHERE org_id = $1 AND id = $2`, orgID, r.ID, existing); err != nil {
+					return err
+				}
+				sp, err := tx.Begin(ctx)
+				if err != nil {
+					return err
+				}
+				if _, err := sp.Exec(ctx, `DELETE FROM person WHERE org_id = $1 AND id = $2 AND user_id IS NULL`, orgID, orphan); err != nil {
+					_ = sp.Rollback(ctx) // still referenced elsewhere: keep it
+				} else if err := sp.Commit(ctx); err != nil {
+					return err
+				}
+			}
 		case errors.Is(err, pgx.ErrNoRows):
 			tag, err := tx.Exec(ctx, `UPDATE person SET user_id = $3, updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2 AND user_id IS NULL`, orgID, personID, res.UserID)
 			if err != nil {
