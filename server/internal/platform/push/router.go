@@ -323,7 +323,7 @@ func directTransport(allowPrivate bool) http.RoundTripper {
 			return errBlockedAddress
 		}
 		ip := net.ParseIP(host)
-		if ip == nil || ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() || ip.IsMulticast() {
+		if ip == nil || ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() || ip.IsMulticast() || blockedNet(ip) {
 			return errBlockedAddress
 		}
 		return nil
@@ -331,6 +331,27 @@ func directTransport(allowPrivate bool) http.RoundTripper {
 	t.DialContext = d.DialContext
 	t.Proxy = nil
 	return t
+}
+
+// blockedRanges are special-purpose ranges net.IP does not classify: carrier
+// grade NAT, IETF protocol assignments, benchmarking, reserved and the NAT64
+// well-known prefix (which can reach IPv4 private hosts).
+var blockedRanges = func() []*net.IPNet {
+	var out []*net.IPNet
+	for _, c := range []string{"100.64.0.0/10", "192.0.0.0/24", "198.18.0.0/15", "240.0.0.0/4", "64:ff9b::/96"} {
+		_, n, _ := net.ParseCIDR(c)
+		out = append(out, n)
+	}
+	return out
+}()
+
+func blockedNet(ip net.IP) bool {
+	for _, n := range blockedRanges {
+		if n.Contains(ip) {
+			return true
+		}
+	}
+	return false
 }
 
 // errClass is a short, secret-free description of a transport error.

@@ -63,6 +63,11 @@ describe('/login/link/$token', () => {
     '/login',
     '/settings',
     `/orgs/${ORG}/../../login`,
+    String.raw`/\evil.example`,
+    'javascript:alert(1)',
+    '%2F%2Fevil.example',
+    '/orgs/x/../..',
+    `/orgs/${ORG}%2F..%2F..%2Flogin`,
   ])('ignores an external or out-of-tree next (%s)', async (next) => {
     exchangeServer({ ok: true })
     const router = await mount(`/login/link/tok-1?next=${encodeURIComponent(next)}`)

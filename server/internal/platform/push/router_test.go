@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -130,5 +131,18 @@ func TestLogSender(t *testing.T) {
 func TestGenericTitleKey(t *testing.T) {
 	if got := GenericTitleKey("visitor.approval_requested"); got != "push.visitor_approval_requested" {
 		t.Fatal(got)
+	}
+}
+
+func TestBlockedNet(t *testing.T) {
+	for _, a := range []string{"100.64.0.1", "100.127.255.254", "198.18.0.1", "192.0.0.8", "240.0.0.1", "64:ff9b::a00:1"} {
+		if !blockedNet(net.ParseIP(a)) {
+			t.Errorf("%s should be blocked", a)
+		}
+	}
+	for _, a := range []string{"8.8.8.8", "93.184.216.34", "2606:4700::1111"} {
+		if blockedNet(net.ParseIP(a)) {
+			t.Errorf("%s should be allowed", a)
+		}
 	}
 }
