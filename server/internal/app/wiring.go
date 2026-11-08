@@ -73,7 +73,10 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 // credentials come from the community module once it supplies a source (until
 // then the projector handles vehicles only).
 func newAccess(cfg Config, log *slog.Logger, d *db.DB) (*access.Service, error) {
-	acfg := access.Config{BaseURL: cfg.BaseURL, InsecureDev: cfg.InsecureDev, Log: log}
+	acfg := access.Config{
+		BaseURL: cfg.BaseURL, InsecureDev: cfg.InsecureDev, Log: log, MaxSnapshotEntries: cfg.AccessMaxSnapshotEntries,
+		SnapshotPartEntries: cfg.AccessSnapshotPartEntries, SnapshotPartBytes: cfg.AccessSnapshotPartBytes,
+	}
 	if len(cfg.EncryptionKey) > 0 {
 		sealer, err := crypto.NewFieldCipher(cfg.EncryptionKey, "access.agent_token")
 		if err != nil {

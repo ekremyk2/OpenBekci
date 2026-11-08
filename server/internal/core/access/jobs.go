@@ -118,7 +118,10 @@ type activateWorker struct {
 }
 
 func (w *activateWorker) Work(ctx context.Context, _ *river.Job[ActivateArgs]) error {
-	_, err := w.s.MarkDueOccupancies(ctx)
+	if _, err := w.s.MarkDueOccupancies(ctx); err != nil {
+		return err
+	}
+	_, err := w.s.ClearSealedRotations(ctx)
 	return err
 }
 

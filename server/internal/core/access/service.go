@@ -68,6 +68,14 @@ type Config struct {
 	Log    *slog.Logger
 	// Now is the clock; nil means time.Now.
 	Now func() time.Time
+	// MaxSnapshotEntries is the largest allow-list (published credentials of one
+	// site) the server sends as a snapshot; a larger site cannot sync and the
+	// session errors on every tick. Default DefaultMaxSnapshotEntries (20 000).
+	MaxSnapshotEntries int
+	// SnapshotPartEntries and SnapshotPartBytes bound one snapshot part (default
+	// 2000 entries, the protocol limit, and 900 000 bytes of JSON, under the 1 MiB frame limit).
+	SnapshotPartEntries int
+	SnapshotPartBytes   int
 }
 
 // Timings of the protocol (design 4 and 8).
@@ -82,6 +90,17 @@ const (
 	ClockBlockOffset   = 24 * time.Hour
 	ChangeLogRetention = 7 * 24 * time.Hour
 	ChangeLogKeep      = 50000
+	// MaxEventAge is the oldest occurred_at (after clock correction) the server
+	// accepts; older events are rejected `invalid`.
+	MaxEventAge = 30 * 24 * time.Hour
+)
+
+// Poll rate limit of one agent: a burst that covers the agent's worst case after
+// an outage (hello, a snapshot's parts' acks, and five event batches in flight, each
+// its own request, plus their acks and a heartbeat) and a sustained 4 requests per second.
+const (
+	PollBurst    = 12
+	PollInterval = 250 * time.Millisecond
 )
 
 // Service is the access module.
@@ -105,6 +124,9 @@ func NewService(db DB, cfg Config) *Service {
 	if cfg.Source == nil {
 		cfg.Source = VehiclesOnly{}
 	}
+	if cfg.MaxSnapshotEntries <= 0 {
+		cfg.MaxSnapshotEntries = DefaultMaxSnapshotEntries
+	}
 	s := &Service{
 		db: db, cfg: cfg,
 		openUser:   ratelimit.New(10, 6*time.Second),       // 10/min per user
@@ -112,9 +134,11 @@ func NewService(db DB, cfg Config) *Service {
 		openSite:   ratelimit.New(60, time.Second),         // 60/min per site
 		enrolLimit: ratelimit.New(10, 6*time.Second),       // 10/min per IP
 		wsLimit:    ratelimit.New(20, 3*time.Second),       // 20/min per agent
-		pollLimit:  ratelimit.New(8, 250*time.Millisecond), // 4/s per agent
+		pollLimit:  ratelimit.New(PollBurst, PollInterval),   // 4/s per agent, burst for hello + 5 batches
 	}
-	s.hub = session.NewManager(&backend{s: s}, session.Options{Now: cfg.Now, Log: cfg.Log})
+	s.hub = session.NewManager(&backend{s: s}, session.Options{
+		Now: cfg.Now, Log: cfg.Log, SnapshotPartEntries: cfg.SnapshotPartEntries, SnapshotPartBytes: cfg.SnapshotPartBytes,
+	})
 	return s
 }
 

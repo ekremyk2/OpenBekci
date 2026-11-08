@@ -630,6 +630,9 @@ type Command struct {
 
 	// update_config
 	ConfigVersion *int64        `json:"config_version,omitempty"`
+	// RotateNow asks the agent to rotate its token now (an administrator forced it
+	// while the agent was connected); the same flag is in the server hello.
+	RotateNow bool `json:"rotate_now,omitempty"`
 	Site          *Site         `json:"site,omitempty"`
 	Points        []PointConfig `json:"points,omitempty"`
 	Settings      *Settings     `json:"settings,omitempty"`

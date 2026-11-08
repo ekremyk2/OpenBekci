@@ -35,6 +35,11 @@ func (s *Service) Mount(r chi.Router) {
 	r.Post("/v1/agent/token:rotate", s.handleRotate)
 }
 
+// clientIP is the key of the enrol rate limit (10 per minute). It is the peer
+// address, which the router's real-IP middleware replaces with the client's
+// X-Forwarded-For address only when the peer is in OPENBEKCI_TRUSTED_PROXIES.
+// Without TRUSTED_PROXIES behind a reverse proxy every enrolment comes from the
+// proxy's address and shares one budget; set it so each site is limited alone.
 func clientIP(r *http.Request) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {

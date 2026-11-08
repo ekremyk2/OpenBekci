@@ -40,8 +40,12 @@ const (
 	StatusExpired   = "expired"
 )
 
-// MaxSnapshotEntries is the size the server refuses to go beyond (design 6.5).
-const MaxSnapshotEntries = 20000
+// DefaultMaxSnapshotEntries is the size of an allow-list the server refuses to go
+// beyond (design 6.5); Config.MaxSnapshotEntries changes it. A site above it can
+// never sync (an error on every session tick), so raise it, or cut the list, before
+// a site grows past it. One snapshot part carries at most 2000 entries (the
+// protocol's limit), so 20 000 entries are 10 parts.
+const DefaultMaxSnapshotEntries = 20000
 
 // pointRow is an access point as the allow-list and the configuration need it.
 type pointRow struct {
@@ -281,7 +285,7 @@ func siteVersion(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int64
 // loadSnapshot reads the complete allow-list at one consistent version: the
 // share lock on the version row holds writers (who take it FOR UPDATE through
 // the version bump) off until the entries are read.
-func loadSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int64, []protocol.Entry, error) {
+func loadSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, limit int) (int64, []protocol.Entry, error) {
 	if err := ensureState(ctx, tx, orgID, siteID); err != nil {
 		return 0, nil, err
 	}
@@ -290,7 +294,7 @@ func loadSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int6
 		return 0, nil, err
 	}
 	rows, err := tx.Query(ctx, `SELECT published FROM credential WHERE org_id = $1 AND site_id = $2 AND published IS NOT NULL ORDER BY id LIMIT $3`,
-		orgID, siteID, MaxSnapshotEntries+1)
+		orgID, siteID, limit+1)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -310,8 +314,8 @@ func loadSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int6
 	if err := rows.Err(); err != nil {
 		return 0, nil, err
 	}
-	if len(entries) > MaxSnapshotEntries {
-		return 0, nil, fmt.Errorf("the allow-list of site %s exceeds %d entries", siteID, MaxSnapshotEntries)
+	if len(entries) > limit {
+		return 0, nil, fmt.Errorf("the allow-list of site %s exceeds %d entries", siteID, limit)
 	}
 	return v, entries, nil
 }

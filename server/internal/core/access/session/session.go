@@ -41,6 +41,8 @@ type HelloInfo struct {
 type ConfigInfo struct {
 	Version int64
 	Command protocol.Command
+	// RotateNow is true while an administrator's forced rotation is pending.
+	RotateNow bool
 }
 
 // SnapshotData is the complete allow-list at Version.
@@ -74,6 +76,9 @@ type Backend interface {
 	Deltas(ctx context.Context, ref Ref, from int64) (deltas []protocol.Delta, ok bool, err error)
 	// Heartbeat records a heartbeat (last_seen, flags, drivers, clock offset).
 	Heartbeat(ctx context.Context, ref Ref, h protocol.Heartbeat, now time.Time) error
+	// Status is the agent's current status in the database ("active", "revoked", ...):
+	// a revocation on another replica reaches a connected session through it.
+	Status(ctx context.Context, ref Ref) (string, error)
 	// Touch records contact (last_seen) without anything else.
 	Touch(ctx context.Context, ref Ref, now time.Time) error
 	// Events ingests the valid events of a batch and reports each one.
@@ -97,6 +102,13 @@ type Options struct {
 	SyncEvery time.Duration
 	// TouchEvery bounds last_seen writes for ordinary frames (default 10 s).
 	TouchEvery time.Duration
+	// StatusEvery is how often a session re-reads the agent's status from the
+	// database (default 30 s, the heartbeat interval); a heartbeat always does.
+	StatusEvery time.Duration
+	// SnapshotPartEntries is the most entries in one snapshot part (default
+	// protocol.MaxSnapshotEntries); SnapshotPartBytes bounds a part's JSON (default 900 000).
+	SnapshotPartEntries int
+	SnapshotPartBytes   int
 }
 
 // Kinds of transport.
@@ -125,6 +137,8 @@ type Session struct {
 	haveSnap   int64 // version the agent said it has, then what we last sent
 	sentSnap   int64
 	sentCfg    int64
+	sentRotate bool      // the pending forced rotation was pushed (or told in the hello)
+	statusAt   time.Time // when the agent's status was last read from the database
 	forceSnap  bool
 	allowLower bool
 	lastTouch  time.Time
@@ -371,6 +385,8 @@ func (s *Session) onHello(ctx context.Context, env protocol.Envelope) error {
 	s.lastTouch = now
 	s.haveSnap, s.sentSnap = h.SnapshotVersion, h.SnapshotVersion
 	s.sentCfg = h.ConfigVersion
+	s.sentRotate = info.RotateNow
+	s.statusAt = now
 	s.forceSnap = false
 	s.allowLower = true // a lower snapshot is legitimate right after hello
 	s.enqueue(out)
@@ -389,6 +405,9 @@ func (s *Session) onHeartbeat(ctx context.Context, env protocol.Envelope, now ti
 	}
 	if err := s.m.b.Heartbeat(ctx, s.Ref, *hb, now); err != nil {
 		s.m.opt.Log.Warn("heartbeat not recorded", "agent", s.Ref.AgentID, "error", err)
+	}
+	if s.revokedLocked(ctx, now, true) {
+		return nil
 	}
 	s.lastTouch = now
 	// A heartbeat is answered: it is the contact the agent's grace clock runs on.
@@ -487,11 +506,55 @@ func (s *Session) Tick(ctx context.Context) error {
 	return s.syncLocked(ctx, s.m.opt.Now())
 }
 
+// revokedLocked re-reads the agent's status from the database (at most once per
+// heartbeat interval unless force is set): when it is no longer active, for
+// example because another replica revoked it, the agent is told and the
+// session closed. procMu is held.
+func (s *Session) revokedLocked(ctx context.Context, now time.Time, force bool) bool {
+	if _, closing := s.Closing(); closing {
+		return true
+	}
+	if !force && now.Sub(s.statusAt) < s.m.opt.StatusEvery {
+		return false
+	}
+	st, err := s.m.b.Status(ctx, s.Ref)
+	if err != nil {
+		return false // the database is unavailable: keep the session, look again next time
+	}
+	s.statusAt = now
+	if st == "active" {
+		return false
+	}
+	if env, err := protocol.New(protocol.TypeCommand, protocol.Command{Command: protocol.CmdRevoked}, now); err == nil {
+		s.enqueue(env)
+	}
+	s.CloseWith(protocol.CloseRevoked, "revoked")
+	return true
+}
+
 func (s *Session) syncLocked(ctx context.Context, now time.Time) error {
 	b := s.m.b
+	if s.revokedLocked(ctx, now, false) {
+		return nil
+	}
 	cfg, err := b.Config(ctx, s.Ref)
 	if err != nil {
 		return err
+	}
+	if cfg.RotateNow && !s.sentRotate {
+		// a forced rotation while connected: push it as update_config (current version)
+		cmd := cfg.Command
+		cmd.RotateNow = true
+		env, err := protocol.NewWithID(protocol.NewID(), protocol.TypeCommand, cmd, now)
+		if err != nil {
+			return err
+		}
+		s.remember(env.ID, "config")
+		s.cfgOf[env.ID] = cfg.Version
+		s.sentRotate = true
+		s.enqueue(env)
+	} else if !cfg.RotateNow {
+		s.sentRotate = false
 	}
 	if cfg.Version != s.sentCfg {
 		env, err := protocol.NewWithID(protocol.NewID(), protocol.TypeCommand, cfg.Command, now)
@@ -565,7 +628,7 @@ func (s *Session) syncAllowlist(ctx context.Context, now time.Time) error {
 		return nil
 	}
 	s.allowLower = false
-	parts := splitEntries(snap.Entries, protocol.MaxSnapshotEntries)
+	parts := splitEntries(snap.Entries, s.m.opt.SnapshotPartEntries, s.m.opt.SnapshotPartBytes)
 	for i, entries := range parts {
 		env, err := protocol.NewWithID(protocol.NewID(), protocol.TypeSnapshot, protocol.Snapshot{
 			Version: snap.Version, Part: i + 1, Parts: len(parts), Site: protocol.Site{Timezone: snap.Timezone}, Entries: entries,
@@ -581,12 +644,12 @@ func (s *Session) syncAllowlist(ctx context.Context, now time.Time) error {
 	return nil
 }
 
-// maxPartBytes keeps one snapshot frame well under the 1 MiB frame limit.
-const maxPartBytes = 900_000
+// DefaultPartBytes keeps one snapshot frame well under the 1 MiB frame limit.
+const DefaultPartBytes = 900_000
 
 // splitEntries cuts entries into parts of at most n entries and about
 // maxPartBytes of JSON (at least one part, even for an empty list).
-func splitEntries(entries []protocol.Entry, n int) [][]protocol.Entry {
+func splitEntries(entries []protocol.Entry, n, maxPartBytes int) [][]protocol.Entry {
 	if len(entries) == 0 {
 		return [][]protocol.Entry{{}}
 	}

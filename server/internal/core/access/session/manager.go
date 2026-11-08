@@ -38,6 +38,15 @@ func NewManager(b Backend, opt Options) *Manager {
 	if opt.TouchEvery == 0 {
 		opt.TouchEvery = 10 * time.Second
 	}
+	if opt.StatusEvery == 0 {
+		opt.StatusEvery = 30 * time.Second
+	}
+	if opt.SnapshotPartEntries <= 0 || opt.SnapshotPartEntries > protocol.MaxSnapshotEntries {
+		opt.SnapshotPartEntries = protocol.MaxSnapshotEntries // the agent protocol's own limit per part
+	}
+	if opt.SnapshotPartBytes <= 0 {
+		opt.SnapshotPartBytes = DefaultPartBytes
+	}
 	return &Manager{b: b, opt: opt, byAgent: map[uuid.UUID]*Session{}}
 }
 

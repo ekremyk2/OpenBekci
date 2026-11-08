@@ -456,6 +456,7 @@ func (s *Service) ForceRotation(ctx context.Context, orgID, agentID uuid.UUID) (
 	if err != nil {
 		return Agent{}, dbProblem(err, "agent")
 	}
+	s.hub.NotifyAgent(agentID) // a connected agent is told now (update_config rotate_now), not at its next hello
 	return out, nil
 }
 

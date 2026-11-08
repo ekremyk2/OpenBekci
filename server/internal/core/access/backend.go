@@ -116,9 +116,17 @@ func (b *backend) Config(ctx context.Context, ref session.Ref) (session.ConfigIn
 			return err
 		}
 		out = session.ConfigInfo{Version: v, Command: cfg.updateConfigFor(v, ref.SiteID, ref.AgentID)}
-		return nil
+		return tx.QueryRow(ctx, `SELECT rotate_now FROM agent WHERE org_id = $1 AND id = $2`, ref.OrgID, ref.AgentID).Scan(&out.RotateNow)
 	})
 	return out, err
+}
+
+func (b *backend) Status(ctx context.Context, ref session.Ref) (string, error) {
+	var st string
+	err := b.s.db.InTenantTx(ctx, ref.OrgID, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx, `SELECT status FROM agent WHERE org_id = $1 AND id = $2`, ref.OrgID, ref.AgentID).Scan(&st)
+	})
+	return st, err
 }
 
 func (b *backend) SiteVersion(ctx context.Context, ref session.Ref) (int64, error) {
@@ -133,7 +141,7 @@ func (b *backend) SiteVersion(ctx context.Context, ref session.Ref) (int64, erro
 func (b *backend) Snapshot(ctx context.Context, ref session.Ref) (session.SnapshotData, error) {
 	var out session.SnapshotData
 	err := b.s.db.InTenantTx(ctx, ref.OrgID, func(tx pgx.Tx) error {
-		v, entries, err := loadSnapshot(ctx, tx, ref.OrgID, ref.SiteID)
+		v, entries, err := loadSnapshot(ctx, tx, ref.OrgID, ref.SiteID, b.s.cfg.MaxSnapshotEntries)
 		if err != nil {
 			return err
 		}
@@ -232,6 +240,11 @@ func (b *backend) Events(ctx context.Context, ref session.Ref, offsetMS *int64, 
 				}
 			}
 			occurred, rawReported := correctOccurred(e.OccurredAt.Time, offsetMS, now)
+			if occurred.Before(now.Add(-MaxEventAge)) {
+				// older than the window a sane agent queues for: it would be pruned at once and skew time filters
+				detail.Rejected = append(detail.Rejected, protocol.Rejection{ID: e.ID, Code: protocol.RejectInvalid})
+				continue
+			}
 			payload, err := eventPayload(e.Detail, rawReported)
 			if err != nil {
 				detail.Rejected = append(detail.Rejected, protocol.Rejection{ID: e.ID, Code: protocol.RejectInvalid})

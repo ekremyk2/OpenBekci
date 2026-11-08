@@ -40,6 +40,12 @@ type Config struct {
 	// zero means the httpapi default (1 MiB). File uploads get their own limit.
 	MaxBodyBytes int64
 
+	// Access control: the largest allow-list of one site that is sent as a snapshot
+	// (OPENBEKCI_ACCESS_MAX_SNAPSHOT_ENTRIES, default 20000), and the size of one
+	// snapshot part (OPENBEKCI_ACCESS_SNAPSHOT_PART_ENTRIES, at most 2000, the protocol
+	// limit; OPENBEKCI_ACCESS_SNAPSHOT_PART_BYTES, default 900000). Zero means the default.
+	AccessMaxSnapshotEntries, AccessSnapshotPartEntries, AccessSnapshotPartBytes int
+
 	// Worker runs the job worker inside serve.
 	Worker      bool
 	AutoMigrate bool
@@ -169,6 +175,23 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("%sMAX_BODY_BYTES: %q is not a positive integer", envPrefix, v)
 		}
 		c.MaxBodyBytes = n
+	}
+
+	for _, o := range []struct {
+		name string
+		dst  *int
+	}{
+		{"ACCESS_MAX_SNAPSHOT_ENTRIES", &c.AccessMaxSnapshotEntries},
+		{"ACCESS_SNAPSHOT_PART_ENTRIES", &c.AccessSnapshotPartEntries},
+		{"ACCESS_SNAPSHOT_PART_BYTES", &c.AccessSnapshotPartBytes},
+	} {
+		if v := l.must(o.name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil || n < 1 {
+				return Config{}, fmt.Errorf("%s%s: %q is not a positive integer", envPrefix, o.name, v)
+			}
+			*o.dst = n
+		}
 	}
 
 	switch w := strings.ToLower(l.must("WORKER")); w {

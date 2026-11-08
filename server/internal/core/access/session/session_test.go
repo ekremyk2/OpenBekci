@@ -30,6 +30,8 @@ type fake struct {
 	events    [][]protocol.Event
 	heartbeat int
 	calls     []string
+	revoked   bool // the agent's status in the "database"
+	rotateNow bool
 }
 
 func (f *fake) log(s string) { f.mu.Lock(); f.calls = append(f.calls, s); f.mu.Unlock() }
@@ -44,7 +46,7 @@ func (f *fake) Config(context.Context, session.Ref) (session.ConfigInfo, error) 
 	defer f.mu.Unlock()
 	v := f.cfg
 	site := protocol.Site{ID: f.site.String(), Timezone: "Europe/Istanbul"}
-	return session.ConfigInfo{Version: v, Command: protocol.Command{Command: protocol.CmdUpdateConfig, ConfigVersion: &v, Site: &site,
+	return session.ConfigInfo{RotateNow: f.rotateNow, Version: v, Command: protocol.Command{Command: protocol.CmdUpdateConfig, ConfigVersion: &v, Site: &site,
 		Points: []protocol.PointConfig{}, Settings: &protocol.Settings{OfflineGraceHours: 72, PlateMatch: "exact", HeartbeatSeconds: 30}}}, nil
 }
 
@@ -75,6 +77,15 @@ func (f *fake) Heartbeat(context.Context, session.Ref, protocol.Heartbeat, time.
 	return nil
 }
 func (f *fake) Touch(context.Context, session.Ref, time.Time) error { return nil }
+
+func (f *fake) Status(context.Context, session.Ref) (string, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.revoked {
+		return "revoked", nil
+	}
+	return "active", nil
+}
 
 func (f *fake) Events(_ context.Context, _ session.Ref, _ *int64, ev []protocol.Event, _ time.Time) (protocol.EventAckDetail, error) {
 	f.mu.Lock()
@@ -488,4 +499,96 @@ func TestWakeChannelFiresOnEnqueue(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("a site notification must wake the session")
 	}
+}
+
+// A revocation made elsewhere (another replica) reaches a connected session with
+// its next heartbeat: the agent is told and the session closed with 4401.
+func TestHeartbeatRechecksTheAgentStatus(t *testing.T) {
+	r := newRig(t)
+	s := r.m.Open(r.ref, session.KindWS)
+	if err := r.hello(s, 3, 5); err != nil {
+		t.Fatal(err)
+	}
+	s.Drain(0)
+	hb, err := protocol.New(protocol.TypeHeartbeat, protocol.Heartbeat{Drivers: []protocol.DriverState{}}, r.now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Handle(context.Background(), hb); err != nil {
+		t.Fatal(err)
+	}
+	if _, closing := s.Closing(); closing {
+		t.Fatal("an active agent was closed")
+	}
+	r.f.mu.Lock()
+	r.f.revoked = true
+	r.f.mu.Unlock()
+	if err := s.Handle(context.Background(), hb); err != nil {
+		t.Fatal(err)
+	}
+	c, closing := s.Closing()
+	if !closing || c.Code != protocol.CloseRevoked {
+		t.Fatalf("closing = %v %+v", closing, c)
+	}
+	msgs, _ := s.Drain(0)
+	found := false
+	for _, k := range kinds(msgs) {
+		if k == "command:revoked" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("the agent was not told it is revoked: %v", kinds(msgs))
+	}
+}
+
+// Between heartbeats the periodic sync re-reads the status too (at most every StatusEvery).
+func TestSyncRechecksTheStatusAfterTheInterval(t *testing.T) {
+	r := newRig(t)
+	s := r.m.Open(r.ref, session.KindWS)
+	if err := r.hello(s, 3, 5); err != nil {
+		t.Fatal(err)
+	}
+	r.f.mu.Lock()
+	r.f.revoked = true
+	r.f.mu.Unlock()
+	r.now = r.now.Add(5 * time.Second)
+	_ = s.Tick(context.Background())
+	if _, closing := s.Closing(); closing {
+		t.Fatal("the status was re-read before the interval")
+	}
+	r.now = r.now.Add(time.Minute)
+	_ = s.Tick(context.Background())
+	if c, closing := s.Closing(); !closing || c.Code != protocol.CloseRevoked {
+		t.Fatalf("closing = %v %+v", closing, c)
+	}
+}
+
+// A forced rotation while the agent is connected is pushed as update_config with rotate_now.
+func TestForcedRotationIsPushedWhileConnected(t *testing.T) {
+	r := newRig(t)
+	s := r.m.Open(r.ref, session.KindWS)
+	if err := r.hello(s, 3, 5); err != nil {
+		t.Fatal(err)
+	}
+	s.Drain(0)
+	r.f.mu.Lock()
+	r.f.rotateNow = true
+	r.f.mu.Unlock()
+	if err := s.Tick(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	msgs, _ := s.Drain(0)
+	eq(t, kinds(msgs), []string{"command:update_config"})
+	var c protocol.Command
+	_ = json.Unmarshal(msgs[0].Payload, &c)
+	if !c.RotateNow {
+		t.Fatalf("rotate_now missing: %s", msgs[0].Payload)
+	}
+	// pushed once, not on every tick
+	if err := s.Tick(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	msgs, _ = s.Drain(0)
+	eq(t, kinds(msgs), nil)
 }

@@ -656,6 +656,22 @@ func (s *Service) MarkDueOccupancies(ctx context.Context) (int64, error) {
 	return n, err
 }
 
+// ClearSealedRotations erases the sealed rotated token of agents whose
+// 10-minute window has passed: it is only kept to answer the idempotent retry.
+func (s *Service) ClearSealedRotations(ctx context.Context) (int64, error) {
+	var n int64
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		ct, err := tx.Exec(ctx, `UPDATE agent SET rotation_sealed = NULL
+			WHERE rotation_sealed IS NOT NULL AND (previous_valid_until IS NULL OR previous_valid_until <= $1)`, s.now())
+		if err != nil {
+			return err
+		}
+		n = ct.RowsAffected()
+		return nil
+	})
+	return n, err
+}
+
 // DirtySites are the sites with queued sources.
 func (s *Service) DirtySites(ctx context.Context) ([]Site, error) {
 	return s.sites(ctx, `SELECT DISTINCT org_id, site_id FROM access_dirty ORDER BY 1, 2 LIMIT 200`)
