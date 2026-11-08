@@ -19,6 +19,8 @@ const buttonVariants = cva(
         default: 'h-9 px-4 py-2',
         sm: 'h-8 gap-1.5 px-3',
         lg: 'h-10 px-6',
+        // touch devices at the gate booth: 56 px, above the 48 px minimum target
+        xl: 'h-14 px-8 text-base',
         icon: 'size-9',
       },
     },

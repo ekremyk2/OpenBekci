@@ -2,8 +2,8 @@ import { useSyncExternalStore } from 'react'
 import createClient, { type Middleware } from 'openapi-fetch'
 import { i18n } from '@lingui/core'
 import type { paths } from '@/api/draft'
+import { createMiddleware } from '@/api/client'
 import { appErrorFromResponse } from '@/api/errors'
-import { emitApiEvent } from '@/api/events'
 import { idempotentOperations } from '@/api/idempotent.gen'
 
 /**
@@ -71,36 +71,44 @@ const NO_GUARD_HEADER = new Set([
   '/v1/orgs/{org_id}/gate/guards',
 ])
 
-export function createGuardMiddleware(getToken: () => string | null, onSessionLost: () => void): Middleware {
+type RequestCtx = Parameters<NonNullable<Middleware['onRequest']>>[0]
+type ResponseCtx = Parameters<NonNullable<Middleware['onResponse']>>[0]
+
+/**
+ * The shared middleware (Accept-Language, CSRF marker, idempotency enforcement, If-Match
+ * translation, reauth and version-conflict events) plus the guard header. Only `invalid_grant` is
+ * handled here: it is the answer for a wrong PIN and for an expired or ended guard session, so it
+ * must never sign the whole booth out, only ask for a PIN again.
+ */
+export function createGuardMiddleware(
+  getToken: () => string | null,
+  onSessionLost: () => void,
+): Middleware {
+  const shared = createMiddleware({
+    getLocale: () => i18n.locale || 'en',
+    idempotent: idempotentOperations,
+  })
   return {
-    onRequest({ request, schemaPath }) {
-      const h = request.headers
-      h.set('Accept-Language', i18n.locale || 'en')
-      h.set('X-Requested-With', 'openbekci-web')
+    onRequest(ctx: RequestCtx) {
       const token = getToken()
-      if (token && !NO_GUARD_HEADER.has(schemaPath)) h.set(GUARD_HEADER, token)
-      if (idempotentOperations.has(`${request.method.toUpperCase()} ${schemaPath}`) && !h.has('Idempotency-Key')) {
-        throw new Error(`${request.method} ${schemaPath} is idempotent and needs an Idempotency-Key`)
-      }
-      return request
+      if (token && !NO_GUARD_HEADER.has(ctx.schemaPath))
+        ctx.request.headers.set(GUARD_HEADER, token)
+      return shared.onRequest!(ctx)
     },
-    async onResponse({ response, schemaPath }) {
-      if (response.ok) return undefined
+    async onResponse(ctx: ResponseCtx) {
+      if (ctx.response.ok) return undefined
       let body: unknown
       try {
-        body = await response.clone().json()
+        body = await ctx.response.clone().json()
       } catch {
         /* non-JSON error body */
       }
-      const error = appErrorFromResponse(response, body)
-      if (error.status === 401) {
-        // `invalid_grant` is the answer for a wrong PIN and for an expired or ended guard session:
-        // it must never sign the whole booth out, only ask for a PIN again.
-        if (error.code === 'invalid_grant') {
-          if (!NO_GUARD_HEADER.has(schemaPath)) onSessionLost()
-        } else emitApiEvent({ type: 'unauthorized', error })
-      } else if (error.isRateLimited) emitApiEvent({ type: 'rate-limited', error })
-      throw error
+      const error = appErrorFromResponse(ctx.response, body)
+      if (error.status === 401 && error.code === 'invalid_grant') {
+        if (!NO_GUARD_HEADER.has(ctx.schemaPath)) onSessionLost()
+        throw error
+      }
+      return shared.onResponse!(ctx)
     },
   }
 }

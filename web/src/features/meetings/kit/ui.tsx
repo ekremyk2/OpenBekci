@@ -356,4 +356,3 @@ export function ConfirmDialog({
 export function DateField(props: Omit<React.ComponentProps<typeof Input>, 'type'>) {
   return <Input type="date" dir="ltr" {...props} />
 }
-

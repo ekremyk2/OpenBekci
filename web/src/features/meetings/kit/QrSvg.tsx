@@ -6,7 +6,15 @@ import QRCode from 'qrcode'
  * dangerouslySetInnerHTML, so a strict CSP holds. This file imports the `qrcode` library and is
  * only ever loaded through `QrCode.tsx` (lazy).
  */
-export default function QrSvg({ value, size = 224, label }: { value: string; size?: number; label: string }) {
+export default function QrSvg({
+  value,
+  size = 224,
+  label,
+}: {
+  value: string
+  size?: number
+  label: string
+}) {
   const { n, d } = useMemo(() => {
     const qr = QRCode.create(value, { errorCorrectionLevel: 'M' })
     const n = qr.modules.size

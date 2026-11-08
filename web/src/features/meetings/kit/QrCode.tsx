@@ -5,7 +5,15 @@ import { Skeleton } from '@/components/ui/skeleton'
 const QrSvg = lazy(() => import('./QrSvg'))
 
 /** Draws `value` as a QR code (lazy-loaded). */
-export function QrCode({ value, size = 224, label }: { value: string; size?: number; label: string }) {
+export function QrCode({
+  value,
+  size = 224,
+  label,
+}: {
+  value: string
+  size?: number
+  label: string
+}) {
   return (
     <Suspense fallback={<Skeleton className="size-56 rounded-md" />}>
       <QrSvg value={value} size={size} label={label} />

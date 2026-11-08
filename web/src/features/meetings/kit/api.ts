@@ -147,7 +147,11 @@ export function useToggle(initial = false) {
 export { downloadFile } from '@/api/download'
 
 /** Sub-resource in the `/v1/orgs/{org_id}/...` tree as a URL for downloads (PDF endpoints). */
-export function orgUrl(orgId: string, rest: string, query: Record<string, string | undefined> = {}) {
+export function orgUrl(
+  orgId: string,
+  rest: string,
+  query: Record<string, string | undefined> = {},
+) {
   const q = new URLSearchParams()
   for (const [k, v] of Object.entries(query)) if (v !== undefined && v !== '') q.set(k, v)
   const qs = q.toString()

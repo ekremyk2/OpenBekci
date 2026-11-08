@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react'
-import { Link } from '@tanstack/react-router'
-import { ArrowLeftIcon, UsersRoundIcon } from 'lucide-react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { UsersRoundIcon } from 'lucide-react'
+import { Trans } from '@lingui/react/macro'
 import { useLocale } from '@/app/locale'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { useSiteCtx } from '@/features/meetings/kit/api'
 import { Callout } from '@/features/meetings/kit/widgets'
 import { setGuardSession, useGuardSession } from './guardApi'
+import { ExitGate } from './ExitGate'
 import { PinSwitch } from './PinSwitch'
-import { ExpectedList, OpenPanel, ParcelsPanel, ScanPanel, SearchPanel, useConsole, WalkInPanel } from './panels'
+import {
+  ExpectedList,
+  OpenPanel,
+  ParcelsPanel,
+  ScanPanel,
+  SearchPanel,
+  useConsole,
+  WalkInPanel,
+} from './panels'
 
 function Clock({ timeZone }: { timeZone: string }) {
   const { intl } = useLocale()
@@ -32,22 +40,13 @@ function Clock({ timeZone }: { timeZone: string }) {
  * windows; never balances, other contacts or national ids (S8).
  */
 export function GuardConsolePage() {
-  const { t } = useLingui()
   const ctx = useSiteCtx()!
   const guard = useGuardSession()
   const cq = useConsole(ctx)
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background" data-testid="guard-console">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background px-4 py-3">
-        <Link
-          to="/orgs/$orgId"
-          params={{ orgId: ctx.orgId }}
-          className={buttonVariants({ variant: 'ghost', size: 'lg' })}
-          aria-label={t`Leave the guard console`}
-        >
-          <ArrowLeftIcon className="rtl-flip" />
-          <Trans>Exit</Trans>
-        </Link>
+        {guard ? <ExitGate ctx={ctx} guard={guard} /> : null}
         <h1 className="text-2xl font-semibold">
           <Trans>Gate</Trans>
         </h1>
@@ -60,7 +59,7 @@ export function GuardConsolePage() {
                 <UsersRoundIcon className="size-5" aria-hidden="true" />
                 {guard.displayName}
               </span>
-              <Button variant="outline" size="lg" onClick={() => setGuardSession(null)}>
+              <Button variant="outline" size="xl" onClick={() => setGuardSession(null)}>
                 <Trans>Switch guard</Trans>
               </Button>
             </>
@@ -82,7 +81,10 @@ export function GuardConsolePage() {
           {cq.data.pending_approvals.length > 0 ? (
             <div className="lg:col-span-3">
               <Callout tone="warning" role="status">
-                <Trans>{cq.data.pending_approvals.length} walk-in visitors are waiting for a resident's answer.</Trans>
+                <Trans>
+                  {cq.data.pending_approvals.length} walk-in visitors are waiting for a resident's
+                  answer.
+                </Trans>
               </Callout>
             </div>
           ) : null}

@@ -15,28 +15,38 @@ export default function QrScannerCore({
   const id = useId().replace(/:/g, '')
   const scanRef = useRef(onScan)
   const errRef = useRef(onError)
-  scanRef.current = onScan
-  errRef.current = onError
+  useEffect(() => {
+    scanRef.current = onScan
+    errRef.current = onError
+  })
 
   useEffect(() => {
     let cancelled = false
     const scanner = new Html5Qrcode(id)
-    let started = false
-    scanner
+    const stop = () =>
+      scanner
+        .stop()
+        .then(() => scanner.clear())
+        .catch(() => undefined)
+    // `start()` and `stop()` are chained on one promise, so a quick unmount (or a StrictMode
+    // double mount) can never stop a scanner that is still starting, nor start two on one element.
+    const started = scanner
       .start(
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 240, height: 240 } },
-        (text) => scanRef.current(text),
+        (text) => {
+          if (!cancelled) scanRef.current(text)
+        },
         () => undefined,
       )
-      .then(() => {
-        started = true
-        if (cancelled) void scanner.stop().then(() => scanner.clear())
+      .then(() => true)
+      .catch((e: unknown) => {
+        if (!cancelled) errRef.current(e instanceof Error ? e.message : String(e))
+        return false
       })
-      .catch((e: unknown) => errRef.current(e instanceof Error ? e.message : String(e)))
     return () => {
       cancelled = true
-      if (started) void scanner.stop().then(() => scanner.clear())
+      void started.then((ok) => (ok ? stop() : undefined))
     }
   }, [id])
 

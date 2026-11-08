@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2Icon, DoorOpenIcon, LogOutIcon, PackageIcon, PhoneIcon, SearchIcon, XCircleIcon } from 'lucide-react'
+import {
+  CheckCircle2Icon,
+  DoorOpenIcon,
+  LogOutIcon,
+  PackageIcon,
+  PhoneIcon,
+  SearchIcon,
+  XCircleIcon,
+} from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { AppError } from '@/api/errors'
 import { SiteDate } from '@/components/data/SiteDate'
@@ -47,12 +55,12 @@ export function useConsole(ctx: SiteCtx) {
 function useReasonText() {
   const { t } = useLingui()
   return {
-  match: t`Valid`,
-  unknown: t`This code is not known.`,
-  outside_window: t`This pass is not valid at this time.`,
-  used_up: t`This pass was already used.`,
-  revoked: t`This pass was cancelled or revoked.`,
-  wrong_site: t`This pass is for another site.`,
+    match: t`Valid`,
+    unknown: t`This code is not known.`,
+    outside_window: t`This pass is not valid at this time.`,
+    used_up: t`This pass was already used.`,
+    revoked: t`This pass was cancelled or revoked.`,
+    wrong_site: t`This pass is for another site.`,
   }
 }
 
@@ -73,7 +81,15 @@ function ApprovalStatus({ s }: { s: S['GuardVisitor']['approval_status'] }) {
 }
 
 /** Admit (arrive) and mark-left actions of one visitor row. */
-export function VisitorActions({ ctx, v, onDone }: { ctx: SiteCtx; v: S['GuardVisitor']; onDone?: () => void }) {
+export function VisitorActions({
+  ctx,
+  v,
+  onDone,
+}: {
+  ctx: SiteCtx
+  v: S['GuardVisitor']
+  onDone?: () => void
+}) {
   const { t } = useLingui()
   const refresh = useRefresh(ctx)
   const keys = useKeyStore()
@@ -105,7 +121,8 @@ export function VisitorActions({ ctx, v, onDone }: { ctx: SiteCtx; v: S['GuardVi
       setBusy(false)
     }
   }
-  const canAdmit = !v.arrived_at && (v.approval_status === 'pre_approved' || v.approval_status === 'approved')
+  const canAdmit =
+    !v.arrived_at && (v.approval_status === 'pre_approved' || v.approval_status === 'approved')
   if (v.left_at) return <Badge variant="secondary">{t`Left`}</Badge>
   if (v.arrived_at)
     return (
@@ -139,7 +156,11 @@ function VisitorRow({ ctx, v }: { ctx: SiteCtx; v: S['GuardVisitor'] }) {
           {v.recurring ? ` · ${t`Recurring`}` : ''}
         </span>
       </div>
-      {v.arrived_at && !v.left_at ? <Badge variant="success">{t`On site`}</Badge> : <ApprovalStatus s={v.approval_status} />}
+      {v.arrived_at && !v.left_at ? (
+        <Badge variant="success">{t`On site`}</Badge>
+      ) : (
+        <ApprovalStatus s={v.approval_status} />
+      )}
       <VisitorActions ctx={ctx} v={v} />
     </li>
   )
@@ -177,7 +198,10 @@ export function SearchPanel({ ctx }: { ctx: SiteCtx }) {
     queryFn: () =>
       unwrap(
         guardApi.GET('/v1/orgs/{org_id}/gate/visitors', {
-          params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, q: term, limit: 20 } },
+          params: {
+            path: { org_id: ctx.orgId },
+            query: { site_id: ctx.siteId, q: term, limit: 20 },
+          },
         }),
       ).then((r) => r.items),
   })
@@ -187,7 +211,10 @@ export function SearchPanel({ ctx }: { ctx: SiteCtx }) {
     queryFn: () =>
       unwrap(
         guardApi.GET('/v1/orgs/{org_id}/gate/plates', {
-          params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, q: term, limit: 10 } },
+          params: {
+            path: { org_id: ctx.orgId },
+            query: { site_id: ctx.siteId, q: term, limit: 10 },
+          },
         }),
       ).then((r) => r.items),
   })
@@ -197,7 +224,10 @@ export function SearchPanel({ ctx }: { ctx: SiteCtx }) {
         <Trans>Search</Trans>
       </h2>
       <div className="relative">
-        <SearchIcon className="pointer-events-none absolute start-3 top-4 size-5 text-muted-foreground" aria-hidden="true" />
+        <SearchIcon
+          className="pointer-events-none absolute start-3 top-4 size-5 text-muted-foreground"
+          aria-hidden="true"
+        />
         <Input
           aria-label={t`Search by name or plate`}
           placeholder={t`Name or plate`}
@@ -290,15 +320,23 @@ export function ScanPanel({ ctx }: { ctx: SiteCtx }) {
       {result ? (
         <div
           role="status"
-          className={cn('flex flex-col gap-3 rounded-lg border-2 p-4', result.valid ? 'border-success bg-success/10' : 'border-destructive bg-destructive/10')}
+          className={cn(
+            'flex flex-col gap-3 rounded-lg border-2 p-4',
+            result.valid ? 'border-success bg-success/10' : 'border-destructive bg-destructive/10',
+          )}
         >
           <div className="flex items-center gap-2 text-xl font-semibold">
-            {result.valid ? <CheckCircle2Icon className="size-7 text-success" /> : <XCircleIcon className="size-7 text-destructive" />}
+            {result.valid ? (
+              <CheckCircle2Icon className="size-7 text-success" />
+            ) : (
+              <XCircleIcon className="size-7 text-destructive" />
+            )}
             {result.valid ? t`Valid pass` : reasons[result.reason]}
           </div>
           {result.entry ? (
             <div className="text-lg">
-              <span className="font-semibold">{result.entry.name}</span> · {result.entry.unit_door_number}
+              <span className="font-semibold">{result.entry.name}</span> ·{' '}
+              {result.entry.unit_door_number}
               {result.entry.plate ? <span dir="ltr"> · {result.entry.plate}</span> : null}
             </div>
           ) : null}
@@ -362,7 +400,12 @@ export function WalkInPanel({ ctx }: { ctx: SiteCtx }) {
       const e = await unwrap(
         guardApi.POST('/v1/orgs/{org_id}/gate/visitors:walk-in', {
           params: { path: { org_id: ctx.orgId }, header: idem(idemKey.key) },
-          body: { site_id: ctx.siteId, unit_id: unitId, name: name.trim(), ...(plate.trim() ? { plate: plate.trim() } : {}) },
+          body: {
+            site_id: ctx.siteId,
+            unit_id: unitId,
+            name: name.trim(),
+            ...(plate.trim() ? { plate: plate.trim() } : {}),
+          },
         }),
       )
       idemKey.renew()
@@ -401,13 +444,31 @@ export function WalkInPanel({ ctx }: { ctx: SiteCtx }) {
           }}
         >
           <Field label={t`Visitor's name`} htmlFor="wi-name">
-            <Input id="wi-name" className="h-14 text-lg" autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              id="wi-name"
+              className="h-14 text-lg"
+              autoComplete="off"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </Field>
           <Field label={t`Plate (optional)`} htmlFor="wi-plate">
-            <Input id="wi-plate" dir="ltr" className="h-14 text-lg" autoComplete="off" value={plate} onChange={(e) => setPlate(e.target.value)} />
+            <Input
+              id="wi-plate"
+              dir="ltr"
+              className="h-14 text-lg"
+              autoComplete="off"
+              value={plate}
+              onChange={(e) => setPlate(e.target.value)}
+            />
           </Field>
           <Field label={t`Visiting unit`} htmlFor="wi-unit">
-            <Select id="wi-unit" className="h-14 text-lg" value={unitId} onChange={(e) => setUnitId(e.target.value)}>
+            <Select
+              id="wi-unit"
+              className="h-14 text-lg"
+              value={unitId}
+              onChange={(e) => setUnitId(e.target.value)}
+            >
               <option value="">{t`Choose the unit`}</option>
               {(units.data ?? []).map((u) => (
                 <option key={u.id} value={u.id}>
@@ -436,7 +497,10 @@ export function WalkInPanel({ ctx }: { ctx: SiteCtx }) {
           {status === 'requested' || status === undefined ? (
             <>
               <Callout tone="warning">
-                <Trans>Waiting for {entry.data?.unit_door_number ?? ''} to answer. This checks every few seconds.</Trans>
+                <Trans>
+                  Waiting for {entry.data?.unit_door_number ?? ''} to answer. This checks every few
+                  seconds.
+                </Trans>
               </Callout>
               <Button variant="outline" className={big} onClick={() => setShowCall(true)}>
                 <PhoneIcon />
@@ -475,7 +539,11 @@ export function WalkInPanel({ ctx }: { ctx: SiteCtx }) {
                 <Trans>This resident did not share a number for the gate.</Trans>
               </p>
             ) : (
-              <a href={`tel:${call.data.phone}`} className="text-2xl font-semibold underline" dir="ltr">
+              <a
+                href={`tel:${call.data.phone}`}
+                className="text-2xl font-semibold underline"
+                dir="ltr"
+              >
                 {call.data.display_name ? `${call.data.display_name} · ` : ''}
                 {call.data.phone}
               </a>
@@ -505,7 +573,11 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
       await unwrap(
         guardApi.POST('/v1/orgs/{org_id}/gate/deliveries', {
           params: { path: { org_id: ctx.orgId }, header: idem(logKey.key) },
-          body: { site_id: ctx.siteId, unit_id: unitId, ...(desc.trim() ? { description: desc.trim() } : {}) },
+          body: {
+            site_id: ctx.siteId,
+            unit_id: unitId,
+            ...(desc.trim() ? { description: desc.trim() } : {}),
+          },
         }),
       )
       logKey.renew()
@@ -540,7 +612,12 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
         <Trans>Parcels</Trans>
       </h2>
       <div className="grid gap-2 sm:grid-cols-[8rem_1fr_auto]">
-        <Select aria-label={t`Unit`} className="h-14 text-lg" value={unitId} onChange={(e) => setUnitId(e.target.value)}>
+        <Select
+          aria-label={t`Unit`}
+          className="h-14 text-lg"
+          value={unitId}
+          onChange={(e) => setUnitId(e.target.value)}
+        >
           <option value="">{t`Unit`}</option>
           {(units.data ?? []).map((u) => (
             <option key={u.id} value={u.id}>
@@ -548,7 +625,13 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
             </option>
           ))}
         </Select>
-        <Input aria-label={t`Description (optional)`} placeholder={t`What is it? (optional)`} className="h-14 text-lg" value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <Input
+          aria-label={t`Description (optional)`}
+          placeholder={t`What is it? (optional)`}
+          className="h-14 text-lg"
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
+        />
         <Button className={big} disabled={!unitId} onClick={() => void log()}>
           <Trans>Log parcel</Trans>
         </Button>
@@ -564,7 +647,8 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="text-lg font-semibold">{d.unit_door_number}</span>
                 <span className="text-sm text-muted-foreground">
-                  {d.description ?? t`Parcel`} · <SiteDate value={d.received_at} timeZone={ctx.timeZone} kind="datetime" />
+                  {d.description ?? t`Parcel`} ·{' '}
+                  <SiteDate value={d.received_at} timeZone={ctx.timeZone} kind="datetime" />
                 </span>
               </div>
               <Input
@@ -574,7 +658,11 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
                 value={collector[d.id] ?? ''}
                 onChange={(e) => setCollector((c) => ({ ...c, [d.id]: e.target.value }))}
               />
-              <Button className={big} disabled={!(collector[d.id] ?? '').trim()} onClick={() => void collect(d)}>
+              <Button
+                className={big}
+                disabled={!(collector[d.id] ?? '').trim()}
+                onClick={() => void collect(d)}
+              >
                 <Trans>Collected</Trans>
               </Button>
             </li>
@@ -588,12 +676,12 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
 function useBlockText() {
   const { t } = useLingui()
   return (r: OpenBlock) =>
-  ({
-    no_permission: t`You may not open gates.`,
-    point_disabled: t`This gate is switched off.`,
-    agent_offline: t`The gate agent is offline.`,
-    clock_suspect: t`The gate agent's clock is wrong; it will not act.`,
-  })[r]
+    ({
+      no_permission: t`You may not open gates.`,
+      point_disabled: t`This gate is switched off.`,
+      agent_offline: t`The gate agent is offline.`,
+      clock_suspect: t`The gate agent's clock is wrong; it will not act.`,
+    })[r]
 }
 
 /** One manual open button: disabled with the reason when it cannot work. */
@@ -614,11 +702,28 @@ export function OpenButton({
   const refresh = useRefresh(ctx)
   const k = useIdempotencyKey()
   const [phase, setPhase] = useState<'idle' | 'sending' | 'done' | 'failed'>('idle')
-  const [learned, setLearned] = useState<OpenBlock | null>(null)
+  // What a 409 taught us holds only for the console snapshot it was learned on: the next poll
+  // (new `server_time`) clears it, so the button recovers when the agent does.
+  const stamp = `${c.server_time}|${c.agent?.last_seen_at ?? ''}`
+  const [learnedAt, setLearnedAt] = useState<{ block: OpenBlock; stamp: string } | null>(null)
+  const learned = learnedAt && learnedAt.stamp === stamp ? learnedAt.block : null
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
+  const alive = useRef(true)
+  useEffect(() => {
+    alive.current = true
+    return () => {
+      alive.current = false
+      if (timer.current) clearTimeout(timer.current)
+    }
+  }, [])
   const blockText = useBlockText()
-  const state = manualOpenState({ canOpen, point, agent: c.agent, serverTime: c.server_time, clockSuspect })
+  const state = manualOpenState({
+    canOpen,
+    point,
+    agent: c.agent,
+    serverTime: c.server_time,
+    clockSuspect,
+  })
   const reason = state.reason ?? learned
   async function open() {
     setPhase('sending')
@@ -633,6 +738,7 @@ export function OpenButton({
       let status = cmd.status
       for (let i = 0; i < 12 && (status === 'pending' || status === 'delivered'); i++) {
         await new Promise((r) => setTimeout(r, 1000))
+        if (!alive.current) return // unmounted: stop polling
         const c2 = await unwrap(
           guardApi.GET('/v1/orgs/{org_id}/access/commands/{command_id}', {
             params: { path: { org_id: ctx.orgId, command_id: cmd.id } },
@@ -645,8 +751,10 @@ export function OpenButton({
       void refresh()
     } catch (e) {
       k.renew()
-      if (e instanceof AppError && e.code === 'agent_offline') setLearned('agent_offline')
-      if (e instanceof AppError && e.code === 'clock_suspect') setLearned('clock_suspect')
+      if (e instanceof AppError && e.code === 'agent_offline')
+        setLearnedAt({ block: 'agent_offline', stamp })
+      if (e instanceof AppError && e.code === 'clock_suspect')
+        setLearnedAt({ block: 'clock_suspect', stamp })
       setPhase('failed')
     }
     timer.current = setTimeout(() => setPhase('idle'), 4000)
@@ -702,7 +810,9 @@ export function OpenPanel({ ctx, console: c }: { ctx: SiteCtx; console: S['GateC
           <Trans>No gate is connected to this console.</Trans>
         </p>
       ) : (
-        points.map((p) => <OpenButton key={p.id} ctx={ctx} point={p} console={c} canOpen={can('access.open')} />)
+        points.map((p) => (
+          <OpenButton key={p.id} ctx={ctx} point={p} console={c} canOpen={can('access.open')} />
+        ))
       )}
       <h3 className="mt-2 text-lg font-semibold">
         <Trans>Recent openings</Trans>
@@ -718,9 +828,19 @@ export function OpenPanel({ ctx, console: c }: { ctx: SiteCtx; console: S['GateC
       ) : (
         <ul className="flex flex-col gap-1" aria-label={t`Recent openings`}>
           {(events.data ?? []).map((e) => (
-            <li key={e.sync_seq} className="flex flex-wrap items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-              <SiteDate value={e.occurred_at} timeZone={ctx.timeZone} kind="time" className="tabular-nums" />
-              <Badge variant={e.decision === 'deny' ? 'destructive' : 'success'}>{decisionLabel[e.decision] ?? e.decision}</Badge>
+            <li
+              key={e.sync_seq}
+              className="flex flex-wrap items-center gap-2 rounded-md bg-muted/50 px-3 py-2"
+            >
+              <SiteDate
+                value={e.occurred_at}
+                timeZone={ctx.timeZone}
+                kind="time"
+                className="tabular-nums"
+              />
+              <Badge variant={e.decision === 'deny' ? 'destructive' : 'success'}>
+                {decisionLabel[e.decision] ?? e.decision}
+              </Badge>
               <span className="min-w-0 flex-1 truncate">
                 {e.point.name}
                 {e.plate ? ` · ${e.plate}` : ''}

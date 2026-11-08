@@ -30,7 +30,7 @@ export function QrScanner({
 
   function emit(text: string) {
     const v = text.trim()
-    if (!v) return
+    if (!v || busy) return
     const now = Date.now()
     // the camera reports the same frame many times a second
     if (last.current && last.current.text === v && now - last.current.at < 4000) return
@@ -61,7 +61,7 @@ export function QrScanner({
       <Button
         type="button"
         variant={camera ? 'outline' : 'default'}
-        size={large ? 'lg' : 'default'}
+        size={large ? 'xl' : 'default'}
         onClick={() => {
           setError(null)
           setCamera((c) => !c)
@@ -88,7 +88,12 @@ export function QrScanner({
           onChange={(e) => setCode(e.target.value)}
           className={large ? 'h-12 text-lg' : undefined}
         />
-        <Button type="submit" variant="secondary" size={large ? 'lg' : 'default'} disabled={busy || code.trim() === ''}>
+        <Button
+          type="submit"
+          variant="secondary"
+          size={large ? 'xl' : 'default'}
+          disabled={busy || code.trim() === ''}
+        >
           {t`Check`}
         </Button>
       </form>

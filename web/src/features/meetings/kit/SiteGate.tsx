@@ -4,13 +4,7 @@ import { useSiteCtx } from './api'
 import { Gate } from './ui'
 
 /** Permission gate that also needs a site to work on (these screens are per site). */
-export function SiteGate({
-  anyOf,
-  children,
-}: {
-  anyOf: string[]
-  children: React.ReactNode
-}) {
+export function SiteGate({ anyOf, children }: { anyOf: string[]; children: React.ReactNode }) {
   const { t } = useLingui()
   const ctx = useSiteCtx()
   return (
@@ -18,7 +12,10 @@ export function SiteGate({
       {ctx ? (
         children
       ) : (
-        <EmptyState title={t`No site yet`} description={t`Set up a site first; this area works per site.`} />
+        <EmptyState
+          title={t`No site yet`}
+          description={t`Set up a site first; this area works per site.`}
+        />
       )}
     </Gate>
   )

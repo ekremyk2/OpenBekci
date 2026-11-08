@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DeleteIcon, UserRoundIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
@@ -36,6 +36,13 @@ export function PinSwitch({
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const pinInput = useRef<HTMLInputElement>(null)
+  // Focus the field after mount, but only with a mouse or keyboard at hand: on a tablet it would
+  // pop the OS keyboard over the on-screen numpad.
+  useEffect(() => {
+    if (guard && globalThis.matchMedia?.('(hover: hover) and (pointer: fine)').matches)
+      pinInput.current?.focus()
+  }, [guard])
 
   async function submit(value = pin) {
     if (!guard || value.length < 4 || busy) return
@@ -50,14 +57,21 @@ export function PinSwitch({
       )
       idem.renew()
       setPin('')
-      setGuardSession({ token: s.token, personId: s.person_id, displayName: s.display_name, expiresAt: s.expires_at })
+      setGuardSession({
+        token: s.token,
+        personId: s.person_id,
+        displayName: s.display_name,
+        expiresAt: s.expires_at,
+      })
     } catch (e) {
       idem.renew()
       setPin('')
       if (e instanceof AppError && e.isRateLimited) {
         const minutes = Math.ceil((e.retryAfter ?? 900) / 60)
         setError(t`Too many wrong PINs. This guard is locked for about ${minutes} minutes.`)
-      } else setError(t`Wrong PIN. Try again.`)
+      } else if (e instanceof AppError && e.code === 'invalid_grant')
+        setError(t`Wrong PIN. Try again.`)
+      else setError(t`The PIN could not be checked. Check the connection and try again.`)
     } finally {
       setBusy(false)
     }
@@ -124,7 +138,7 @@ export function PinSwitch({
         type="password"
         inputMode="numeric"
         autoComplete="off"
-        autoFocus
+        ref={pinInput}
         value={pin}
         maxLength={8}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
@@ -138,24 +152,45 @@ export function PinSwitch({
       ) : null}
       <div className="grid w-full grid-cols-3 gap-3">
         {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => (
-          <Button key={d} type="button" variant="outline" className="h-16 text-2xl" onClick={() => press(d)}>
+          <Button
+            key={d}
+            type="button"
+            variant="outline"
+            className="h-16 text-2xl"
+            onClick={() => press(d)}
+          >
             {d}
           </Button>
         ))}
         <Button type="button" variant="ghost" className="h-16" onClick={() => setGuard(null)}>
           <Trans>Back</Trans>
         </Button>
-        <Button type="button" variant="outline" className="h-16 text-2xl" onClick={() => press('0')}>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-16 text-2xl"
+          onClick={() => press('0')}
+        >
           0
         </Button>
-        <Button type="button" variant="ghost" className="h-16" aria-label={t`Delete a digit`} onClick={() => setPin((p) => p.slice(0, -1))}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-16"
+          aria-label={t`Delete a digit`}
+          onClick={() => setPin((p) => p.slice(0, -1))}
+        >
           <DeleteIcon className="size-6 rtl-flip" />
         </Button>
       </div>
-      <Button type="submit" size="lg" className="h-16 w-full text-xl" disabled={pin.length < 4 || busy}>
+      <Button
+        type="submit"
+        size="lg"
+        className="h-16 w-full text-xl"
+        disabled={pin.length < 4 || busy}
+      >
         <Trans>Start the shift</Trans>
       </Button>
     </form>
   )
 }
-
