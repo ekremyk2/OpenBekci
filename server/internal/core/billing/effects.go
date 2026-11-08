@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -204,7 +205,12 @@ func (s *Service) planRateChange(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	if lastBooked != nil {
 		return ch, conflictField("the plan has already billed a period due on or after the new rate's date", "from", "before_booked_period", map[string]any{"booked_through": *lastBooked})
 	}
+	// the date is a civil date of the site: compare and subtract in its zone, as the schedule is loaded
 	tz := ledger.Location(site.Timezone)
+	from, err = time.ParseInLocation(ledger.DateLayout, e.From, tz)
+	if err != nil {
+		return ch, bad("from", "invalid_format")
+	}
 	sc, err := loadSchedule(ctx, tx, orgID, e.PlanID, ch.cur, tz)
 	if err != nil {
 		return ch, err
