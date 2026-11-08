@@ -40,6 +40,7 @@ const (
 	DefaultOTPAttempts   = 5
 	DefaultLinkTTL       = 15 * time.Minute
 	DefaultReauthWindow  = 10 * time.Minute
+	DefaultWebLoginTTL   = 2 * time.Minute
 	// MinPasswordLength is the minimum password length in characters.
 	MinPasswordLength = 10
 	// MaxPasswordLength bounds the input handed to argon2.
@@ -71,6 +72,8 @@ type Config struct {
 	OTPAttempts   int
 	LinkTTL       time.Duration
 	ReauthWindow  time.Duration
+	// WebLoginTTL is how long a web-login link stays valid (default 2 minutes).
+	WebLoginTTL time.Duration
 
 	// LockoutThreshold is the number of consecutive failures per account and
 	// client address after which that address is refused for a growing time.
@@ -106,6 +109,8 @@ type Limits struct {
 	// AuthIP limits credential checks (password, code verification, link
 	// consumption, refresh) per client address.
 	AuthIP *ratelimit.Limiter
+	// WebLinkUser limits web-login link issuance per signed-in user.
+	WebLinkUser *ratelimit.Limiter
 	// SendDaily is the daily send budget per identifier (a phone number or
 	// an address, whatever the purpose), on top of the short-term buckets.
 	SendDaily *ratelimit.Limiter
@@ -151,6 +156,7 @@ func newLimits(cfg Config, now func() time.Time) *Limits {
 		LinkSendIP:     ratelimit.NewWithClock(10, time.Minute, now),
 		LinkSendTarget: ratelimit.NewWithClock(3, 2*time.Minute, now),
 		AuthIP:         ratelimit.NewWithClock(30, 2*time.Second, now),
+		WebLinkUser:    ratelimit.NewWithClock(5, 30*time.Second, now),
 		SendDaily:      per(daily, 24*time.Hour),
 		SMSHourly:      per(sms, time.Hour),
 		MailHourly:     per(mailB, time.Hour),
@@ -186,6 +192,9 @@ func NewService(db TxRunner, cfg Config) *Service {
 	}
 	if cfg.LinkTTL == 0 {
 		cfg.LinkTTL = DefaultLinkTTL
+	}
+	if cfg.WebLoginTTL == 0 {
+		cfg.WebLoginTTL = DefaultWebLoginTTL
 	}
 	if cfg.ReauthWindow == 0 {
 		cfg.ReauthWindow = DefaultReauthWindow
@@ -285,6 +294,9 @@ const (
 	LinkMagic  LinkKind = "magic"  // {BASE_URL}/login/magic?token=...
 	LinkInvite LinkKind = "invite" // {BASE_URL}/invite/{token}
 	LinkReset  LinkKind = "reset"  // {BASE_URL}/reset/{token}
+	// LinkWebLogin is {BASE_URL}/login/link/{token}; it is always a web URL
+	// (its purpose is to open the browser).
+	LinkWebLogin LinkKind = "weblogin"
 )
 
 // LinkURL builds a link for token. The web form is under baseURL; the mobile
@@ -296,6 +308,8 @@ func LinkURL(baseURL string, client Client, kind LinkKind, token string) string 
 		path = "invite/" + token
 	case LinkReset:
 		path = "reset/" + token
+	case LinkWebLogin:
+		return strings.TrimRight(baseURL, "/") + "/login/link/" + token
 	default:
 		path = "login/magic?token=" + token
 	}

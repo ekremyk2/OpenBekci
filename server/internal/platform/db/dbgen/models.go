@@ -595,6 +595,22 @@ type DeliveryLog struct {
 	Detail  pgtype.Text
 }
 
+type Device struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	SessionFamilyID pgtype.UUID
+	PushKind        string
+	TokenEnc        []byte
+	TokenHash       []byte
+	RelayID         pgtype.Text
+	AppVersion      pgtype.Text
+	Locale          pgtype.Text
+	DisabledAt      pgtype.Timestamptz
+	DisabledReason  pgtype.Text
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
 type DirectoryConsent struct {
 	OrgID      pgtype.UUID
 	SiteID     pgtype.UUID
@@ -1370,6 +1386,12 @@ type Refund struct {
 	CreatedAt         pgtype.Timestamptz
 }
 
+type RelayEnrollment struct {
+	ID        bool
+	Challenge string
+	ExpiresAt pgtype.Timestamptz
+}
+
 type Sequence struct {
 	OrgID  pgtype.UUID
 	SiteID pgtype.UUID
@@ -1725,4 +1747,14 @@ type VoteCount struct {
 	AbstainShare pgtype.Numeric
 	RecordedBy   pgtype.UUID
 	RecordedAt   pgtype.Timestamptz
+}
+
+type WebLoginLink struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	SessionFamilyID pgtype.UUID
+	TokenHash       []byte
+	CreatedAt       pgtype.Timestamptz
+	ExpiresAt       pgtype.Timestamptz
+	ConsumedAt      pgtype.Timestamptz
 }

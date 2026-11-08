@@ -443,7 +443,8 @@ All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the
 | `SMTP_*` | no | email channel disabled without it |
 | `SMS_PROVIDER`, `SMS_NETGSM_*` | no (yes for phone-first sites) | core gateway; per-site credentials may override |
 | `SEND_DAILY_BUDGET`, `SMS_HOURLY_BUDGET`, `MAIL_HOURLY_BUDGET` | no | sign-in message budgets: per identifier per day (default 10), per instance per hour for SMS (120) and mail (300); negative removes the limit |
-| `PUSH_RELAYS` (0.4) | no | list of `relay_id=url;server_id;secret_file;app_id` |
+| `PUSH_RELAYS` (0.4) | no | comma separated list of `relay_id=url;server_id;secret_file[;app_id]` (app id default `org.openbekci.app`); `official` is just an id; `relay_id=log` is the development driver that logs the payload (refused without `INSECURE_DEV`); relays other than `log` must be https; the ids are announced in the discovery document (`push.relay_ids`) |
+| `PUSH_ALLOW_PRIVATE` (0.4) | no | default false: UnifiedPush endpoints must be public https URLs (the server refuses loopback, private and link-local addresses at connect time); `true` also allows plain http and LAN distributors |
 | `TRUSTED_PROXIES` | yes behind a proxy | CIDRs; also what lets the agent enrol rate limit (10/min) count per real client IP: without it behind a proxy every enrolment shares one budget |
 | `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | |
 | `WORKER` | no | `embedded` (default) / `off` |

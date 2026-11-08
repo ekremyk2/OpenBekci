@@ -74,6 +74,41 @@ Methods: `password`, `sms_otp` (needs `SMS_PROVIDER`), `magic_link` (needs `MAIL
 `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_TLS=starttls|tls|none`) or `log`. The `log` drivers write sign-in codes and links
 to the log and are refused unless `OPENBEKCI_INSECURE_DEV=true`.
 
+## Push devices, push channel and the web-login link (0.4)
+
+- `POST /v1/me/devices` (`push_kind` `fcm`|`apns`|`unifiedpush`, `token`, `relay_id`, `app_version`, `locale`) registers a
+  device; one row per (user, token), registering again updates and enables it. The token is sealed with the core field
+  cipher (purpose `device.push_token`) and never returned. `DELETE /v1/me/devices/{id}` removes one. Signing a session out
+  (`DELETE /v1/me/sessions/{id|current}`, sign-out everywhere, a password change, refresh-token reuse detection)
+  deletes the devices that session registered; `Prune` removes devices whose session is gone; the account's
+  devices cascade with the user (a privacy erase of the account deletes them through `devices.DeleteForUser`).
+- The dispatcher (`notifications.deliver`) adds a `push` delivery next to the `in_app` one for every recipient with an
+  enabled device (a sender or a site can also list `push` explicitly). The payload is exactly
+  `{instance_id, org_id, notification_id, type, collapse_key, badge}` (`badge` = the person's unread in-app count in the
+  organization, `collapse_key` = the event key): never a title, body, name or address. `fcm` and `apns` go through the relay
+  of the device's `relay_id` (`OPENBEKCI_PUSH_RELAYS`, signed `Relay-HMAC` request to `{url}/v1/send`, infra plan 4.2),
+  `unifiedpush` is posted as JSON straight to the endpoint URL. A relay or endpoint that answers `invalid_token` / 404 / 410
+  disables the device (a new registration of the token enables it); a timeout, 5xx or `rate_limited` fails the
+  delivery and River retries the job (at most 8 attempts, the in-app row is not duplicated); no relay for the id, or no
+  usable device, records the push delivery as `skipped`. `relay_id=log` (dev) only logs.
+  Each request has a 10 s timeout; UnifiedPush endpoints are checked against private and loopback addresses at connect
+  time unless `OPENBEKCI_PUSH_ALLOW_PRIVATE=true`.
+- **Enrolling with a relay**: `openbekci admin push enrol --relay https://push.openbekci.org --app-id org.openbekci.app [--invite CODE] [--relay-id official] [--manual]`
+  (the server must be running and reachable by the relay). It does `POST {relay}/v1/enrollments/begin`, publishes the
+  returned challenge as `relay_enrollment.challenge` in `/.well-known/openbekci.json` (table `relay_enrollment`, ten
+  minutes, deleted afterwards), calls `/v1/enrollments/complete` (the relay fetches the document and compares), writes the
+  secret to `DATA_DIR/push-relay-<relay-id>.secret` (mode 600; the enrollment token never leaves memory) and prints the
+  `OPENBEKCI_PUSH_RELAYS` entry `relay-id=url;server_id;secret_file;app_id` to add. Send errors: per message
+  `retryable` results retry through the job, other errors are logged and dropped, only `invalid_token` disables a device,
+  and when more than half of a batch of at least 10 comes back `invalid_token` nothing is disabled (warning plus a
+  `push.invalid_token_surge` audit event: the relay's APNs environment is probably wrong).
+- `GET /v1/orgs/{org_id}/me/notifications/{notification_id}`: one row through the same join as the list.
+- `POST /v1/me/web-login-link` (optional `next`, an `/orgs/{org_id}/...` path) returns a one-time token and the URL
+  `{BASE_URL}/login/link/{token}[?next=...]`. The token lives 2 minutes, is single use, is stored hashed, is bound to the
+  user and to the issuing session (it stops working when that session is signed out), a new link voids the session's
+  earlier one, and issuance is limited to a burst of 5 per user. The web route posts it to
+  `POST /v1/auth/web-login-link:exchange` and receives the session cookie; any other token state is 401 `invalid_grant`.
+
 Sign-in failures answer `401 invalid_grant` (wrong password, unknown account, wrong or used code, bad link, reused
 refresh token); five consecutive failures per account lock it for 30 s, doubling per further failure up to 30 min, and
 per-address and per-target send limits answer `429 rate_limited` with `Retry-After`. Sensitive operations need

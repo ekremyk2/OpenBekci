@@ -20,12 +20,14 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/devices"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
+	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -48,25 +50,27 @@ const testBase = "https://bekci.example.org"
 const testScope = "test.members"
 
 type idEnv struct {
-	t      *testing.T
-	h      http.Handler
-	svc    *identity.Service
-	db     *db.DB
-	admin  *platformadmin.Service
-	sms    *sms.Recorder
-	mail   *mail.Recorder
-	people *people.Service
-	tenSvc *tenancy.Service
-	gov    *governance.Service
-	comm   *community.Service
-	notes  *recNotifier
-	charge *recCharger
-	hooks  *recHooks
-	acc    *access.Service
-	cookie *http.Cookie
-	files  *files.Service
-	ops    *opsTest
-	deps   Deps
+	t       *testing.T
+	h       http.Handler
+	svc     *identity.Service
+	db      *db.DB
+	admin   *platformadmin.Service
+	sms     *sms.Recorder
+	mail    *mail.Recorder
+	people  *people.Service
+	tenSvc  *tenancy.Service
+	gov     *governance.Service
+	comm    *community.Service
+	notes   *recNotifier
+	charge  *recCharger
+	hooks   *recHooks
+	acc     *access.Service
+	cookie  *http.Cookie
+	files   *files.Service
+	ops     *opsTest
+	relay   *fakeRelay
+	devices *devices.Service
+	deps    Deps
 }
 
 func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
@@ -102,7 +106,9 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	// a scope type any member may read and attach to, for the files tests
 	allowAll := func(context.Context, pgx.Tx, files.ScopeRef) (bool, error) { return true, nil }
 	e.files.RegisterResolver(testScope, files.ResolverFuncs{Read: allowAll, Attach: allowAll}, files.WithMaxFiles(3))
-	e.ops = newOpsTest(d, e.files)
+	e.relay = newFakeRelay(t)
+	e.devices = newTestDevices(t, d)
+	e.ops = newOpsTest(d, e.files, notifications.Config{Push: e.relay.router(), Devices: e.devices, InstanceID: instance.PGIDSource{DB: d}.InstanceID})
 	e.gov = governance.NewService(d, d, governance.Config{BaseURL: testBase, InstanceName: "Test", Log: cfg.Log})
 	e.notes, e.charge, e.hooks = &recNotifier{}, &recCharger{}, &recHooks{}
 	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log,
@@ -116,7 +122,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
-		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
+		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc, Devices: e.devices,
 		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc,
 		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,

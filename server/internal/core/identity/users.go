@@ -241,6 +241,10 @@ func (s *Service) updatePassword(ctx context.Context, userID uuid.UUID, hash str
 		if _, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL AND family_id <> $3`, userID, now, keep); err != nil {
 			return err
 		}
+		// a device registered by a signed-out session stops receiving push
+		if _, err = tx.Exec(ctx, `DELETE FROM device WHERE user_id = $1 AND session_family_id IS DISTINCT FROM $2`, userID, keep); err != nil {
+			return err
+		}
 		return audit.Record(ctx, tx, audit.Event{Action: action, TargetType: "user", TargetID: userID})
 	})
 	if errors.Is(err, pgx.ErrNoRows) {

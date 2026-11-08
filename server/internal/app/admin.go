@@ -22,6 +22,7 @@ type Admin struct {
 	Tenancy  *tenancy.Service
 	db       *db.DB
 	encKey   []byte
+	cfg      Config
 }
 
 // OpenAdmin connects as the app and platform roles and builds the services.
@@ -40,7 +41,7 @@ func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error
 		return nil, err
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
-	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d, encKey: cfg.EncryptionKey}, nil
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d, encKey: cfg.EncryptionKey, cfg: cfg}, nil
 }
 
 // Close releases the database connections.

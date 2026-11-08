@@ -35,6 +35,23 @@ export function safeNext(next: string | undefined | null): string | undefined {
   return next
 }
 
+// the org segment is an id (a UUID in production; the server validates `next` strictly when it issues the link)
+const ORG_PATH = /^\/orgs\/[A-Za-z0-9_-]{1,64}(?:\/[^?#]*)?(?:\?[^#]*)?$/
+
+/**
+ * The destination of a web-login link (`/login/link/{token}?next=`): only a path inside the app's
+ * `/orgs/$orgId/...` tree. Stricter than `safeNext`: no other prefix, no dot segments, no encoded
+ * separators or dots, no fragment, no non-ASCII.
+ */
+export function orgNext(next: string | undefined | null): string | undefined {
+  const safe = safeNext(next)
+  if (!safe || safe.length > 512 || !ORG_PATH.test(safe)) return undefined
+  if (/[^!-~]/.test(safe) || /%(2e|2f|5c|00)/i.test(safe)) return undefined
+  const path = safe.split('?', 1)[0] ?? ''
+  if (path.split('/').some((s) => s === '.' || s === '..')) return undefined
+  return safe
+}
+
 /** Guard: needs a session, else → `/login?next=<where you were going>`. */
 export async function requireSession(ctx: RouterContext, location: { href: string }): Promise<Me> {
   const me = await loadSession(ctx.queryClient)

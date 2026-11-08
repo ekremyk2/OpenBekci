@@ -596,3 +596,118 @@ schemas:
           expires_at: 2026-03-01T09:00:00Z
           current: false
       next_cursor: null
+  DeviceRegister:
+    type: object
+    description: |
+      A push registration of the signed-in app (backend section 4.12, mobile section 9).
+      One row per (user, token): registering a token again updates the row and
+      enables it. The token is stored encrypted and is never returned.
+    required:
+      - push_kind
+      - token
+    properties:
+      push_kind:
+        type: string
+        description: "`fcm` and `apns` go through the relay named by `relay_id`; `unifiedpush` posts to the endpoint URL held in `token`. Open on input; the known values are listed here."
+        x-known-values:
+          - fcm
+          - apns
+          - unifiedpush
+      token:
+        type: string
+        minLength: 1
+        maxLength: 4096
+        description: The FCM or APNs device token, or the https endpoint URL of the UnifiedPush distributor.
+        x-secret: true
+      relay_id:
+        type: string
+        pattern: '^[A-Za-z0-9_.-]{1,64}$'
+        description: The relay of the app build (`app_config.json`; `official` in the store build). Required for `fcm` and `apns`, ignored for `unifiedpush`.
+      app_version:
+        type: string
+        maxLength: 64
+      locale:
+        type: string
+        maxLength: 16
+        example: tr
+    example:
+      push_kind: fcm
+      token: fcm-device-token
+      relay_id: official
+      app_version: 1.0.0
+      locale: tr
+  Device:
+    type: object
+    description: A registered push device. The token is never returned.
+    required:
+      - id
+      - push_kind
+      - relay_id
+      - app_version
+      - locale
+      - enabled
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      push_kind:
+        type: string
+        x-known-values:
+          - fcm
+          - apns
+          - unifiedpush
+      relay_id:
+        type: string
+        nullable: true
+      app_version:
+        type: string
+        nullable: true
+      locale:
+        type: string
+        nullable: true
+      enabled:
+        type: boolean
+        description: False after the relay reported the token invalid; registering the token again enables the device.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  WebLoginLinkCreate:
+    type: object
+    properties:
+      next:
+        type: string
+        maxLength: 512
+        description: An in-app path under `/orgs/{org_id}/...` the web app opens after signing in; any other value (another host, a scheme, a path outside `/orgs/`) is 422.
+        example: /orgs/0192a3f0-1000-7000-8000-000000000001/tickets
+  WebLoginLink:
+    type: object
+    description: A one-time link that signs the caller's browser in. Single use, bound to the issuing session, valid for a few minutes. Shown once.
+    required:
+      - token
+      - url
+      - expires_at
+    properties:
+      token:
+        type: string
+      url:
+        type: string
+        description: "`{BASE_URL}/login/link/{token}`, with `?next=` when `next` was given."
+      expires_at:
+        type: string
+        format: date-time
+  WebLoginLinkExchange:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        maxLength: 200
+      device_name:
+        type: string
+        maxLength: 128

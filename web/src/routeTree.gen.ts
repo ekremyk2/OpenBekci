@@ -18,6 +18,7 @@ import { Route as LoginIndexRouteImport } from './routes/login.index'
 import { Route as LoginMagicRouteImport } from './routes/login.magic'
 import { Route as OrgsOrgIdRouteImport } from './routes/orgs.$orgId'
 import { Route as ResetTokenRouteImport } from './routes/reset.$token'
+import { Route as LoginLinkTokenRouteImport } from './routes/login.link.$token'
 import { Route as OrgsOrgIdIndexRouteImport } from './routes/orgs.$orgId.index'
 import { Route as OrgsOrgIdAccessRouteImport } from './routes/orgs.$orgId.access'
 import { Route as OrgsOrgIdAllocationKeysRouteImport } from './routes/orgs.$orgId.allocation-keys'
@@ -131,6 +132,11 @@ const OrgsOrgIdRoute = OrgsOrgIdRouteImport.update({
 const ResetTokenRoute = ResetTokenRouteImport.update({
   id: '/reset/$token',
   path: '/reset/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginLinkTokenRoute = LoginLinkTokenRouteImport.update({
+  id: '/login/link/$token',
+  path: '/login/link/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrgsOrgIdIndexRoute = OrgsOrgIdIndexRouteImport.update({
@@ -514,6 +520,7 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/login/link/$token': typeof LoginLinkTokenRoute
   '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
   '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
@@ -593,6 +600,7 @@ export interface FileRoutesByTo {
   '/login/magic': typeof LoginMagicRoute
   '/reset/$token': typeof ResetTokenRoute
   '/login': typeof LoginIndexRoute
+  '/login/link/$token': typeof LoginLinkTokenRoute
   '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
   '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
@@ -671,6 +679,7 @@ export interface FileRoutesById {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/login/link/$token': typeof LoginLinkTokenRoute
   '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
   '/orgs/$orgId/allocation-keys': typeof OrgsOrgIdAllocationKeysRoute
   '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
@@ -753,6 +762,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/login/link/$token'
     | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
     | '/orgs/$orgId/bookings'
@@ -832,6 +842,7 @@ export interface FileRouteTypes {
     | '/login/magic'
     | '/reset/$token'
     | '/login'
+    | '/login/link/$token'
     | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
     | '/orgs/$orgId/bookings'
@@ -909,6 +920,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/login/link/$token'
     | '/orgs/$orgId/access'
     | '/orgs/$orgId/allocation-keys'
     | '/orgs/$orgId/bookings'
@@ -990,6 +1002,7 @@ export interface RootRouteChildren {
   OrgsOrgIdRoute: typeof OrgsOrgIdRouteWithChildren
   ResetTokenRoute: typeof ResetTokenRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  LoginLinkTokenRoute: typeof LoginLinkTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1055,6 +1068,13 @@ declare module '@tanstack/react-router' {
       path: '/reset/$token'
       fullPath: '/reset/$token'
       preLoaderRoute: typeof ResetTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/link/$token': {
+      id: '/login/link/$token'
+      path: '/login/link/$token'
+      fullPath: '/login/link/$token'
+      preLoaderRoute: typeof LoginLinkTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orgs/$orgId/': {
@@ -1731,6 +1751,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrgsOrgIdRoute: OrgsOrgIdRouteWithChildren,
   ResetTokenRoute: ResetTokenRoute,
   LoginIndexRoute: LoginIndexRoute,
+  LoginLinkTokenRoute: LoginLinkTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -81,6 +81,11 @@ type Config struct {
 	MinAppVersionIOS     string
 	LogoURL              string
 	PrimaryColor         string
+	// PushRelayIDs are the relay ids devices may register with
+	// (OPENBEKCI_PUSH_RELAYS); empty when push through a relay is not configured.
+	PushRelayIDs []string
+	// UnifiedPush says the server posts to UnifiedPush endpoints directly.
+	UnifiedPush bool
 }
 
 // Document is the discovery document.
@@ -142,6 +147,8 @@ type Service struct {
 	ids     IDSource
 	methods *AuthMethodRegistry
 	now     func() time.Time
+	// challenges serves the pending push relay enrollment challenge; nil: none.
+	challenges ChallengeSource
 
 	mu       sync.Mutex
 	id       uuid.UUID
@@ -170,6 +177,19 @@ func (d Document) clone() Document {
 // never holds RelayChallenge: it is ephemeral, so once enrollment exists set it
 // on the returned copy per request (TODO(push-relay): compute it here, outside the cache).
 func (s *Service) Discovery(ctx context.Context) (Document, error) {
+	d, err := s.discovery(ctx)
+	if err != nil {
+		return d, err
+	}
+	if s.challenges != nil {
+		if c, ok, cerr := s.challenges.Challenge(ctx); cerr == nil && ok {
+			d.RelayChallenge = &c
+		}
+	}
+	return d, nil
+}
+
+func (s *Service) discovery(ctx context.Context) (Document, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if !s.cachedAt.IsZero() && s.now().Sub(s.cachedAt) < CacheTTL {
@@ -191,8 +211,12 @@ func (s *Service) Discovery(ctx context.Context) (Document, error) {
 		MinAppAndroid: s.cfg.MinAppVersionAndroid,
 		MinAppIOS:     s.cfg.MinAppVersionIOS,
 		AuthMethods:   s.methods.Methods(ctx),
-		PushRelayIDs:  []string{},
+		PushRelayIDs:  slices.Clone(s.cfg.PushRelayIDs),
+		UnifiedPush:   s.cfg.UnifiedPush,
 		Packs:         []string{},
+	}
+	if doc.PushRelayIDs == nil {
+		doc.PushRelayIDs = []string{}
 	}
 	if s.cfg.LogoURL != "" {
 		doc.LogoURL = &s.cfg.LogoURL
