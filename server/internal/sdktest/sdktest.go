@@ -334,6 +334,31 @@ func (h *Harness) Balance(code string) (debit, credit int64) {
 	return d, c
 }
 
+// AssertLedgerInvariants fails the test unless the books of the fixture
+// organization are sound: every journal entry balances (debits equal
+// credits), every reversal mirrors the entry it reverses, and receipt numbers
+// are gap-free. The conformance suites call it after every case, so a pack
+// that finds a way to post an unbalanced or half-reversed entry cannot pass.
+func (h *Harness) AssertLedgerInvariants() {
+	h.T.Helper()
+	if n := h.Int(`SELECT count(*) FROM (SELECT entry_id FROM journal_line WHERE org_id = $1 GROUP BY entry_id HAVING sum(debit) <> sum(credit)) x`, h.Env.OrgID); n != 0 {
+		h.T.Errorf("sdktest: %d journal entries are unbalanced (debits differ from credits)", n)
+	}
+	if n := h.Int(`SELECT count(*) FROM journal_entry e WHERE e.org_id = $1 AND e.reverses_entry_id IS NOT NULL AND
+		(SELECT COALESCE(sum(debit), 0) FROM journal_line WHERE org_id = e.org_id AND entry_id = e.id) <>
+		(SELECT COALESCE(sum(credit), 0) FROM journal_line WHERE org_id = e.org_id AND entry_id = e.reverses_entry_id)`, h.Env.OrgID); n != 0 {
+		h.T.Errorf("sdktest: %d reversals do not mirror the entry they reverse", n)
+	}
+	if n := h.Int(`SELECT count(*) FROM (SELECT site_id, left(receipt_no, 4) AS yr, count(*) AS c, max(substr(receipt_no, 6)::int) AS m FROM payment
+		WHERE org_id = $1 AND receipt_no IS NOT NULL GROUP BY 1, 2) x WHERE c <> m`, h.Env.OrgID); n != 0 {
+		h.T.Errorf("sdktest: receipt numbers of %d site-years have gaps or repeats", n)
+	}
+	if n := h.Int(`SELECT count(*) FROM payment p WHERE p.org_id = $1 AND p.status = 'confirmed' AND p.provider IS NOT NULL AND
+		p.net <> p.gross - p.fee`, h.Env.OrgID); n != 0 {
+		h.T.Errorf("sdktest: %d provider payments whose net is not gross minus fee", n)
+	}
+}
+
 // Int runs a query returning one integer as the platform role (it bypasses row-level security).
 func (h *Harness) Int(sql string, args ...any) int64 { return h.Env.Int(sql, args...) }
 

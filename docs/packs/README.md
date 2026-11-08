@@ -80,7 +80,7 @@ Every interface in `sdk/` is documented with the core call sites that use it. Th
 | Compile | `server/cmd/openbekci/packs.go` lists the packs in `Official`. A fork adds its pack to the slice. `-tags nopacks` leaves it empty; `-tags examplepack` adds `packs/example` (tests) |
 | Startup | The registry reads `Manifest()`, checks `MinSDK`, calls `Register`, runs `StartupCheck`, validates namespacing and collisions, then **freezes**. Any violation is a named error (`errors.Is(err, packs.ErrNamespace)` and friends) and the server does not start; a panic in pack code is recovered |
 | `migrate` | Core migrations, then each pack's migrations in pack-id order, each with its own goose table `pack_<id>_goose_version`. They run even when no organization has the pack enabled: schema is global, data is per organization |
-| Enable (per organization) | An org admin enables the pack with settings: validated against the schema and `ValidateSettings`, stored (secrets encrypted), presets applied to sites' unchanged settings, chart names localized, `OnEnable` called; if it fails the enablement is withdrawn |
+| Enable (per organization) | An org admin enables the pack with settings: validated against the schema and `ValidateSettings`, stored (secrets encrypted), presets applied to sites' unchanged settings, chart names localized, `OnEnable` called; if it fails the enablement is withdrawn completely: preset values and chart names the enablement wrote go back to what the sites had (a key a site edited meanwhile keeps its edit), and the stored settings return to their earlier state |
 | Running | The core selects pack implementations only for organizations where the pack is enabled; pack routes and webhooks answer 404 otherwise; jobs and event handlers of a disabled pack are skipped |
 | Disable | `OnDisable`; data retained; implementations stop being selected. Settings filled by presets stay (they are the site's now) |
 | Purge | `openbekci admin packs purge --org <id or slug> --pack <id>` deletes the pack's rows for that organization after confirmation; never automatic; the pack must be disabled first |
@@ -100,7 +100,7 @@ The registry rejects violations at startup, naming the pack and the identifier.
 | Catalog label keys | `<id>.<key>` |
 | Settings keys (top-level schema properties) | `<id>_<name>` |
 | Job kinds, subscription names | `<id>.<name>` |
-| Tables | `pack_<id>_<name>`; checked after the pack's migrations ran, together with "no core table was created, altered or dropped" |
+| Tables | `pack_<id>_<name>`; checked after the pack's migrations ran, together with "no core table was created, altered or dropped" (columns, constraints, indexes, policies, triggers and privileges of every other table are fingerprinted before and after; the check runs after the migrations committed, so a violation stops startup but is not rolled back) |
 | Routes | literal paths under `/v1/orgs/{org}/packs/{id}/`; `enable`, `disable`, `settings` and `payments` are the core's |
 | Payment method | `card:<provider id>` |
 
@@ -118,7 +118,7 @@ The registry rejects violations at startup, naming the pack and the identifier.
   when there is a `site_id` column, and forced row-level security (`app.org_id`). The migration runner refuses a tenant
   table without it.
 - **Migrations** are goose files at the root of the `fs.FS` you register (`fs.Sub(embedded, "migrations")`).
-- **`Services.DB()`** gives tenant transactions only (`InTx`); there is no raw pool. Packs touch their own tables and
+- **`Services.DB()`** gives tenant transactions only (`InTx`); there is no raw pool. Statements that change the tenant context or the session (`set_config`, `SET`, `RESET`, anything naming `app.org_id`, transaction control) are refused: a guard against mistakes, not a sandbox, since a pack is trusted code compiled into the server. Packs touch their own tables and
   read core data through `UnitReader`, `PeopleReader`, `LedgerReader`; they write through `LedgerPoster`,
   `PaymentRecorder`, `Notifier`, `FileStore`. The core's invariants (balanced entries, lock date, idempotency, audit)
   apply to pack writes. No service takes an organization argument: the organization is in the context (`sdk.OrgFrom`).
