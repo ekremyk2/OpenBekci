@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: folder_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.getFolder
   summary: Get folder
   description: |-
-    Get folder.
+    **Release 0.1.** Get folder.
 
     Permission: `documents.read`.
   tags:
@@ -19,7 +19,22 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.read]
+  x-openbekci-roles:
+    org_admin:
+      - documents.read
+    site_manager:
+      - documents.read
+    board_member:
+      - documents.read
+    auditor:
+      - documents.read
+    owner:
+      - documents.read
+    tenant:
+      - documents.read
+    household:
+      - documents.read
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -39,7 +54,7 @@ patch:
   operationId: operations.updateFolder
   summary: Update folder
   description: |-
-    Update folder.
+    **Release 0.1.** Update folder.
 
     Permission: `documents.manage`.
 
@@ -49,10 +64,17 @@ patch:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.manage]
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
@@ -82,7 +104,7 @@ delete:
   operationId: operations.deleteFolder
   summary: Delete folder
   description: |-
-    Only an empty, non-system folder.
+    **Release 0.1.** Only an empty, non-system folder.
 
     Permission: `documents.manage`.
 
@@ -92,10 +114,17 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.manage]
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:
     "204":
       description: No content

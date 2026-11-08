@@ -1,0 +1,61 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: transaction_id
+    in: path
+    required: true
+    description: Id of the transaction.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.ignoreBankTransaction
+  summary: Ignore a line
+  description: |-
+    **Release 0.1.** Ignore a line.
+
+    Permission: `payments.record`.
+
+    Problems: `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.record
+    site_manager:
+      - payments.record
+    board_member:
+      - payments.record
+    accountant:
+      - payments.record
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/BankTransactionReason
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BankTransaction
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

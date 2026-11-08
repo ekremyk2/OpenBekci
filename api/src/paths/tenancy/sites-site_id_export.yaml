@@ -1,0 +1,57 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: tenancy.exportSite
+  summary: Export a site to an archive
+  description: |-
+    **Release 0.1.** People, occupancies, money history, documents and decisions in one archive file (D2); audited.
+
+    Permission: `sites.export`.
+
+    Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Problems: `reauth_required` (403), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.export
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/SiteExportRequest
+  responses:
+    "202":
+      description: Accepted; the work continues as a job.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/SiteTransfer
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: notification_id
     in: path
     required: true
@@ -11,7 +11,7 @@ post:
   operationId: operations.markNotificationRead
   summary: Mark a notification read
   description: |-
-    Mark a notification read.
+    **Release 0.1.** Mark a notification read.
 
     Permission: `notifications.read`.
 
@@ -21,8 +21,11 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [notifications.read]
+  x-openbekci-roles:
+    member:
+      - notifications.read
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   responses:

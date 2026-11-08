@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.listTicketComments
   summary: List ticket comments
   description: |-
-    Residents never receive internal comments.
+    **Release 0.1.** Residents never receive internal comments.
 
     Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
 
@@ -21,7 +21,28 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor
@@ -44,7 +65,7 @@ post:
   operationId: operations.createTicketComment
   summary: Comment on a ticket
   description: |-
-    `visibility: internal` needs `tickets.manage` or `tickets.work`.
+    **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
 
     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
 
@@ -54,8 +75,30 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned|tickets.work]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+      - tickets.work
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

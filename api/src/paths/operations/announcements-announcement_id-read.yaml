@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: announcement_id
     in: path
     required: true
@@ -11,7 +11,7 @@ put:
   operationId: operations.markAnnouncementRead
   summary: Mark an announcement read
   description: |-
-    Counted when the announcement is opened in the web or app.
+    **Release 0.1.** Counted when the announcement is opened in the web or app.
 
     Permission: `announcements.read`.
 
@@ -21,8 +21,11 @@ put:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.read]
+  x-openbekci-roles:
+    member:
+      - announcements.read
   x-idempotent: optional
+  x-stability: stable
   responses:
     "204":
       description: No content

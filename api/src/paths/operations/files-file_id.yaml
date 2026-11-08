@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - $ref: ../../components/files.yaml#/parameters/FileId
 get:
   operationId: operations.downloadFile
@@ -25,7 +25,8 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - files.read
+    member:
+      - files.read
   x-openbekci-stream: true
   x-stability: stable
   parameters:
@@ -101,7 +102,8 @@ delete:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - files.upload
+    member:
+      - files.upload
   x-idempotent: optional
   x-stability: stable
   parameters:

@@ -11,7 +11,7 @@ schemas:
         type: string
       description:
         type: string
-  OrgCodes:
+  Codes:
     type: object
     required:
       - locale

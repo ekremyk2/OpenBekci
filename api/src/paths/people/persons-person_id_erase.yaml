@@ -1,0 +1,53 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: person_id
+    in: path
+    required: true
+    description: Id of the person.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: people.erasePerson
+  summary: Erase a person (privacy)
+  description: |-
+    **Release 0.1.** Anonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates.
+
+    Permission: `people.erase`.
+
+    Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Problems: `reauth_required` (403), `conflict` (409, open balance without override), `idempotency_mismatch` (422).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.erase
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/PersonErase
+  responses:
+    "204":
+      description: Erased.
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

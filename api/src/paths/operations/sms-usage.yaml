@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.getSmsUsage
   summary: Monthly SMS counter of a site
   description: |-
-    Monthly SMS counter of a site.
+    **Release 0.1.** Monthly SMS counter of a site.
 
     Permission: `notifications.manage`.
   tags:
@@ -12,9 +12,14 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [notifications.manage]
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: month
       in: query
       schema:

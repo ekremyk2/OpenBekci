@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.listTicketHistory
   summary: Status history of a ticket
   description: |-
-    Status history of a ticket.
+    **Release 0.1.** Status history of a ticket.
 
     Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
 
@@ -21,7 +21,28 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor

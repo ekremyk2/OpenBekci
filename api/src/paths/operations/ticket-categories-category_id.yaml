@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: category_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.getTicketCategory
   summary: Get ticket category
   description: |-
-    Get ticket category.
+    **Release 0.1.** Get ticket category.
 
     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
@@ -19,7 +19,28 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -39,7 +60,7 @@ patch:
   operationId: operations.updateTicketCategory
   summary: Update ticket category
   description: |-
-    Update ticket category.
+    **Release 0.1.** Update ticket category.
 
     Permission: `tickets.manage`.
 
@@ -49,10 +70,17 @@ patch:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.manage]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:

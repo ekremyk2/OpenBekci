@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.listNotifications
   summary: List my notifications
   description: |-
-    List my notifications.
+    **Release 0.1.** List my notifications.
 
     Permission: `notifications.read`.
   tags:
@@ -12,9 +12,12 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [notifications.read]
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteId
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
     - name: unread
       in: query
       schema:

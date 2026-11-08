@@ -1,0 +1,42 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.getGateConsole
+  summary: Guard console snapshot
+  description: |-
+    **Release 0.3.** Today's expected visitors, pending approvals, waiting parcels and the access agent state.
+
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+    Permission: `gate.operate`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/GateConsole
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

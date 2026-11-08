@@ -1,0 +1,94 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: agent_id
+    in: path
+    required: true
+    description: Id of the agent.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: access.getAgent
+  summary: Get an agent
+  description: |-
+    **Release 0.3.** Get an agent.
+
+    Permission: `access.read`.
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - access.read
+    site_manager:
+      - access.read
+    board_member:
+      - access.read
+    auditor:
+      - access.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/Agent
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: access.updateAgent
+  summary: Rename an agent
+  description: |-
+    **Release 0.3.** Rename an agent.
+
+    Permission: `access.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - access.manage
+    site_manager:
+      - access.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/AgentUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/Agent
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

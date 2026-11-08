@@ -33,7 +33,7 @@ const (
 
 	// permManagerOfUnits is who may open unit folders besides the unit's own
 	// people: the managers (org admin, site manager), not the board.
-	permManagerOfUnits authz.Permission = "person.manage"
+	permManagerOfUnits authz.Permission = "people.manage"
 )
 
 // AnyRead is the permission set of the read operations.

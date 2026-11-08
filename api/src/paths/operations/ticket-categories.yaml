@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.listTicketCategories
   summary: List ticket categories
@@ -12,9 +12,29 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: archived
       in: query
       schema:
@@ -53,7 +73,13 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.manage]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
   x-idempotent: optional
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey

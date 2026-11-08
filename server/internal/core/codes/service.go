@@ -11,15 +11,9 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 )
 
-// PermRead lets a member read the labels.
+// PermRead lets a member read the labels. The permission is registered by the
+// people module (same name); this constant only names it for the service.
 const PermRead authz.Permission = "codes.read"
-
-// Permissions declares the module's permission; the wiring registers it.
-func Permissions() []authz.PermissionDef {
-	return []authz.PermissionDef{{Name: PermRead, Description: "Read enum and status labels",
-		Roles: authz.BuiltinRoles(), Scopes: []authz.ScopeType{authz.ScopeOrg, authz.ScopeSite, authz.ScopeBlock},
-		Occupants: []authz.OccupancyKind{authz.OccOwner, authz.OccTenant, authz.OccHousehold}}}
-}
 
 // Label is one code with its text.
 type Label struct {

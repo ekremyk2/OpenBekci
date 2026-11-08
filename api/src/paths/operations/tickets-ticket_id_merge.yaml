@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -11,7 +11,7 @@ post:
   operationId: operations.mergeTicket
   summary: Merge a duplicate into another ticket
   description: |-
-    Votes carry over to the target; the merged ticket points to it.
+    **Release 0.1.** Votes carry over to the target; the merged ticket points to it.
 
     Permission: `tickets.manage`.
 
@@ -21,8 +21,15 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.manage]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

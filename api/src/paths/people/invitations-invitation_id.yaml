@@ -1,33 +1,80 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: invitation_id
     in: path
     required: true
-    description: The invitation id.
+    description: Id of the invitation.
     schema:
       type: string
       format: uuid
-delete:
-  operationId: people.revokeInvitation
-  summary: Revoke a pending invitation
-  tags: [people]
+get:
+  operationId: people.getInvitation
+  summary: Get an invitation
+  description: |-
+    **Release 0.1.** Get an invitation.
+
+    Permission: `invitations.manage`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [invitation.manage]
-  x-idempotent: optional
+  x-openbekci-roles:
+    org_admin:
+      - invitations.manage
+    site_manager:
+      - invitations.manage
+    board_member:
+      - invitations.manage
+  x-stability: stable
   responses:
-    '204':
-      description: Done.
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Invitation
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: people.revokeInvitation
+  summary: Revoke an invitation
+  description: |-
+    **Release 0.1.** Revoke an invitation.
+
+    Permission: `invitations.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - invitations.manage
+    site_manager:
+      - invitations.manage
+    board_member:
+      - invitations.manage
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

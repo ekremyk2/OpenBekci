@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -11,7 +11,7 @@ post:
   operationId: operations.transitionTicket
   summary: Move a ticket to another status
   description: |-
-    Appends to the status history.
+    **Release 0.1.** Appends to the status history.
 
     Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
 
@@ -21,8 +21,17 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.manage|tickets.work]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
+    staff:
+      - tickets.work
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

@@ -266,6 +266,17 @@ func (s *Service) findJoinCode(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, 
 // PreviewJoin shows the site behind a join code; signed-in visitors also get
 // the units they can claim.
 func (s *Service) PreviewJoin(ctx context.Context, code string) (JoinPreview, error) {
+	return s.previewJoin(ctx, code, authz.PrincipalFromContext(ctx) != nil)
+}
+
+// PreviewJoinUnits is PreviewJoin with the unit list for any visitor: the draft
+// contract lists the units behind a join code without a sign-in (the code on
+// the site's notice board is the secret).
+func (s *Service) PreviewJoinUnits(ctx context.Context, code string) (JoinPreview, error) {
+	return s.previewJoin(ctx, code, true)
+}
+
+func (s *Service) previewJoin(ctx context.Context, code string, withUnits bool) (JoinPreview, error) {
 	orgID, ok := parseScopedToken(code)
 	if !ok {
 		return JoinPreview{}, problem.NotFound("this join code is not valid")
@@ -279,7 +290,7 @@ func (s *Service) PreviewJoin(ctx context.Context, code string) (JoinPreview, er
 		if err := tx.QueryRow(ctx, `SELECT o.name, s.name FROM site s JOIN organization o ON o.id = s.org_id WHERE s.org_id = $1 AND s.id = $2`, orgID, siteID).Scan(&out.OrgName, &out.SiteName); err != nil {
 			return err
 		}
-		if authz.PrincipalFromContext(ctx) == nil {
+		if !withUnits {
 			return nil
 		}
 		rows, err := tx.Query(ctx, `SELECT u.id, u.door_number, b.name, u.type FROM unit u JOIN block b ON b.org_id = u.org_id AND b.id = u.block_id

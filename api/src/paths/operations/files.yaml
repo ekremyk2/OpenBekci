@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 post:
   operationId: operations.uploadFile
   summary: Upload a file
@@ -37,7 +37,8 @@ post:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - files.upload
+    member:
+      - files.upload
   x-idempotent: optional
   x-openbekci-stream: true
   x-stability: stable
@@ -100,7 +101,8 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - files.read
+    member:
+      - files.read
   x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/Limit

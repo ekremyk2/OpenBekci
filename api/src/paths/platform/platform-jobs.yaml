@@ -1,0 +1,50 @@
+get:
+  operationId: platform.listJobs
+  summary: Background jobs of the instance
+  description: |-
+    **Release 1.0.** Background jobs of the instance.
+
+    Permission: `platform.read`.
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.read
+  x-stability: preview
+  parameters:
+    - name: state
+      in: query
+      schema:
+        type: string
+      description: Filter by `state`.
+    - name: kind
+      in: query
+      schema:
+        type: string
+      description: Filter by `kind`.
+    - name: org_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `org_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformJobList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

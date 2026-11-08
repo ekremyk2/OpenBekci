@@ -100,6 +100,16 @@ schemas:
         enum:
           - open_like
           - closed_like
+  TicketWorkflowRestore:
+    type: object
+    description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+    properties:
+      replacements:
+        type: object
+        additionalProperties:
+          type: string
+          format: uuid
+        description: "For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`."
   TicketWorkflowUpdate:
     type: object
     required:
@@ -116,16 +126,6 @@ schemas:
           type: string
           format: uuid
         description: "Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`."
-  TicketWorkflowRestore:
-    type: object
-    description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
-    properties:
-      replacements:
-        type: object
-        additionalProperties:
-          type: string
-          format: uuid
-        description: "For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`."
   TicketCategory:
     type: object
     description: "Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other."
@@ -914,27 +914,6 @@ schemas:
         items:
           type: string
           format: uuid
-  AnnouncementAttachment:
-    type: object
-    description: A file attached to an announcement.
-    required:
-      - id
-      - name
-      - mime
-      - size
-    properties:
-      id:
-        type: string
-        format: uuid
-        description: The file id; download it with `files.download`.
-      name:
-        type: string
-      mime:
-        type: string
-      size:
-        type: integer
-        format: int64
-        description: Bytes.
   Announcement:
     type: object
     description: "A one-way announcement (O4): no comments, reactions or polls."
@@ -1884,3 +1863,270 @@ schemas:
         type: integer
         format: int64
         nullable: true
+  ExportRequest:
+    type: object
+    required:
+      - kind
+      - format
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        x-known-values:
+          - income_expense
+          - debtors
+          - budget_vs_actual
+          - trial_balance
+          - receivables_aging
+          - collector_reconciliation
+          - bank_reconciliation
+          - fund_balances
+          - statements
+          - charges
+          - payments
+          - journal
+          - vehicles
+          - debt_breakdown
+      format:
+        type: string
+        enum:
+          - csv
+          - xlsx
+          - pdf
+      params:
+        type: object
+        additionalProperties: true
+        description: Kind-specific parameters, the same as the matching GET.
+  AuditEvent:
+    type: object
+    description: Append-only audit record.
+    required:
+      - id
+      - org_id
+      - site_id
+      - actor_user_id
+      - actor_display_name
+      - action
+      - target_type
+      - target_id
+      - diff
+      - ip
+      - request_id
+      - at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_user_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_display_name:
+        type: string
+        nullable: true
+      action:
+        type: string
+      target_type:
+        type: string
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      diff:
+        type: object
+        additionalProperties: true
+        description: "PII fields appear as `{field: {hash_before, hash_after}}`; never national ids."
+      ip:
+        type: string
+        nullable: true
+      request_id:
+        type: string
+      at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: null
+      actor_user_id: null
+      actor_display_name: null
+      action: action
+      target_type: target type
+      target_id: null
+      diff: {}
+      ip: null
+      request_id: 0192a3f0-1000-7000-8000-000000000004
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AuditEventList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AuditEvent"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: null
+          actor_user_id: null
+          actor_display_name: null
+          action: action
+          target_type: target type
+          target_id: null
+          diff: {}
+          ip: null
+          request_id: 0192a3f0-1000-7000-8000-000000000004
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  AuditNote:
+    type: object
+    description: An auditor's note.
+    required:
+      - id
+      - org_id
+      - site_id
+      - target_type
+      - target_id
+      - body
+      - author_person_id
+      - author_display_name
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      target_type:
+        type: string
+        nullable: true
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      body:
+        type: string
+      author_person_id:
+        type: string
+        format: uuid
+        nullable: true
+      author_display_name:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      target_type: null
+      target_id: null
+      body: body
+      author_person_id: null
+      author_display_name: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AuditNoteCreate:
+    type: object
+    required:
+      - site_id
+      - body
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      target_type:
+        type: string
+        nullable: true
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      body:
+        type: string
+  AuditNoteList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AuditNote"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          target_type: null
+          target_id: null
+          body: body
+          author_person_id: null
+          author_display_name: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  AnnouncementAttachment:
+    type: object
+    description: A file attached to an announcement.
+    required:
+      - id
+      - name
+      - mime
+      - size
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: The file id; download it with `files.download`.
+      name:
+        type: string
+      mime:
+        type: string
+      size:
+        type: integer
+        format: int64
+        description: Bytes.

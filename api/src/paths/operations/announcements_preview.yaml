@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 post:
   operationId: operations.previewAnnouncement
   summary: Preview recipient and SMS counts
@@ -12,7 +12,13 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
   x-idempotent: none
   requestBody:
     required: true

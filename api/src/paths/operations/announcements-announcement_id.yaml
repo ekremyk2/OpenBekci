@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: announcement_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.getAnnouncement
   summary: Get an announcement
   description: |-
-    Get an announcement.
+    **Release 0.1.** Get an announcement.
 
     Permission (any one of): `announcements.read`, `announcements.publish`.
   tags:
@@ -19,7 +19,16 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.read|announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
+    member:
+      - announcements.read
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -39,7 +48,7 @@ patch:
   operationId: operations.updateAnnouncement
   summary: Edit an announcement
   description: |-
-    Content of a published announcement can no longer change; pin, expiry and archive can.
+    **Release 0.1.** Content of a published announcement can no longer change; pin, expiry and archive can.
 
     Permission: `announcements.publish`.
 
@@ -49,10 +58,17 @@ patch:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
@@ -82,7 +98,7 @@ delete:
   operationId: operations.deleteAnnouncement
   summary: Delete a draft announcement
   description: |-
-    Delete a draft announcement.
+    **Release 0.1.** Delete a draft announcement.
 
     Permission: `announcements.publish`.
 
@@ -92,10 +108,17 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:
     "204":
       description: No content

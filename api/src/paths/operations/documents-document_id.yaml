@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: document_id
     in: path
     required: true
@@ -11,7 +11,7 @@ get:
   operationId: operations.getDocument
   summary: Get document
   description: |-
-    Get document.
+    **Release 0.1.** Get document.
 
     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
 
@@ -21,7 +21,24 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.read|documents.read_addressed]
+  x-openbekci-roles:
+    org_admin:
+      - documents.read
+    site_manager:
+      - documents.read
+    board_member:
+      - documents.read
+    auditor:
+      - documents.read
+    owner:
+      - documents.read
+    tenant:
+      - documents.read
+    household:
+      - documents.read
+    former_occupant:
+      - documents.read_addressed
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -41,7 +58,7 @@ patch:
   operationId: operations.updateDocument
   summary: Update document
   description: |-
-    Update document.
+    **Release 0.1.** Update document.
 
     Permission (any one of): `documents.manage`, `documents.upload_own`.
 
@@ -51,10 +68,21 @@ patch:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.manage|documents.upload_own]
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
@@ -84,7 +112,7 @@ delete:
   operationId: operations.deleteDocument
   summary: Delete document
   description: |-
-    Deletes the document; generated documents can be regenerated.
+    **Release 0.1.** Deletes the document; generated documents can be regenerated.
 
     Permission (any one of): `documents.manage`, `documents.upload_own`.
 
@@ -94,10 +122,21 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.manage|documents.upload_own]
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:
     "204":
       description: No content

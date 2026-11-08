@@ -4,6 +4,7 @@ package tenancy
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -50,35 +51,40 @@ func NewService(db TxRunner) *Service { return &Service{db: db} }
 // Org is an organization as the API shows it. The JSON tags are the audit
 // field names (see audit.Diff).
 type Org struct {
-	ID            uuid.UUID `json:"id"`
-	Slug          string    `json:"slug"`
-	Name          string    `json:"name"`
-	Status        string    `json:"status"`
-	CountryCode   string    `json:"country_code"`
-	DefaultLocale string    `json:"default_locale"`
-	Timezone      string    `json:"timezone"`
-	Version       int       `json:"version"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID            uuid.UUID      `json:"id"`
+	Slug          string         `json:"slug"`
+	Name          string         `json:"name"`
+	Status        string         `json:"status"`
+	CountryCode   string         `json:"country_code"`
+	DefaultLocale string         `json:"default_locale"`
+	Timezone      string         `json:"timezone"`
+	Settings      map[string]any `json:"settings"`
+	Version       int            `json:"version"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
 // auditView is what an org.update diff compares: the editable settings only.
 type auditView struct {
-	Name          string `json:"name"`
-	CountryCode   string `json:"country_code"`
-	DefaultLocale string `json:"default_locale"`
-	Timezone      string `json:"timezone"`
+	Name          string         `json:"name"`
+	CountryCode   string         `json:"country_code"`
+	DefaultLocale string         `json:"default_locale"`
+	Timezone      string         `json:"timezone"`
+	Settings      map[string]any `json:"settings"`
 }
 
 func (o Org) auditView() auditView {
-	return auditView{Name: o.Name, CountryCode: o.CountryCode, DefaultLocale: o.DefaultLocale, Timezone: o.Timezone}
+	return auditView{Name: o.Name, CountryCode: o.CountryCode, DefaultLocale: o.DefaultLocale, Timezone: o.Timezone, Settings: o.Settings}
 }
 
-const orgColumns = `id, slug, name, status, country_code, default_locale, timezone, version, created_at, updated_at`
+const orgColumns = `id, slug, name, status, country_code, default_locale, timezone, settings, version, created_at, updated_at`
 
 func scanOrg(row pgx.Row) (Org, error) {
 	var o Org
-	err := row.Scan(&o.ID, &o.Slug, &o.Name, &o.Status, &o.CountryCode, &o.DefaultLocale, &o.Timezone, &o.Version, &o.CreatedAt, &o.UpdatedAt)
+	var settings []byte
+	err := row.Scan(&o.ID, &o.Slug, &o.Name, &o.Status, &o.CountryCode, &o.DefaultLocale, &o.Timezone, &settings, &o.Version, &o.CreatedAt, &o.UpdatedAt)
+	o.Settings = map[string]any{}
+	_ = json.Unmarshal(settings, &o.Settings)
 	o.CreatedAt, o.UpdatedAt = o.CreatedAt.UTC(), o.UpdatedAt.UTC()
 	return o, err
 }
@@ -109,6 +115,8 @@ type Patch struct {
 	CountryCode   *string
 	DefaultLocale *string
 	Timezone      *string
+	// Settings is merged key by key into the stored settings; a null value removes the key.
+	Settings map[string]any
 }
 
 var (
@@ -173,6 +181,20 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 		if p.Timezone != nil {
 			next.Timezone = *p.Timezone
 		}
+		if p.Settings != nil {
+			merged := map[string]any{}
+			for k, v := range before.Settings {
+				merged[k] = v
+			}
+			for k, v := range p.Settings {
+				if v == nil {
+					delete(merged, k)
+				} else {
+					merged[k] = v
+				}
+			}
+			next.Settings = merged
+		}
 		diff, err := audit.Diff("organization", before.auditView(), next.auditView())
 		if err != nil {
 			return err
@@ -181,10 +203,11 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 			out = before
 			return nil
 		}
+		settingsJSON, _ := json.Marshal(next.Settings)
 		out, err = scanOrg(tx.QueryRow(ctx, `
-			UPDATE organization SET name = $2, country_code = $3, default_locale = $4, timezone = $5,
+			UPDATE organization SET name = $2, country_code = $3, default_locale = $4, timezone = $5, settings = $6,
 			       updated_at = now(), version = version + 1
-			WHERE id = $1 RETURNING `+orgColumns, orgID, next.Name, next.CountryCode, next.DefaultLocale, next.Timezone))
+			WHERE id = $1 RETURNING `+orgColumns, orgID, next.Name, next.CountryCode, next.DefaultLocale, next.Timezone, settingsJSON))
 		if err != nil {
 			return err
 		}

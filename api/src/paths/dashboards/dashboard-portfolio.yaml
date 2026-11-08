@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: dashboards.getPortfolioDashboard
   summary: Organization portfolio dashboard
   description: |-
-    In release 0.1 (S5).
+    **Release 0.1.** In release 0.1 (S5).
 
     Permission: `dashboard.portfolio`.
   tags:
@@ -12,7 +12,16 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [dashboard.portfolio]
+  x-openbekci-roles:
+    org_admin:
+      - dashboard.portfolio
+    site_manager:
+      - dashboard.portfolio
+    auditor:
+      - dashboard.portfolio
+    accountant:
+      - dashboard.portfolio
+  x-stability: stable
   responses:
     "200":
       description: OK

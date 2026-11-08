@@ -1,0 +1,86 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: import_id
+    in: path
+    required: true
+    description: Id of the import.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getBankStatementImport
+  summary: Get a bank statement import
+  description: |-
+    **Release 0.1.** Get a bank statement import.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BankStatementImport
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: money.deleteBankStatementImport
+  summary: Discard a bank statement import
+  description: |-
+    **Release 0.1.** Only while no transaction is matched.
+
+    Permission: `money.post`.
+
+    Problems: `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

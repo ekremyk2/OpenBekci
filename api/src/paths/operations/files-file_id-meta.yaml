@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - $ref: ../../components/files.yaml#/parameters/FileId
 get:
   operationId: operations.getFileMeta
@@ -14,7 +14,8 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - files.read
+    member:
+      - files.read
   x-stability: stable
   responses:
     '200':

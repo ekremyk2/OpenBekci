@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.listAnnouncements
   summary: List announcements
   description: |-
-    List announcements.
+    **Release 0.1.** List announcements.
 
     Permission (any one of): `announcements.read`, `announcements.publish` (residents: published announcements addressed to them).
   tags:
@@ -12,9 +12,18 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.read|announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
+    member:
+      - announcements.read
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: status
       in: query
       schema:
@@ -68,7 +77,7 @@ post:
   operationId: operations.createAnnouncement
   summary: Create an announcement
   description: |-
-    Created as a draft; `publish_at` schedules it.
+    **Release 0.1.** Created as a draft; `publish_at` schedules it.
 
     Permission: `announcements.publish`.
 
@@ -78,8 +87,15 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

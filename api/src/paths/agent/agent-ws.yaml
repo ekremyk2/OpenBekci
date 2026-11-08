@@ -1,0 +1,33 @@
+get:
+  operationId: agent.connect
+  summary: WebSocket transport
+  description: |-
+    **Release 0.3.** Upgrade with subprotocol `openbekci.agent.v1` and `Authorization: Bearer <agent token>`. One JSON envelope per text frame, at most 1 MiB. Close codes: 4401 revoked or unauthorized, 4409 replaced by a newer session, 4426 no common protocol version, 4429 rate limited. Server ping every 30 s, 60 s pong deadline; the server answers the agent's pings with a pong and acks heartbeats, so the agent's contact clock advances. Revocation is the `revoked` command followed by close 4401; a bare 401 on upgrade means an unknown token only.
+
+    Problems: `rate_limited` (429).
+  tags:
+    - agent
+  security:
+    - agentAuth: []
+  x-stability: preview
+  x-agent-message-schemas:
+    envelope: api/agent-protocol/v1/envelope.schema.json
+    hello_agent: api/agent-protocol/v1/hello-agent.schema.json
+    hello_server: api/agent-protocol/v1/hello-server.schema.json
+    snapshot: api/agent-protocol/v1/snapshot.schema.json
+    delta: api/agent-protocol/v1/delta.schema.json
+    event: api/agent-protocol/v1/event.schema.json
+    ack: api/agent-protocol/v1/ack.schema.json
+    command: api/agent-protocol/v1/command.schema.json
+    heartbeat: api/agent-protocol/v1/heartbeat.schema.json
+  responses:
+    "101":
+      description: WebSocket upgrade accepted (subprotocol `openbekci.agent.v1`).
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

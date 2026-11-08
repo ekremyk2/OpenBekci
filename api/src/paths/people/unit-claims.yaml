@@ -1,40 +1,54 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
-  operationId: people.listClaims
+  operationId: people.listUnitClaims
   summary: List unit claims
-  tags: [people]
+  description: |-
+    **Release 0.1.** List unit claims.
+
+    Permission: `claims.decide`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [claim.manage]
+  x-openbekci-roles:
+    org_admin:
+      - claims.decide
+    site_manager:
+      - claims.decide
+  x-stability: stable
   parameters:
-    - $ref: '../../components/common.yaml#/parameters/Limit'
-    - $ref: '../../components/common.yaml#/parameters/Cursor'
-    - name: site_id
-      in: query
-      description: 'Only this site.'
-      schema: {type: string, format: uuid}
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
     - name: status
       in: query
-      description: 'pending (default), approved, rejected or all.'
-      schema: {type: string}
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - approved
+          - rejected
+      description: Filter by `status`.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/UnitClaimList'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/UnitClaimList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

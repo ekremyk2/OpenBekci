@@ -251,10 +251,12 @@ func (s *Service) parseInvite(d Doc, household bool) (inviteInput, error) {
 		in.kind = KindHousehold
 	} else if err := d.Get("occupancy_kind", &in.kind); err != nil {
 		return in, err
+	} else if in.kind == "" && in.personID != nil {
+		// an invitation of an existing person without an occupancy only links their account
 	} else if !slices.Contains([]string{KindOwner, KindTenant, KindHousehold}, in.kind) {
 		fields = append(fields, problem.Field{Field: "occupancy_kind", Code: map[bool]string{true: "required", false: "invalid_value"}[in.kind == ""]})
 	}
-	if in.unitID == nil && !household {
+	if in.unitID == nil && !household && in.kind != "" {
 		fields = append(fields, problem.Field{Field: "unit_id", Code: "required"})
 	}
 	if err := d.Get("side", &in.side); err != nil {

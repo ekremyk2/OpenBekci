@@ -322,41 +322,12 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Read an organization
-         * @description Needs the `org.read` permission in the organization. Callers without an active membership there get 404.
-         */
-        get: operations["org.get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Change an organization's settings
-         * @description Needs the `org.manage` permission. `If-Match` carries the `version` the
-         *     client last read; a stale version is 409 `version_conflict`. The change is
-         *     recorded in the audit trail.
-         */
-        patch: operations["org.update"];
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/audit": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -373,1166 +344,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/v1/codes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Labels of the API's codes
-         * @description Human labels for enums and error codes (roles, unit types, occupancy kinds, allocation key kinds, invitation kinds, problem codes, ...) in the requested locale.
-         */
-        get: operations["instance.getCodes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/invitations/{token}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                token: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Preview an invitation
-         * @description What the holder of an invitation link sees before accepting. The token is the secret.
-         */
-        get: operations["people.previewInvitation"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/invitations/{token}/accept": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                token: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Accept an invitation
-         * @description Public: the link proves the invited contact, like a magic link. The account for that contact is found or created (with the optional password), linked to the invited person, and the occupancy is created. Then sign in with any method.
-         */
-        post: operations["people.acceptInvitation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/join/{code}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                code: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Preview the site behind a join code
-         * @description The site and organization names; signed in, also the units that can be claimed.
-         */
-        get: operations["people.previewJoin"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/join/{code}/claims": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                code: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Claim a unit through a join code
-         * @description Needs a signed-in account. The claim waits for a manager's approval.
-         */
-        post: operations["people.createClaim"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/allocation-keys/{key_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The key id. */
-                key_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read an allocation key with its values */
-        get: operations["tenancy.getAllocationKey"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Rename an allocation key */
-        patch: operations["tenancy.updateAllocationKey"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/allocation-keys/{key_id}/values": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The key id. */
-                key_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Replace a share or table key's values
-         * @description Values are rationals (`12/1000`) or decimals. The response carries sanity warnings, for example a share key that does not add up to one.
-         */
-        put: operations["tenancy.setAllocationKeyValues"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/blocks/{block_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The block id. */
-                block_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Rename, hide or reorder a block */
-        patch: operations["tenancy.updateBlock"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/invitations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List invitations */
-        get: operations["people.listInvitations"];
-        put?: never;
-        /**
-         * Invite a person to a unit
-         * @description Adds the person when needed and sends a one-time link by SMS or email. The response carries the token and link once.
-         */
-        post: operations["people.createInvitation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/invitations/{invitation_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Revoke a pending invitation */
-        delete: operations["people.revokeInvitation"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/invitations/{invitation_id}/resend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Send an invitation again with a new link */
-        post: operations["people.resendInvitation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/memberships": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List role memberships */
-        get: operations["people.listMemberships"];
-        put?: never;
-        /**
-         * Grant a role
-         * @description `board_member` and `auditor` are site-owned and must be scoped to a site or block.
-         */
-        post: operations["people.createMembership"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/memberships/{membership_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The membership id. */
-                membership_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * End a membership
-         * @description End-dates the membership. A site-owned one (board member, auditor) needs a recent re-authentication and is recorded as an override; the last organization administrator cannot be ended.
-         */
-        delete: operations["people.endMembership"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/move-outs/{move_out_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The move out id. */
-                move_out_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read a move-out */
-        get: operations["people.getMoveOut"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/occupancies": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List occupancies */
-        get: operations["people.listOccupancies"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/occupancies/{occupancy_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Change an occupancy */
-        patch: operations["people.updateOccupancy"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Let a household member see (or stop seeing) the unit's money
-         * @description For managers, the unit's owner, and the tenant for the tenant side.
-         */
-        put: operations["people.setMoneyAccess"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Record a move-out or transfer
-         * @description Ends the occupancy as of a date, with placeholder closing statement and debt certificate records; a successor takes over for a sale.
-         */
-        post: operations["people.moveOut"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/persons": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List people */
-        get: operations["people.listPersons"];
-        put?: never;
-        /** Add a person */
-        post: operations["people.createPerson"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/persons/{person_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The person id. */
-                person_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read a person */
-        get: operations["people.getPerson"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Change a person */
-        patch: operations["people.updatePerson"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/site-exports": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List site exports and imports */
-        get: operations["tenancy.listSiteExports"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/site-exports/{export_id}/archive": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The export id. */
-                export_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Download an export's archive
-         * @description The archive holds national ids sealed with this instance's encryption key.
-         */
-        get: operations["tenancy.downloadSiteExport"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/site-imports": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Import a site archive into the organization
-         * @description Creates the site with the identifiers of the archive. People who already have an account in this organization are linked, not duplicated.
-         */
-        post: operations["tenancy.importSiteArchive"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List sites
-         * @description The sites the caller can read: all of them with an organization-wide grant, otherwise the granted sites.
-         */
-        get: operations["tenancy.listSites"];
-        put?: never;
-        /**
-         * Create a site
-         * @description Creates the site with its hidden block (or the named blocks) and the two Law 634 allocation keys `arsa_payi` (share) and `equal`.
-         */
-        post: operations["tenancy.createSite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read a site */
-        get: operations["tenancy.getSite"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Change a site's settings
-         * @description Settings, bank details, lock date, address, time zone. `If-Match` carries the site `version`.
-         */
-        patch: operations["tenancy.updateSite"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/allocation-keys": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /** List a site's allocation keys */
-        get: operations["tenancy.listAllocationKeys"];
-        put?: never;
-        /** Add a custom allocation key */
-        post: operations["tenancy.createAllocationKey"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/blocks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /** List a site's blocks */
-        get: operations["tenancy.listBlocks"];
-        put?: never;
-        /** Add a block */
-        post: operations["tenancy.createBlock"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/directory": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * The site directory
-         * @description Managers, board and auditor see everyone with their phone; a resident sees their own unit's people and, when the site enabled the directory, those who consented.
-         */
-        get: operations["people.listDirectory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/directory-consent": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /** Choose what the directory shows about me */
-        put: operations["people.setDirectoryConsent"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Export a whole site to an archive
-         * @description Site hand-over (decision D2): people, occupancies, units, keys, vehicles, memberships of the site and more, identifiers preserved. Download it with `tenancy.downloadSiteExport`.
-         */
-        post: operations["tenancy.exportSite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/import": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Import units and people from a spreadsheet
-         * @description CSV or XLSX; idempotent by door number. With `dry_run=true` only the row-level report is produced. A real import with an error row writes nothing and answers `status: failed`. Opening-balance columns are validated and stored for the money module.
-         */
-        post: operations["tenancy.importUnits"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/join-code": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Read the site's join code
-         * @description The code behind the site's QR: `{BASE_URL}/join/{code}`.
-         */
-        get: operations["people.getJoinCode"];
-        put?: never;
-        /**
-         * Create or replace the site's join code
-         * @description The previous code stops working at once.
-         */
-        post: operations["people.rotateJoinCode"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/offboard": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Offboard a site after its hand-over
-         * @description Needs a prior export and a recent re-authentication. Ends the site's and its blocks' memberships, revokes open invitations and closes the site: every operation on it answers 403 `site_offboarded`.
-         */
-        post: operations["tenancy.offboardSite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/units": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * List a site's units
-         * @description A block-scoped caller sees only the permitted blocks' units.
-         */
-        get: operations["tenancy.listUnits"];
-        put?: never;
-        /** Add a unit */
-        post: operations["tenancy.createUnit"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/vehicles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /** List a site's vehicles */
-        get: operations["tenancy.listVehicles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sites/{site_id}/vehicles/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Export the site's plates as CSV
-         * @description Columns `plate,door_number,block,label` for the camera operator.
-         */
-        get: operations["tenancy.exportVehicles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/unit-claims": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List unit claims */
-        get: operations["people.listClaims"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/unit-claims/{claim_id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The claim id. */
-                claim_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Approve a unit claim
-         * @description Creates the occupancy the resident asked for.
-         */
-        post: operations["people.approveClaim"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/unit-claims/{claim_id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The claim id. */
-                claim_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reject a unit claim */
-        post: operations["people.rejectClaim"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read a unit */
-        get: operations["tenancy.getUnit"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Change a unit */
-        patch: operations["tenancy.updateUnit"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/household-invitations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * List a unit's household invitations
-         * @description For the unit's owner or tenant (and managers).
-         */
-        get: operations["people.listHouseholdInvitations"];
-        put?: never;
-        /**
-         * Invite a household member to a unit
-         * @description For the unit's owner or tenant (and managers). Creates a household occupancy on this unit only, without money access.
-         */
-        post: operations["people.createHouseholdInvitation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Revoke a household invitation */
-        delete: operations["people.revokeHouseholdInvitation"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * End a household member's occupancy
-         * @description The unit's owner or tenant (or a manager) ends a household member's stay as of today.
-         */
-        delete: operations["people.endHouseholdOccupancy"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/occupancies": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Add an occupancy to a unit
-         * @description Owner, tenant or household member. Co-owner shares of the unit sum to at most 100; a new correspondent replaces the side's previous one.
-         */
-        post: operations["people.createOccupancy"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/tags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Replace a unit's tags
-         * @description Tags are cost-group memberships such as `lift` or `pool`.
-         */
-        put: operations["tenancy.setUnitTags"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/units/{unit_id}/vehicles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Register a plate for a unit
-         * @description The plate is normalized (`34 abc 123` becomes `34ABC123`) and unique per site.
-         */
-        post: operations["tenancy.createVehicle"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/vehicles/{vehicle_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vehicle id. */
-                vehicle_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Remove a vehicle */
-        delete: operations["tenancy.deleteVehicle"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/vendors": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /** List vendors */
-        get: operations["people.listVendors"];
-        put?: never;
-        /** Add a vendor */
-        post: operations["people.createVendor"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/vendors/{vendor_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vendor id. */
-                vendor_id: string;
-            };
-            cookie?: never;
-        };
-        /** Read a vendor */
-        get: operations["people.getVendor"];
-        put?: never;
-        post?: never;
-        /** Remove a vendor */
-        delete: operations["people.deleteVendor"];
-        options?: never;
-        head?: never;
-        /** Change a vendor */
-        patch: operations["people.updateVendor"];
         trace?: never;
     };
     "/v1/platform/audit": {
@@ -1561,12 +372,2906 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the organization
+         * @description **Release 0.1.** Get the organization.
+         *
+         *     Permission: `org.read`.
+         */
+        get: operations["tenancy.getOrg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update the organization
+         * @description **Release 0.1.** Update the organization.
+         *
+         *     Permission: `org.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateOrg"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List sites
+         * @description **Release 0.1.** Cursor-paginated list of sites.
+         *
+         *     Permission: `sites.read`.
+         */
+        get: operations["tenancy.listSites"];
+        put?: never;
+        /**
+         * Create site
+         * @description **Release 0.1.** Creates a site.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["tenancy.createSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get site
+         * @description **Release 0.1.** Get site.
+         *
+         *     Permission: `sites.read`.
+         */
+        get: operations["tenancy.getSite"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update site
+         * @description **Release 0.1.** Update site.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateSite"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get site settings
+         * @description **Release 0.1.** Get site settings.
+         *
+         *     Permission: `sites.read`.
+         */
+        get: operations["tenancy.getSiteSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update site settings
+         * @description **Release 0.1.** Partial update; `If-Match` carries the site `version`.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateSiteSettings"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/bank-details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get bank details
+         * @description **Release 0.1.** IBAN and holder shown to payers; with `unit_id` and `debtor_kind` also the suggested transfer reference.
+         *
+         *     Permission: `sites.bank_details`.
+         */
+        get: operations["tenancy.getBankDetails"];
+        /**
+         * Set bank details
+         * @description **Release 0.1.** Set bank details.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        put: operations["tenancy.setBankDetails"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List blocks
+         * @description **Release 0.1.** Cursor-paginated list of blocks.
+         *
+         *     Permission: `sites.read`.
+         */
+        get: operations["tenancy.listBlocks"];
+        put?: never;
+        /**
+         * Create block
+         * @description **Release 0.1.** Creates a block.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["tenancy.createBlock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/blocks/{block_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get block
+         * @description **Release 0.1.** Get block.
+         *
+         *     Permission: `sites.read`.
+         */
+        get: operations["tenancy.getBlock"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete block
+         * @description **Release 0.1.** Only an empty block can be deleted (409 `conflict` otherwise).
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["tenancy.deleteBlock"];
+        options?: never;
+        head?: never;
+        /**
+         * Update block
+         * @description **Release 0.1.** Update block.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateBlock"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List units
+         * @description **Release 0.1.** Cursor-paginated list of units.
+         *
+         *     Permission: `units.read`.
+         */
+        get: operations["tenancy.listUnits"];
+        put?: never;
+        /**
+         * Create unit
+         * @description **Release 0.1.** Creates a unit.
+         *
+         *     Permission: `units.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["tenancy.createUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get unit
+         * @description **Release 0.1.** Get unit.
+         *
+         *     Permission: `units.read`.
+         */
+        get: operations["tenancy.getUnit"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete unit
+         * @description **Release 0.1.** Only a unit without history can be deleted (409 `conflict`); otherwise it is merged or archived.
+         *
+         *     Permission: `units.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["tenancy.deleteUnit"];
+        options?: never;
+        head?: never;
+        /**
+         * Update unit
+         * @description **Release 0.1.** Update unit.
+         *
+         *     Permission: `units.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateUnit"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace a unit's tags
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps it because the tag codes of a unit are stored with the unit (cost-group memberships such as `lift` or `pool`). It is superseded by the `unit-tags` resources once those are served; both write the same membership.
+         *
+         *     Permission: `units.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        put: operations["tenancy.setUnitTags"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units:import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import units from CSV or XLSX
+         * @description **Release 0.1.** Upload, column mapping, then `dry_run=true` for a row-level report; repeat without it to commit (asynchronous job). The mapping is a JSON `ColumnMapping`.
+         *
+         *     Permission: `units.import`.
+         *
+         *     Problems: `payload_too_large` (413), `conflict` (409).
+         */
+        post: operations["tenancy.importUnits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/allocation-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List allocation keys
+         * @description **Release 0.1.** Cursor-paginated list of allocation keys.
+         *
+         *     Permission: `units.read`.
+         */
+        get: operations["tenancy.listAllocationKeys"];
+        put?: never;
+        /**
+         * Create allocation key
+         * @description **Release 0.1.** Creates a allocation key.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["tenancy.createAllocationKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/allocation-keys/{key_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get allocation key
+         * @description **Release 0.1.** Get allocation key.
+         *
+         *     Permission: `units.read`.
+         */
+        get: operations["tenancy.getAllocationKey"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete allocation key
+         * @description **Release 0.1.** System keys and keys used by a plan cannot be deleted (409 `conflict`).
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["tenancy.deleteAllocationKey"];
+        options?: never;
+        head?: never;
+        /**
+         * Update allocation key
+         * @description **Release 0.1.** Update allocation key.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateAllocationKey"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/allocation-keys/{key_id}/values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List the value of a key per unit
+         * @description **Release 0.1.** List the value of a key per unit.
+         *
+         *     Permission: `units.read`.
+         */
+        get: operations["tenancy.listAllocationKeyValues"];
+        /**
+         * Replace the values of a key
+         * @description **Release 0.1.** Only for `share` and `table` keys; `equal` and `area` are computed.
+         *
+         *     Permission: `sites.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        put: operations["tenancy.putAllocationKeyValues"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}:export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export a site to an archive
+         * @description **Release 0.1.** People, occupancies, money history, documents and decisions in one archive file (D2); audited.
+         *
+         *     Permission: `sites.export`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `conflict` (409).
+         */
+        post: operations["tenancy.exportSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites:import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import a site archive into this organization
+         * @description **Release 0.1.** Preserves identifiers; residents' logins survive because accounts are instance-wide.
+         *
+         *     Permission: `sites.export`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `payload_too_large` (413), `conflict` (409).
+         */
+        post: operations["tenancy.importSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}:offboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Offboard a site
+         * @description **Release 0.1.** Revokes this organization's access to the site; board and auditor memberships are site-owned and stay with the site. Later calls on the site answer `site_offboarded`.
+         *
+         *     Permission: `sites.offboard`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `site_offboarded` (409), `conflict` (409).
+         */
+        post: operations["tenancy.offboardSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List site exports, imports and offboardings
+         * @description **Release 0.1.** List site exports, imports and offboardings.
+         *
+         *     Permission: `sites.export`.
+         */
+        get: operations["tenancy.listSiteTransfers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-transfers/{transfer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a site transfer record
+         * @description **Release 0.1.** Get a site transfer record.
+         *
+         *     Permission: `sites.export`.
+         */
+        get: operations["tenancy.getSiteTransfer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-transfers/{transfer_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the archive of a site export
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps the archive with the transfer record until the file store exists (`SiteTransfer.archive_file_id` stays null until then). Only exports have an archive; national ids inside stay sealed with the source instance's key.
+         *
+         *     Permission: `sites.export`.
+         */
+        get: operations["tenancy.downloadSiteTransferArchive"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List vehicles
+         * @description **Release 0.1.** Cursor-paginated list of vehicles.
+         *
+         *     Permission: `vehicles.read`.
+         */
+        get: operations["tenancy.listVehicles"];
+        put?: never;
+        /**
+         * Create vehicle
+         * @description **Release 0.1.** Creates a vehicle.
+         *
+         *     Permission: `vehicles.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["tenancy.createVehicle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vehicles/{vehicle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vehicle. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get vehicle
+         * @description **Release 0.1.** Get vehicle.
+         *
+         *     Permission: `vehicles.read`.
+         */
+        get: operations["tenancy.getVehicle"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete vehicle
+         * @description **Release 0.1.** Delete vehicle.
+         *
+         *     Permission: `vehicles.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["tenancy.deleteVehicle"];
+        options?: never;
+        head?: never;
+        /**
+         * Update vehicle
+         * @description **Release 0.1.** Update vehicle.
+         *
+         *     Permission: `vehicles.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["tenancy.updateVehicle"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vehicles:export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Export the plate registry
+         * @description **Release 0.1.** For camera operators (D6): unit door number, plate, normalized plate.
+         *
+         *     Permission: `vehicles.read`.
+         */
+        get: operations["tenancy.exportVehicles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List persons
+         * @description **Release 0.1.** Cursor-paginated list of persons.
+         *
+         *     Permission: `people.read`.
+         */
+        get: operations["people.listPersons"];
+        put?: never;
+        /**
+         * Create person
+         * @description **Release 0.1.** Creates a person.
+         *
+         *     Permission: `people.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.createPerson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get person
+         * @description **Release 0.1.** Get person.
+         *
+         *     Permission: `people.read`.
+         */
+        get: operations["people.getPerson"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update person
+         * @description **Release 0.1.** Update person.
+         *
+         *     Permission: `people.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["people.updatePerson"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons/{person_id}/national-id": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Read the masked national id
+         * @description **Release 0.1.** Always masked; the full value is never readable through the API.
+         *
+         *     Permission: `people.national_id`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`); every read is audited.
+         *
+         *     Problems: `reauth_required` (403).
+         */
+        get: operations["people.getNationalId"];
+        /**
+         * Set the national id
+         * @description **Release 0.1.** Optional (S6). Validated on entry (TCKN checksum for `TR`), stored encrypted.
+         *
+         *     Permission: `people.national_id`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["people.setNationalId"];
+        post?: never;
+        /**
+         * Clear the national id
+         * @description **Release 0.1.** Clear the national id.
+         *
+         *     Permission: `people.national_id`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["people.clearNationalId"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List occupancies
+         * @description **Release 0.1.** Cursor-paginated list of occupancys.
+         *
+         *     Permission: `occupancies.read`.
+         */
+        get: operations["people.listOccupancies"];
+        put?: never;
+        /**
+         * Create occupancy
+         * @description **Release 0.1.** Creates a occupancy.
+         *
+         *     Permission: `occupancies.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.createOccupancy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get occupancy
+         * @description **Release 0.1.** Get occupancy.
+         *
+         *     Permission: `occupancies.read`.
+         */
+        get: operations["people.getOccupancy"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete occupancy
+         * @description **Release 0.1.** Only an occupancy without history can be deleted; otherwise end it with `valid_to` or `people.moveOut`.
+         *
+         *     Permission: `occupancies.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["people.deleteOccupancy"];
+        options?: never;
+        head?: never;
+        /**
+         * Update occupancy
+         * @description **Release 0.1.** Update occupancy.
+         *
+         *     Permission: `occupancies.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["people.updateOccupancy"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Grant or withdraw money visibility for a household member
+         * @description **Release 0.1.** Callable by the owner or tenant of the same unit side (S3) and by managers.
+         *
+         *     Permission: `occupancies.grant_money`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["people.setMoneyAccess"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a move-out or sale
+         * @description **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and handles open charges per `open_charges`: by default (`carry_to_person`) they become the leaving person's personal receivable and the next occupant starts at zero; the response lists every carried charge. Overrides are audited.
+         *
+         *     Permission: `people.move_out`.
+         *
+         *     Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["people.moveOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/move-outs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List move-outs
+         * @description **Release 0.1.** List move-outs.
+         *
+         *     Permission: `people.move_out`.
+         */
+        get: operations["people.listMoveOuts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/move-outs/{move_out_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the move out. */
+                move_out_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a move-out
+         * @description **Release 0.1.** Get a move-out.
+         *
+         *     Permission: `people.move_out`.
+         */
+        get: operations["people.getMoveOut"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List memberships
+         * @description **Release 0.1.** List memberships.
+         *
+         *     Permission: `memberships.read`.
+         */
+        get: operations["people.listMemberships"];
+        put?: never;
+        /**
+         * Create a membership
+         * @description **Release 0.1.** Create a membership.
+         *
+         *     Permission: `memberships.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.createMembership"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/memberships/{membership_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the membership. */
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a membership
+         * @description **Release 0.1.** Get a membership.
+         *
+         *     Permission: `memberships.read`.
+         */
+        get: operations["people.getMembership"];
+        put?: never;
+        post?: never;
+        /**
+         * End a membership
+         * @description **Release 0.1.** Removing a site-owned membership needs re-authentication and is audited; an organization admin cannot otherwise remove board or auditor memberships.
+         *
+         *     Permission: `memberships.manage`.
+         *
+         *     Sensitive (ending a site-owned membership): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `conflict` (409), `version_conflict` (409).
+         */
+        delete: operations["people.deleteMembership"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List invitations
+         * @description **Release 0.1.** The "who has joined" view.
+         *
+         *     Permission: `invitations.manage`.
+         */
+        get: operations["people.listInvitations"];
+        put?: never;
+        /**
+         * Invite a person
+         * @description **Release 0.1.** Sent by SMS when the person has a phone (otherwise email).
+         *
+         *     Permission: `invitations.manage`.
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+         */
+        post: operations["people.createInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get an invitation
+         * @description **Release 0.1.** Get an invitation.
+         *
+         *     Permission: `invitations.manage`.
+         */
+        get: operations["people.getInvitation"];
+        put?: never;
+        post?: never;
+        /**
+         * Revoke an invitation
+         * @description **Release 0.1.** Revoke an invitation.
+         *
+         *     Permission: `invitations.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["people.revokeInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations/{invitation_id}:resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend an invitation
+         * @description **Release 0.1.** Resend an invitation.
+         *
+         *     Permission: `invitations.manage`.
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+         */
+        post: operations["people.resendInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/household-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Invite a household member to my unit
+         * @description **Release 0.1.** Invite a household member to my unit.
+         *
+         *     Listing and revoking what the caller sent: `me.listHouseholdInvitations`, `me.revokeHouseholdInvitation`; removing a member: `me.endHouseholdOccupancy`.
+         *
+         *     Permission: `invitations.household` (own unit only).
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+         */
+        post: operations["people.createHouseholdInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the token. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Preview an invitation
+         * @description **Release 0.1.** Public; an unknown, used or expired token answers one identical 404.
+         *
+         *     Problems: `rate_limited` (429), `not_found` (404).
+         */
+        get: operations["people.previewInvitation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{token}:accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the token. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept an invitation
+         * @description **Release 0.1.** Creates the account (or links the signed-in one) to the person and starts a session as `client` says.
+         *
+         *     Problems: `rate_limited` (429), `not_found` (404), `conflict` (409).
+         */
+        post: operations["people.acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/join-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the site QR join code
+         * @description **Release 0.1.** Get the site QR join code.
+         *
+         *     Permission: `claims.decide`.
+         */
+        get: operations["people.getJoinCode"];
+        /**
+         * Enable or disable the join code
+         * @description **Release 0.1.** Enable or disable the join code.
+         *
+         *     Permission: `claims.decide`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["people.setJoinCodeEnabled"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/join-code:rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the join code
+         * @description **Release 0.1.** Invalidates the printed poster.
+         *
+         *     Permission: `claims.decide`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.rotateJoinCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/join/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Describe the site behind a join code
+         * @description **Release 0.1.** Describe the site behind a join code.
+         *
+         *     Problems: `rate_limited` (429), `not_found` (404).
+         */
+        get: operations["people.getJoinInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/join/{code}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List unit labels for the claim picker
+         * @description **Release 0.1.** Public and data-minimized: door numbers only, never names.
+         *
+         *     Problems: `rate_limited` (429), `not_found` (404).
+         */
+        get: operations["people.listJoinUnits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/join/{code}/claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim a unit
+         * @description **Release 0.1.** The caller signed up (or signed in) first. The claim waits for approval; nothing is granted before.
+         *
+         *     Problems: `not_found` (404), `conflict` (409), `rate_limited` (429).
+         */
+        post: operations["people.createUnitClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List unit claims
+         * @description **Release 0.1.** List unit claims.
+         *
+         *     Permission: `claims.decide`.
+         */
+        get: operations["people.listUnitClaims"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims/{claim_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a unit claim
+         * @description **Release 0.1.** Get a unit claim.
+         *
+         *     Permission: `claims.decide`.
+         */
+        get: operations["people.getUnitClaim"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims/{claim_id}:approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a unit claim
+         * @description **Release 0.1.** Creates (or links) the person and the occupancy; the claimant gets portal access from this moment.
+         *
+         *     Permission: `claims.decide`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.approveUnitClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims/{claim_id}:reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject a unit claim
+         * @description **Release 0.1.** Reject a unit claim.
+         *
+         *     Permission: `claims.decide`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.rejectUnitClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/directory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the resident directory
+         * @description **Release 0.1.** Empty unless the site enabled the directory; residents see only people who opted in; managers and board see everyone (S8).
+         *
+         *     Permission: `directory.read`.
+         */
+        get: operations["people.listDirectory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List vendors
+         * @description **Release 0.1.** Cursor-paginated list of vendors.
+         *
+         *     Permission: `vendors.read`.
+         */
+        get: operations["people.listVendors"];
+        put?: never;
+        /**
+         * Create vendor
+         * @description **Release 0.1.** Creates a vendor.
+         *
+         *     Permission: `vendors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["people.createVendor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vendor. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get vendor
+         * @description **Release 0.1.** Get vendor.
+         *
+         *     Permission: `vendors.read`.
+         */
+        get: operations["people.getVendor"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete vendor
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps it (a vendor never used can be removed instead of archived).
+         *
+         *     Permission: `vendors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["people.deleteVendor"];
+        options?: never;
+        head?: never;
+        /**
+         * Update vendor
+         * @description **Release 0.1.** Update vendor.
+         *
+         *     Permission: `vendors.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["people.updateVendor"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * The role to permission matrix
+         * @description **Release 0.1.** Read-only; the same data as the spec extension `x-openbekci-roles`.
+         *
+         *     Permission: `roles.read`.
+         */
+        get: operations["people.listRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/person": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My person in this organization
+         * @description **Release 0.1.** My person in this organization.
+         *
+         *     Permission: `me.manage`.
+         */
+        get: operations["people.getMyPerson"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update my person
+         * @description **Release 0.1.** Includes the gate contact number guards may call (C2, release 0.3 consumes it).
+         *
+         *     Permission: `me.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["people.updateMyPerson"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/directory-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Opt in or out of the directory of a site
+         * @description **Release 0.1.** Opt in or out of the directory of a site.
+         *
+         *     Permission: `me.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["people.setMyDirectoryConsent"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/occupancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My occupancies (current and former)
+         * @description **Release 0.1.** Former occupancies are bounded by their dates (S7).
+         *
+         *     Permission: `me.manage`.
+         */
+        get: operations["people.listMyOccupancies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Members of my own unit side
+         * @description **Release 0.1.** The current owners, tenants and household members of the unit side the caller owns or rents, so owners and tenants need no `occupancies.read`. The same fields as an occupancy; a household member sees none of this.
+         *
+         *     Permission: `invitations.household`.
+         */
+        get: operations["me.listHouseholdMembers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the household invitations I sent
+         * @description **Release 0.1.** The pending, accepted, expired and revoked household invitations the caller sent for their own unit(s). Owners and tenants manage their own household; managers use `people.listInvitations`.
+         *
+         *     Permission: `invitations.household` (own unit only; invitations sent by someone else for the same unit are not listed).
+         */
+        get: operations["me.listHouseholdInvitations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revoke a household invitation I sent
+         * @description **Release 0.1.** Revokes a pending household invitation the caller sent; the link stops working. An accepted invitation cannot be revoked here: end the household occupancy instead (`me.endHouseholdOccupancy`).
+         *
+         *     Permission: `invitations.household` (own invitations only).
+         *
+         *     Problems: `conflict` (409, not pending).
+         */
+        delete: operations["me.revokeHouseholdInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-occupancies/{occupancy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of a household occupancy on the caller's own unit. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * End a household member's occupancy
+         * @description **Release 0.1.** Ends the occupancy of a household member of the caller's own unit (`kind = household` only) and withdraws their access and money visibility from that day. Owner and tenant occupancies are ended by managers (`people.deleteOccupancy`, `people.moveOut`).
+         *
+         *     Permission: `occupancies.household` (own unit, household occupancies only).
+         *
+         *     Problems: `conflict` (409, not a household occupancy or already ended).
+         */
+        delete: operations["me.endHouseholdOccupancy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Labels for enums, error codes and site statuses
+         * @description Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+         *
+         *     Permission: `codes.read`.
+         */
+        get: operations["codes.listCodes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the ticket workflow of a site
+         * @description Get the ticket workflow of a site.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicketWorkflow"];
+        /**
+         * Replace the ticket workflow of a site
+         * @description Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["operations.updateTicketWorkflow"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow:restore-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore the default ticket workflow of a site
+         * @description Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        post: operations["operations.restoreTicketWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List ticket categories
+         * @description Cursor-paginated list of ticket categorys.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketCategories"];
+        put?: never;
+        /**
+         * Create ticket category
+         * @description Creates a ticket category.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-categories/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the category. */
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get ticket category
+         * @description **Release 0.1.** Get ticket category.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicketCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update ticket category
+         * @description **Release 0.1.** Update ticket category.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateTicketCategory"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List tickets
+         * @description **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
+         *
+         *     Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
+         */
+        get: operations["operations.listTickets"];
+        put?: never;
+        /**
+         * Open a ticket
+         * @description **Release 0.1.** Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a ticket
+         * @description Get a ticket.
+         *
+         *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicket"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit, reassign or change visibility of a ticket
+         * @description The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateTicket"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}:transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move a ticket to another status
+         * @description **Release 0.1.** Appends to the status history.
+         *
+         *     Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.transitionTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}:merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge a duplicate into another ticket
+         * @description **Release 0.1.** Votes carry over to the target; the merged ticket points to it.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.mergeTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * "+1" a common ticket
+         * @description **Release 0.1.** One vote per person; repeating is harmless. Only common tickets.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["operations.voteTicket"];
+        post?: never;
+        /**
+         * Take back a "+1"
+         * @description **Release 0.1.** Take back a "+1".
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["operations.unvoteTicket"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List ticket comments
+         * @description **Release 0.1.** Residents never receive internal comments.
+         *
+         *     Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketComments"];
+        put?: never;
+        /**
+         * Comment on a ticket
+         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketComment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach an uploaded file to a ticket
+         * @description **Release 0.1.** At most 10 per ticket or comment.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketAttachment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+                /** @description Id of the attachment. */
+                attachment_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an attachment
+         * @description **Release 0.1.** Remove an attachment.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["operations.deleteTicketAttachment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Status history of a ticket
+         * @description **Release 0.1.** Status history of a ticket.
+         *
+         *     Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List announcements
+         * @description **Release 0.1.** List announcements.
+         *
+         *     Permission (any one of): `announcements.read`, `announcements.publish` (residents: published announcements addressed to them).
+         */
+        get: operations["operations.listAnnouncements"];
+        put?: never;
+        /**
+         * Create an announcement
+         * @description **Release 0.1.** Created as a draft; `publish_at` schedules it.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get an announcement
+         * @description **Release 0.1.** Get an announcement.
+         *
+         *     Permission (any one of): `announcements.read`, `announcements.publish`.
+         */
+        get: operations["operations.getAnnouncement"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft announcement
+         * @description **Release 0.1.** Delete a draft announcement.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        delete: operations["operations.deleteAnnouncement"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit an announcement
+         * @description **Release 0.1.** Content of a published announcement can no longer change; pin, expiry and archive can.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        patch: operations["operations.updateAnnouncement"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements:preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview recipient and SMS counts
+         * @description Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
+         *
+         *     Permission: `announcements.publish`.
+         */
+        post: operations["operations.previewAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}:publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish an announcement now
+         * @description **Release 0.1.** Sends by the chosen channels and fixes `recipient_count` and `sms_count`.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["operations.publishAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}:archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive an announcement
+         * @description **Release 0.1.** Archive an announcement.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.archiveAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}/reads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Who has read an announcement
+         * @description Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
+         *
+         *     Permission: `announcements.publish`.
+         */
+        get: operations["operations.listAnnouncementReads"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark an announcement read
+         * @description **Release 0.1.** Counted when the announcement is opened in the web or app.
+         *
+         *     Permission: `announcements.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["operations.markAnnouncementRead"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List folders
+         * @description **Release 0.1.** Cursor-paginated list of folders.
+         *
+         *     Permission: `documents.read`.
+         */
+        get: operations["operations.listFolders"];
+        put?: never;
+        /**
+         * Create folder
+         * @description **Release 0.1.** Creates a folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createFolder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/folders/{folder_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the folder. */
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get folder
+         * @description **Release 0.1.** Get folder.
+         *
+         *     Permission: `documents.read`.
+         */
+        get: operations["operations.getFolder"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete folder
+         * @description **Release 0.1.** Only an empty, non-system folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["operations.deleteFolder"];
+        options?: never;
+        head?: never;
+        /**
+         * Update folder
+         * @description **Release 0.1.** Update folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateFolder"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List documents
+         * @description **Release 0.1.** Cursor-paginated list of documents.
+         *
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
+         */
+        get: operations["operations.listDocuments"];
+        put?: never;
+        /**
+         * Create document
+         * @description **Release 0.1.** Creates a document.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createDocument"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the document. */
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get document
+         * @description **Release 0.1.** Get document.
+         *
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
+         */
+        get: operations["operations.getDocument"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete document
+         * @description **Release 0.1.** Deletes the document; generated documents can be regenerated.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["operations.deleteDocument"];
+        options?: never;
+        head?: never;
+        /**
+         * Update document
+         * @description **Release 0.1.** Update document.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateDocument"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List my notifications
+         * @description **Release 0.1.** List my notifications.
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.listNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Unread notification count
+         * @description Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.getUnreadCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications/{notification_id}:read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the notification. */
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a notification read
+         * @description **Release 0.1.** Mark a notification read.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.markNotificationRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications:read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark all notifications read
+         * @description **Release 0.1.** Mark all notifications read.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.markAllNotificationsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/notification-defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the site defaults for automatic messages
+         * @description **Release 0.1.** Get the site defaults for automatic messages.
+         *
+         *     Permission: `notifications.manage`.
+         */
+        get: operations["operations.getNotificationDefaults"];
+        /**
+         * Set the site defaults for automatic messages
+         * @description **Release 0.1.** Set the site defaults for automatic messages.
+         *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
+         *     Permission: `notifications.manage`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["operations.setNotificationDefaults"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notification-mutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My muted notification types
+         * @description My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.getNotificationMutes"];
+        /**
+         * Set my muted notification types
+         * @description Set my muted notification types.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409).
+         */
+        put: operations["operations.setNotificationMutes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sms-usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Monthly SMS counter of a site
+         * @description **Release 0.1.** Monthly SMS counter of a site.
+         *
+         *     Permission: `notifications.manage`.
+         */
+        get: operations["operations.getSmsUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/files": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -1620,12 +3325,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/files/{file_id}/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get file metadata
+         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
+         */
+        get: operations["operations.getFileMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/files/{file_id}": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The file id. */
                 file_id: components["parameters"]["FileId"];
@@ -1665,1003 +3397,12 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/files/{file_id}/meta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Get file metadata
-         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
-         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
-         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
-         */
-        get: operations["operations.getFileMeta"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/ticket-workflow": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Get the ticket workflow of a site
-         * @description Get the ticket workflow of a site.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.getTicketWorkflow"];
-        /**
-         * Replace the ticket workflow of a site
-         * @description Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `conflict` (409), `version_conflict` (409).
-         */
-        put: operations["operations.updateTicketWorkflow"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/ticket-categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List ticket categories
-         * @description Cursor-paginated list of ticket categorys.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.listTicketCategories"];
-        put?: never;
-        /**
-         * Create ticket category
-         * @description Creates a ticket category.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createTicketCategory"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/ticket-categories/{category_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the category. */
-                category_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get ticket category
-         * @description Get ticket category.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.getTicketCategory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update ticket category
-         * @description Update ticket category.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        patch: operations["operations.updateTicketCategory"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List tickets
-         * @description `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
-         *
-         *     Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
-         */
-        get: operations["operations.listTickets"];
-        put?: never;
-        /**
-         * Open a ticket
-         * @description Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
-         *
-         *     Permission: `tickets.open`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createTicket"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get a ticket
-         * @description Get a ticket.
-         *
-         *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.getTicket"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Edit, reassign or change visibility of a ticket
-         * @description The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        patch: operations["operations.updateTicket"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}:transition": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Move a ticket to another status
-         * @description Appends to the status history.
-         *
-         *     Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.transitionTicket"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}:merge": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Merge a duplicate into another ticket
-         * @description Votes carry over to the target; the merged ticket points to it.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.mergeTicket"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}/vote": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * "+1" a common ticket
-         * @description One vote per person; repeating is harmless. Only common tickets.
-         *
-         *     Permission: `tickets.open`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        put: operations["operations.voteTicket"];
-        post?: never;
-        /**
-         * Take back a "+1"
-         * @description Take back a "+1".
-         *
-         *     Permission: `tickets.open`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        delete: operations["operations.unvoteTicket"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}/comments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * List ticket comments
-         * @description Residents never receive internal comments.
-         *
-         *     Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.listTicketComments"];
-        put?: never;
-        /**
-         * Comment on a ticket
-         * @description `visibility: internal` needs `tickets.manage` or `tickets.work`.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createTicketComment"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Attach an uploaded file to a ticket
-         * @description At most 10 per ticket or comment.
-         *
-         *     Permission: `tickets.open`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createTicketAttachment"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-                /** @description Id of the attachment. */
-                attachment_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Remove an attachment
-         * @description Remove an attachment.
-         *
-         *     Permission: `tickets.open`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        delete: operations["operations.deleteTicketAttachment"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/tickets/{ticket_id}/history": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the ticket. */
-                ticket_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Status history of a ticket
-         * @description Status history of a ticket.
-         *
-         *     Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
-         *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
-         */
-        get: operations["operations.listTicketHistory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List announcements
-         * @description List announcements.
-         *
-         *     Permission (any one of): `announcements.read`, `announcements.publish` (residents: published announcements addressed to them).
-         */
-        get: operations["operations.listAnnouncements"];
-        put?: never;
-        /**
-         * Create an announcement
-         * @description Created as a draft; `publish_at` schedules it.
-         *
-         *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createAnnouncement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements/{announcement_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the announcement. */
-                announcement_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get an announcement
-         * @description Get an announcement.
-         *
-         *     Permission (any one of): `announcements.read`, `announcements.publish`.
-         */
-        get: operations["operations.getAnnouncement"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete a draft announcement
-         * @description Delete a draft announcement.
-         *
-         *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409), `version_conflict` (409).
-         */
-        delete: operations["operations.deleteAnnouncement"];
-        options?: never;
-        head?: never;
-        /**
-         * Edit an announcement
-         * @description Content of a published announcement can no longer change; pin, expiry and archive can.
-         *
-         *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409), `version_conflict` (409).
-         */
-        patch: operations["operations.updateAnnouncement"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements:preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Preview recipient and SMS counts
-         * @description Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
-         *
-         *     Permission: `announcements.publish`.
-         */
-        post: operations["operations.previewAnnouncement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements/{announcement_id}:publish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the announcement. */
-                announcement_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Publish an announcement now
-         * @description Sends by the chosen channels and fixes `recipient_count` and `sms_count`.
-         *
-         *     Permission: `announcements.publish`.
-         *
-         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
-         */
-        post: operations["operations.publishAnnouncement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements/{announcement_id}:archive": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the announcement. */
-                announcement_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Archive an announcement
-         * @description Archive an announcement.
-         *
-         *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.archiveAnnouncement"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements/{announcement_id}/reads": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the announcement. */
-                announcement_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Who has read an announcement
-         * @description Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
-         *
-         *     Permission: `announcements.publish`.
-         */
-        get: operations["operations.listAnnouncementReads"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/announcements/{announcement_id}/read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the announcement. */
-                announcement_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Mark an announcement read
-         * @description Counted when the announcement is opened in the web or app.
-         *
-         *     Permission: `announcements.read`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        put: operations["operations.markAnnouncementRead"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List folders
-         * @description Cursor-paginated list of folders.
-         *
-         *     Permission: `documents.read`.
-         */
-        get: operations["operations.listFolders"];
-        put?: never;
-        /**
-         * Create folder
-         * @description Creates a folder.
-         *
-         *     Permission: `documents.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createFolder"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/folders/{folder_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the folder. */
-                folder_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get folder
-         * @description Get folder.
-         *
-         *     Permission: `documents.read`.
-         */
-        get: operations["operations.getFolder"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete folder
-         * @description Only an empty, non-system folder.
-         *
-         *     Permission: `documents.manage`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        delete: operations["operations.deleteFolder"];
-        options?: never;
-        head?: never;
-        /**
-         * Update folder
-         * @description Update folder.
-         *
-         *     Permission: `documents.manage`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        patch: operations["operations.updateFolder"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/documents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List documents
-         * @description Cursor-paginated list of documents.
-         *
-         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
-         *
-         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
-         */
-        get: operations["operations.listDocuments"];
-        put?: never;
-        /**
-         * Create document
-         * @description Creates a document.
-         *
-         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createDocument"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/documents/{document_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the document. */
-                document_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get document
-         * @description Get document.
-         *
-         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
-         *
-         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
-         */
-        get: operations["operations.getDocument"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete document
-         * @description Deletes the document; generated documents can be regenerated.
-         *
-         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        delete: operations["operations.deleteDocument"];
-        options?: never;
-        head?: never;
-        /**
-         * Update document
-         * @description Update document.
-         *
-         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        patch: operations["operations.updateDocument"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/me/notifications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List my notifications
-         * @description List my notifications.
-         *
-         *     Permission: `notifications.read`.
-         */
-        get: operations["operations.listNotifications"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/me/notifications/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Unread notification count
-         * @description Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
-         *
-         *     Permission: `notifications.read`.
-         */
-        get: operations["operations.getUnreadCount"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/me/notifications/{notification_id}:read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the notification. */
-                notification_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Mark a notification read
-         * @description Mark a notification read.
-         *
-         *     Permission: `notifications.read`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.markNotificationRead"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/me/notifications:read-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Mark all notifications read
-         * @description Mark all notifications read.
-         *
-         *     Permission: `notifications.read`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.markAllNotificationsRead"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/notification-defaults": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Get the site defaults for automatic messages
-         * @description Get the site defaults for automatic messages.
-         *
-         *     Permission: `notifications.manage`.
-         */
-        get: operations["operations.getNotificationDefaults"];
-        /**
-         * Set the site defaults for automatic messages
-         * @description Set the site defaults for automatic messages.
-         *
-         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
-         *
-         *     Permission: `notifications.manage`.
-         *
-         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
-         */
-        put: operations["operations.setNotificationDefaults"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/me/notification-mutes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * My muted notification types
-         * @description My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
-         *
-         *     Permission: `notifications.read`.
-         */
-        get: operations["operations.getNotificationMutes"];
-        /**
-         * Set my muted notification types
-         * @description Set my muted notification types.
-         *
-         *     Permission: `notifications.read`.
-         *
-         *     Problems: `validation_failed` (422), `conflict` (409).
-         */
-        put: operations["operations.setNotificationMutes"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/sms-usage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Monthly SMS counter of a site
-         * @description Monthly SMS counter of a site.
-         *
-         *     Permission: `notifications.manage`.
-         */
-        get: operations["operations.getSmsUsage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/sites/{site_id}/dashboard": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the site. */
                 site_id: string;
@@ -2670,7 +3411,7 @@ export interface paths {
         };
         /**
          * Site dashboard
-         * @description Site dashboard.
+         * @description **Release 0.1.** Site dashboard.
          *
          *     Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
          *
@@ -2690,7 +3431,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the site. */
                 site_id: string;
@@ -2699,7 +3440,7 @@ export interface paths {
         };
         /**
          * Staff dashboard (counts only)
-         * @description Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
+         * @description **Release 0.1.** Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
          *
          *     Permission: `dashboard.staff`.
          */
@@ -2717,14 +3458,14 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
         };
         /**
          * Organization portfolio dashboard
-         * @description In release 0.1 (S5).
+         * @description **Release 0.1.** In release 0.1 (S5).
          *
          *     Permission: `dashboard.portfolio`.
          */
@@ -2742,72 +3483,20 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
         };
         /**
          * My home summary
-         * @description Resident summary, or the role-appropriate home.
+         * @description **Release 0.1.** Resident summary, or the role-appropriate home.
          *
          *     Permission: `me.dashboard`.
          */
         get: operations["dashboards.getMyDashboard"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/codes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Labels for enums, error codes and site statuses
-         * @description Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
-         *
-         *     Permission: `codes.read`.
-         */
-        get: operations["codes.listCodes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/ticket-workflow:restore-default": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Restore the default ticket workflow of a site
-         * @description Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
-         *
-         *     Permission: `tickets.manage`.
-         *
-         *     Problems: `version_conflict` (409), `validation_failed` (422).
-         */
-        post: operations["operations.restoreTicketWorkflow"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3107,13 +3796,24 @@ export interface components {
         Me: {
             user: components["schemas"]["MeUser"];
             organizations: components["schemas"]["OrgAccess"][];
-            /** @description The caller's unit occupancies (owner, tenant, household), current and former (former ones bound read access by their dates). */
+            /** @description The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands. */
             occupancies: components["schemas"]["MeOccupancy"][];
-            policies: {
-                [key: string]: unknown;
-            };
+            policies: components["schemas"]["MePolicies"];
         };
-        /** @description One open session of the caller. Mobile sessions keep their id across token rotation. */
+        /**
+         * @description One open session of the caller. Mobile sessions keep their id across token rotation.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "client": "web",
+         *       "device_name": null,
+         *       "ip": null,
+         *       "user_agent": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "last_used_at": null,
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "current": false
+         *     }
+         */
         Session: {
             /** Format: uuid */
             id: string;
@@ -3135,6 +3835,24 @@ export interface components {
             /** @description True for the session that made this request. */
             current: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "client": "web",
+         *           "device_name": null,
+         *           "ip": null,
+         *           "user_agent": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "last_used_at": null,
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "current": false
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         SessionList: {
             items: components["schemas"]["Session"][];
             /** @description Always null; the list is short and returned whole. */
@@ -3171,36 +3889,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "allocation.manage" | "allocation.read" | "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claim.manage" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.consent" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "files.manage" | "files.read" | "files.upload" | "import.run" | "invitation.household" | "invitation.manage" | "me.dashboard" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "notifications.manage" | "notifications.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read";
-        Organization: {
-            /** Format: uuid */
-            id: string;
-            slug: string;
-            name: string;
-            /**
-             * @description Open enum: active.
-             * @enum {string}
-             */
-            status: "active";
-            /** @description ISO 3166-1 alpha-2. */
-            country_code: string;
-            default_locale: string;
-            /** @description IANA time zone name. */
-            timezone: string;
-            /** @description Optimistic-locking version; send it as `If-Match` when updating. */
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        /** @description Partial update; absent fields stay as they are. */
-        OrganizationUpdate: {
-            name?: string;
-            country_code?: string;
-            default_locale?: string;
-            timezone?: string;
-        };
+        Permission: "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -3247,1003 +3936,2051 @@ export interface components {
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        Site: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            /** @description Postal address, free-form keys (personal data in audit diffs). */
-            address: {
-                [key: string]: unknown;
-            };
-            /** @description IANA time zone name. */
-            timezone: string;
-            /** @description ISO 4217. */
-            currency: string;
-            fiscal_year_start_month: number;
+        /** @description Gate-control settings (`site.settings.access`), release 0.3. */
+        AccessSettings: {
             /**
-             * Format: date
-             * @description Postings dated on or before this day are refused (money module).
+             * Format: int64
+             * @description Hours an offline agent keeps deciding locally before it stops (1 to 336, default 72). Sent to the agent as `update_config.settings.offline_grace_hours`.
              */
-            lock_date: string | null;
-            settings: components["schemas"]["SiteSettings"];
-            /** @description IBAN and account holder, shown to payers (`iban`, `holder`). */
-            bank_details: {
-                [key: string]: unknown;
-            };
+            offline_grace_hours: number;
             /**
-             * @description Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).
+             * Format: int64
+             * @description Silence before the agent_silent notification (default 5).
+             */
+            agent_silent_minutes: number;
+            /**
+             * @description Open enum.
              * @enum {string}
              */
-            status: "active" | "offboarded";
-            version: number;
+            plate_match: "exact" | "tolerant";
+            /**
+             * Format: int64
+             * @description Local hour for agent updates.
+             */
+            maintenance_hour: number | null;
+        };
+        /** @description A postal address. */
+        Address: {
+            line1: string;
+            line2: string | null;
+            district: string | null;
+            city: string | null;
+            postal_code: string | null;
+            /** @description ISO 3166-1 alpha-2 */
+            country_code: string;
+        };
+        /**
+         * @description How a cost is split (M2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "code": "code",
+         *       "name": "Ali Veli",
+         *       "kind": "share",
+         *       "is_system": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        AllocationKey: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** @description `arsa_payi`, `equal`, `area` or custom. */
+            code: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "share" | "equal" | "area" | "table";
+            is_system: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
-        };
-        /** @description Typed site settings; unknown keys are kept. */
-        SiteSettings: {
-            /** @description Owners see the aggregate income and expense and the budget (default false). */
-            transparency_to_owners?: boolean;
-            /** @description Tenants get portal access to the tenant side of their unit (default true). */
-            tenants_are_portal_users?: boolean;
-            /** @description Residents can see the opt-in directory (default false). */
-            directory_enabled?: boolean;
             /**
-             * @description Whether parking and storage units are listed under a flat (default) or are independent units.
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        AllocationKeyCreate: {
+            /** Format: uuid */
+            site_id: string;
+            code: string;
+            name: string;
+            /**
+             * @description Open enum.
              * @enum {string}
              */
-            appurtenance_default?: "appurtenance" | "independent";
-        } & {
-            [key: string]: unknown;
+            kind: "share" | "equal" | "area" | "table";
         };
-        SiteCreate: {
-            name: string;
-            address?: {
-                [key: string]: unknown;
-            };
-            timezone?: string;
-            currency?: string;
-            fiscal_year_start_month?: number;
-            /** Format: date */
-            lock_date?: string | null;
-            settings?: components["schemas"]["SiteSettings"];
-            bank_details?: {
-                [key: string]: unknown;
-            };
-            /** @description Names of the blocks of a multi-block site; omit for a single building (one hidden block is created). */
-            blocks?: string[];
-        };
-        /** @description Partial update; `settings` keys merge (a null value removes a key). */
-        SiteUpdate: {
-            name?: string;
-            address?: {
-                [key: string]: unknown;
-            };
-            timezone?: string;
-            currency?: string;
-            fiscal_year_start_month?: number;
-            /** Format: date */
-            lock_date?: string | null;
-            settings?: {
-                [key: string]: unknown;
-            };
-            bank_details?: {
-                [key: string]: unknown;
-            };
-        };
-        SiteList: {
-            items: components["schemas"]["Site"][];
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "code": "code",
+         *           "name": "Ali Veli",
+         *           "kind": "share",
+         *           "is_system": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AllocationKeyList: {
+            items: components["schemas"]["AllocationKey"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AllocationKeyUpdate: {
+            code?: string;
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind?: "share" | "equal" | "area" | "table";
+        };
+        /**
+         * @example {
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "value": 1.5,
+         *       "computed": false
+         *     }
+         */
+        AllocationKeyValue: {
+            /** Format: uuid */
+            unit_id: string;
+            /** @description Weight; for `equal` and `area` computed, for `share` and `table` stored. */
+            value: number;
+            computed: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "value": 1.5,
+         *           "computed": false
+         *         }
+         *       ],
+         *       "next_cursor": null,
+         *       "total": 1.5,
+         *       "complete": false
+         *     }
+         */
+        AllocationKeyValueList: {
+            items: components["schemas"]["AllocationKeyValue"][];
+            next_cursor: string | null;
+            /** @description Sum of all weights. */
+            total: number;
+            /** @description Every active unit in scope has a value. */
+            complete: boolean;
+        };
+        AllocationKeyValuesPut: {
+            items: components["schemas"]["AllocationKeyValue"][];
+        };
+        AllocationKeyValuesSummary: {
+            /** Format: int64 */
+            count: number;
+            total: number;
+        };
+        /** @description Shown to payers (M5). */
+        BankDetails: {
+            /**
+             * Format: int64
+             * @description The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
+             */
+            version: number;
+            iban: string;
+            holder: string;
+            bank_name: string | null;
+            /** @description Text payers should put in the transfer description. */
+            reference_hint: string | null;
+            /** @description Only when `unit_id` and `debtor_kind` were given: the reference for that unit side. */
+            suggested_reference: string | null;
+        };
+        BankDetailsUpdate: {
+            iban: string;
+            holder: string;
+            bank_name?: string | null;
+            reference_hint?: string | null;
+        };
+        /**
+         * @description A building within a site (S1).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "is_default": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Block: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
             site_id: string;
             name: string;
-            /** @description The automatic block of a single building; clients do not show it. */
-            hidden: boolean;
-            sort_order: number;
+            /** @description The auto-created block of a single building; hidden by clients when it is the only one. */
+            is_default: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
             version: number;
+        };
+        BlockCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "is_default": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        BlockList: {
+            items: components["schemas"]["Block"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        BlockUpdate: {
+            name?: string;
+        };
+        /**
+         * @description An open charge handled by a move-out.
+         * @example {
+         *       "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "charge_type": "dues",
+         *       "period": "2026-02",
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "outcome": "carried_to_person",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *     }
+         */
+        CarriedCharge: {
+            /** Format: uuid */
+            charge_id: string;
+            /** @description Open enum, see `Charge.charge_type`. */
+            charge_type: string;
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
+            period: string | null;
+            balance: components["schemas"]["Money"];
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            outcome: "carried_to_person" | "kept_on_unit" | "written_off";
+            /**
+             * Format: uuid
+             * @description The person now holding the receivable (`carried_to_person`).
+             */
+            person_id: string | null;
+        };
+        CodeLabel: {
+            code: string;
+            label: string;
+            description?: string;
+        };
+        Codes: {
+            locale: string;
+            /** @description Labels per open enum, keyed by enum name (for example `charge_type`, `occupancy_kind`), pack labels included. */
+            enums: {
+                [key: string]: components["schemas"]["CodeLabel"][];
+            };
+            /** @description Problem codes. */
+            errors: components["schemas"]["CodeLabel"][];
+            /** @description Site-defined ticket statuses when `site_id` is given. */
+            ticket_statuses: components["schemas"]["CodeLabel"][];
+        };
+        DirectoryConsent: {
+            /** Format: uuid */
+            site_id: string;
+            consent: boolean;
+            show_phone: boolean;
+        };
+        /**
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "display_name": "Ali Veli",
+         *       "units": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "door_number": "door number",
+         *           "kind": "owner"
+         *         }
+         *       ],
+         *       "phone": null,
+         *       "email": null
+         *     }
+         */
+        DirectoryEntry: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            units: components["schemas"]["DirectoryUnit"][];
+            /** @description E.164. */
+            phone: string | null;
+            /**
+             * Format: email
+             * @description Only for managers and board.
+             */
+            email: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "display_name": "Ali Veli",
+         *           "units": [
+         *             {
+         *               "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "door_number": "door number",
+         *               "kind": "owner"
+         *             }
+         *           ],
+         *           "phone": null,
+         *           "email": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        DirectoryEntryList: {
+            items: components["schemas"]["DirectoryEntry"][];
+            next_cursor: string | null;
+        };
+        DirectoryUnit: {
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+        };
+        /** @description Creates a household occupancy on the inviter's unit only; cannot grant money access (S3). */
+        HouseholdInvitationCreate: {
+            display_name: string;
+            /** @enum {string} */
+            channel: "sms" | "email";
+            destination: string;
+        };
+        /**
+         * @description Result of a bulk import. With `dry_run=true` nothing was saved.
+         * @example {
+         *       "dry_run": true,
+         *       "total_rows": 120,
+         *       "ok_rows": 118,
+         *       "warning_rows": 1,
+         *       "error_rows": 1,
+         *       "rows": [
+         *         {
+         *           "row": 1,
+         *           "status": "ok",
+         *           "errors": [],
+         *           "data": {}
+         *         }
+         *       ],
+         *       "rows_truncated": false,
+         *       "job_id": null
+         *     }
+         */
+        ImportReport: {
+            dry_run: boolean;
+            /** Format: int64 */
+            total_rows: number;
+            /** Format: int64 */
+            ok_rows: number;
+            /** Format: int64 */
+            warning_rows: number;
+            /** Format: int64 */
+            error_rows: number;
+            /** @description Row-level report; capped at 1000 rows (the error rows come first). */
+            rows: components["schemas"]["ImportRowResult"][];
+            rows_truncated: boolean;
+            /**
+             * Format: uuid
+             * @description Set when the import was committed (dry_run=false): the asynchronous job doing the work.
+             */
+            job_id: string | null;
+        };
+        ImportRowError: {
+            field: string | null;
+            /** @description Field-level error code, as in Problem.errors. */
+            code: string;
+            message: string | null;
+            params: {
+                [key: string]: unknown;
+            } | null;
+        };
+        ImportRowResult: {
+            /**
+             * Format: int64
+             * @description 1-based row number in the uploaded file (header excluded).
+             */
+            row: number;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "ok" | "warning" | "error";
+            errors: components["schemas"]["ImportRowError"][];
+            /** @description The parsed row as the server understood it (after column mapping). */
+            data: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description An invitation to join. Links: `{BASE_URL}/invite/{token}`.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "kind": "manager",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": null,
+         *       "unit_id": null,
+         *       "channel": "sms",
+         *       "destination": "destination",
+         *       "status": "pending",
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "accepted_at": null,
+         *       "invited_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Invitation: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "manager" | "site_code" | "household";
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            person_id: string | null;
+            /** Format: uuid */
+            unit_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            channel: "sms" | "email";
+            /** @description Masked phone or email. */
+            destination: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "expired" | "revoked";
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            accepted_at: string | null;
+            /** Format: uuid */
+            invited_by: string | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
         };
-        BlockCreate: {
-            name: string;
-            hidden?: boolean;
-            sort_order?: number;
+        InvitationAccept: {
+            /** @description Required for a new account; minimum 10 characters. */
+            password?: string;
+            display_name?: string;
+            locale?: string;
+            /** @enum {string} */
+            client?: "web" | "mobile";
         };
-        BlockUpdate: {
-            name?: string;
-            hidden?: boolean;
-            sort_order?: number;
+        InvitationCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            person_id: string;
+            /** @enum {string} */
+            channel: "sms" | "email";
+            /** Format: uuid */
+            unit_id?: string;
+            /** @description Override of the person contact. */
+            destination?: string;
         };
-        BlockList: {
-            items: components["schemas"]["Block"][];
-            /** @description Always null; a site has few blocks. */
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "kind": "manager",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": null,
+         *           "unit_id": null,
+         *           "channel": "sms",
+         *           "destination": "destination",
+         *           "status": "pending",
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "accepted_at": null,
+         *           "invited_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        InvitationList: {
+            items: components["schemas"]["Invitation"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
+        InvitationPreview: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "manager" | "site_code" | "household";
+            org_name: string;
+            site_name: string;
+            unit_door_number: string | null;
+            person_display_name: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            channel: "sms" | "email";
+            /** Format: date-time */
+            expires_at: string;
+            /** @description An account with the destination exists: accepting links it, no password needed. */
+            existing_account: boolean;
+        };
+        JoinBlock: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        JoinCode: {
+            code: string;
+            /** @description `{BASE_URL}/join/{code}`; the QR encodes this. */
+            url: string;
+            enabled: boolean;
+            /** Format: date-time */
+            rotated_at: string;
+        };
+        JoinCodeSet: {
+            enabled: boolean;
+        };
+        JoinInfo: {
+            site_name: string;
+            org_name: string;
+            blocks: components["schemas"]["JoinBlock"][];
+        };
+        /**
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "door_number": "door number",
+         *       "block_name": "Ali Veli"
+         *     }
+         */
+        JoinUnit: {
+            /** Format: uuid */
+            id: string;
+            door_number: string;
+            block_name: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "door_number": "door number",
+         *           "block_name": "Ali Veli"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        JoinUnitList: {
+            items: components["schemas"]["JoinUnit"][];
+            next_cursor: string | null;
+        };
+        /**
+         * @description A role of a person with a scope and a term.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_display_name": "Ali Veli",
+         *       "role": "org_admin",
+         *       "scope_type": "org",
+         *       "scope_id": null,
+         *       "valid_from": "2026-03-01",
+         *       "valid_to": null,
+         *       "decision_id": null,
+         *       "site_owned": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Membership: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            person_id: string;
+            person_display_name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            scope_type: "org" | "site" | "block";
+            /** Format: uuid */
+            scope_id: string | null;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to: string | null;
+            /**
+             * Format: uuid
+             * @description The electing assembly decision (0.2).
+             */
+            decision_id: string | null;
+            /** @description Board and auditor memberships: removable only through a decision or an audited override with re-authentication. */
+            site_owned: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        MembershipCreate: {
+            /** Format: uuid */
+            person_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            scope_type: "org" | "site" | "block";
+            /** Format: uuid */
+            scope_id?: string | null;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to?: string | null;
+            /** Format: uuid */
+            decision_id?: string | null;
+            site_owned?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_display_name": "Ali Veli",
+         *           "role": "org_admin",
+         *           "scope_type": "org",
+         *           "scope_id": null,
+         *           "valid_from": "2026-03-01",
+         *           "valid_to": null,
+         *           "decision_id": null,
+         *           "site_owned": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        MembershipList: {
+            items: components["schemas"]["Membership"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        MoneyAccessSet: {
+            may_see_money: boolean;
+        };
+        /**
+         * @description A move-out or sale (S7).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "occupancy_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "as_of": "2026-03-01",
+         *       "closing_statement_file_id": null,
+         *       "certificate_file_id": null,
+         *       "open_charges": "carry_to_person",
+         *       "carried": [
+         *         {
+         *           "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "charge_type": "dues",
+         *           "period": "2026-02",
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "outcome": "carried_to_person",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *         }
+         *       ],
+         *       "disposition_reason": null,
+         *       "transferred_to_person_id": null,
+         *       "decided_by": "0192a3f0-1000-7000-8000-000000000005",
+         *       "balance": {
+         *         "occupancy_id": "0192a3f0-1000-7000-8000-000000000006",
+         *         "as_of": "2026-03-01",
+         *         "principal": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "late_fee": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "credit": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "total": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "default_open_charges": "carry_to_person",
+         *         "carried": [
+         *           {
+         *             "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *             "charge_type": "dues",
+         *             "period": "2026-02",
+         *             "balance": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "outcome": "carried_to_person",
+         *             "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *           }
+         *         ]
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        MoveOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            occupancy_id: string;
+            /** Format: date */
+            as_of: string;
+            /** Format: uuid */
+            closing_statement_file_id: string | null;
+            /** Format: uuid */
+            certificate_file_id: string | null;
+            /**
+             * @description The decision taken. Open enum.
+             * @enum {string}
+             */
+            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Every open charge the move-out handled and where it went; sums to `balance.principal` plus fee. */
+            carried: components["schemas"]["CarriedCharge"][];
+            disposition_reason: string | null;
+            /** Format: uuid */
+            transferred_to_person_id: string | null;
+            /** Format: uuid */
+            decided_by: string;
+            balance: components["schemas"]["MoveOutPreview"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        MoveOutCreate: {
+            /** Format: date */
+            as_of: string;
+            /**
+             * @description What happens to the leaving person's open charges (S7). `carry_to_person` (default): they become that person's personal receivable and the next occupant starts at zero, collectible through `DebtorRef.person_id`. `keep_on_unit`: they stay on the unit side. `write_off`: written off (needs `disposition_reason`; audited).
+             * @default carry_to_person
+             * @enum {string}
+             */
+            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Required for `write_off` and `keep_on_unit` (an override of the default). */
+            disposition_reason?: string;
+            /**
+             * Format: uuid
+             * @description With `carry_to_person`: carry to this person instead of the leaving one (for example the seller's estate); audited.
+             */
+            transferred_to_person_id?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "occupancy_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "as_of": "2026-03-01",
+         *           "closing_statement_file_id": null,
+         *           "certificate_file_id": null,
+         *           "open_charges": "carry_to_person",
+         *           "carried": [
+         *             {
+         *               "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "charge_type": "dues",
+         *               "period": "2026-02",
+         *               "balance": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "outcome": "carried_to_person",
+         *               "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *             }
+         *           ],
+         *           "disposition_reason": null,
+         *           "transferred_to_person_id": null,
+         *           "decided_by": "0192a3f0-1000-7000-8000-000000000005",
+         *           "balance": {
+         *             "occupancy_id": "0192a3f0-1000-7000-8000-000000000006",
+         *             "as_of": "2026-03-01",
+         *             "principal": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "late_fee": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "credit": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "total": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "default_open_charges": "carry_to_person",
+         *             "carried": [
+         *               {
+         *                 "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *                 "charge_type": "dues",
+         *                 "period": "2026-02",
+         *                 "balance": {
+         *                   "amount": 200000,
+         *                   "currency": "TRY"
+         *                 },
+         *                 "outcome": "carried_to_person",
+         *                 "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *               }
+         *             ]
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        MoveOutList: {
+            items: components["schemas"]["MoveOut"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        MoveOutPreview: {
+            /** Format: uuid */
+            occupancy_id: string;
+            /** Format: date */
+            as_of: string;
+            principal: components["schemas"]["Money"];
+            late_fee: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+            /** @description Principal plus fee minus credit. */
+            total: components["schemas"]["Money"];
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Open charges the move-out would handle under the default. */
+            carried: components["schemas"]["CarriedCharge"][];
+        };
+        MyPersonUpdate: {
+            display_name?: string;
+            contact?: components["schemas"]["PersonContact"];
+            /** @description E.164. */
+            gate_contact_phone?: string | null;
+        };
+        NationalId: {
+            /** @description The full number. Reading the national id needs a recent re-authentication (403 `reauth_required` otherwise) and is audited; null when none is set. */
+            value: string | null;
+            set: boolean;
+            country_code: string | null;
+            masked: string | null;
+        };
+        NationalIdSet: {
+            /** @description ISO 3166-1 alpha-2; `TR` validates the TCKN checksum. */
+            country_code: string;
+            value: string;
+        };
+        /**
+         * @description Who is related to which unit, and for how long. Portal rights derive from this resource only.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "person_display_name": "Ayse Yilmaz",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "A-12",
+         *       "kind": "owner",
+         *       "side": "owner",
+         *       "share_pct": 100,
+         *       "is_correspondent": false,
+         *       "may_see_money": false,
+         *       "valid_from": "2024-01-01",
+         *       "valid_to": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Occupancy: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            person_id: string;
+            person_display_name: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Debtor side: owner for owners, tenant for tenants; for a household member the side whose money they may see. Open enum.
+             * @enum {string}
+             */
+            side: "owner" | "tenant";
+            /** @description Co-owner share. */
+            share_pct: number | null;
+            /** @description One per unit side. */
+            is_correspondent: boolean;
+            /** @description Household only; default false. */
+            may_see_money: boolean;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        OccupancyCreate: {
+            /** Format: uuid */
+            person_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            side?: "owner" | "tenant";
+            share_pct?: number | null;
+            is_correspondent?: boolean;
+            may_see_money?: boolean;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "person_display_name": "Ayse Yilmaz",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "A-12",
+         *           "kind": "owner",
+         *           "side": "owner",
+         *           "share_pct": 100,
+         *           "is_correspondent": false,
+         *           "may_see_money": false,
+         *           "valid_from": "2024-01-01",
+         *           "valid_to": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        OccupancyList: {
+            items: components["schemas"]["Occupancy"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        OccupancySummary: {
+            /** Format: int64 */
+            owners: number;
+            /** Format: int64 */
+            tenants: number;
+            /** Format: int64 */
+            household: number;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        OccupancyUpdate: {
+            /** Format: uuid */
+            person_id?: string;
+            /** Format: uuid */
+            unit_id?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind?: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            side?: "owner" | "tenant";
+            share_pct?: number | null;
+            is_correspondent?: boolean;
+            may_see_money?: boolean;
+            /** Format: date */
+            valid_from?: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        /** @description The access boundary (D2). */
+        Organization: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+            default_locale: string;
+            timezone: string;
+            country_code: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "active" | "suspended" | "archived";
+            settings: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: int64 */
+            version: number;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        OrganizationUpdate: {
+            name?: string;
+            default_locale?: string;
+            timezone?: string;
+            country_code?: string;
+            settings?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description A person of the organization; exists before an account.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "user_id": null,
+         *       "display_name": "Ayse Yilmaz",
+         *       "contact": {},
+         *       "national_id_masked": "*******1234",
+         *       "national_id_country": "TR",
+         *       "gate_contact_phone": null,
+         *       "notes": null,
+         *       "join_status": "no_account",
+         *       "directory_consent": [
+         *         {
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "consent": false,
+         *           "show_phone": false
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Person: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /**
+             * Format: uuid
+             * @description The linked sign-in account, once the person joined.
+             */
+            user_id: string | null;
+            display_name: string;
+            contact: components["schemas"]["PersonContact"];
+            /** @description Only for callers with `people.national_id`; for example `*******1234`. Never returned in full and never in audit diffs. */
+            national_id_masked: string | null;
+            national_id_country: string | null;
+            /** @description E.164. */
+            gate_contact_phone: string | null;
+            notes: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            join_status: "no_account" | "invited" | "joined";
+            directory_consent: components["schemas"]["DirectoryConsent"][];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        PersonContact: {
+            /** Format: email */
+            email?: string | null;
+            /** @description E.164. */
+            phone?: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            preferred_channel?: "sms" | "email" | null;
+            address?: components["schemas"]["Address"] | null;
+        };
+        PersonCreate: {
+            display_name: string;
+            contact?: components["schemas"]["PersonContact"];
+            /** @description E.164. */
+            gate_contact_phone?: string | null;
+            notes?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "user_id": null,
+         *           "display_name": "Ayse Yilmaz",
+         *           "contact": {},
+         *           "national_id_masked": "*******1234",
+         *           "national_id_country": "TR",
+         *           "gate_contact_phone": null,
+         *           "notes": null,
+         *           "join_status": "no_account",
+         *           "directory_consent": [
+         *             {
+         *               "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "consent": false,
+         *               "show_phone": false
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        PersonList: {
+            items: components["schemas"]["Person"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        PersonUpdate: {
+            display_name?: string;
+            contact?: components["schemas"]["PersonContact"];
+            /** @description E.164. */
+            gate_contact_phone?: string | null;
+            notes?: string | null;
+        };
+        RoleDefinition: {
+            role: string;
+            description: string;
+            permissions: string[];
+        };
+        RoleMatrix: {
+            roles: components["schemas"]["RoleDefinition"][];
+        };
+        /**
+         * @description The data-owning unit.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "name": "Ali Veli",
+         *       "address": {
+         *         "line1": "line1",
+         *         "line2": null,
+         *         "district": null,
+         *         "city": null,
+         *         "postal_code": null,
+         *         "country_code": "country code"
+         *       },
+         *       "timezone": "timezone",
+         *       "currency": "currency",
+         *       "fiscal_year_start_month": 1,
+         *       "lock_date": null,
+         *       "status": "active",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Site: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            name: string;
+            address: components["schemas"]["Address"];
+            /** @description IANA zone */
+            timezone: string;
+            /** @description ISO 4217; one per site */
+            currency: string;
+            /**
+             * Format: int64
+             * @description 1..12, default 1
+             */
+            fiscal_year_start_month: number;
+            /**
+             * Format: date
+             * @description Postings dated on or before this are rejected (`locked_period`).
+             */
+            lock_date: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "active" | "offboarded";
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        SiteCreate: {
+            name: string;
+            address?: components["schemas"]["Address"];
+            timezone: string;
+            currency: string;
+            /** Format: int64 */
+            fiscal_year_start_month?: number;
+        };
+        SiteExportRequest: {
+            include_documents?: boolean;
+            include_money_history?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "Ali Veli",
+         *           "address": {
+         *             "line1": "line1",
+         *             "line2": null,
+         *             "district": null,
+         *             "city": null,
+         *             "postal_code": null,
+         *             "country_code": "country code"
+         *           },
+         *           "timezone": "timezone",
+         *           "currency": "currency",
+         *           "fiscal_year_start_month": 1,
+         *           "lock_date": null,
+         *           "status": "active",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        SiteList: {
+            items: components["schemas"]["Site"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        SiteOffboardRequest: {
+            /** @description Must equal the site name. */
+            confirm_site_name: string;
+            reason?: string;
+        };
+        /** @description Site settings. Late-fee policy, lock date and bank details have their own resources; governance thresholds are `governance.getGovernanceSettings`. */
+        SiteSettings: {
+            /**
+             * Format: int64
+             * @description The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
+             */
+            version: number;
+            /** @description Tenants get a portal login (S3). */
+            tenants_are_portal_users: boolean;
+            /** @description Opt-in resident directory is on (S8). */
+            directory_enabled: boolean;
+            /** @description Owners see aggregate gelir-gider and budget vs actual. */
+            owner_financial_transparency: boolean;
+            /**
+             * @description Default for parking and storage units (S2). Open enum.
+             * @enum {string}
+             */
+            parking_storage_default: "appurtenance" | "independent";
+            /** @description Vendor bills with due dates and partial payments are switched on (M6). */
+            bills_enabled: boolean;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            announcement_publishers: "manager_only" | "manager_and_board";
+            /**
+             * Format: int64
+             * @description Archive closed tickets after N months; null: never.
+             */
+            ticket_archive_months: number | null;
+            /**
+             * Format: int64
+             * @description Default 90 (C2).
+             */
+            visitor_log_retention_days: number;
+            /** @description National preset id supplied by a pack, for example `tr`. */
+            legal_preset: string | null;
+            access: components["schemas"]["AccessSettings"];
+            /** @description Pack-defined settings (schema-driven in 0.4). */
+            extra: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** @description Partial update of the site settings. */
+        SiteSettingsUpdate: {
+            /** @description Tenants get a portal login (S3). */
+            tenants_are_portal_users?: boolean;
+            /** @description Opt-in resident directory is on (S8). */
+            directory_enabled?: boolean;
+            /** @description Owners see aggregate gelir-gider and budget vs actual. */
+            owner_financial_transparency?: boolean;
+            /**
+             * @description Default for parking and storage units (S2). Open enum.
+             * @enum {string}
+             */
+            parking_storage_default?: "appurtenance" | "independent";
+            /** @description Vendor bills with due dates and partial payments are switched on (M6). */
+            bills_enabled?: boolean;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            announcement_publishers?: "manager_only" | "manager_and_board";
+            /**
+             * Format: int64
+             * @description Archive closed tickets after N months; null: never.
+             */
+            ticket_archive_months?: number | null;
+            /**
+             * Format: int64
+             * @description Default 90 (C2).
+             */
+            visitor_log_retention_days?: number;
+            /** @description National preset id supplied by a pack, for example `tr`. */
+            legal_preset?: string | null;
+            access?: components["schemas"]["AccessSettings"];
+            /** @description Pack-defined settings (schema-driven in 0.4). */
+            extra?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /**
+         * @description Record of a site export, import or offboarding (D2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "direction": "export",
+         *       "site_id": null,
+         *       "archive_file_id": null,
+         *       "source_org_id": null,
+         *       "target_org_id": null,
+         *       "status": "queued",
+         *       "job_id": null,
+         *       "at": "2026-03-01T09:00:00Z",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        SiteTransfer: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            direction: "export" | "import" | "offboard";
+            /** Format: uuid */
+            site_id: string | null;
+            /** Format: uuid */
+            archive_file_id: string | null;
+            /** Format: uuid */
+            source_org_id: string | null;
+            /** Format: uuid */
+            target_org_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "queued" | "running" | "succeeded" | "failed";
+            /** Format: uuid */
+            job_id: string | null;
+            /** Format: date-time */
+            at: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "direction": "export",
+         *           "site_id": null,
+         *           "archive_file_id": null,
+         *           "source_org_id": null,
+         *           "target_org_id": null,
+         *           "status": "queued",
+         *           "job_id": null,
+         *           "at": "2026-03-01T09:00:00Z",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        SiteTransferList: {
+            items: components["schemas"]["SiteTransfer"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        SiteUpdate: {
+            name?: string;
+            address?: components["schemas"]["Address"];
+            timezone?: string;
+            currency?: string;
+            /** Format: int64 */
+            fiscal_year_start_month?: number;
+        };
+        /**
+         * @description A unit of a site.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "block_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "door_number": "A-12",
+         *       "legal_ref": "12/34",
+         *       "type": "flat",
+         *       "area_m2": 96.5,
+         *       "parent_unit_id": null,
+         *       "status": "active",
+         *       "vacant": false,
+         *       "occupancy": {
+         *         "owners": 1,
+         *         "tenants": 1,
+         *         "household": 1
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1,
+         *       "payer_overrides": {}
+         *     }
+         */
         Unit: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
             site_id: string;
             /** Format: uuid */
             block_id: string;
-            block_name: string;
-            /** @description What people say, for example "A-12". */
+            /** @description What people say, for example A-12. */
             door_number: string;
-            /** @description Legal reference (tapu bagimsiz bolum no). */
+            /** @description Tapu bagimsiz bolum no. */
             legal_ref: string | null;
             /**
-             * @description Open enum: flat, shop, office, parking, storage, common, other.
+             * @description Open enum.
              * @enum {string}
              */
             type: "flat" | "shop" | "office" | "parking" | "storage" | "common" | "other";
             area_m2: number | null;
             /**
              * Format: uuid
-             * @description The flat a parking spot or storage room belongs to (appurtenance).
+             * @description Set: an appurtenance of that unit (S2); null: an independent unit.
              */
             parent_unit_id: string | null;
             /**
-             * @description Per-unit override of the site's `appurtenance_default`; null follows the site.
-             * @enum {string|null}
-             */
-            appurtenance_override: "appurtenance" | "independent" | null;
-            /** @description Per-unit payer override: charge type to the side that pays it, replacing the site default (`settings.payer_defaults`). Empty follows the site. */
-            payer_overrides: {
-                [key: string]: "owner" | "tenant";
-            };
-            /**
-             * @description Open enum: active, merged, split (the last two are reserved).
+             * @description Open enum.
              * @enum {string}
              */
             status: "active" | "merged" | "split";
-            /** @description Derived. True when the unit has dues and a statement of its own (flats, shops, offices; parking and storage per the override or site default). */
-            independent: boolean;
-            /** @description Derived from occupancies. True when nobody currently lives in the unit. */
+            /** @description Derived from occupancies; never set. */
             vacant: boolean;
-            tags: string[];
+            occupancy: components["schemas"]["OccupancySummary"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
             version: number;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
+            payer_overrides: {
+                [key: string]: "owner" | "tenant";
+            };
+        };
+        /**
+         * @description A request from the site QR path to be linked to a unit (S4).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "user_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "display_name": "Ali Veli",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "claimed_role": "owner",
+         *       "status": "pending",
+         *       "decided_by": null,
+         *       "decided_at": null,
+         *       "decision_note": null,
+         *       "note": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        UnitClaim: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            user_id: string;
+            display_name: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            claimed_role: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "approved" | "rejected";
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            decision_note: string | null;
+            note: string | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
         };
+        UnitClaimApprove: {
+            share_pct?: number;
+            /** Format: date */
+            valid_from?: string;
+            note?: string;
+        };
+        UnitClaimCreate: {
+            /** Format: uuid */
+            unit_id: string;
+            /** @enum {string} */
+            claimed_role: "owner" | "tenant" | "household";
+            note?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "user_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "display_name": "Ali Veli",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "claimed_role": "owner",
+         *           "status": "pending",
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "decision_note": null,
+         *           "note": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        UnitClaimList: {
+            items: components["schemas"]["UnitClaim"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        UnitClaimReject: {
+            reason: string;
+        };
         UnitCreate: {
-            /**
-             * Format: uuid
-             * @description Required when the site has several blocks.
-             */
-            block_id?: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            block_id: string;
             door_number: string;
             legal_ref?: string | null;
-            /** @description One of flat (default), shop, office, parking, storage, common, other. */
-            type?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            type: "flat" | "shop" | "office" | "parking" | "storage" | "common" | "other";
             area_m2?: number | null;
             /** Format: uuid */
             parent_unit_id?: string | null;
-            /** @enum {string|null} */
-            appurtenance_override?: "appurtenance" | "independent" | null;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
             payer_overrides?: {
                 [key: string]: "owner" | "tenant";
             };
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "block_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "door_number": "A-12",
+         *           "legal_ref": "12/34",
+         *           "type": "flat",
+         *           "area_m2": 96.5,
+         *           "parent_unit_id": null,
+         *           "status": "active",
+         *           "vacant": false,
+         *           "occupancy": {
+         *             "owners": 1,
+         *             "tenants": 1,
+         *             "household": 1
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1,
+         *           "payer_overrides": {}
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        UnitList: {
+            items: components["schemas"]["Unit"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description The tag codes of one unit (cost groups such as `lift` or `pool`); replaces the whole set. */
+        UnitTags: {
+            tags: string[];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         UnitUpdate: {
             /** Format: uuid */
             block_id?: string;
             door_number?: string;
             legal_ref?: string | null;
-            type?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            type?: "flat" | "shop" | "office" | "parking" | "storage" | "common" | "other";
             area_m2?: number | null;
             /** Format: uuid */
             parent_unit_id?: string | null;
-            /** @enum {string|null} */
-            appurtenance_override?: "appurtenance" | "independent" | null;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed. PATCH merges by key; a `null` value removes that override.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
             payer_overrides?: {
-                [key: string]: "owner" | "tenant";
+                [key: string]: "owner" | "tenant" | null;
             };
         };
-        UnitList: {
-            items: components["schemas"]["Unit"][];
-            next_cursor: string | null;
-        };
-        UnitTags: {
-            tags: string[];
-        };
-        AllocationKey: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string;
-            /** @description For example `arsa_payi`, `equal`, `area` or a custom code. */
-            code: string;
-            name: string;
-            /**
-             * @description Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).
-             * @enum {string}
-             */
-            kind: "share" | "equal" | "area" | "table";
-            /** @description One of the Law 634 keys created with the site. */
-            is_default: boolean;
-            value_count: number;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        AllocationKeyList: {
-            items: components["schemas"]["AllocationKey"][];
-            /** @description Always null. */
-            next_cursor: string | null;
-        };
-        AllocationKeyCreate: {
-            code: string;
-            name: string;
-            /** @enum {string} */
-            kind: "share" | "equal" | "area" | "table";
-        };
-        AllocationKeyUpdate: {
-            name: string;
-        };
-        KeyValue: {
-            /** Format: uuid */
-            unit_id: string;
-            /** @description A rational ("12/1000") or a decimal ("0.012", "350"). */
-            value: string;
-        };
-        KeyWarning: {
-            /** @description For example `share_sum_mismatch`. */
-            code: string;
-            params?: {
-                [key: string]: unknown;
-            };
-        };
-        AllocationKeyDetail: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string;
-            code: string;
-            name: string;
-            /**
-             * @description Open enum: share, equal, area, table.
-             * @enum {string}
-             */
-            kind: "share" | "equal" | "area" | "table";
-            is_default: boolean;
-            value_count: number;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            values: components["schemas"]["KeyValue"][];
-            /** @description Non-blocking findings, such as a share key that does not add up to one. */
-            warnings: components["schemas"]["KeyWarning"][];
-        };
-        AllocationKeyValues: {
-            values: components["schemas"]["KeyValue"][];
-        };
+        /**
+         * @description A plate registered to a unit (D6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "plate": "plate",
+         *       "plate_normalized": "plate normalized",
+         *       "description": null,
+         *       "archived": false,
+         *       "warning": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Vehicle: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
-            site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            door_number: string;
-            /** @description Normalized, for example `34ABC123`. */
-            plate: string;
-            label: string | null;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-        };
-        VehicleCreate: {
-            /** @description As written, for example "34 abc 123"; stored normalized. */
-            plate: string;
-            label?: string | null;
-        };
-        VehicleList: {
-            items: components["schemas"]["Vehicle"][];
-            next_cursor: string | null;
-        };
-        ImportMessage: {
-            /** @enum {string} */
-            level: "error" | "warning";
-            column: string;
-            code: string;
-            params?: {
-                [key: string]: unknown;
-            };
-        };
-        ImportRow: {
-            /** @description Line in the file (the header is line 1). */
-            row: number;
-            door_number: string;
-            /** @enum {string} */
-            status: "ok" | "warning" | "error";
-            /** @enum {string} */
-            action: "create" | "update" | "unchanged" | "skipped";
-            messages: components["schemas"]["ImportMessage"][];
-        };
-        ImportReport: {
-            /** Format: uuid */
-            batch_id: string;
-            dry_run: boolean;
-            /** @description False for a dry run and for a file with errors (nothing is written then). */
-            applied: boolean;
-            /** @enum {string} */
-            status: "dry_run" | "applied" | "failed";
-            summary: {
-                [key: string]: number;
-            };
-            /** @description Canonical column to the header it was read from. */
-            columns: {
-                [key: string]: string;
-            };
-            rows: components["schemas"]["ImportRow"][];
-        };
-        ImportUpload: {
-            /**
-             * Format: binary
-             * @description A CSV (comma, semicolon or tab separated, UTF-8) or XLSX file; the first row is the header.
-             */
-            file: string;
-            /**
-             * @description Validate and report only; nothing is written.
-             * @default false
-             */
-            dry_run: boolean;
-            /** @description JSON object mapping a canonical column (`door_number`, `block`, `area_m2`, `arsa_payi`, `owner_name`, ...) to the header text in the file. */
-            mapping?: string;
-        };
-        ArchiveUpload: {
-            /**
-             * Format: binary
-             * @description A site archive produced by a site export.
-             */
-            file: string;
-        };
-        SiteExport: {
-            /** Format: uuid */
-            id: string;
-            /**
-             * @description Open enum: export, import.
-             * @enum {string}
-             */
-            direction: "export" | "import";
-            /** Format: uuid */
-            site_id: string | null;
-            site_name: string | null;
-            /** Format: uuid */
-            source_org_id: string | null;
-            /** Format: uuid */
-            target_org_id: string | null;
-            /**
-             * @description Open enum: running, done, failed.
-             * @enum {string}
-             */
-            status: "running" | "done" | "failed";
-            /** @description Rows per table. */
-            summary: {
-                [key: string]: unknown;
-            };
-            has_archive: boolean;
-            /** Format: date-time */
-            at: string;
-        };
-        SiteExportList: {
-            items: components["schemas"]["SiteExport"][];
-            next_cursor: string | null;
-        };
-        Codes: {
-            /** @description The locale the labels are in (en or tr). */
-            locale: string;
-            /** @description Section name (`roles`, `unit_types`, `occupancy_kinds`, `allocation_key_kinds`, `invitation_kinds`, `claim_statuses`, `debt_dispositions`, `problem_codes`, `field_error_codes`, ...) to code to label. */
-            sections: {
-                [key: string]: {
-                    [key: string]: string;
-                };
-            };
-        };
-        Person: {
-            /** Format: uuid */
-            id: string;
-            /**
-             * Format: uuid
-             * @description The sign-in account linked to the person, if any.
-             */
-            user_id: string | null;
-            display_name: string;
-            email: string | null;
-            /** @description E.164. */
-            phone: string | null;
-            /** @description The number the gate calls for visitors (E.164). */
-            gate_contact_phone: string | null;
-            /** @description Always masked in reads (`*******1234`); stored encrypted, never in audit diffs. */
-            national_id: string | null;
-            /** @description ISO 3166-1 alpha-2; `TR` numbers are checksum-validated. */
-            national_id_country: string | null;
-            notes: string | null;
-            /**
-             * Format: uuid
-             * @description The site that registered the person.
-             */
-            site_id: string | null;
-            has_account: boolean;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        PersonCreate: {
-            display_name: string;
-            email?: string | null;
-            /** @description International format; Turkish 05xx numbers are normalized. */
-            phone?: string | null;
-            gate_contact_phone?: string | null;
-            national_id?: string | null;
-            national_id_country?: string;
-            notes?: string | null;
-            /**
-             * Format: uuid
-             * @description Register the person at this site (needed for a site-scoped manager).
-             */
-            site_id?: string | null;
-        };
-        PersonUpdate: {
-            display_name?: string;
-            email?: string | null;
-            phone?: string | null;
-            gate_contact_phone?: string | null;
-            /** @description A new number replaces the stored one; null removes it. */
-            national_id?: string | null;
-            national_id_country?: string;
-            notes?: string | null;
-        };
-        PersonList: {
-            items: components["schemas"]["Person"][];
-            next_cursor: string | null;
-        };
-        Occupancy: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            door_number: string;
-            /** Format: uuid */
-            person_id: string;
-            person_name: string;
-            /**
-             * @description Open enum: owner, tenant, household.
-             * @enum {string}
-             */
-            kind: "owner" | "tenant" | "household";
-            /**
-             * @description Open enum: owner, tenant. The unit side the occupancy belongs to.
-             * @enum {string}
-             */
-            side: "owner" | "tenant";
-            /** @description A co-owner's share; the shares of one unit sum to at most 100. */
-            share_pct: number | null;
-            /** @description The one person per unit side who receives notices. */
-            is_correspondent: boolean;
-            /** @description Household members only; granted by the unit's owner or tenant. */
-            may_see_money: boolean;
-            /** @description Lives in the unit. Vacancy is derived from this. */
-            resides: boolean;
-            /** Format: date */
-            valid_from: string;
-            /**
-             * Format: date
-             * @description Exclusive; the first day the person is no longer there.
-             */
-            valid_to: string | null;
-            current: boolean;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        OccupancyList: {
-            items: components["schemas"]["Occupancy"][];
-            next_cursor: string | null;
-        };
-        OccupancyCreate: {
-            /** Format: uuid */
-            person_id: string;
-            /** @enum {string} */
-            kind: "owner" | "tenant" | "household";
-            /**
-             * @description Household members only: the side they live with (default: the tenant side when the unit has a tenant).
-             * @enum {string}
-             */
-            side?: "owner" | "tenant";
-            share_pct?: number | null;
-            is_correspondent?: boolean;
-            resides?: boolean;
-            /**
-             * Format: date
-             * @description Default today.
-             */
-            valid_from?: string;
-            /** Format: date */
-            valid_to?: string | null;
-        };
-        OccupancyUpdate: {
-            share_pct?: number | null;
-            is_correspondent?: boolean;
-            resides?: boolean;
-            /** Format: date */
-            valid_from?: string;
-            /** Format: date */
-            valid_to?: string | null;
-        };
-        MoneyAccess: {
-            may_see_money: boolean;
-        };
-        MoveOutRequest: {
-            /**
-             * Format: date
-             * @description The first day the person is no longer there; no month is pro-rated.
-             */
-            as_of: string;
-            /**
-             * @description What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
-             * @enum {string}
-             */
-            open_charges?: "carry_to_person" | "keep_on_unit" | "write_off";
-            notes?: string | null;
-            /**
-             * Format: uuid
-             * @description A transfer (sale): this person takes over the same kind, side and share from the date.
-             */
-            successor_person_id?: string | null;
-            /** @description Also end the household members of the same side (default true). */
-            end_household?: boolean;
-        };
-        MoveOut: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string;
-            /** Format: uuid */
-            occupancy_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /** Format: uuid */
-            person_id: string;
-            /** Format: date */
-            as_of: string;
-            /**
-             * @description Open enum: carry_to_person, keep_on_unit, write_off.
-             * @enum {string}
-             */
-            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
-            /**
-             * Format: int64
-             * @description Filled by the money module: the amount carried to the person's receivable (minor units).
-             */
-            carried_amount_minor: number | null;
-            carried_currency: string | null;
-            /**
-             * @description Open enum: pending, ready. The money module fills the statement.
-             * @enum {string}
-             */
-            closing_statement_status: "pending" | "ready";
-            /** Format: uuid */
-            closing_statement_file_id: string | null;
-            /**
-             * @description Open enum: pending, ready. The debt certificate (borc durum belgesi).
-             * @enum {string}
-             */
-            certificate_status: "pending" | "ready";
-            /** Format: uuid */
-            certificate_file_id: string | null;
-            /** Format: uuid */
-            successor_occupancy_id: string | null;
-            /** Format: uuid */
-            decided_by: string | null;
-            notes: string | null;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-        };
-        Membership: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            person_id: string;
-            person_name: string;
-            /**
-             * @description Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
-             * @enum {string}
-             */
-            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
-            /**
-             * @description Open enum: org, site, block.
-             * @enum {string}
-             */
-            scope_type: "org" | "site" | "block";
-            /** Format: uuid */
-            scope_id: string | null;
-            /** Format: date-time */
-            valid_from: string;
-            /** Format: date-time */
-            valid_to: string | null;
-            /** @description Board and auditor memberships belong to the site; ending one needs re-authentication and is audited. */
-            site_owned: boolean;
-            /**
-             * Format: uuid
-             * @description The assembly decision that granted it (governance, 0.2).
-             */
-            decision_id: string | null;
-            current: boolean;
-            version: number;
-            /** Format: date-time */
-            created_at: string;
-        };
-        MembershipList: {
-            items: components["schemas"]["Membership"][];
-            next_cursor: string | null;
-        };
-        MembershipCreate: {
-            /** Format: uuid */
-            person_id: string;
-            /** @enum {string} */
-            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
-            /**
-             * @description Default org.
-             * @enum {string}
-             */
-            scope_type?: "org" | "site" | "block";
-            /** Format: uuid */
-            scope_id?: string | null;
-            /** Format: date-time */
-            valid_from?: string;
-            /** Format: date-time */
-            valid_to?: string | null;
-            /** Format: uuid */
-            decision_id?: string | null;
-        };
-        Invitation: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string;
-            /**
-             * @description Open enum: manager, household, site_code.
-             * @enum {string}
-             */
-            kind: "manager" | "household" | "site_code";
-            /** Format: uuid */
-            unit_id: string | null;
-            door_number: string | null;
-            /** Format: uuid */
-            person_id: string | null;
-            occupancy_kind: string | null;
-            /**
-             * @description Open enum: sms, email, link.
-             * @enum {string}
-             */
-            channel: "sms" | "email" | "link";
-            email: string | null;
-            phone: string | null;
-            /**
-             * @description Open enum: pending, accepted, revoked, expired.
-             * @enum {string}
-             */
-            status: "pending" | "accepted" | "revoked" | "expired";
-            /** Format: date-time */
-            expires_at: string | null;
-            send_count: number;
-            /** Format: date-time */
-            last_sent_at: string | null;
-            uses: number;
-            /** Format: date-time */
-            accepted_at: string | null;
-            /**
-             * @description Open enum: sent, failed, none. The outcome of the send made by this request.
-             * @enum {string}
-             */
-            delivery: "sent" | "failed" | "none";
-            /** @description The one-time secret; only in the response that created or re-sent the invitation. */
-            token?: string;
-            /** @description The invitation URL; only in the response that created or re-sent it. */
-            link?: string;
-            /** Format: date-time */
-            created_at: string;
-            version: number;
-        };
-        InvitationList: {
-            items: components["schemas"]["Invitation"][];
-            next_cursor: string | null;
-        };
-        /** @description Either `person_id` of an existing person without an account, or `display_name` with `phone` and/or `email`. */
-        InvitationCreate: {
-            /** Format: uuid */
-            site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /** Format: uuid */
-            person_id?: string;
-            display_name?: string;
-            email?: string;
-            phone?: string;
-            /** @enum {string} */
-            occupancy_kind: "owner" | "tenant" | "household";
-            /** @enum {string} */
-            side?: "owner" | "tenant";
-            share_pct?: number;
-            is_correspondent?: boolean;
-            resides?: boolean;
-            /** Format: date */
-            valid_from?: string;
-            /**
-             * @description Default sms when there is a phone, else email; `link` creates the link without sending it.
-             * @enum {string}
-             */
-            channel?: "sms" | "email" | "link";
-            expires_in_days?: number;
-            /**
-             * @description `mobile` makes the link use the `openbekci://` scheme.
-             * @enum {string}
-             */
-            client?: "web" | "mobile";
-            locale?: string;
-        };
-        /** @description Invite a household member to this unit. They get no money access. */
-        HouseholdInvitationCreate: {
-            display_name?: string;
-            email?: string;
-            phone?: string;
-            /** @enum {string} */
-            side?: "owner" | "tenant";
-            resides?: boolean;
-            /** Format: date */
-            valid_from?: string;
-            /** @enum {string} */
-            channel?: "sms" | "email" | "link";
-            expires_in_days?: number;
-            /** @enum {string} */
-            client?: "web" | "mobile";
-            locale?: string;
-            /** Format: uuid */
-            person_id?: string;
-        };
-        InvitationPreview: {
-            kind: string;
-            org_name: string;
-            site_name: string;
-            door_number: string | null;
-            occupancy_kind: string | null;
-            invited_name: string;
-            channel: string;
-            /** @description The invited phone or email, masked. */
-            contact_hint: string;
-            /** Format: date-time */
-            expires_at: string | null;
-        };
-        AcceptInvitation: {
-            /** @description Optional password for a newly created account (minimum 10 characters). */
-            password?: string;
-            locale?: string;
-        };
-        AcceptResult: {
-            /** Format: uuid */
             org_id: string;
             /** Format: uuid */
             site_id: string;
             /** Format: uuid */
-            person_id: string;
-            /** Format: uuid */
-            user_id: string;
-            /** Format: uuid */
-            occupancy_id: string | null;
-            user_created: boolean;
-            /** @description True unless the caller was already signed in; sign in with any method (SMS code, magic link, password). */
-            sign_in_required: boolean;
-        };
-        JoinCode: {
-            /** Format: uuid */
-            site_id: string;
-            code: string;
-            /** @description `{BASE_URL}/join/{code}`; the QR code encodes it. */
-            url: string;
-            uses: number;
+            unit_id: string;
+            /** @description As entered. */
+            plate: string;
+            /** @description Canonical form used for matching and gate control. */
+            plate_normalized: string;
+            description: string | null;
+            archived: boolean;
+            /** @description Set when the plate normalizes to empty and projects nothing. */
+            warning: string | null;
             /** Format: date-time */
             created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
         };
-        JoinUnit: {
-            /** Format: uuid */
-            id: string;
-            door_number: string;
-            block_name: string;
-            type: string;
-        };
-        JoinPreview: {
-            org_name: string;
-            site_name: string;
-            /** @description The units that can be claimed; empty unless the visitor is signed in. */
-            units: components["schemas"]["JoinUnit"][];
-        };
-        ClaimCreate: {
-            /** Format: uuid */
-            unit_id: string;
-            /** @enum {string} */
-            kind: "owner" | "tenant" | "household";
-            display_name?: string;
-            message?: string;
-        };
-        UnitClaim: {
-            /** Format: uuid */
-            id: string;
+        VehicleCreate: {
             /** Format: uuid */
             site_id: string;
             /** Format: uuid */
             unit_id: string;
-            door_number: string;
-            /** Format: uuid */
-            person_id: string;
-            person_name: string;
-            /**
-             * @description Open enum: owner, tenant, household.
-             * @enum {string}
-             */
-            kind: "owner" | "tenant" | "household";
-            /**
-             * @description Open enum: pending, approved, rejected.
-             * @enum {string}
-             */
-            status: "pending" | "approved" | "rejected";
-            message: string | null;
-            /** Format: date-time */
-            decided_at: string | null;
-            decision_note: string | null;
-            /** Format: uuid */
-            occupancy_id: string | null;
-            /** Format: date-time */
-            created_at: string;
+            plate: string;
+            description?: string | null;
+            archived?: boolean;
         };
-        UnitClaimList: {
-            items: components["schemas"]["UnitClaim"][];
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "plate": "plate",
+         *           "plate_normalized": "plate normalized",
+         *           "description": null,
+         *           "archived": false,
+         *           "warning": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        VehicleList: {
+            items: components["schemas"]["Vehicle"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        ClaimApprove: {
-            share_pct?: number | null;
-            is_correspondent?: boolean;
-            /** Format: date */
-            valid_from?: string;
-            /** @enum {string} */
-            side?: "owner" | "tenant";
-            note?: string | null;
-        };
-        ClaimReject: {
-            note?: string | null;
-        };
-        DirectoryEntry: {
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        VehicleUpdate: {
             /** Format: uuid */
-            person_id: string;
-            display_name: string;
-            phone: string | null;
-            /** Format: uuid */
-            unit_id: string;
-            door_number: string;
-            kind: string;
-            /** @description A person of the caller's own unit; always visible to them. */
-            own_unit: boolean;
+            unit_id?: string;
+            plate?: string;
+            description?: string | null;
+            archived?: boolean;
         };
-        DirectoryList: {
-            items: components["schemas"]["DirectoryEntry"][];
-            /** @description Always null. */
-            next_cursor: string | null;
-        };
-        DirectoryConsent: {
-            /** Format: uuid */
-            site_id: string;
-            share_name: boolean;
-            share_phone: boolean;
-        };
-        DirectoryConsentUpdate: {
-            share_name?: boolean;
-            /** @description Needs `share_name`. */
-            share_phone?: boolean;
-        };
+        /**
+         * @description A supplier, also used as a ticket assignee label (O2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "name": "Ali Veli",
+         *       "tax_id": null,
+         *       "contact": {
+         *         "email": null,
+         *         "phone": null,
+         *         "preferred_channel": "sms",
+         *         "address": {
+         *           "line1": "line1",
+         *           "line2": null,
+         *           "district": null,
+         *           "city": null,
+         *           "postal_code": null,
+         *           "country_code": "country code"
+         *         }
+         *       },
+         *       "default_expense_category_id": null,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Vendor: {
             /** Format: uuid */
             id: string;
-            /**
-             * Format: uuid
-             * @description Null for a vendor shared by the organization's sites.
-             */
-            site_id: string | null;
+            /** Format: uuid */
+            org_id: string;
             name: string;
             tax_id: string | null;
-            contact: {
-                [key: string]: unknown;
-            };
+            contact: components["schemas"]["PersonContact"];
             /** Format: uuid */
             default_expense_category_id: string | null;
-            version: number;
+            archived: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
-        };
-        VendorList: {
-            items: components["schemas"]["Vendor"][];
-            next_cursor: string | null;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
         };
         VendorCreate: {
             name: string;
-            /** Format: uuid */
-            site_id?: string | null;
             tax_id?: string | null;
-            contact?: {
-                [key: string]: unknown;
-            };
+            contact?: components["schemas"]["PersonContact"];
             /** Format: uuid */
             default_expense_category_id?: string | null;
+            archived?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "Ali Veli",
+         *           "tax_id": null,
+         *           "contact": {
+         *             "email": null,
+         *             "phone": null,
+         *             "preferred_channel": "sms",
+         *             "address": {
+         *               "line1": "line1",
+         *               "line2": null,
+         *               "district": null,
+         *               "city": null,
+         *               "postal_code": null,
+         *               "country_code": "country code"
+         *             }
+         *           },
+         *           "default_expense_category_id": null,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        VendorList: {
+            items: components["schemas"]["Vendor"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         VendorUpdate: {
             name?: string;
             tax_id?: string | null;
-            contact?: {
-                [key: string]: unknown;
-            };
+            contact?: components["schemas"]["PersonContact"];
             /** Format: uuid */
             default_expense_category_id?: string | null;
+            archived?: boolean;
         };
-        /** @description One occupancy of the caller, as `GET /v1/me` lists it. */
+        /**
+         * @description One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "unit_label": "A Blok D:12",
+         *       "kind": "tenant",
+         *       "side": "tenant",
+         *       "may_see_money": true,
+         *       "valid_from": "2025-09-01",
+         *       "valid_to": null
+         *     }
+         */
         MeOccupancy: {
-            /**
-             * Format: uuid
-             * @description The occupancy id.
-             */
+            /** Format: uuid */
             id: string;
-            /** @description The unit as people name it (the door number). */
-            unit_label: string;
             /** Format: uuid */
             org_id: string;
             /** Format: uuid */
             site_id: string;
-            site_name: string;
             /** Format: uuid */
             unit_id: string;
-            door_number: string;
-            block_name: string;
+            /** @description What people say, for example `A Blok D:12`. */
+            unit_label: string;
             /**
-             * @description Open enum: owner, tenant, household.
+             * @description Open enum.
              * @enum {string}
              */
-            kind: "owner" | "tenant" | "household";
+            kind: "owner" | "tenant" | "household" | "former_occupant";
             /**
-             * @description Open enum: owner, tenant.
-             * @enum {string}
+             * @description The debtor side the occupant belongs to (`owner` or `tenant`); null for household members. Open enum.
+             * @enum {string|null}
              */
-            side: "owner" | "tenant";
-            is_correspondent: boolean;
-            /** @description For household members; owners and tenants always see their side's money. */
+            side: "owner" | "tenant" | null;
+            /** @description Always true for owners and tenants; for household members whether the owner or tenant granted money visibility (S3). */
             may_see_money: boolean;
-            resides: boolean;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description Null while the occupancy is current.
+             */
             valid_to: string | null;
-            /** @description False for a former occupancy (read access bounded by its dates). */
-            current: boolean;
         };
+        /**
+         * @description Instance policies that apply to the signed-in user, so clients can enforce them without a second call.
+         * @example {
+         *       "app_lock_required": false,
+         *       "reauth_window_minutes": 10
+         *     }
+         */
+        MePolicies: {
+            /** @description The mobile app must be protected by a device lock (biometrics or passcode) before it shows money or personal data. */
+            app_lock_required: boolean;
+            /**
+             * Format: int64
+             * @description How long a re-authentication (`POST /v1/auth/reauth`) stays valid for sensitive operations (default 10).
+             */
+            reauth_window_minutes: number;
+        };
+        /** @description Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values. */
+        NotificationType: string;
         /** @description A rendition of an image, generated on upload. */
         FileVariant: {
             width: number;
@@ -4351,309 +6088,89 @@ export interface components {
             file: string;
         };
         /**
-         * @description A one-way announcement (O4): no comments, reactions or polls.
-         * @example {
-         *       "id": "0192a3f0-1000-7000-8000-000000000003",
-         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
-         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "title": "Water cut on Saturday",
-         *       "body_md": "body md",
-         *       "status": "published",
-         *       "audience": {
-         *         "kind": "site"
-         *       },
-         *       "publish_at": null,
-         *       "expires_at": null,
-         *       "pinned": false,
-         *       "channels": [
-         *         "in_app",
-         *         "sms"
-         *       ],
-         *       "recipient_count": 120,
-         *       "sms_count": 80,
-         *       "read_count": 1,
-         *       "read_at": null,
-         *       "attachments": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "name": "schedule.pdf",
-         *           "mime": "application/pdf",
-         *           "size": 48211
-         *         }
-         *       ],
-         *       "published_at": null,
-         *       "created_by": null,
-         *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z",
-         *       "version": 1
-         *     }
+         * @description Whether a status counts as open work or as finished. Open enum.
+         * @enum {string}
          */
-        Announcement: {
+        TicketSemantic: "open_like" | "closed_like";
+        TicketStatus: {
             /** Format: uuid */
             id: string;
-            /** Format: uuid */
-            org_id: string;
-            /** Format: uuid */
-            site_id: string;
-            title: string;
-            body_md: string;
+            name: string;
             /**
              * @description Open enum.
              * @enum {string}
              */
-            status: "draft" | "scheduled" | "published" | "archived";
-            audience: components["schemas"]["AnnouncementAudience"];
-            /** Format: date-time */
-            publish_at: string | null;
-            /** Format: date-time */
-            expires_at: string | null;
-            pinned: boolean;
-            /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms" | "push")[];
-            /**
-             * Format: int64
-             * @description Set at publish.
-             */
-            recipient_count: number | null;
+            semantic: "open_like" | "closed_like";
             /** Format: int64 */
-            sms_count: number | null;
-            /**
-             * Format: int64
-             * @description Opened in web or app; a delivered SMS or email is not a read.
-             */
-            read_count: number;
-            /**
-             * Format: date-time
-             * @description When the caller read it.
-             */
-            read_at: string | null;
-            /** @description The attached files with what a client needs to show them; download through `files.download` with the `id`. */
-            attachments: components["schemas"]["AnnouncementAttachment"][];
-            /** Format: date-time */
-            published_at: string | null;
+            position: number;
+            /** @description Stable key of the built-in statuses: open, in_progress, done. */
+            key: string | null;
+        };
+        /** @description Ordered statuses per site (O1). A site inherits the default until it edits it. */
+        TicketWorkflow: {
             /** Format: uuid */
-            created_by: string | null;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /**
-             * Format: int64
-             * @description Optimistic-lock counter; send it back as If-Match on updates.
-             */
+            site_id: string;
+            statuses: components["schemas"]["TicketStatus"][];
+            /** @description The site still uses the default open, in progress, done flow. */
+            is_default: boolean;
+            /** Format: int64 */
             version: number;
         };
-        /** @description A file attached to an announcement. */
-        AnnouncementAttachment: {
+        TicketStatusInput: {
             /**
              * Format: uuid
-             * @description The file id; download it with `files.download`.
+             * @description Existing status; omitted: a new one.
              */
-            id: string;
+            id?: string;
             name: string;
-            mime: string;
-            /**
-             * Format: int64
-             * @description Bytes.
-             */
-            size: number;
-        };
-        AnnouncementAudience: {
             /** @enum {string} */
-            kind: "site" | "block" | "owners" | "tenants" | "units";
-            /** Format: uuid */
-            block_id?: string;
-            unit_ids?: string[];
+            semantic: "open_like" | "closed_like";
         };
-        AnnouncementCreate: {
-            /** Format: uuid */
-            site_id: string;
-            title: string;
-            body_md: string;
-            audience: components["schemas"]["AnnouncementAudience"];
-            /** Format: date-time */
-            publish_at?: string | null;
-            /** Format: date-time */
-            expires_at?: string | null;
-            pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push")[];
-            file_ids?: string[];
+        TicketWorkflowUpdate: {
+            /** @description The complete ordered list. */
+            statuses: components["schemas"]["TicketStatusInput"][];
+            /** @description Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`. */
+            replacements?: {
+                [key: string]: string;
+            };
         };
         /**
-         * @example {
-         *       "items": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
-         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "title": "Water cut on Saturday",
-         *           "body_md": "body md",
-         *           "status": "published",
-         *           "audience": {
-         *             "kind": "site"
-         *           },
-         *           "publish_at": null,
-         *           "expires_at": null,
-         *           "pinned": false,
-         *           "channels": [
-         *             "in_app",
-         *             "sms"
-         *           ],
-         *           "recipient_count": 120,
-         *           "sms_count": 80,
-         *           "read_count": 1,
-         *           "read_at": null,
-         *           "attachments": [
-         *             {
-         *               "id": "0192a3f0-1000-7000-8000-000000000003",
-         *               "name": "schedule.pdf",
-         *               "mime": "application/pdf",
-         *               "size": 48211
-         *             }
-         *           ],
-         *           "published_at": null,
-         *           "created_by": null,
-         *           "created_at": "2026-03-01T09:00:00Z",
-         *           "updated_at": "2026-03-01T09:00:00Z",
-         *           "version": 1
-         *         }
-         *       ],
-         *       "next_cursor": null
-         *     }
-         */
-        AnnouncementList: {
-            items: components["schemas"]["Announcement"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        /** @description What publishing would cost, before the sender presses publish (O5). */
-        AnnouncementPreview: {
-            /** Format: int64 */
-            recipient_count: number;
-            /** Format: int64 */
-            sms_count: number;
-            /** Format: int64 */
-            email_count: number;
-            /** Format: int64 */
-            in_app_count: number;
-        };
-        AnnouncementPreviewRequest: {
-            /** Format: uuid */
-            site_id: string;
-            audience: components["schemas"]["AnnouncementAudience"];
-            channels: ("in_app" | "email" | "sms" | "push")[];
-        };
-        AnnouncementPublish: {
-            /** @description Overrides the stored channels. */
-            channels?: ("in_app" | "email" | "sms" | "push")[];
-        };
-        /**
-         * @example {
-         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "display_name": "Ali Veli",
-         *       "unit_door_numbers": [
-         *         "unit door numbers"
-         *       ],
-         *       "read_at": null
-         *     }
-         */
-        AnnouncementRead: {
-            /** Format: uuid */
-            person_id: string;
-            display_name: string;
-            unit_door_numbers: string[];
-            /** Format: date-time */
-            read_at: string | null;
-        };
-        /**
-         * @example {
-         *       "items": [
-         *         {
-         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "display_name": "Ali Veli",
-         *           "unit_door_numbers": [
-         *             "unit door numbers"
-         *           ],
-         *           "read_at": null
-         *         }
-         *       ],
-         *       "next_cursor": null,
-         *       "audience_count": 3,
-         *       "read_count": 3
-         *     }
-         */
-        AnnouncementReadList: {
-            items: components["schemas"]["AnnouncementRead"][];
-            next_cursor: string | null;
-            audience_count: number;
-            read_count: number;
-        };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        AnnouncementUpdate: {
-            title?: string;
-            body_md?: string;
-            audience?: components["schemas"]["AnnouncementAudience"];
-            /** Format: date-time */
-            publish_at?: string | null;
-            /** Format: date-time */
-            expires_at?: string | null;
-            pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push")[];
-            file_ids?: string[];
-        };
-        /**
-         * @description A document. No versions: replacing the file (`file_id`) overwrites it.
+         * @description Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.
          * @example {
          *       "id": "0192a3f0-1000-7000-8000-000000000002",
          *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *       "folder_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "title": "Ali Veli",
-         *       "file_id": "0192a3f0-1000-7000-8000-000000000006",
-         *       "mime": "mime",
-         *       "size": 1,
-         *       "visibility": {
-         *         "level": "board",
-         *         "unit_ids": [
-         *           "0192a3f0-1000-7000-8000-000000000007"
-         *         ]
-         *       },
-         *       "source": "uploaded",
-         *       "generated_from": {
-         *         "type": "type",
-         *         "id": "0192a3f0-1000-7000-8000-000000000008"
-         *       },
-         *       "uploaded_by": null,
+         *       "name": "Ali Veli",
+         *       "default_visibility": "private",
+         *       "default_assignee_role": "site_manager",
+         *       "position": 1,
+         *       "archived": false,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z",
          *       "version": 1
          *     }
          */
-        Document: {
+        TicketCategory: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
             org_id: string;
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            folder_id: string;
-            title: string;
-            /** Format: uuid */
-            file_id: string;
-            mime: string;
-            /** Format: int64 */
-            size: number;
-            /** @description Null: inherits the folder. */
-            visibility: components["schemas"]["DocumentVisibility"] | null;
+            name: string;
             /**
              * @description Open enum.
              * @enum {string}
              */
-            source: "uploaded" | "generated";
-            generated_from: components["schemas"]["GeneratedFrom"] | null;
-            /** Format: uuid */
-            uploaded_by: string | null;
+            default_visibility: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position: number;
+            archived: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -4664,15 +6181,40 @@ export interface components {
              */
             version: number;
         };
-        DocumentCreate: {
+        TicketCategoryCreate: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            folder_id: string;
-            title: string;
-            /** Format: uuid */
-            file_id: string;
-            visibility?: components["schemas"]["DocumentVisibility"] | null;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_visibility?: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position?: number;
+            archived?: boolean;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        TicketCategoryUpdate: {
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_visibility?: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position?: number;
+            archived?: boolean;
         };
         /**
          * @example {
@@ -4681,23 +6223,11 @@ export interface components {
          *           "id": "0192a3f0-1000-7000-8000-000000000002",
          *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *           "folder_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "title": "Ali Veli",
-         *           "file_id": "0192a3f0-1000-7000-8000-000000000006",
-         *           "mime": "mime",
-         *           "size": 1,
-         *           "visibility": {
-         *             "level": "board",
-         *             "unit_ids": [
-         *               "0192a3f0-1000-7000-8000-000000000007"
-         *             ]
-         *           },
-         *           "source": "uploaded",
-         *           "generated_from": {
-         *             "type": "type",
-         *             "id": "0192a3f0-1000-7000-8000-000000000008"
-         *           },
-         *           "uploaded_by": null,
+         *           "name": "Ali Veli",
+         *           "default_visibility": "private",
+         *           "default_assignee_role": "site_manager",
+         *           "position": 1,
+         *           "archived": false,
          *           "created_at": "2026-03-01T09:00:00Z",
          *           "updated_at": "2026-03-01T09:00:00Z",
          *           "version": 1
@@ -4706,248 +6236,48 @@ export interface components {
          *       "next_cursor": null
          *     }
          */
-        DocumentList: {
-            items: components["schemas"]["Document"][];
+        TicketCategoryList: {
+            items: components["schemas"]["TicketCategory"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        DocumentUpdate: {
+        TicketAssignee: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "person" | "vendor";
             /** Format: uuid */
-            folder_id?: string;
-            title?: string;
+            person_id: string | null;
             /** Format: uuid */
-            file_id?: string;
-            visibility?: components["schemas"]["DocumentVisibility"] | null;
+            vendor_id: string | null;
+            display_name: string;
         };
-        DocumentVisibility: {
-            /** @enum {string} */
-            level: "board" | "owners" | "everyone" | "units";
-            /** @description With `level: units`. */
-            unit_ids?: string[];
-        };
-        /**
-         * @description A site folder or the private folder of a unit (O8).
-         * @example {
-         *       "id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
-         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *       "parent_id": null,
-         *       "name": "Ali Veli",
-         *       "kind": "site",
-         *       "unit_id": null,
-         *       "visibility": {
-         *         "level": "board",
-         *         "unit_ids": [
-         *           "0192a3f0-1000-7000-8000-000000000005"
-         *         ]
-         *       },
-         *       "breadcrumb": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000006",
-         *           "name": "Ali Veli"
-         *         }
-         *       ],
-         *       "is_system": false,
-         *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z",
-         *       "version": 1
-         *     }
-         */
-        Folder: {
+        /** @description A photo or file on a ticket (up to 10 per ticket or comment). */
+        TicketAttachment: {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
             org_id: string;
             /** Format: uuid */
-            site_id: string;
+            ticket_id: string;
             /** Format: uuid */
-            parent_id: string | null;
-            name: string;
-            /**
-             * @description Unit folders are private and created with the unit. Open enum.
-             * @enum {string}
-             */
-            kind: "site" | "unit";
+            comment_id: string | null;
             /** Format: uuid */
-            unit_id: string | null;
-            visibility: components["schemas"]["DocumentVisibility"];
-            breadcrumb: components["schemas"]["FolderCrumb"][];
-            is_system: boolean;
+            file_id: string;
+            mime: string;
+            /** Format: int64 */
+            size: number;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
             updated_at: string;
-            /**
-             * Format: int64
-             * @description Optimistic-lock counter; send it back as If-Match on updates.
-             */
-            version: number;
         };
-        FolderCreate: {
+        TicketAttachmentCreate: {
             /** Format: uuid */
-            site_id: string;
+            file_id: string;
             /** Format: uuid */
-            parent_id?: string | null;
-            name: string;
-            visibility?: components["schemas"]["DocumentVisibility"];
-        };
-        FolderCrumb: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-        };
-        /**
-         * @example {
-         *       "items": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *           "parent_id": null,
-         *           "name": "Ali Veli",
-         *           "kind": "site",
-         *           "unit_id": null,
-         *           "visibility": {
-         *             "level": "board",
-         *             "unit_ids": [
-         *               "0192a3f0-1000-7000-8000-000000000005"
-         *             ]
-         *           },
-         *           "breadcrumb": [
-         *             {
-         *               "id": "0192a3f0-1000-7000-8000-000000000006",
-         *               "name": "Ali Veli"
-         *             }
-         *           ],
-         *           "is_system": false,
-         *           "created_at": "2026-03-01T09:00:00Z",
-         *           "updated_at": "2026-03-01T09:00:00Z",
-         *           "version": 1
-         *         }
-         *       ],
-         *       "next_cursor": null
-         *     }
-         */
-        FolderList: {
-            items: components["schemas"]["Folder"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        FolderUpdate: {
-            /** Format: uuid */
-            parent_id?: string | null;
-            name?: string;
-            visibility?: components["schemas"]["DocumentVisibility"];
-        };
-        GeneratedFrom: {
-            /** @description For example statement, receipt, certificate, closing_statement, minutes. */
-            type: string;
-            /** Format: uuid */
-            id: string;
-        };
-        /**
-         * @description An in-app notification of the caller.
-         * @example {
-         *       "id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "site_id": null,
-         *       "type": "type",
-         *       "payload": {},
-         *       "read_at": null,
-         *       "link": null,
-         *       "created_at": "2026-03-01T09:00:00Z"
-         *     }
-         */
-        Notification: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            site_id: string | null;
-            type: components["schemas"]["NotificationType"];
-            payload: {
-                [key: string]: unknown;
-            };
-            /** Format: date-time */
-            read_at: string | null;
-            link: string | null;
-            /** Format: date-time */
-            created_at: string;
-        };
-        NotificationDefault: {
-            type: components["schemas"]["NotificationType"];
-            channels: ("in_app" | "email" | "sms" | "push")[];
-            /** @description Sign-in codes and invitations always go by SMS or email and cannot be changed. */
-            locked: boolean;
-        };
-        NotificationDefaultInput: {
-            type: string;
-            channels: ("in_app" | "email" | "sms" | "push")[];
-        };
-        /** @description Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app. */
-        NotificationDefaults: {
-            /** Format: uuid */
-            site_id: string;
-            defaults: components["schemas"]["NotificationDefault"][];
-            /**
-             * Format: int64
-             * @description Optimistic-lock counter; send it back as If-Match on the next write.
-             */
-            version: number;
-        };
-        NotificationDefaultsSet: {
-            defaults: components["schemas"]["NotificationDefaultInput"][];
-        };
-        /**
-         * @example {
-         *       "items": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "site_id": null,
-         *           "type": "type",
-         *           "payload": {},
-         *           "read_at": null,
-         *           "link": null,
-         *           "created_at": "2026-03-01T09:00:00Z"
-         *         }
-         *       ],
-         *       "next_cursor": null
-         *     }
-         */
-        NotificationList: {
-            items: components["schemas"]["Notification"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        NotificationMutes: {
-            muted_types: string[];
-            /** @description Sign-in codes and invitations. */
-            unmutable_types: string[];
-            /** @description The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own. */
-            available_types: string[];
-        };
-        NotificationMutesSet: {
-            muted_types: string[];
-        };
-        /** @description Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values. */
-        NotificationType: string;
-        NotificationsReadAll: {
-            /** Format: uuid */
-            site_id?: string;
-        };
-        SmsUsage: {
-            /** Format: uuid */
-            site_id: string;
-            /** @description The month, `YYYY-MM`. */
-            month: string;
-            /** Format: int64 */
-            sent: number;
-            /** Format: int64 */
-            delivered: number;
-            /** Format: int64 */
-            failed: number;
-            /** Format: int64 */
-            monthly_limit: number | null;
+            comment_id?: string;
         };
         /**
          * @description A ticket. Every request is a ticket; there is no chat (O6).
@@ -5040,121 +6370,85 @@ export interface components {
              */
             version: number;
         };
-        TicketAssignee: {
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            kind: "person" | "vendor";
-            /** Format: uuid */
-            person_id: string | null;
-            /** Format: uuid */
-            vendor_id: string | null;
-            display_name: string;
-        };
-        /** @description A photo or file on a ticket (up to 10 per ticket or comment). */
-        TicketAttachment: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            org_id: string;
-            /** Format: uuid */
-            ticket_id: string;
-            /** Format: uuid */
-            comment_id: string | null;
-            /** Format: uuid */
-            file_id: string;
-            mime: string;
-            /** Format: int64 */
-            size: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        TicketAttachmentCreate: {
-            /** Format: uuid */
-            file_id: string;
-            /** Format: uuid */
-            comment_id?: string;
-        };
-        /**
-         * @description Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.
-         * @example {
-         *       "id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
-         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *       "name": "Ali Veli",
-         *       "default_visibility": "private",
-         *       "default_assignee_role": "site_manager",
-         *       "position": 1,
-         *       "archived": false,
-         *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z",
-         *       "version": 1
-         *     }
-         */
-        TicketCategory: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            org_id: string;
+        TicketCreate: {
             /** Format: uuid */
             site_id: string;
-            name: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            default_visibility: "private" | "common";
-            /**
-             * @description Open enum.
-             * @enum {string|null}
-             */
-            default_assignee_role: "site_manager" | "staff" | "board_member" | null;
-            /** Format: int64 */
-            position: number;
-            archived: boolean;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /**
-             * Format: int64
-             * @description Optimistic-lock counter; send it back as If-Match on updates.
-             */
-            version: number;
-        };
-        TicketCategoryCreate: {
             /** Format: uuid */
-            site_id: string;
-            name: string;
+            unit_id?: string | null;
+            /** Format: uuid */
+            category_id: string;
+            title: string;
+            description: string;
             /**
              * @description Open enum.
              * @enum {string}
              */
-            default_visibility?: "private" | "common";
+            visibility?: "private" | "common";
+            /** Format: uuid */
+            reporter_person_id?: string;
+            attachment_file_ids?: string[];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        TicketUpdate: {
+            /** Format: uuid */
+            unit_id?: string | null;
+            /** Format: uuid */
+            category_id?: string;
+            title?: string;
+            description?: string;
             /**
              * @description Open enum.
-             * @enum {string|null}
+             * @enum {string}
              */
-            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
-            /** Format: int64 */
-            position?: number;
-            archived?: boolean;
+            visibility?: "private" | "common";
+            /**
+             * Format: uuid
+             * @description A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+             */
+            assignee_person_id?: string | null;
+            /**
+             * Format: uuid
+             * @description A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+             */
+            assignee_vendor_id?: string | null;
         };
         /**
          * @example {
          *       "items": [
          *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
-         *           "name": "Ali Veli",
-         *           "default_visibility": "private",
-         *           "default_assignee_role": "site_manager",
-         *           "position": 1,
-         *           "archived": false,
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": null,
+         *           "unit_door_number": null,
+         *           "reporter_person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "reporter_display_name": "reporter display name",
+         *           "category_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "title": "Elevator stuck on floor 3",
+         *           "description": "description",
+         *           "status_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "status_name": "Open",
+         *           "status_semantic": "open_like",
+         *           "visibility": "common",
+         *           "assignee": null,
+         *           "vote_count": 4,
+         *           "voted_by_me": false,
+         *           "merged_into_id": null,
+         *           "comment_count": 1,
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "comment_id": null,
+         *               "file_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "mime": "mime",
+         *               "size": 1,
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ],
+         *           "closed_at": null,
          *           "created_at": "2026-03-01T09:00:00Z",
          *           "updated_at": "2026-03-01T09:00:00Z",
          *           "version": 1
@@ -5163,27 +6457,28 @@ export interface components {
          *       "next_cursor": null
          *     }
          */
-        TicketCategoryList: {
-            items: components["schemas"]["TicketCategory"][];
+        TicketList: {
+            items: components["schemas"]["Ticket"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        TicketCategoryUpdate: {
-            name?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            default_visibility?: "private" | "common";
-            /**
-             * @description Open enum.
-             * @enum {string|null}
-             */
-            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
+        TicketTransition: {
+            /** Format: uuid */
+            status_id: string;
+            comment?: string;
+            /** @enum {string} */
+            comment_visibility?: "public" | "internal";
+        };
+        TicketMerge: {
+            /** Format: uuid */
+            into_ticket_id: string;
+        };
+        TicketVote: {
+            /** Format: uuid */
+            ticket_id: string;
             /** Format: int64 */
-            position?: number;
-            archived?: boolean;
+            vote_count: number;
+            voted: boolean;
         };
         /**
          * @description A comment. Internal notes are hidden from residents.
@@ -5279,97 +6574,6 @@ export interface components {
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        TicketCreate: {
-            /** Format: uuid */
-            site_id: string;
-            /** Format: uuid */
-            unit_id?: string | null;
-            /** Format: uuid */
-            category_id: string;
-            title: string;
-            description: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            visibility?: "private" | "common";
-            /** Format: uuid */
-            reporter_person_id?: string;
-            attachment_file_ids?: string[];
-        };
-        /**
-         * @example {
-         *       "items": [
-         *         {
-         *           "id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
-         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
-         *           "unit_id": null,
-         *           "unit_door_number": null,
-         *           "reporter_person_id": "0192a3f0-1000-7000-8000-000000000001",
-         *           "reporter_display_name": "reporter display name",
-         *           "category_id": "0192a3f0-1000-7000-8000-000000000003",
-         *           "title": "Elevator stuck on floor 3",
-         *           "description": "description",
-         *           "status_id": "0192a3f0-1000-7000-8000-000000000001",
-         *           "status_name": "Open",
-         *           "status_semantic": "open_like",
-         *           "visibility": "common",
-         *           "assignee": null,
-         *           "vote_count": 4,
-         *           "voted_by_me": false,
-         *           "merged_into_id": null,
-         *           "comment_count": 1,
-         *           "attachments": [
-         *             {
-         *               "id": "0192a3f0-1000-7000-8000-000000000003",
-         *               "org_id": "0192a3f0-1000-7000-8000-000000000001",
-         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000001",
-         *               "comment_id": null,
-         *               "file_id": "0192a3f0-1000-7000-8000-000000000002",
-         *               "mime": "mime",
-         *               "size": 1,
-         *               "created_at": "2026-03-01T09:00:00Z",
-         *               "updated_at": "2026-03-01T09:00:00Z"
-         *             }
-         *           ],
-         *           "closed_at": null,
-         *           "created_at": "2026-03-01T09:00:00Z",
-         *           "updated_at": "2026-03-01T09:00:00Z",
-         *           "version": 1
-         *         }
-         *       ],
-         *       "next_cursor": null
-         *     }
-         */
-        TicketList: {
-            items: components["schemas"]["Ticket"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        TicketMerge: {
-            /** Format: uuid */
-            into_ticket_id: string;
-        };
-        /**
-         * @description Whether a status counts as open work or as finished. Open enum.
-         * @enum {string}
-         */
-        TicketSemantic: "open_like" | "closed_like";
-        TicketStatus: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            semantic: "open_like" | "closed_like";
-            /** Format: int64 */
-            position: number;
-            /** @description Stable key of the built-in statuses: open, in_progress, done. */
-            key: string | null;
-        };
         /**
          * @description Append-only status history.
          * @example {
@@ -5451,78 +6655,535 @@ export interface components {
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        TicketStatusInput: {
-            /**
-             * Format: uuid
-             * @description Existing status; omitted: a new one.
-             */
-            id?: string;
-            name: string;
+        AnnouncementAudience: {
             /** @enum {string} */
-            semantic: "open_like" | "closed_like";
+            kind: "site" | "block" | "owners" | "tenants" | "units";
+            /** Format: uuid */
+            block_id?: string;
+            unit_ids?: string[];
         };
-        TicketTransition: {
+        /**
+         * @description A one-way announcement (O4): no comments, reactions or polls.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "title": "Water cut on Saturday",
+         *       "body_md": "body md",
+         *       "status": "published",
+         *       "audience": {
+         *         "kind": "site"
+         *       },
+         *       "publish_at": null,
+         *       "expires_at": null,
+         *       "pinned": false,
+         *       "channels": [
+         *         "in_app",
+         *         "sms"
+         *       ],
+         *       "recipient_count": 120,
+         *       "sms_count": 80,
+         *       "read_count": 1,
+         *       "read_at": null,
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "schedule.pdf",
+         *           "mime": "application/pdf",
+         *           "size": 48211
+         *         }
+         *       ],
+         *       "published_at": null,
+         *       "created_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Announcement: {
             /** Format: uuid */
-            status_id: string;
-            comment?: string;
-            /** @enum {string} */
-            comment_visibility?: "public" | "internal";
-        };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        TicketUpdate: {
+            id: string;
             /** Format: uuid */
-            unit_id?: string | null;
+            org_id: string;
             /** Format: uuid */
-            category_id?: string;
-            title?: string;
-            description?: string;
+            site_id: string;
+            title: string;
+            body_md: string;
             /**
              * @description Open enum.
              * @enum {string}
              */
-            visibility?: "private" | "common";
+            status: "draft" | "scheduled" | "published" | "archived";
+            audience: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at: string | null;
+            /** Format: date-time */
+            expires_at: string | null;
+            pinned: boolean;
+            /** @description Chosen by the sender (O5). */
+            channels: ("in_app" | "email" | "sms" | "push")[];
             /**
-             * Format: uuid
-             * @description A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+             * Format: int64
+             * @description Set at publish.
              */
-            assignee_person_id?: string | null;
+            recipient_count: number | null;
+            /** Format: int64 */
+            sms_count: number | null;
             /**
-             * Format: uuid
-             * @description A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+             * Format: int64
+             * @description Opened in web or app; a delivered SMS or email is not a read.
              */
-            assignee_vendor_id?: string | null;
-        };
-        TicketVote: {
+            read_count: number;
+            /**
+             * Format: date-time
+             * @description When the caller read it.
+             */
+            read_at: string | null;
+            /** @description The attached files with what a client needs to show them; download through `files.download` with the `id`. */
+            attachments: components["schemas"]["AnnouncementAttachment"][];
+            /** Format: date-time */
+            published_at: string | null;
             /** Format: uuid */
-            ticket_id: string;
-            /** Format: int64 */
-            vote_count: number;
-            voted: boolean;
-        };
-        /** @description Ordered statuses per site (O1). A site inherits the default until it edits it. */
-        TicketWorkflow: {
-            /** Format: uuid */
-            site_id: string;
-            statuses: components["schemas"]["TicketStatus"][];
-            /** @description The site still uses the default open, in progress, done flow. */
-            is_default: boolean;
-            /** Format: int64 */
+            created_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
             version: number;
         };
-        /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
-        TicketWorkflowRestore: {
-            /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
-            replacements?: {
-                [key: string]: string;
-            };
+        AnnouncementCreate: {
+            /** Format: uuid */
+            site_id: string;
+            title: string;
+            body_md: string;
+            audience: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            pinned?: boolean;
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+            file_ids?: string[];
         };
-        TicketWorkflowUpdate: {
-            /** @description The complete ordered list. */
-            statuses: components["schemas"]["TicketStatusInput"][];
-            /** @description Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`. */
-            replacements?: {
-                [key: string]: string;
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AnnouncementUpdate: {
+            title?: string;
+            body_md?: string;
+            audience?: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            pinned?: boolean;
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+            file_ids?: string[];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "title": "Water cut on Saturday",
+         *           "body_md": "body md",
+         *           "status": "published",
+         *           "audience": {
+         *             "kind": "site"
+         *           },
+         *           "publish_at": null,
+         *           "expires_at": null,
+         *           "pinned": false,
+         *           "channels": [
+         *             "in_app",
+         *             "sms"
+         *           ],
+         *           "recipient_count": 120,
+         *           "sms_count": 80,
+         *           "read_count": 1,
+         *           "read_at": null,
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "name": "schedule.pdf",
+         *               "mime": "application/pdf",
+         *               "size": 48211
+         *             }
+         *           ],
+         *           "published_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AnnouncementList: {
+            items: components["schemas"]["Announcement"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AnnouncementPreviewRequest: {
+            /** Format: uuid */
+            site_id: string;
+            audience: components["schemas"]["AnnouncementAudience"];
+            channels: ("in_app" | "email" | "sms" | "push")[];
+        };
+        /** @description What publishing would cost, before the sender presses publish (O5). */
+        AnnouncementPreview: {
+            /** Format: int64 */
+            recipient_count: number;
+            /** Format: int64 */
+            sms_count: number;
+            /** Format: int64 */
+            email_count: number;
+            /** Format: int64 */
+            in_app_count: number;
+        };
+        AnnouncementPublish: {
+            /** @description Overrides the stored channels. */
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+        };
+        /**
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "display_name": "Ali Veli",
+         *       "unit_door_numbers": [
+         *         "unit door numbers"
+         *       ],
+         *       "read_at": null
+         *     }
+         */
+        AnnouncementRead: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            unit_door_numbers: string[];
+            /** Format: date-time */
+            read_at: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "display_name": "Ali Veli",
+         *           "unit_door_numbers": [
+         *             "unit door numbers"
+         *           ],
+         *           "read_at": null
+         *         }
+         *       ],
+         *       "next_cursor": null,
+         *       "audience_count": 3,
+         *       "read_count": 3
+         *     }
+         */
+        AnnouncementReadList: {
+            items: components["schemas"]["AnnouncementRead"][];
+            next_cursor: string | null;
+            audience_count: number;
+            read_count: number;
+        };
+        DocumentVisibility: {
+            /** @enum {string} */
+            level: "board" | "owners" | "everyone" | "units";
+            /** @description With `level: units`. */
+            unit_ids?: string[];
+        };
+        FolderCrumb: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        /**
+         * @description A site folder or the private folder of a unit (O8).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "parent_id": null,
+         *       "name": "Ali Veli",
+         *       "kind": "site",
+         *       "unit_id": null,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000005"
+         *         ]
+         *       },
+         *       "breadcrumb": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "name": "Ali Veli"
+         *         }
+         *       ],
+         *       "is_system": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Folder: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            parent_id: string | null;
+            name: string;
+            /**
+             * @description Unit folders are private and created with the unit. Open enum.
+             * @enum {string}
+             */
+            kind: "site" | "unit";
+            /** Format: uuid */
+            unit_id: string | null;
+            visibility: components["schemas"]["DocumentVisibility"];
+            breadcrumb: components["schemas"]["FolderCrumb"][];
+            is_system: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        FolderCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            parent_id?: string | null;
+            name: string;
+            visibility?: components["schemas"]["DocumentVisibility"];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        FolderUpdate: {
+            /** Format: uuid */
+            parent_id?: string | null;
+            name?: string;
+            visibility?: components["schemas"]["DocumentVisibility"];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "parent_id": null,
+         *           "name": "Ali Veli",
+         *           "kind": "site",
+         *           "unit_id": null,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000005"
+         *             ]
+         *           },
+         *           "breadcrumb": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "name": "Ali Veli"
+         *             }
+         *           ],
+         *           "is_system": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FolderList: {
+            items: components["schemas"]["Folder"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        GeneratedFrom: {
+            /** @description For example statement, receipt, certificate, closing_statement, minutes. */
+            type: string;
+            /** Format: uuid */
+            id: string;
+        };
+        /**
+         * @description A document. No versions: replacing the file (`file_id`) overwrites it.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "title": "Ali Veli",
+         *       "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "mime": "mime",
+         *       "size": 1,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000007"
+         *         ]
+         *       },
+         *       "source": "uploaded",
+         *       "generated_from": {
+         *         "type": "type",
+         *         "id": "0192a3f0-1000-7000-8000-000000000008"
+         *       },
+         *       "uploaded_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Document: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            folder_id: string;
+            title: string;
+            /** Format: uuid */
+            file_id: string;
+            mime: string;
+            /** Format: int64 */
+            size: number;
+            /** @description Null: inherits the folder. */
+            visibility: components["schemas"]["DocumentVisibility"] | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            generated_from: components["schemas"]["GeneratedFrom"] | null;
+            /** Format: uuid */
+            uploaded_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        DocumentCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            folder_id: string;
+            title: string;
+            /** Format: uuid */
+            file_id: string;
+            visibility?: components["schemas"]["DocumentVisibility"] | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        DocumentUpdate: {
+            /** Format: uuid */
+            folder_id?: string;
+            title?: string;
+            /** Format: uuid */
+            file_id?: string;
+            visibility?: components["schemas"]["DocumentVisibility"] | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "title": "Ali Veli",
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000007"
+         *             ]
+         *           },
+         *           "source": "uploaded",
+         *           "generated_from": {
+         *             "type": "type",
+         *             "id": "0192a3f0-1000-7000-8000-000000000008"
+         *           },
+         *           "uploaded_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        DocumentList: {
+            items: components["schemas"]["Document"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description An in-app notification of the caller.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "site_id": null,
+         *       "type": "type",
+         *       "payload": {},
+         *       "read_at": null,
+         *       "link": null,
+         *       "created_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Notification: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            type: components["schemas"]["NotificationType"];
+            payload: {
+                [key: string]: unknown;
             };
+            /** Format: date-time */
+            read_at: string | null;
+            link: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "site_id": null,
+         *           "type": "type",
+         *           "payload": {},
+         *           "read_at": null,
+         *           "link": null,
+         *           "created_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        NotificationList: {
+            items: components["schemas"]["Notification"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
         };
         UnreadCount: {
             /** Format: int64 */
@@ -5532,6 +7193,135 @@ export interface components {
              * @description Pending visitor approval requests (0.3); polled together.
              */
             visitor_approvals_pending: number;
+        };
+        NotificationsReadAll: {
+            /** Format: uuid */
+            site_id?: string;
+        };
+        NotificationDefault: {
+            type: components["schemas"]["NotificationType"];
+            channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description Sign-in codes and invitations always go by SMS or email and cannot be changed. */
+            locked: boolean;
+        };
+        /** @description Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app. */
+        NotificationDefaults: {
+            /** Format: uuid */
+            site_id: string;
+            defaults: components["schemas"]["NotificationDefault"][];
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
+        };
+        NotificationDefaultsSet: {
+            defaults: components["schemas"]["NotificationDefaultInput"][];
+        };
+        NotificationDefaultInput: {
+            type: string;
+            channels: ("in_app" | "email" | "sms" | "push")[];
+        };
+        NotificationMutes: {
+            muted_types: string[];
+            /** @description Sign-in codes and invitations. */
+            unmutable_types: string[];
+            /** @description The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own. */
+            available_types: string[];
+        };
+        NotificationMutesSet: {
+            muted_types: string[];
+        };
+        SmsUsage: {
+            /** Format: uuid */
+            site_id: string;
+            /** @description The month, `YYYY-MM`. */
+            month: string;
+            /** Format: int64 */
+            sent: number;
+            /** Format: int64 */
+            delivered: number;
+            /** Format: int64 */
+            failed: number;
+            /** Format: int64 */
+            monthly_limit: number | null;
+        };
+        ExportRequest: {
+            /** Format: uuid */
+            site_id?: string;
+            kind: string;
+            /** @enum {string} */
+            format: "csv" | "xlsx" | "pdf";
+            /** @description Kind-specific parameters, the same as the matching GET. */
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description An auditor's note.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "target_type": null,
+         *       "target_id": null,
+         *       "body": "body",
+         *       "author_person_id": null,
+         *       "author_display_name": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        AuditNote: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            target_type: string | null;
+            /** Format: uuid */
+            target_id: string | null;
+            body: string;
+            /** Format: uuid */
+            author_person_id: string | null;
+            author_display_name: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        AuditNoteCreate: {
+            /** Format: uuid */
+            site_id: string;
+            target_type?: string | null;
+            /** Format: uuid */
+            target_id?: string | null;
+            body: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "target_type": null,
+         *           "target_id": null,
+         *           "body": "body",
+         *           "author_person_id": null,
+         *           "author_display_name": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AuditNoteList: {
+            items: components["schemas"]["AuditNote"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
         };
         DashboardMeeting: {
             /** Format: uuid */
@@ -5548,76 +7338,6 @@ export interface components {
             role: string;
             /** Format: date */
             valid_to: string;
-        };
-        /** @description The caller's home summary in the organization. */
-        MeDashboard: {
-            /**
-             * @description Which home the web app should show. Open enum.
-             * @enum {string}
-             */
-            home: "portfolio" | "site" | "resident";
-            /** @description Resident money summary (what do I owe today); empty without money visibility. */
-            sides: components["schemas"]["MySide"][];
-            /** Format: int64 */
-            unread_notifications: number;
-            /** Format: int64 */
-            unread_announcements: number;
-            /** Format: int64 */
-            my_open_tickets: number;
-            upcoming_meetings: components["schemas"]["DashboardMeeting"][];
-            /** Format: int64 */
-            pending_visitor_approvals: number;
-            /** Format: int64 */
-            waiting_deliveries: number;
-        };
-        /** @description What the caller owes on one side (owner or tenant) of one unit today. Filled by the money module; the draft's `money.MySide`, kept here until the money module lands and owns it. */
-        MySide: {
-            /** Format: uuid */
-            unit_id: string;
-            unit_door_number: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
-            principal: components["schemas"]["Money"];
-            accrued_late_fee: components["schemas"]["Money"];
-            /** @description What do I owe today. */
-            total: components["schemas"]["Money"];
-            credit: components["schemas"]["Money"];
-            /** Format: date */
-            next_due_date: string | null;
-            /** @description The site's bank details shown to payers (IBAN and holder). */
-            bank_details: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /** @description Cross-site view for management companies (S5): overdue, cash and open tickets per site. */
-        PortfolioDashboard: {
-            /** Format: date-time */
-            as_of: string;
-            sites: components["schemas"]["PortfolioSite"][];
-            totals: components["schemas"]["PortfolioTotals"];
-        };
-        PortfolioSite: {
-            /** Format: uuid */
-            site_id: string;
-            name: string;
-            overdue: components["schemas"]["Money"];
-            /** Format: int64 */
-            overdue_units: number;
-            cash: components["schemas"]["Money"];
-            bank: components["schemas"]["Money"];
-            /** Format: int64 */
-            open_tickets: number;
-            collection_rate_pct: number;
-        };
-        PortfolioTotals: {
-            overdue: components["schemas"]["Money"];
-            cash: components["schemas"]["Money"];
-            bank: components["schemas"]["Money"];
-            /** Format: int64 */
-            open_tickets: number;
         };
         /** @description Per-site dashboard for managers, board, auditors and accountants. */
         SiteDashboard: {
@@ -5656,6 +7376,54 @@ export interface components {
             upcoming_meeting: components["schemas"]["DashboardMeeting"] | null;
             /** @description Empty before release 0.2. */
             expiring_terms: components["schemas"]["DashboardTerm"][];
+        };
+        PortfolioSite: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            overdue: components["schemas"]["Money"];
+            /** Format: int64 */
+            overdue_units: number;
+            cash: components["schemas"]["Money"];
+            bank: components["schemas"]["Money"];
+            /** Format: int64 */
+            open_tickets: number;
+            collection_rate_pct: number;
+        };
+        PortfolioTotals: {
+            overdue: components["schemas"]["Money"];
+            cash: components["schemas"]["Money"];
+            bank: components["schemas"]["Money"];
+            /** Format: int64 */
+            open_tickets: number;
+        };
+        /** @description Cross-site view for management companies (S5): overdue, cash and open tickets per site. */
+        PortfolioDashboard: {
+            /** Format: date-time */
+            as_of: string;
+            sites: components["schemas"]["PortfolioSite"][];
+            totals: components["schemas"]["PortfolioTotals"];
+        };
+        /** @description The caller's home summary in the organization. */
+        MeDashboard: {
+            /**
+             * @description Which home the web app should show. Open enum.
+             * @enum {string}
+             */
+            home: "portfolio" | "site" | "resident";
+            /** @description Resident money summary (what do I owe today); empty without money visibility. */
+            sides: components["schemas"]["MySide"][];
+            /** Format: int64 */
+            unread_notifications: number;
+            /** Format: int64 */
+            unread_announcements: number;
+            /** Format: int64 */
+            my_open_tickets: number;
+            upcoming_meetings: components["schemas"]["DashboardMeeting"][];
+            /** Format: int64 */
+            pending_visitor_approvals: number;
+            /** Format: int64 */
+            waiting_deliveries: number;
         };
         /**
          * @description Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names.
@@ -5697,22 +7465,6 @@ export interface components {
              */
             waiting_deliveries: number;
         };
-        CodeLabel: {
-            code: string;
-            label: string;
-            description?: string;
-        };
-        OrgCodes: {
-            locale: string;
-            /** @description Labels per open enum, keyed by enum name (for example `charge_type`, `occupancy_kind`), pack labels included. */
-            enums: {
-                [key: string]: components["schemas"]["CodeLabel"][];
-            };
-            /** @description Problem codes. */
-            errors: components["schemas"]["CodeLabel"][];
-            /** @description Site-defined ticket statuses when `site_id` is given. */
-            ticket_statuses: components["schemas"]["CodeLabel"][];
-        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -5721,6 +7473,46 @@ export interface components {
             method: "email_code";
             /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
             code: string;
+        };
+        /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
+        TicketWorkflowRestore: {
+            /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
+            replacements?: {
+                [key: string]: string;
+            };
+        };
+        /** @description A file attached to an announcement. */
+        AnnouncementAttachment: {
+            /**
+             * Format: uuid
+             * @description The file id; download it with `files.download`.
+             */
+            id: string;
+            name: string;
+            mime: string;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+        };
+        MySide: {
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            principal: components["schemas"]["Money"];
+            accrued_late_fee: components["schemas"]["Money"];
+            /** @description What do I owe today. */
+            total: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+            /** Format: date */
+            next_due_date: string | null;
+            bank_details: components["schemas"]["BankDetails"] | null;
         };
     };
     responses: {
@@ -5746,19 +7538,18 @@ export interface components {
         Cursor: string;
         /** @description Client-generated unique key; replays within 7 days return the stored response. */
         IdempotencyKey: string;
-        /** @description The organization id. */
-        OrgId: string;
-        /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        /** @description When true, validate and return the row-level report without saving anything. */
+        DryRun: boolean;
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+        IfMatch: string;
+        /** @description Organization id. */
+        OrgId: string;
         /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
         SiteId: string;
-        /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+        /** @description The site this resource belongs to. */
         SiteIdRequired: string;
-        /**
-         * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-         *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-         */
-        IfMatch: string;
         /** @description The file id. */
         FileId: string;
     };
@@ -6170,77 +7961,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "org.get": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The organization. */
-            200: {
-                headers: {
-                    /** @description The organization's version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Organization"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "org.update": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The organization's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
-                 *     any validation detail (generated code binds required headers before authentication runs).
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OrganizationUpdate"];
-            };
-        };
-        responses: {
-            /** @description The updated organization. */
-            200: {
-                headers: {
-                    /** @description The new version, quoted. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Organization"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "audit.list": {
         parameters: {
             query?: {
@@ -6261,7 +7981,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -6280,2260 +8000,6 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "instance.getCodes": {
-        parameters: {
-            query?: {
-                /** @description en or tr (default en). */
-                locale?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Codes"];
-                };
-            };
-            404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.previewInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                token: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InvitationPreview"];
-                };
-            };
-            404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.acceptInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                token: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AcceptInvitation"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AcceptResult"];
-                };
-            };
-            404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.previewJoin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                code: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JoinPreview"];
-                };
-            };
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createClaim": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The secret token or code from the link. */
-                code: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClaimCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnitClaim"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.getAllocationKey": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The key id. */
-                key_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AllocationKeyDetail"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.updateAllocationKey": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The key id. */
-                key_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AllocationKeyUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AllocationKey"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.setAllocationKeyValues": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The key id. */
-                key_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AllocationKeyValues"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AllocationKeyDetail"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.updateBlock": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The block id. */
-                block_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BlockUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Block"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listInvitations": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only this site. */
-                site_id?: string;
-                /** @description pending, accepted, revoked or expired. */
-                status?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InvitationList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InvitationCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Invitation"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.revokeInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.resendInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Invitation"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listMemberships": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only this person. */
-                person_id?: string;
-                /** @description Only memberships scoped to this site or its blocks. */
-                site_id?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MembershipList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createMembership": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MembershipCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Membership"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.endMembership": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The membership id. */
-                membership_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.getMoveOut": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The move out id. */
-                move_out_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MoveOut"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listOccupancies": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only this site. */
-                site_id?: string;
-                /** @description Only this unit. */
-                unit_id?: string;
-                /** @description Only this person. */
-                person_id?: string;
-                /** @description Only occupancies in force today. */
-                current?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OccupancyList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.updateOccupancy": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OccupancyUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Occupancy"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.setMoneyAccess": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MoneyAccess"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Occupancy"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.moveOut": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MoveOutRequest"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MoveOut"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listPersons": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Name, phone or email fragment. */
-                q?: string;
-                /** @description Only people tied to this site. */
-                site_id?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PersonList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createPerson": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PersonCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Person"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.getPerson": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The person id. */
-                person_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Person"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.updatePerson": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The person id. */
-                person_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PersonUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Person"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listSiteExports": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SiteExportList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.downloadSiteExport": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The export id. */
-                export_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/octet-stream": string;
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.importSiteArchive": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["ArchiveUpload"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SiteExport"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listSites": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SiteList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.createSite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SiteCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Site"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.getSite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Site"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.updateSite": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SiteUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Site"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listAllocationKeys": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AllocationKeyList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.createAllocationKey": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AllocationKeyCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AllocationKey"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listBlocks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BlockList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.createBlock": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BlockCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Block"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listDirectory": {
-        parameters: {
-            query?: {
-                /** @description Name or door number fragment. */
-                q?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DirectoryList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.setDirectoryConsent": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DirectoryConsentUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DirectoryConsent"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.exportSite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SiteExport"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.importUnits": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["ImportUpload"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ImportReport"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.getJoinCode": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JoinCode"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.rotateJoinCode": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["JoinCode"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.offboardSite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Site"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listUnits": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only units of this block. */
-                block_id?: string;
-                /** @description Only units of this type. */
-                type?: string;
-                /** @description Door number fragment. */
-                q?: string;
-                /** @description Only vacant or only occupied units (derived). */
-                vacant?: boolean;
-                /** @description Only appurtenances of this unit. */
-                parent_unit_id?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnitList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.createUnit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UnitCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Unit"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.listVehicles": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only this unit's vehicles. */
-                unit_id?: string;
-                /** @description Plate fragment. */
-                q?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VehicleList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.exportVehicles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The site id. */
-                site_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/csv": string;
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listClaims": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only this site. */
-                site_id?: string;
-                /** @description pending (default), approved, rejected or all. */
-                status?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnitClaimList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.approveClaim": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The claim id. */
-                claim_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClaimApprove"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnitClaim"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.rejectClaim": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The claim id. */
-                claim_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClaimReject"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnitClaim"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.getUnit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Unit"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.updateUnit": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UnitUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Unit"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listHouseholdInvitations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InvitationList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createHouseholdInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["HouseholdInvitationCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Invitation"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.revokeHouseholdInvitation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-                /** @description The invitation id. */
-                invitation_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.endHouseholdOccupancy": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-                /** @description The occupancy id. */
-                occupancy_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createOccupancy": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OccupancyCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Occupancy"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.setUnitTags": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UnitTags"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Unit"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.createVehicle": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The unit id. */
-                unit_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VehicleCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vehicle"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "tenancy.deleteVehicle": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vehicle id. */
-                vehicle_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.listVendors": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VendorList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.createVendor": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VendorCreate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vendor"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.getVendor": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vendor id. */
-                vendor_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vendor"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.deleteVendor": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vendor id. */
-                vendor_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Done. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "people.updateVendor": {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: string;
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The vendor id. */
-                vendor_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VendorUpdate"];
-            };
-        };
-        responses: {
-            /** @description Success. */
-            200: {
-                headers: {
-                    /** @description The version, quoted; send it as `If-Match` when updating. */
-                    ETag?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vendor"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
@@ -8575,42 +8041,104 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "operations.listFiles": {
+    "tenancy.getOrg": {
         parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
-                scope?: string;
-            };
+            query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description One page of files. */
+            /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FileList"];
+                    "application/json": components["schemas"]["Organization"];
                 };
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateOrg": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganizationUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organization"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
-    "operations.uploadFile": {
+    "tenancy.listSites": {
+        parameters: {
+            query?: {
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createSite": {
         parameters: {
             query?: never;
             header?: {
@@ -8618,79 +8146,358 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["FileUpload"];
+                "application/json": components["schemas"]["SiteCreate"];
             };
         };
         responses: {
-            /** @description The stored file. */
+            /** @description Created */
             201: {
                 headers: {
-                    /** @description The file's metadata URL. */
-                    Location?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["File"];
+                    "application/json": components["schemas"]["Site"];
                 };
             };
-            400: components["responses"]["Problem"];
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
-            413: components["responses"]["Problem"];
-            415: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
-    "operations.downloadFile": {
+    "tenancy.getSite": {
         parameters: {
-            query?: {
-                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
-                variant?: "thumb" | "medium";
-                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
-                exp?: number;
-                /** @description Signature of a signed URL. Sent with `exp`. */
-                sig?: string;
-            };
+            query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
+                /** @description Id of the site. */
+                site_id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The file's bytes, with the stored type as `Content-Type`. */
+            /** @description OK */
             200: {
                 headers: {
-                    "Content-Disposition"?: string;
-                    "Content-Security-Policy"?: string;
-                    "Cache-Control"?: string;
-                    "X-Content-Type-Options"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": string;
+                    "application/json": components["schemas"]["Site"];
                 };
             };
-            /** @description Short-lived signed URL (S3 driver). */
-            302: {
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateSite": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
-                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Site"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getSiteSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateSiteSettings": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getBankDetails": {
+        parameters: {
+            query?: {
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Debtor side of the unit: owner or tenant. */
+                debtor_kind?: "owner" | "tenant";
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BankDetails"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.setBankDetails": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BankDetailsUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BankDetails"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listBlocks": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createBlock": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getBlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.deleteBlock": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
@@ -8698,11 +8505,98 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
-    "operations.deleteFile": {
+    "tenancy.updateBlock": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listUnits": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `block_id`. */
+                block_id?: string;
+                /** @description Filter by `type`. */
+                type?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `parent_unit_id`. */
+                parent_unit_id?: string;
+                /** @description Filter by `vacant`. */
+                vacant?: boolean;
+                /** @description Filter by `tag_id`. */
+                tag_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createUnit": {
         parameters: {
             query?: never;
             header?: {
@@ -8710,16 +8604,1111 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getUnit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Deleted. */
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.deleteUnit": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateUnit": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.setUnitTags": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitTags"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.importUnits": {
+        parameters: {
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: uuid */
+                    site_id: string;
+                    /** Format: binary */
+                    file: string;
+                    mapping?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description The dry-run report; nothing was saved. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReport"];
+                };
+            };
+            /** @description Committed; follow `job_id`. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReport"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            413: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listAllocationKeys": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createAllocationKey": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getAllocationKey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.deleteAllocationKey": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateAllocationKey": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listAllocationKeyValues": {
+        parameters: {
+            query?: {
+                /** @description Filter by `block_id`. */
+                block_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyValueList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.putAllocationKeyValues": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyValuesPut"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyValuesSummary"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.exportSite": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteExportRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted; the work continues as a job. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteTransfer"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.importSite": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    archive: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Accepted; the work continues as a job. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteTransfer"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            413: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.offboardSite": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteOffboardRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteTransfer"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listSiteTransfers": {
+        parameters: {
+            query?: {
+                /** @description Filter by `direction`. */
+                direction?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteTransferList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getSiteTransfer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteTransfer"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.downloadSiteTransferArchive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The archive, a JSON document. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listVehicles": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Filter by `archived`. */
+                archived?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createVehicle": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vehicle"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getVehicle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vehicle. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vehicle"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.deleteVehicle": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vehicle. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateVehicle": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vehicle. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vehicle"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.exportVehicles": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Response format. */
+                format?: "csv" | "xlsx";
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listPersons": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Free-text search: display name, phone (any part, so the last digits work) or email. */
+                q?: string;
+                /** @description Only people holding this role membership now. */
+                role?: string;
+                /** @description Only people with a current occupancy of this kind. */
+                occupancy_kind?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `join_status`. */
+                join_status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createPerson": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getPerson": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updatePerson": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getNationalId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NationalId"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setNationalId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NationalIdSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NationalId"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.clearNationalId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -8733,27 +9722,106 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "operations.getFileMeta": {
+    "people.listOccupancies": {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `side`. */
+                side?: string;
+                /** @description Filter by `active`. */
+                active?: boolean;
+                /** @description Evaluate as of this date (default today). */
+                as_of?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The file. */
+            /** @description OK */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["File"];
+                    "application/json": components["schemas"]["OccupancyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createOccupancy": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OccupancyCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getOccupancy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
                 };
             };
             401: components["responses"]["Problem"];
@@ -8762,15 +9830,1509 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "operations.getTicketWorkflow": {
+    "people.deleteOccupancy": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updateOccupancy": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OccupancyUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setMoneyAccess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoneyAccessSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.moveOut": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the occupancy. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveOutCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveOut"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listMoveOuts": {
         parameters: {
             query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveOutList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getMoveOut": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the move out. */
+                move_out_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveOut"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listMemberships": {
+        parameters: {
+            query?: {
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Filter by `role`. */
+                role?: string;
+                /** @description Filter by `scope_type`. */
+                scope_type?: string;
+                /** @description Filter by `scope_id`. */
+                scope_id?: string;
+                /** @description Filter by `active`. */
+                active?: boolean;
+                /** @description Evaluate as of this date (default today). */
+                as_of?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createMembership": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getMembership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the membership. */
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.deleteMembership": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the membership. */
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listInvitations": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.revokeInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.resendInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createHouseholdInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdInvitationCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.previewInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the token. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationPreview"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.acceptInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Id of the token. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationAccept"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getJoinCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinCode"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setJoinCodeEnabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinCodeSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinCode"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.rotateJoinCode": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinCode"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getJoinInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinInfo"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listJoinUnits": {
+        parameters: {
+            query?: {
+                /** @description Filter by `block_id`. */
+                block_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinUnitList"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createUnitClaim": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitClaimCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listUnitClaims": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaimList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getUnitClaim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.approveUnitClaim": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitClaimApprove"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.rejectUnitClaim": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the claim. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitClaimReject"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listDirectory": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryEntryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listVendors": {
+        parameters: {
+            query?: {
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Filter by `archived`. */
+                archived?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createVendor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VendorCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vendor. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.deleteVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vendor. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updateVendor": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vendor. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VendorUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listRoles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleMatrix"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getMyPerson": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updateMyPerson": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MyPersonUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setMyDirectoryConsent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DirectoryConsent"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryConsent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listMyOccupancies": {
+        parameters: {
+            query?: {
+                /** @description Filter by `active`. */
+                active?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OccupancyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.listHouseholdMembers": {
+        parameters: {
+            query?: {
+                /** @description Only this unit (one of the caller's own). */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OccupancyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.listHouseholdInvitations": {
+        parameters: {
+            query?: {
+                /** @description Only invitations for this unit of the caller. */
+                unit_id?: string;
+                /** @description Filter by `status` (open enum: `pending`, `accepted`, `expired`, `revoked`). */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.revokeHouseholdInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.endHouseholdOccupancy": {
+        parameters: {
+            query?: {
+                /** @description Last day of the occupancy; default today. Not in the past by more than the lock date allows. */
+                valid_to?: string;
+            };
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of a household occupancy on the caller's own unit. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ended occupancy. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "codes.listCodes": {
+        parameters: {
+            query?: {
+                /** @description Filter by `locale`. */
+                locale?: string;
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Codes"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -8794,19 +11356,16 @@ export interface operations {
     };
     "operations.updateTicketWorkflow": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
             };
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -8833,11 +11392,50 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.restoreTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TicketWorkflowRestore"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "operations.listTicketCategories": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`. */
                 archived?: "active" | "archived" | "all";
                 /** @description Page size. */
@@ -8847,7 +11445,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -8877,7 +11475,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -8909,7 +11507,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the category. */
                 category_id: string;
@@ -8936,15 +11534,12 @@ export interface operations {
     "operations.updateTicketCategory": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the category. */
                 category_id: string;
@@ -8976,9 +11571,9 @@ export interface operations {
     };
     "operations.listTickets": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `category_id`. */
                 category_id?: string;
                 /** @description Filter by `status_id`. */
@@ -9008,7 +11603,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9038,7 +11633,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9070,7 +11665,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9097,15 +11692,12 @@ export interface operations {
     "operations.updateTicket": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9143,7 +11735,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9181,7 +11773,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9216,7 +11808,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9246,7 +11838,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9281,7 +11873,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9313,7 +11905,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9351,7 +11943,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9386,7 +11978,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9421,7 +12013,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the ticket. */
                 ticket_id: string;
@@ -9447,9 +12039,9 @@ export interface operations {
     };
     "operations.listAnnouncements": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `status`. */
                 status?: string;
                 /** @description Filter by `pinned`. */
@@ -9467,7 +12059,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9497,7 +12089,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9529,7 +12121,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9556,15 +12148,12 @@ export interface operations {
     "operations.deleteAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9591,15 +12180,12 @@ export interface operations {
     "operations.updateAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9634,7 +12220,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9664,12 +12250,12 @@ export interface operations {
     "operations.publishAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKeyRequired"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9708,7 +12294,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9745,7 +12331,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9775,7 +12361,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the announcement. */
                 announcement_id: string;
@@ -9800,9 +12386,9 @@ export interface operations {
     };
     "operations.listFolders": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `parent_id`. */
                 parent_id?: string;
                 /** @description Filter by `kind`. */
@@ -9816,7 +12402,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9846,7 +12432,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -9878,7 +12464,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the folder. */
                 folder_id: string;
@@ -9905,15 +12491,12 @@ export interface operations {
     "operations.deleteFolder": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the folder. */
                 folder_id: string;
@@ -9940,15 +12523,12 @@ export interface operations {
     "operations.updateFolder": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the folder. */
                 folder_id: string;
@@ -9980,9 +12560,9 @@ export interface operations {
     };
     "operations.listDocuments": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `folder_id`. */
                 folder_id?: string;
                 /** @description Filter by `source`. */
@@ -9996,7 +12576,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10026,7 +12606,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10058,7 +12638,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the document. */
                 document_id: string;
@@ -10085,15 +12665,12 @@ export interface operations {
     "operations.deleteDocument": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the document. */
                 document_id: string;
@@ -10120,15 +12697,12 @@ export interface operations {
     "operations.updateDocument": {
         parameters: {
             query?: never;
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the document. */
                 document_id: string;
@@ -10174,7 +12748,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10204,7 +12778,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10234,7 +12808,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the notification. */
                 notification_id: string;
@@ -10267,7 +12841,7 @@ export interface operations {
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10294,13 +12868,13 @@ export interface operations {
     };
     "operations.getNotificationDefaults": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10324,19 +12898,16 @@ export interface operations {
     };
     "operations.setNotificationDefaults": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
             };
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10368,7 +12939,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10394,7 +12965,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10423,15 +12994,15 @@ export interface operations {
     };
     "operations.getSmsUsage": {
         parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by month, `YYYY-MM`. */
                 month?: string;
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10453,12 +13024,199 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.listFiles": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of files. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.uploadFile": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["FileUpload"];
+            };
+        };
+        responses: {
+            /** @description The stored file. */
+            201: {
+                headers: {
+                    /** @description The file's metadata URL. */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["File"];
+                };
+            };
+            400: components["responses"]["Problem"];
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            413: components["responses"]["Problem"];
+            415: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getFileMeta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["File"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.downloadFile": {
+        parameters: {
+            query?: {
+                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
+                variant?: "thumb" | "medium";
+                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
+                exp?: number;
+                /** @description Signature of a signed URL. Sent with `exp`. */
+                sig?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file's bytes, with the stored type as `Content-Type`. */
+            200: {
+                headers: {
+                    "Content-Disposition"?: string;
+                    "Content-Security-Policy"?: string;
+                    "Cache-Control"?: string;
+                    "X-Content-Type-Options"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+            /** @description Short-lived signed URL (S3 driver). */
+            302: {
+                headers: {
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteFile": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "dashboards.getSiteDashboard": {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the site. */
                 site_id: string;
@@ -10487,7 +13245,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description Id of the site. */
                 site_id: string;
@@ -10516,7 +13274,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10545,7 +13303,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -10563,80 +13321,6 @@ export interface operations {
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "codes.listCodes": {
-        parameters: {
-            query?: {
-                /** @description Filter by `locale`. */
-                locale?: string;
-                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
-                site_id?: components["parameters"]["SiteId"];
-            };
-            header?: never;
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OrgCodes"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.restoreTicketWorkflow": {
-        parameters: {
-            query?: {
-                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
-                site_id?: components["parameters"]["SiteIdRequired"];
-            };
-            header?: {
-                /**
-                 * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
-                 *     is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
-                 */
-                "If-Match"?: components["parameters"]["IfMatch"];
-            };
-            path: {
-                /** @description The organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["TicketWorkflowRestore"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TicketWorkflow"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

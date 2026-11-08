@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: money.declarePayment
+  summary: Declare a bank transfer ("I have paid")
+  description: |-
+    **Release 0.1.** Creates a payment with `status = pending_declared`; nothing is posted until a manager confirms it during matching.
+
+    Permission: `payments.declare`.
+
+    Problems: `idempotency_mismatch` (422), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - payments.declare
+    tenant:
+      - payments.declare
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/PaymentDeclare
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Payment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

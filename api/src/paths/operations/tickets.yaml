@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.listTickets
   summary: List tickets
   description: |-
-    `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
+    **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
 
     Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
 
@@ -14,9 +14,30 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: category_id
       in: query
       schema:
@@ -105,7 +126,7 @@ post:
   operationId: operations.createTicket
   summary: Open a ticket
   description: |-
-    Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
+    **Release 0.1.** Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
 
     Permission: `tickets.open`.
 
@@ -115,8 +136,23 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.open]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.open
+    site_manager:
+      - tickets.open
+    board_member:
+      - tickets.open
+    staff:
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

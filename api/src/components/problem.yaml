@@ -4,7 +4,12 @@ schemas:
     description: |
       RFC 9457 problem details, served as application/problem+json. Clients
       translate by `code`. `code` is an open enum: clients must tolerate unknown values.
-    required: [type, title, status, code, instance]
+    required:
+      - type
+      - title
+      - status
+      - code
+      - instance
     properties:
       type:
         type: string
@@ -57,10 +62,12 @@ schemas:
         type: array
         description: Per-field errors (with `validation_failed`).
         items:
-          $ref: '#/schemas/ProblemFieldError'
+          $ref: "#/schemas/ProblemFieldError"
   ProblemFieldError:
     type: object
-    required: [field, code]
+    required:
+      - field
+      - code
     properties:
       field:
         type: string
@@ -90,4 +97,4 @@ responses:
     content:
       application/problem+json:
         schema:
-          $ref: '#/schemas/Problem'
+          $ref: "#/schemas/Problem"

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/envelope.schema.json",
+  "title": "Envelope of every agent protocol message (one JSON object per WebSocket text frame or poll message)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "type",
+    "id",
+    "ts",
+    "payload"
+  ],
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "type": {
+      "type": "string",
+      "description": "hello, snapshot, delta, event, ack, command, heartbeat. Unknown types are answered with ack status unsupported."
+    },
+    "id": {
+      "$ref": "defs.schema.json#/$defs/uuid"
+    },
+    "ts": {
+      "$ref": "defs.schema.json#/$defs/ts"
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

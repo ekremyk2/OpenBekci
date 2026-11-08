@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -18,7 +18,7 @@ delete:
   operationId: operations.deleteTicketAttachment
   summary: Remove an attachment
   description: |-
-    Remove an attachment.
+    **Release 0.1.** Remove an attachment.
 
     Permission: `tickets.open`.
 
@@ -28,8 +28,23 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.open]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.open
+    site_manager:
+      - tickets.open
+    board_member:
+      - tickets.open
+    staff:
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   x-idempotent: optional
+  x-stability: stable
   responses:
     "204":
       description: No content

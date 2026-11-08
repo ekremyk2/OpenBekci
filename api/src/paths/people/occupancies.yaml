@@ -1,48 +1,136 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: people.listOccupancies
   summary: List occupancies
-  tags: [people]
+  description: |-
+    **Release 0.1.** Cursor-paginated list of occupancys.
+
+    Permission: `occupancies.read`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [occupancy.read]
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.read
+    site_manager:
+      - occupancies.read
+    board_member:
+      - occupancies.read
+    auditor:
+      - occupancies.read
+    owner:
+      - occupancies.read
+    tenant:
+      - occupancies.read
+    household:
+      - occupancies.read
+  x-stability: stable
   parameters:
-    - $ref: '../../components/common.yaml#/parameters/Limit'
-    - $ref: '../../components/common.yaml#/parameters/Cursor'
-    - name: site_id
-      in: query
-      description: 'Only this site.'
-      schema: {type: string, format: uuid}
     - name: unit_id
       in: query
-      description: 'Only this unit.'
-      schema: {type: string, format: uuid}
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
     - name: person_id
       in: query
-      description: 'Only this person.'
-      schema: {type: string, format: uuid}
-    - name: current
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: kind
       in: query
-      description: 'Only occupancies in force today.'
-      schema: {type: boolean}
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+          - household
+      description: Filter by `kind`.
+    - name: side
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: Filter by `side`.
+    - name: active
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `active`.
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/OccupancyList'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/OccupancyList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: people.createOccupancy
+  summary: Create occupancy
+  description: |-
+    **Release 0.1.** Creates a occupancy.
+
+    Permission: `occupancies.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.manage
+    site_manager:
+      - occupancies.manage
+    board_member:
+      - occupancies.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/OccupancyCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

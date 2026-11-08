@@ -1,4 +1,4 @@
-package httpapi
+﻿package httpapi
 
 import (
 	"context"
@@ -11,7 +11,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/documents"
 	"github.com/openbekci/openbekci/server/internal/core/notifications"
-	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/core/tickets"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -63,12 +62,6 @@ func deref[T any](p *T) T {
 }
 
 // body reads a required JSON body as a Doc.
-func bodyDoc(isNil bool, body any) (tenancy.Doc, error) {
-	if err := hasBody(isNil); err != nil {
-		return nil, err
-	}
-	return docOf(body)
-}
 
 // ---- notifications ----
 
@@ -188,7 +181,7 @@ func (s *apiServer) OperationsSetNotificationDefaults(ctx context.Context, req g
 	if err := hasBody(req.Body == nil); err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +274,7 @@ func (s *apiServer) OperationsUpdateTicketWorkflow(ctx context.Context, req gen.
 	if err := hasBody(req.Body == nil); err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +307,7 @@ func (s *apiServer) OperationsRestoreTicketWorkflow(ctx context.Context, req gen
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -392,7 +385,7 @@ func (s *apiServer) OperationsUpdateTicketCategory(ctx context.Context, req gen.
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -463,7 +456,7 @@ func (s *apiServer) OperationsUpdateTicket(ctx context.Context, req gen.Operatio
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -672,7 +665,7 @@ func (s *apiServer) OperationsUpdateAnnouncement(ctx context.Context, req gen.Op
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -689,7 +682,7 @@ func (s *apiServer) OperationsDeleteAnnouncement(ctx context.Context, req gen.Op
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -837,7 +830,7 @@ func (s *apiServer) OperationsUpdateFolder(ctx context.Context, req gen.Operatio
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -854,7 +847,7 @@ func (s *apiServer) OperationsDeleteFolder(ctx context.Context, req gen.Operatio
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -921,7 +914,7 @@ func (s *apiServer) OperationsUpdateDocument(ctx context.Context, req gen.Operat
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -938,7 +931,7 @@ func (s *apiServer) OperationsDeleteDocument(ctx context.Context, req gen.Operat
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -1010,16 +1003,13 @@ func (s *apiServer) CodesListCodes(ctx context.Context, req gen.CodesListCodesRe
 	if err != nil {
 		return nil, err
 	}
-	out, err := conv[gen.OrgCodes](v)
+	out, err := conv[gen.Codes](v)
 	return gen.CodesListCodes200JSONResponse(out), err
 }
 
 var _ = codes.PermRead
 
 // needSite reads the site_id query parameter every site-bound listing requires.
-func needSite(p *gen.SiteIdRequired) (uuid.UUID, error) {
-	if p == nil {
-		return uuid.Nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
-	}
-	return *p, nil
+func needSite(p gen.SiteIdRequired) (uuid.UUID, error) {
+	return p, nil
 }

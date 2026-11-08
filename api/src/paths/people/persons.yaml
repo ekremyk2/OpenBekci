@@ -1,74 +1,133 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: people.listPersons
-  summary: List people
-  tags: [people]
+  summary: List persons
+  description: |-
+    **Release 0.1.** Cursor-paginated list of persons.
+
+    Permission: `people.read`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [person.read]
+  x-openbekci-roles:
+    org_admin:
+      - people.read
+    site_manager:
+      - people.read
+    board_member:
+      - people.read
+    auditor:
+      - people.read
+  x-stability: stable
   parameters:
-    - $ref: '../../components/common.yaml#/parameters/Limit'
-    - $ref: '../../components/common.yaml#/parameters/Cursor'
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
     - name: q
       in: query
-      description: 'Name, phone or email fragment.'
-      schema: {type: string}
-    - name: site_id
+      schema:
+        type: string
+      description: "Free-text search: display name, phone (any part, so the last digits work) or email."
+    - name: role
       in: query
-      description: 'Only people tied to this site.'
-      schema: {type: string, format: uuid}
+      schema:
+        type: string
+        x-known-values:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
+      description: Only people holding this role membership now.
+    - name: occupancy_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+          - household
+      description: Only people with a current occupancy of this kind.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: join_status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - no_account
+          - invited
+          - joined
+      description: Filter by `join_status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/PersonList'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/PersonList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
 post:
   operationId: people.createPerson
-  summary: Add a person
-  tags: [people]
+  summary: Create person
+  description: |-
+    **Release 0.1.** Creates a person.
+
+    Permission: `people.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [person.manage]
+  x-openbekci-roles:
+    org_admin:
+      - people.manage
+    site_manager:
+      - people.manage
+    board_member:
+      - people.manage
   x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/PersonCreate'
+          $ref: ../../components/people.yaml#/schemas/PersonCreate
   responses:
-    '201':
-      description: 'Success.'
+    "201":
+      description: Created
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Person'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Person
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

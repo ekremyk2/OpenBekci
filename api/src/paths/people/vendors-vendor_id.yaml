@@ -1,114 +1,140 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: vendor_id
     in: path
     required: true
-    description: The vendor id.
+    description: Id of the vendor.
     schema:
       type: string
       format: uuid
-delete:
-  operationId: people.deleteVendor
-  summary: Remove a vendor
-  tags: [people]
-  security:
-    - cookieAuth: []
-    - bearerAuth: []
-  x-openbekci-roles: [vendor.manage]
-  x-idempotent: optional
-  responses:
-    '204':
-      description: Done.
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
 get:
   operationId: people.getVendor
-  summary: Read a vendor
-  tags: [people]
+  summary: Get vendor
+  description: |-
+    **Release 0.1.** Get vendor.
+
+    Permission: `vendors.read`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [vendor.read]
+  x-openbekci-roles:
+    org_admin:
+      - vendors.read
+    site_manager:
+      - vendors.read
+    board_member:
+      - vendors.read
+    auditor:
+      - vendors.read
+    accountant:
+      - vendors.read
+    staff:
+      - vendors.read
+  x-stability: stable
   responses:
-    '200':
-      description: 'Success.'
-      headers:
-        ETag:
-          description: The version, quoted; send it as `If-Match` when updating.
-          schema:
-            type: string
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Vendor'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Vendor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
 patch:
   operationId: people.updateVendor
-  summary: Change a vendor
-  tags: [people]
+  summary: Update vendor
+  description: |-
+    **Release 0.1.** Update vendor.
+
+    Permission: `vendors.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [vendor.manage]
+  x-openbekci-roles:
+    org_admin:
+      - vendors.manage
+    site_manager:
+      - vendors.manage
+    board_member:
+      - vendors.manage
+    accountant:
+      - vendors.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - name: If-Match
-      in: header
-      required: false
-      description: |
-        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-      schema:
-        type: string
-        pattern: '^"?[0-9]{1,9}"?$'
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/VendorUpdate'
+          $ref: ../../components/people.yaml#/schemas/VendorUpdate
   responses:
-    '200':
-      description: 'Success.'
-      headers:
-        ETag:
-          description: The version, quoted; send it as `If-Match` when updating.
-          schema:
-            type: string
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Vendor'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Vendor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: people.deleteVendor
+  summary: Delete vendor
+  description: |-
+    **Release 0.1.** Not part of the original draft; phase B keeps it (a vendor never used can be removed instead of archived).
+
+    Permission: `vendors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vendors.manage
+    site_manager:
+      - vendors.manage
+    board_member:
+      - vendors.manage
+    accountant:
+      - vendors.manage
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

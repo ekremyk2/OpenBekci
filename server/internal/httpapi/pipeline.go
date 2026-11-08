@@ -2,10 +2,12 @@ package httpapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
@@ -193,9 +195,35 @@ func extPermissions(ext map[string]any) []authz.Permission {
 	default:
 		raw, _ = json.Marshal(v)
 	}
+	return PermissionsOfRoles(raw)
+}
+
+// PermissionsOfRoles reads an operation's x-openbekci-roles value: either the
+// list of required permission names, or the draft contract's map from role to
+// the permissions that role holds for the operation (every operation names one
+// permission, so the distinct values are the requirement).
+func PermissionsOfRoles(raw []byte) []authz.Permission {
 	var names []string
 	if json.Unmarshal(raw, &names) != nil {
-		return nil
+		var byRole map[string][]string
+		if json.Unmarshal(raw, &byRole) != nil {
+			return nil
+		}
+		seen := map[string]bool{}
+		for _, ps := range byRole {
+			for _, p := range ps {
+				if !seen[p] {
+					seen[p] = true
+					names = append(names, p)
+				}
+			}
+		}
+		sort.Strings(names)
+		if len(names) > 1 {
+			// An operation that lists several permissions across roles accepts any
+			// one of them (tickets.read, tickets.open, ...): a single alternatives group.
+			names = []string{strings.Join(names, "|")}
+		}
 	}
 	out := make([]authz.Permission, len(names))
 	for i, n := range names {
@@ -316,6 +344,10 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 		}
 		pr, err := p.auth.Authenticate(r)
 		if mode == authOptional {
+			if isCSRFProblem(err) {
+				problem.Write(w, r, err)
+				return
+			}
 			if err == nil && pr != nil {
 				r = r.WithContext(authz.WithPrincipal(r.Context(), pr))
 			}
@@ -332,6 +364,36 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(authz.WithPrincipal(r.Context(), pr)))
 	})
+}
+
+func isCSRFProblem(err error) bool {
+	var pe *problem.Error
+	return errors.As(err, &pe) && pe.Code == problem.CodeCSRFFailed
+}
+
+// preAuth is the authentication step for a request whose parameters could not
+// be bound: the generated wrapper binds required headers and query parameters
+// before any middleware runs, so a caller who is not allowed in would learn
+// about them from the binding error. It returns the problem to answer with
+// (401, or 403 csrf_failed), or nil when binding errors may be reported.
+func (p *pipeline) preAuth(r *http.Request) error {
+	mode := p.op(r).auth
+	if mode == authNone {
+		return nil
+	}
+	pr, err := p.auth.Authenticate(r)
+	switch {
+	case mode == authOptional:
+		if isCSRFProblem(err) {
+			return err
+		}
+		return nil
+	case err != nil:
+		return err
+	case pr == nil:
+		return problem.Unauthenticated("authentication is required")
+	}
+	return nil
 }
 
 // notFound renders unknown API paths as problem+json.

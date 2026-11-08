@@ -1,0 +1,126 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: person_id
+    in: path
+    required: true
+    description: Id of the person.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getNationalId
+  summary: Read the masked national id
+  description: |-
+    **Release 0.1.** Always masked; the full value is never readable through the API.
+
+    Permission: `people.national_id`.
+
+    Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`); every read is audited.
+
+    Problems: `reauth_required` (403).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.national_id
+    site_manager:
+      - people.national_id
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/NationalId
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: people.setNationalId
+  summary: Set the national id
+  description: |-
+    **Release 0.1.** Optional (S6). Validated on entry (TCKN checksum for `TR`), stored encrypted.
+
+    Permission: `people.national_id`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.national_id
+    site_manager:
+      - people.national_id
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/NationalIdSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/NationalId
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: people.clearNationalId
+  summary: Clear the national id
+  description: |-
+    **Release 0.1.** Clear the national id.
+
+    Permission: `people.national_id`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.national_id
+    site_manager:
+      - people.national_id
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

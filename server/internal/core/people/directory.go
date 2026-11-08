@@ -71,7 +71,7 @@ func (s *Service) ListDirectory(ctx context.Context, orgID, siteID uuid.UUID, q 
 		qq := "%" + strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(strings.ToLower(strings.TrimSpace(q))) + "%"
 		rows, err := tx.Query(ctx, `
 			SELECT p.id, p.display_name, p.contact->>'phone', u.id, u.door_number, o.kind,
-			       COALESCE(c.share_name, false), COALESCE(c.share_phone, false), u.id = ANY($3)
+			       COALESCE(c.share_name, false), COALESCE(c.share_phone, false), COALESCE(u.id = ANY($3), false)
 			FROM occupancy o
 			JOIN person p ON p.org_id = o.org_id AND p.id = o.person_id
 			JOIN unit u ON u.org_id = o.org_id AND u.id = o.unit_id

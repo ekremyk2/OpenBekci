@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: me.listHouseholdMembers
+  summary: Members of my own unit side
+  description: |-
+    **Release 0.1.** The current owners, tenants and household members of the unit side the caller owns or rents, so owners and tenants need no `occupancies.read`. The same fields as an occupancy; a household member sees none of this.
+
+    Permission: `invitations.household`.
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - invitations.household
+    site_manager:
+      - invitations.household
+    owner:
+      - invitations.household
+    tenant:
+      - invitations.household
+  x-stability: stable
+  parameters:
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Only this unit (one of the caller's own).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/OccupancyList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

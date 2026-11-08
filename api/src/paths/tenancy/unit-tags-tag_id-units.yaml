@@ -1,0 +1,108 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: tag_id
+    in: path
+    required: true
+    description: Id of the tag.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getUnitTagMembers
+  summary: Units carrying a tag
+  description: |-
+    **Release 0.1.** Units carrying a tag.
+
+    Permission: `units.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.read
+    site_manager:
+      - units.read
+    board_member:
+      - units.read
+    auditor:
+      - units.read
+    accountant:
+      - units.read
+    staff:
+      - units.read
+    owner:
+      - units.read
+    tenant:
+      - units.read
+    household:
+      - units.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/UnitTagMembers
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: tenancy.setUnitTagMembers
+  summary: Set the units carrying a tag
+  description: |-
+    **Release 0.1.** Set the units carrying a tag.
+
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+    Permission: `sites.manage`.
+
+    Problems: `conflict` (409), `version_conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/UnitTagMembersSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/UnitTagMembers
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

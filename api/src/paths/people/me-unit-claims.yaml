@@ -1,0 +1,37 @@
+get:
+  operationId: people.listMyUnitClaims
+  summary: List my unit claims across organizations
+  description: '**Release 0.1.** Lets a freshly signed-up resident see "waiting for approval".'
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-stability: stable
+  parameters:
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - approved
+          - rejected
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/UnitClaimList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

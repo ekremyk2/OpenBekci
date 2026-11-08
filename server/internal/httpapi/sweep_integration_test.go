@@ -46,6 +46,18 @@ func mutating(t *testing.T, scheme string) map[string]*openapi3.Operation {
 	return out
 }
 
+func allowsAnonymous(op *openapi3.Operation) bool {
+	if op.Security == nil {
+		return false
+	}
+	for _, req := range *op.Security {
+		if len(req) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func (e *idEnv) raw(method, path, body string, headers ...string) *httptest.ResponseRecorder {
 	e.t.Helper()
 	var rd *strings.Reader
@@ -139,6 +151,9 @@ func TestIntegrationHTTPAuthPrecedesValidationOverTheSpec(t *testing.T) {
 		for opName, op := range mutating(t, scheme) {
 			if op.RequestBody == nil {
 				continue
+			}
+			if allowsAnonymous(op) {
+				continue // optional authentication: anonymous callers reach the handler (and its own errors)
 			}
 			withBody++
 			method, path, _ := strings.Cut(opName, " ")

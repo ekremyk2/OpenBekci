@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.getNotificationDefaults
   summary: Get the site defaults for automatic messages
   description: |-
-    Get the site defaults for automatic messages.
+    **Release 0.1.** Get the site defaults for automatic messages.
 
     Permission: `notifications.manage`.
   tags:
@@ -12,9 +12,14 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [notifications.manage]
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
   responses:
     "200":
       description: OK
@@ -34,7 +39,7 @@ put:
   operationId: operations.setNotificationDefaults
   summary: Set the site defaults for automatic messages
   description: |-
-    Set the site defaults for automatic messages.
+    **Release 0.1.** Set the site defaults for automatic messages.
 
     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
 
@@ -46,11 +51,16 @@ put:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [notifications.manage]
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:

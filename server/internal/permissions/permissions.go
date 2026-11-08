@@ -1,4 +1,4 @@
-// Package permissions builds the permission registry from every module's Permissions().
+﻿// Package permissions builds the permission registry from every module's Permissions().
 // It is a package of its own so that cmd/genpermissions can run before the API code is generated.
 package permissions
 
@@ -6,7 +6,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/announcements"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
-	"github.com/openbekci/openbekci/server/internal/core/codes"
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/documents"
 	"github.com/openbekci/openbekci/server/internal/core/files"
@@ -39,7 +38,6 @@ func NewRegistry() (*authz.Registry, error) {
 		{"announcements", announcements.Permissions()},
 		{"documents", documents.Permissions()},
 		{"dashboards", dashboards.Permissions()},
-		{"codes", codes.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err

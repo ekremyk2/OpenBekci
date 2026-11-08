@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: dashboards.getMyDashboard
   summary: My home summary
   description: |-
-    Resident summary, or the role-appropriate home.
+    **Release 0.1.** Resident summary, or the role-appropriate home.
 
     Permission: `me.dashboard`.
   tags:
@@ -12,9 +12,12 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [me.dashboard]
+  x-openbekci-roles:
+    member:
+      - me.dashboard
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteId
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
   responses:
     "200":
       description: OK

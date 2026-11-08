@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: announcement_id
     in: path
     required: true
@@ -11,7 +11,7 @@ post:
   operationId: operations.archiveAnnouncement
   summary: Archive an announcement
   description: |-
-    Archive an announcement.
+    **Release 0.1.** Archive an announcement.
 
     Permission: `announcements.publish`.
 
@@ -21,8 +21,15 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [announcements.publish]
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   responses:

@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 post:
   operationId: operations.restoreTicketWorkflow
   summary: Restore the default ticket workflow of a site
@@ -14,11 +14,18 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.manage]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
+  x-stability: stable
   x-idempotent: optional
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
-    - $ref: ../../components/common.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: false
     content:

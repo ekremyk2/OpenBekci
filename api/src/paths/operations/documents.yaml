@@ -1,10 +1,10 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: operations.listDocuments
   summary: List documents
   description: |-
-    Cursor-paginated list of documents.
+    **Release 0.1.** Cursor-paginated list of documents.
 
     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
 
@@ -14,9 +14,26 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.read|documents.read_addressed]
+  x-openbekci-roles:
+    org_admin:
+      - documents.read
+    site_manager:
+      - documents.read
+    board_member:
+      - documents.read
+    auditor:
+      - documents.read
+    owner:
+      - documents.read
+    tenant:
+      - documents.read
+    household:
+      - documents.read
+    former_occupant:
+      - documents.read_addressed
+  x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: folder_id
       in: query
       schema:
@@ -57,7 +74,7 @@ post:
   operationId: operations.createDocument
   summary: Create document
   description: |-
-    Creates a document.
+    **Release 0.1.** Creates a document.
 
     Permission (any one of): `documents.manage`, `documents.upload_own`.
 
@@ -67,8 +84,19 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [documents.manage|documents.upload_own]
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
   x-idempotent: optional
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

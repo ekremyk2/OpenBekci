@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: ticket_id
     in: path
     required: true
@@ -11,7 +11,7 @@ put:
   operationId: operations.voteTicket
   summary: '"+1" a common ticket'
   description: |-
-    One vote per person; repeating is harmless. Only common tickets.
+    **Release 0.1.** One vote per person; repeating is harmless. Only common tickets.
 
     Permission: `tickets.open`.
 
@@ -21,8 +21,23 @@ put:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.open]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.open
+    site_manager:
+      - tickets.open
+    board_member:
+      - tickets.open
+    staff:
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   x-idempotent: optional
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -44,7 +59,7 @@ delete:
   operationId: operations.unvoteTicket
   summary: Take back a "+1"
   description: |-
-    Take back a "+1".
+    **Release 0.1.** Take back a "+1".
 
     Permission: `tickets.open`.
 
@@ -54,8 +69,23 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [tickets.open]
+  x-openbekci-roles:
+    org_admin:
+      - tickets.open
+    site_manager:
+      - tickets.open
+    board_member:
+      - tickets.open
+    staff:
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
   x-idempotent: optional
+  x-stability: stable
   responses:
     "200":
       description: OK
