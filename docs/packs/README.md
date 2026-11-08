@@ -222,3 +222,17 @@ Repository layout, tagging, listing in the docs' pack index (builds with `obkbui
 `sdk/` is versioned independently of the server; v1.0 is frozen at project release 1.0, and until then minor versions may
 break with notes. Behaviour is added only through new optional interfaces checked by type assertion; an existing
 interface is never widened. Breaking changes batch into `sdk/v2`.
+
+## Known limitations before SDK 1.0
+
+- **Raw SQL on the tenant transaction is not restricted to pack tables.** `Services.DB()` isolates tenants (row-level
+  security, `app.org_id` set by the host, context-changing statements refused), but a pack can still read or write core
+  tables of its own organization. Enforcing "own tables only" through a restricted database role is a 1.0 item.
+- **`sdk.WithOrg` is public.** Services act for the organization in the call's context, and a pack can put another
+  organization into a context it creates. Packs are trusted code compiled into the binary; a host-private binding is a
+  1.0 item.
+- **The migration fingerprint check runs after commit.** A pack migration that alters a table outside its namespace stops
+  startup with a named error, but the change is not rolled back.
+- **Webhook batches post per event.** Each event of one webhook delivery is posted in its own transaction. A failure in
+  the middle leaves the earlier events recorded; every posting is idempotent per `(organization, provider,
+  provider_txn_id)`, so the provider's retry completes the batch.
