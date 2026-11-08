@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { Me } from '@/api/schema'
+import { registerReset } from '../reset'
 
 /*
  * MSW handlers for the DRAFT operations contract (api/openapi-draft.yaml, modules operations, audit,
@@ -1672,6 +1673,7 @@ route('GET', `/platform/jobs`, ({ url }) =>
 // ---------------------------------------------------------------------------------------------
 
 resetOperationsDb()
+registerReset(() => resetOperationsDb())
 
 /** Role-aware `/v1/me` for mock mode and tests; list it before the generic fixture handler. */
 export const meByRoleHandler = http.get('*/v1/me', () => HttpResponse.json(meForRole(db.role)))

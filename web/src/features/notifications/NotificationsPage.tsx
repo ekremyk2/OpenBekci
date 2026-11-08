@@ -97,6 +97,22 @@ export function MutesPanel({ orgId }: { orgId: string }) {
   )
 }
 
+/**
+ * `link` is a server-supplied in-app path. Browsers read a backslash as a slash, so `/\host` and
+ * `//host` both leave the site, and an absolute URL does too: the link is resolved against the
+ * current origin and only followed when it stays there, and only as a path.
+ */
+export function inAppPath(link: string): string | null {
+  if (!link.startsWith('/') || link.includes('\\')) return null
+  try {
+    const url = new URL(link, window.location.origin)
+    if (url.origin !== window.location.origin) return null
+    return url.pathname + url.search + url.hash
+  } catch {
+    return null
+  }
+}
+
 export function NotificationsPage() {
   const { t, i18n } = useLingui()
   const { org, can } = useSession()
@@ -164,10 +180,8 @@ export function NotificationsPage() {
 
   function open(n: Notification) {
     if (!n.read_at) markRead.mutate(n)
-    // `link` is a server-supplied in-app path; only same-origin absolute paths are followed.
-    if (n.link && n.link.startsWith('/') && !n.link.startsWith('//')) {
-      void navigate({ href: n.link })
-    }
+    const path = n.link ? inAppPath(n.link) : null
+    if (path) void navigate({ href: path })
   }
 
   return (

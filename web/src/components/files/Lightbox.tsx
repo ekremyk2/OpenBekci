@@ -28,9 +28,13 @@ export default function Lightbox({
   const current = images[index]
 
   useEffect(() => {
+    // the chevrons flip in right-to-left layouts, so the arrow keys follow the reading direction
+    const rtl = document.documentElement.dir === 'rtl'
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'ArrowRight') onIndexChange(Math.min(images.length - 1, index + 1))
-      if (e.key === 'ArrowLeft') onIndexChange(Math.max(0, index - 1))
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+      if (step === 0) return
+      const next = index + (rtl ? -step : step)
+      onIndexChange(Math.min(images.length - 1, Math.max(0, next)))
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)

@@ -4,7 +4,7 @@ import { cleanup, configure } from '@testing-library/react'
 import { i18n } from '@lingui/core'
 import { setupServer } from 'msw/node'
 import { handlers } from './handlers'
-import { resetOperationsDb } from './handlers/operations'
+import { runResets } from './reset'
 
 export const server = setupServer(...handlers)
 
@@ -32,6 +32,6 @@ beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {
   cleanup()
   server.resetHandlers()
-  resetOperationsDb()
+  runResets()
 })
 afterAll(() => server.close())
