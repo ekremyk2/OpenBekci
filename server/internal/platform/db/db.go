@@ -35,7 +35,11 @@ type Options struct {
 
 // DB holds the connection pools.
 type DB struct {
-	app      *pgxpool.Pool
+	app *pgxpool.Pool
+	// side serves InIndependentTenantTx: transactions opened while the caller
+	// already holds an app connection. Nothing that runs on side waits for an
+	// app connection, so those waits always end.
+	side     *pgxpool.Pool
 	platform *pgxpool.Pool
 	migrator *pgxpool.Pool
 
@@ -56,6 +60,10 @@ func Open(ctx context.Context, o Options) (*DB, error) {
 	if o.AppURL != "" {
 		if d.app, err = openPool(ctx, o.AppURL, o.Pooled); err != nil {
 			return nil, fmt.Errorf("open app pool: %w", err)
+		}
+		if d.side, err = openPool(ctx, o.AppURL, o.Pooled); err != nil {
+			d.Close()
+			return nil, fmt.Errorf("open side pool: %w", err)
 		}
 		if d.appGoose, d.closeAppGoose, err = gooseProvider(d.app, false); err != nil {
 			d.Close()
@@ -102,7 +110,7 @@ func (d *DB) Close() {
 		d.closeAppGoose()
 		d.closeAppGoose = nil
 	}
-	for _, p := range []*pgxpool.Pool{d.app, d.platform, d.migrator} {
+	for _, p := range []*pgxpool.Pool{d.app, d.side, d.platform, d.migrator} {
 		if p != nil {
 			p.Close()
 		}
@@ -114,6 +122,20 @@ func (d *DB) Close() {
 // This is the only way business code reaches a tenant connection.
 func (d *DB) InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error {
 	return inTx(ctx, d.app, orgID.String(), fn)
+}
+
+// InIndependentTenantTx is InTenantTx for a transaction that must commit on
+// its own connection while the caller's own transaction stays open (a draft
+// stored before the caller's transaction can roll it back). It uses a separate
+// pool: drawing the second connection from the app pool lets N callers that
+// each hold one wait forever for the connection another holds once N reaches
+// the pool size. Never call InTenantTx, or anything that does, inside fn.
+func (d *DB) InIndependentTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error {
+	pool := d.side
+	if pool == nil {
+		pool = d.app
+	}
+	return inTx(ctx, pool, orgID.String(), fn)
 }
 
 // InAppTx runs fn in a transaction on the RLS-subject pool with no tenant

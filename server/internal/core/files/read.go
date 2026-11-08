@@ -551,7 +551,7 @@ func (s *Service) AttachGenerated(ctx context.Context, tx pgx.Tx, orgID, fileID 
 // transaction filed the same source record first). A file that is attached is
 // left alone. Failures are not fatal: retention expires the draft anyway.
 func (s *Service) DiscardDraft(ctx context.Context, orgID, fileID uuid.UUID) {
-	_ = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+	_ = s.db.InIndependentTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `UPDATE file SET status = 'deleted', deleted_at = $3, updated_at = $3
 			WHERE org_id = $1 AND id = $2 AND scope_type IS NULL AND source = 'generated' AND status <> 'deleted'`, orgID, fileID, s.now())
 		return err

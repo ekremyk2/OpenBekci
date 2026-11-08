@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -20,6 +21,10 @@ func TestIntegrationFileGeneratedConcurrentFilingsMakeOneDocument(t *testing.T) 
 	s := newD2Site(e.w, org, t)
 	source := id.New()
 	const n = 6
+	// Bounded: a regression (every filer holding a connection while waiting
+	// for another) must fail fast, not hang until the package timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
 	var wg sync.WaitGroup
 	docs := make([]documents.Document, n)
 	errs := make([]error, n)
@@ -27,9 +32,9 @@ func TestIntegrationFileGeneratedConcurrentFilingsMakeOneDocument(t *testing.T) 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			errs[i] = e.db.InTenantTx(context.Background(), org.ID, func(tx pgx.Tx) error {
+			errs[i] = e.db.InTenantTx(ctx, org.ID, func(tx pgx.Tx) error {
 				var err error
-				docs[i], err = e.ops.documents.FileGenerated(context.Background(), tx, documents.GeneratedParams{
+				docs[i], err = e.ops.documents.FileGenerated(ctx, tx, documents.GeneratedParams{
 					OrgID: org.ID, SiteID: s.Site, Title: "Minutes", FileName: "minutes.txt", Content: strings.NewReader("agenda"),
 					SystemKey: "minutes", FolderName: "Minutes", GeneratedType: "meeting_minutes", GeneratedID: source})
 				return err
@@ -46,14 +51,14 @@ func TestIntegrationFileGeneratedConcurrentFilingsMakeOneDocument(t *testing.T) 
 		}
 	}
 	var ndocs, live, orphans int
-	err := e.db.InTenantTx(context.Background(), org.ID, func(tx pgx.Tx) error {
-		if err := tx.QueryRow(context.Background(), `SELECT count(*) FROM document WHERE org_id = $1 AND generated_id = $2`, org.ID, source).Scan(&ndocs); err != nil {
+	err := e.db.InTenantTx(ctx, org.ID, func(tx pgx.Tx) error {
+		if err := tx.QueryRow(ctx, `SELECT count(*) FROM document WHERE org_id = $1 AND generated_id = $2`, org.ID, source).Scan(&ndocs); err != nil {
 			return err
 		}
-		if err := tx.QueryRow(context.Background(), `SELECT count(*) FROM file WHERE org_id = $1 AND scope_type = 'document' AND scope_id = $2 AND status = 'ready' AND retention_until IS NULL`, org.ID, docs[0].ID).Scan(&live); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT count(*) FROM file WHERE org_id = $1 AND scope_type = 'document' AND scope_id = $2 AND status = 'ready' AND retention_until IS NULL`, org.ID, docs[0].ID).Scan(&live); err != nil {
 			return err
 		}
-		return tx.QueryRow(context.Background(), `SELECT count(*) FROM file WHERE org_id = $1 AND site_id = $2 AND source = 'generated' AND scope_type IS NULL AND status <> 'deleted'`, org.ID, s.Site).Scan(&orphans)
+		return tx.QueryRow(ctx, `SELECT count(*) FROM file WHERE org_id = $1 AND site_id = $2 AND source = 'generated' AND scope_type IS NULL AND status <> 'deleted'`, org.ID, s.Site).Scan(&orphans)
 	})
 	if err != nil {
 		t.Fatal(err)
