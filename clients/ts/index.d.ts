@@ -1880,7 +1880,7 @@ export interface paths {
         };
         /**
          * Download the call letter
-         * @description **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+         * @description **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
          *
          *     Permission: `meetings.read`.
          */
@@ -8544,7 +8544,7 @@ export interface operations {
     "governance.getCallLetter": {
         parameters: {
             query?: {
-                /** @description Filter by person. */
+                /** @description The owner whose personal letter (with their check-in QR) is wanted. */
                 person_id?: string;
             };
             header?: never;
