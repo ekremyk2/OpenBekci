@@ -183,6 +183,8 @@ type GenerationStatus struct {
 	PlanID  uuid.UUID `json:"plan_id"`
 	Name    string    `json:"name"`
 	Missing []string  `json:"missing_periods"`
+	// Units is how many units each missing period would bill (the active units of the site).
+	Units int `json:"units"`
 }
 
 // ChargeGenerationStatus reports the periods the catch-up job has still to bill (money.read).
@@ -215,6 +217,9 @@ func (s *Service) ChargeGenerationStatus(ctx context.Context, orgID, siteID uuid
 				return err
 			}
 			st := GenerationStatus{PlanID: p.ID, Name: p.Name, Missing: []string{}}
+			if err := tx.QueryRow(ctx, `SELECT count(*) FROM unit WHERE org_id=$1 AND site_id=$2 AND status='active' AND type <> 'common'`, orgID, siteID).Scan(&st.Units); err != nil {
+				return err
+			}
 			for _, per := range pers {
 				var have int
 				if err := tx.QueryRow(ctx, `SELECT count(*) FROM charge WHERE org_id=$1 AND plan_id=$2 AND period=$3`, orgID, p.ID, per.Key).Scan(&have); err != nil {
@@ -318,28 +323,29 @@ func (s *Service) CreateCharge(ctx context.Context, orgID uuid.UUID, in ChargeIn
 
 // Charge is a charge as the API shows it.
 type Charge struct {
-	ID              uuid.UUID       `json:"id"`
-	OrgID           uuid.UUID       `json:"org_id"`
-	SiteID          uuid.UUID       `json:"site_id"`
-	PlanID          *uuid.UUID      `json:"plan_id"`
-	UnitID          uuid.UUID       `json:"unit_id"`
-	DoorNumber      string          `json:"unit_door_number"`
-	Period          string          `json:"period"`
-	Kind            string          `json:"kind"`
-	ChargeType      string          `json:"charge_type"`
-	DebtorKind      string          `json:"debtor_kind"`
-	DebtorPersonID  *uuid.UUID      `json:"debtor_person_id"`
-	Amount          money.Money     `json:"amount"`
-	Paid            money.Money     `json:"paid"`
-	Balance         money.Money     `json:"balance"`
-	EffectiveDebtor EffectiveDebtor `json:"effective_debtor"`
-	DueDate         string          `json:"due_date"`
-	Description     string          `json:"description"`
-	AllocationBasis any             `json:"allocation_basis"`
-	JournalEntryID  uuid.UUID       `json:"journal_entry_id"`
-	Status          string          `json:"status"`
-	CreatedAt       time.Time       `json:"created_at"`
-	UpdatedAt       time.Time       `json:"updated_at"`
+	ID                uuid.UUID       `json:"id"`
+	OrgID             uuid.UUID       `json:"org_id"`
+	SiteID            uuid.UUID       `json:"site_id"`
+	PlanID            *uuid.UUID      `json:"plan_id"`
+	UnitID            uuid.UUID       `json:"unit_id"`
+	DoorNumber        string          `json:"unit_door_number"`
+	Period            string          `json:"period"`
+	Kind              string          `json:"kind"`
+	ChargeType        string          `json:"charge_type"`
+	DebtorKind        string          `json:"debtor_kind"`
+	DebtorPersonID    *uuid.UUID      `json:"debtor_person_id"`
+	DebtorDisplayName *string         `json:"debtor_display_name"`
+	Amount            money.Money     `json:"amount"`
+	Paid              money.Money     `json:"paid"`
+	Balance           money.Money     `json:"balance"`
+	EffectiveDebtor   EffectiveDebtor `json:"effective_debtor"`
+	DueDate           string          `json:"due_date"`
+	Description       string          `json:"description"`
+	AllocationBasis   any             `json:"allocation_basis"`
+	JournalEntryID    uuid.UUID       `json:"journal_entry_id"`
+	Status            string          `json:"status"`
+	CreatedAt         time.Time       `json:"created_at"`
+	UpdatedAt         time.Time       `json:"updated_at"`
 }
 
 // EffectiveDebtor is who is (or was) charged and why (M1).
@@ -372,6 +378,7 @@ func scanCharge(r pgx.Row) (c Charge, err error) {
 	case c.PlanID != nil:
 		src = "plan_default"
 	}
+	c.DebtorDisplayName = name
 	c.EffectiveDebtor = EffectiveDebtor{DebtorKind: c.DebtorKind, PersonID: c.DebtorPersonID, DisplayName: name, Source: src}
 	c.UpdatedAt = c.CreatedAt
 	if len(basis) > 0 {

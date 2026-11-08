@@ -5,6 +5,7 @@ package billing
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -54,6 +55,21 @@ type Debtor struct {
 	UnitID   *uuid.UUID `json:"unit_id,omitempty"`
 	Kind     string     `json:"debtor_kind,omitempty"`
 	PersonID *uuid.UUID `json:"person_id,omitempty"`
+}
+
+// MarshalJSON writes the API's DebtorRef: a `mode` of unit_side or person and the members of that mode.
+func (d Debtor) MarshalJSON() ([]byte, error) {
+	if d.IsPerson() {
+		return json.Marshal(struct {
+			Mode     string     `json:"mode"`
+			PersonID *uuid.UUID `json:"person_id"`
+		}{"person", d.PersonID})
+	}
+	return json.Marshal(struct {
+		Mode       string     `json:"mode"`
+		UnitID     *uuid.UUID `json:"unit_id"`
+		DebtorKind string     `json:"debtor_kind"`
+	}{"unit_side", d.UnitID, d.Kind})
 }
 
 // IsPerson reports a person debtor.

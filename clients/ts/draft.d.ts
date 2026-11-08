@@ -5096,7 +5096,7 @@ export interface paths {
         };
         /**
          * Cash-basis income and expense (gelir-gider)
-         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5146,7 +5146,7 @@ export interface paths {
         };
         /**
          * Budget versus actual
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5171,7 +5171,7 @@ export interface paths {
         };
         /**
          * Trial balance
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5196,7 +5196,7 @@ export interface paths {
         };
         /**
          * Receivables aging
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5271,7 +5271,7 @@ export interface paths {
         };
         /**
          * Fund balances
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -13765,7 +13765,7 @@ export interface components {
             amount: components["schemas"]["Money"];
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /**
          * @example {
@@ -13852,7 +13852,7 @@ export interface components {
             to?: string | null;
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         LateFeeFreezeUpdate: {
@@ -14106,7 +14106,7 @@ export interface components {
             allocations?: components["schemas"]["AllocationInput"][];
             send_receipt?: components["schemas"]["ReceiptDelivery"];
             /** @description Who the payment settles: a unit side or a person (carried debt). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentVoid: {
             reason: string;
@@ -14119,7 +14119,7 @@ export interface components {
             site_id: string;
             amount: components["schemas"]["Money"];
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         AllocationPreview: {
             allocations: components["schemas"]["PaymentAllocation"][];
@@ -14135,7 +14135,7 @@ export interface components {
             reference?: string;
             note?: string;
             /** @description Who the declared transfer is for. Residents declare for their own side; a former occupant never declares. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentConfirm: {
             /** Format: uuid */
@@ -14726,7 +14726,7 @@ export interface components {
              */
             expense_id?: string;
             /** @description Who the line pays; omitted when matching to `payment_id` or `expense_id`. */
-            debtor?: components["schemas"]["DebtorRef"];
+            debtor?: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         BankTransactionReason: {
             reason?: string;
@@ -15557,7 +15557,7 @@ export interface components {
         };
         DebtBreakdown: {
             /** @description Whose debt this is. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             as_of: string;
             lines: components["schemas"]["DebtBreakdownLine"][];
@@ -15592,7 +15592,7 @@ export interface components {
         /** @description Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`. */
         Statement: {
             /** @description Whose statement this is: a unit side or a person. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -15607,7 +15607,7 @@ export interface components {
         };
         StatementSend: {
             /** @description Whose statement to send. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -15796,6 +15796,10 @@ export interface components {
         MoneyOverview: {
             /** Format: date */
             as_of: string;
+            /** @description The balance of every fund. */
+            funds: components["schemas"]["FundBalanceRow"][];
+            /** @description The five largest overdue debtors. */
+            top_debtors: components["schemas"]["DebtorRow"][];
             receivable_owner: components["schemas"]["Money"];
             receivable_tenant: components["schemas"]["Money"];
             cash: components["schemas"]["Money"];
@@ -20228,30 +20232,8 @@ export interface components {
             items: components["schemas"]["PlatformJob"][];
             next_cursor: string | null;
         };
-        /**
-         * @description Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
-         * @example {
-         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
-         *       "debtor_kind": "tenant"
-         *     }
-         */
-        DebtorRef: {
-            /**
-             * Format: uuid
-             * @description Unit mode: the unit.
-             */
-            unit_id?: string;
-            /**
-             * @description Unit mode: the side of the unit that owes.
-             * @enum {string}
-             */
-            debtor_kind?: "owner" | "tenant";
-            /**
-             * Format: uuid
-             * @description Person mode: the person who owes; covers charges carried to them and charges keyed on them.
-             */
-            person_id?: string;
-        } & (unknown | unknown);
+        /** @description Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`. */
+        DebtorRef: components["schemas"]["DebtorRefUnitSide"] | components["schemas"]["DebtorRefPerson"];
         /**
          * @description Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
          * @example {
@@ -20554,6 +20536,48 @@ export interface components {
          * @enum {string}
          */
         Permission: "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "collections.manage" | "directory.read" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        /**
+         * @example {
+         *       "mode": "unit_side",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "debtor_kind": "tenant"
+         *     }
+         */
+        DebtorRefUnitSide: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "unit_side";
+            /**
+             * Format: uuid
+             * @description The unit.
+             */
+            unit_id: string;
+            /**
+             * @description The side of the unit that owes.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+        };
+        /**
+         * @example {
+         *       "mode": "person",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002"
+         *     }
+         */
+        DebtorRefPerson: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "person";
+            /**
+             * Format: uuid
+             * @description The person who owes; covers charges carried to them and charges keyed on them.
+             */
+            person_id: string;
+        };
         /** @description A rendition of an image, generated on upload. */
         FileVariant: {
             width: number;
@@ -29271,7 +29295,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29279,8 +29303,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["IncomeExpenseReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29349,7 +29371,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29357,8 +29379,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BudgetVsActualReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29388,7 +29408,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29396,8 +29416,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TrialBalanceReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29427,7 +29445,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29435,8 +29453,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReceivablesAgingReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29544,7 +29560,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29552,8 +29568,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FundBalancesReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];

@@ -29,6 +29,8 @@ type OpeningBalance struct {
 	LateFee        int64      `json:"late_fee"`
 	JournalEntryID uuid.UUID  `json:"journal_entry_id"`
 	Voided         bool       `json:"voided"`
+	VoidedAt       *time.Time `json:"voided_at"`
+	VoidReason     *string    `json:"void_reason"`
 	CreatedAt      time.Time  `json:"created_at"`
 }
 
@@ -45,10 +47,10 @@ type OpeningInput struct {
 	LateFee    int64      `json:"late_fee"`
 }
 
-const obCols = `id, site_id, as_of::text, kind, unit_id, debtor_kind, account_id, principal, late_fee, journal_entry_id, voided_at IS NOT NULL, created_at`
+const obCols = `id, site_id, as_of::text, kind, unit_id, debtor_kind, account_id, principal, late_fee, journal_entry_id, voided_at IS NOT NULL, voided_at, void_reason, created_at`
 
 func scanOB(r pgx.Row) (o OpeningBalance, err error) {
-	err = r.Scan(&o.ID, &o.SiteID, &o.AsOf, &o.Kind, &o.UnitID, &o.DebtorKind, &o.AccountID, &o.Principal, &o.LateFee, &o.JournalEntryID, &o.Voided, &o.CreatedAt)
+	err = r.Scan(&o.ID, &o.SiteID, &o.AsOf, &o.Kind, &o.UnitID, &o.DebtorKind, &o.AccountID, &o.Principal, &o.LateFee, &o.JournalEntryID, &o.Voided, &o.VoidedAt, &o.VoidReason, &o.CreatedAt)
 	o.CreatedAt = o.CreatedAt.UTC()
 	return
 }
@@ -205,7 +207,7 @@ func (s *Service) postOpening(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, i
 // VoidOpeningBalance reverses an opening balance (money.post, re-auth). It is
 // idempotent: voiding a voided balance returns it unchanged. Locked periods and
 // payments already applied to the opening charges refuse it (409).
-func (s *Service) VoidOpeningBalance(ctx context.Context, orgID, obID uuid.UUID) (OpeningBalance, error) {
+func (s *Service) VoidOpeningBalance(ctx context.Context, orgID, obID uuid.UUID, reason string) (OpeningBalance, error) {
 	if err := authz.PrincipalFromContext(ctx).RequireReauth(s.Now()); err != nil {
 		return OpeningBalance{}, err
 	}
@@ -251,7 +253,7 @@ func (s *Service) VoidOpeningBalance(ctx context.Context, orgID, obID uuid.UUID)
 				return err
 			}
 		}
-		if _, err := tx.Exec(ctx, `UPDATE opening_balance SET voided_at=now(), void_entry_id=$3 WHERE org_id=$1 AND id=$2`, orgID, obID, first); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE opening_balance SET voided_at=now(), void_entry_id=$3, void_reason=$4 WHERE org_id=$1 AND id=$2`, orgID, obID, first, reason); err != nil {
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, o.SiteID, "opening_balance.void", "opening_balance", obID, map[string]any{"voided": false}, map[string]any{"voided": true}); err != nil {

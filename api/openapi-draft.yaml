@@ -13037,7 +13037,7 @@ paths:
       operationId: money.getIncomeExpenseReport
       summary: Cash-basis income and expense (gelir-gider)
       description: |-
-        **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
 
         Permission (any one of): `reports.read`, `reports.aggregate`.
       tags:
@@ -13084,20 +13084,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncomeExpenseReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13191,7 +13183,7 @@ paths:
       operationId: money.getBudgetVsActualReport
       summary: Budget versus actual
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission (any one of): `reports.read`, `reports.aggregate`.
       tags:
@@ -13225,20 +13217,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BudgetVsActualReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13257,7 +13241,7 @@ paths:
       operationId: money.getTrialBalanceReport
       summary: Trial balance
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13294,20 +13278,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrialBalanceReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13326,7 +13302,7 @@ paths:
       operationId: money.getReceivablesAgingReport
       summary: Receivables aging
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13363,20 +13339,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReceivablesAgingReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13542,7 +13510,7 @@ paths:
       operationId: money.getFundBalancesReport
       summary: Fund balances
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13573,20 +13541,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FundBalancesReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -33898,10 +33858,23 @@ components:
         - accrued_late_fees
         - collection_rate_pct
         - aging
+        - funds
+        - top_debtors
       properties:
         as_of:
           type: string
           format: date
+        funds:
+          type: array
+          description: The balance of every fund.
+          items:
+            $ref: '#/components/schemas/FundBalanceRow'
+        top_debtors:
+          type: array
+          maxItems: 5
+          description: The five largest overdue debtors.
+          items:
+            $ref: '#/components/schemas/DebtorRow'
         receivable_owner:
           $ref: '#/components/schemas/Money'
         receivable_tenant:
@@ -41124,32 +41097,15 @@ components:
             error: null
         next_cursor: null
     DebtorRef:
-      type: object
-      description: 'Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.'
+      description: 'Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`.'
       oneOf:
-        - required:
-            - unit_id
-            - debtor_kind
-        - required:
-            - person_id
-      properties:
-        unit_id:
-          type: string
-          format: uuid
-          description: 'Unit mode: the unit.'
-        debtor_kind:
-          type: string
-          enum:
-            - owner
-            - tenant
-          description: 'Unit mode: the side of the unit that owes.'
-        person_id:
-          type: string
-          format: uuid
-          description: 'Person mode: the person who owes; covers charges carried to them and charges keyed on them.'
-      example:
-        unit_id: 0192a3f0-1000-7000-8000-000000000001
-        debtor_kind: tenant
+        - $ref: '#/components/schemas/DebtorRefUnitSide'
+        - $ref: '#/components/schemas/DebtorRefPerson'
+      discriminator:
+        propertyName: mode
+        mapping:
+          unit_side: '#/components/schemas/DebtorRefUnitSide'
+          person: '#/components/schemas/DebtorRefPerson'
     EffectiveDebtor:
       type: object
       description: 'Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.'
@@ -41626,6 +41582,48 @@ components:
         - vehicles.read
         - vendors.manage
         - vendors.read
+    DebtorRefUnitSide:
+      type: object
+      required:
+        - mode
+        - unit_id
+        - debtor_kind
+      properties:
+        mode:
+          type: string
+          enum:
+            - unit_side
+        unit_id:
+          type: string
+          format: uuid
+          description: The unit.
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: The side of the unit that owes.
+      example:
+        mode: unit_side
+        unit_id: 0192a3f0-1000-7000-8000-000000000001
+        debtor_kind: tenant
+    DebtorRefPerson:
+      type: object
+      required:
+        - mode
+        - person_id
+      properties:
+        mode:
+          type: string
+          enum:
+            - person
+        person_id:
+          type: string
+          format: uuid
+          description: The person who owes; covers charges carried to them and charges keyed on them.
+      example:
+        mode: person
+        person_id: 0192a3f0-1000-7000-8000-000000000002
     FileVariant:
       type: object
       description: A rendition of an image, generated on upload.

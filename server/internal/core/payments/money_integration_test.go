@@ -278,13 +278,13 @@ func TestIntegrationOpeningBalancesAndCancel(t *testing.T) {
 	if _, err := w.pay.Record(ctx, e.OrgID, payments.Input{SiteID: e.SiteID, Debtor: a1, Method: "bank_transfer", Amount: money.New(1000, "TRY"), ReceivedOn: "2026-01-02"}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob.ID); problem.From(err).Status != 409 {
+	if _, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob.ID, "test"); problem.From(err).Status != 409 {
 		t.Errorf("void with payments: %v", err)
 	}
 	// a fresh balance can be voided, twice (idempotent)
 	ob2, _ := w.bill.CreateOpeningBalance(ctx, e.OrgID, billing.OpeningInput{SiteID: e.SiteID, AsOf: "2025-12-31", Kind: "unit_receivable", UnitID: &w.a2, DebtorKind: "owner", Principal: 700}, false)
 	for i := 0; i < 2; i++ {
-		if v, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob2.ID); err != nil || !v.Voided {
+		if v, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob2.ID, "test"); err != nil || !v.Voided {
 			t.Fatalf("void %d: %+v %v", i, v, err)
 		}
 	}

@@ -537,7 +537,7 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 	if st.To != nil {
 		to = *st.To
 	}
-	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
+	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"mode": "unit_side", "unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
 		"closing_balance": st.Closing.Total, "accrued_late_fee": st.AccruedFee, "credit": st.Credit, "total_due": st.Closing.Total, "lines": lines})
 	return gen.MoneyGetUnitStatement200JSONResponse(out), err
 }

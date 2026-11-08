@@ -88,7 +88,7 @@ func debtorOf(p Payment) billing.Debtor {
 
 // Confirm settles a declared payment (payments.record): it is allocated and
 // posted like a recorded payment, optionally with another received date.
-func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, receivedOn string, chargeIDs []uuid.UUID) (Payment, error) {
+func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, assetAccount uuid.UUID, receivedOn string, chargeIDs []uuid.UUID) (Payment, error) {
 	var out Payment
 	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
 		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
@@ -121,13 +121,20 @@ func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, recei
 		if err := s.requireOwnBox(ctx, tx, orgID, p); err != nil {
 			return err
 		}
+		if assetAccount != uuid.Nil && assetAccount != p.AssetAccountID {
+			var typ, sub string
+			if err := tx.QueryRow(ctx, `SELECT type, COALESCE(subtype,'') FROM account WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, p.SiteID, assetAccount).Scan(&typ, &sub); err != nil || typ != "asset" || sub != ledger.SubBank {
+				return bad("asset_account_id", "invalid_value")
+			}
+			p.AssetAccountID = assetAccount
+		}
 		d := debtorOf(p)
 		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, d, chargeIDs)
 		if err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6 WHERE org_id=$1 AND id=$2`,
-			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx)); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6, asset_account_id=$7 WHERE org_id=$1 AND id=$2`,
+			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx), p.AssetAccountID); err != nil {
 			return err
 		}
 		if err := saveAllocations(ctx, tx, orgID, p.SiteID, p, allocs); err != nil {

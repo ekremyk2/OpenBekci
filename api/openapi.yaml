@@ -7912,6 +7912,3185 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: plan_id
+        in: path
+        required: true
+        description: Id of the plan.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getChargePlan
+      summary: Get charge plan
+      description: |-
+        **Release 0.1.** Get charge plan.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlan'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: money.updateChargePlan
+      summary: Update charge plan
+      description: |-
+        **Release 0.1.** Update charge plan.
+
+        Permission: `money.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargePlanUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlan'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: plan_id
+        in: path
+        required: true
+        description: Id of the plan.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.listChargePlanRates
+      summary: List the rates of a plan
+      description: |-
+        **Release 0.1.** List the rates of a plan.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlanRateList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createChargePlanRate
+      summary: Add an effective-dated rate
+      description: |-
+        **Release 0.1.** "2,000 from March": `from` must not overlap an existing rate; the previous open-ended rate is closed the day before. Past charges are never changed.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargePlanRateCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlanRate'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: plan_id
+        in: path
+        required: true
+        description: Id of the plan.
+        schema:
+          type: string
+          format: uuid
+      - name: rate_id
+        in: path
+        required: true
+        description: Id of the rate.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: money.deleteChargePlanRate
+      summary: Delete a future rate
+      description: |-
+        **Release 0.1.** Only a rate that has not taken effect yet.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: required
+      x-stability: stable
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+  /v1/orgs/{org_id}/charge-plans:preview:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.previewChargePlan
+      summary: Preview what each unit side would pay
+      description: |-
+        **Release 0.1.** Does not persist anything (M3). Allocation: largest remainder in deterministic order so the sum equals the total.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargePlanPreviewRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlanPreview'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charge-generation:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getChargeGenerationStatus
+      summary: Catch-up charge generation status
+      description: |-
+        **Release 0.1.** Catch-up charge generation status.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeGenerationStatus'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charges/{charge_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: charge_id
+        in: path
+        required: true
+        description: Id of the charge.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getCharge
+      summary: Get a charge
+      description: |-
+        **Release 0.1.** Get a charge.
+
+        Permission (any one of): `money.read`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+        owner:
+          - statements.read_own
+        tenant:
+          - statements.read_own
+        household:
+          - statements.read_own
+        former_occupant:
+          - statements.read_own
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Charge'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charges/{charge_id}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: charge_id
+        in: path
+        required: true
+        description: Id of the charge.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.cancelCharge
+      summary: Cancel a charge
+      description: |-
+        **Release 0.1.** Reverses the posting (dated today) with a reason; payments already allocated become credit.
+
+        Permission: `money.post`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeCancel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Charge'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: opening_balance_id
+        in: path
+        required: true
+        description: Id of the opening balance.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getOpeningBalance
+      summary: Get opening balance
+      description: |-
+        **Release 0.1.** Get opening balance.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningBalance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: opening_balance_id
+        in: path
+        required: true
+        description: Id of the opening balance.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.voidOpeningBalance
+      summary: Void an opening balance
+      description: |-
+        **Release 0.1.** Reverses the opening entry with a reason and keeps both in the ledger (nothing is edited or deleted after the fact); `locked_period` once the lock date has passed `as_of`. Replaces the former `money.deleteOpeningBalance`.
+
+        Permission: `money.post`.
+
+        Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+        Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpeningBalanceVoid'
+      responses:
+        '200':
+          description: The voided opening balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningBalance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/opening-balances:import:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.importOpeningBalances
+      summary: Import opening balances from CSV or XLSX
+      description: |-
+        **Release 0.1.** Per-unit principal and known late fee by owner or tenant side, plus bank and cash balances (M7). Always run with `dry_run=true` first.
+
+        Permission: `money.post`.
+
+        Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+        Problems: `locked_period` (409), `payload_too_large` (413), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/DryRun'
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                site_id:
+                  type: string
+                  format: uuid
+                as_of:
+                  type: string
+                  format: date
+                file:
+                  type: string
+                  format: binary
+                mapping:
+                  type: object
+                  additionalProperties: true
+              required:
+                - site_id
+                - as_of
+                - file
+      responses:
+        '200':
+          description: The dry-run report; nothing was posted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportReport'
+        '202':
+          description: Committed; follow `job_id`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportReport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '413':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-accruals:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listLateFeeAccruals
+      summary: List accrued late fees per unit side
+      description: |-
+        **Release 0.1.** List accrued late fees per unit side.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - name: nonzero
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `nonzero`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeAccrualList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-bookings:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listLateFeeBookings
+      summary: List monthly late-fee bookings
+      description: |-
+        **Release 0.1.** List monthly late-fee bookings.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: period
+          in: query
+          schema:
+            type: string
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: Filter by month, `YYYY-MM`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeBookingList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-waivers:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listLateFeeWaivers
+      summary: List late-fee waivers
+      description: |-
+        **Release 0.1.** List late-fee waivers.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeWaiverList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createLateFeeWaiver
+      summary: Waive late fees
+      description: |-
+        **Release 0.1.** Re-authentication is required above the site threshold (`waiver_reauth_threshold`). Audited.
+
+        Permission: `money.post`.
+
+        Sensitive (waivers above the site threshold): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+        Problems: `reauth_required` (403), `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LateFeeWaiverCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeWaiver'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-freezes:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listLateFeeFreezes
+      summary: List late-fee freezes
+      description: |-
+        **Release 0.1.** Cursor-paginated list of late-fee freezes.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `active`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeFreezeList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createLateFeeFreeze
+      summary: Create late-fee freeze
+      description: |-
+        **Release 0.1.** Creates a late-fee freeze.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LateFeeFreezeCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeFreeze'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: freeze_id
+        in: path
+        required: true
+        description: Id of the freeze.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getLateFeeFreeze
+      summary: Get late-fee freeze
+      description: |-
+        **Release 0.1.** Get late-fee freeze.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeFreeze'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: money.updateLateFeeFreeze
+      summary: Update late-fee freeze
+      description: |-
+        **Release 0.1.** Update late-fee freeze.
+
+        Permission: `money.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LateFeeFreezeUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeeFreeze'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments:declare:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.declarePayment
+      summary: Declare a bank transfer ("I have paid")
+      description: |-
+        **Release 0.1.** Creates a payment with `status = pending_declared`; nothing is posted until a manager confirms it during matching.
+
+        Permission: `payments.declare`.
+
+        Problems: `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        owner:
+          - payments.declare
+        tenant:
+          - payments.declare
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentDeclare'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}:confirm:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.confirmPayment
+      summary: Confirm a declared payment
+      description: |-
+        **Release 0.1.** Confirm a declared payment.
+
+        Permission: `payments.record`.
+
+        Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentConfirm'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}:reject:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.rejectPayment
+      summary: Reject a declared payment
+      description: |-
+        **Release 0.1.** Reject a declared payment.
+
+        Permission: `payments.record`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentReject'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}/receipt:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getPaymentReceipt
+      summary: Download the receipt (aidat makbuzu)
+      description: |-
+        **Release 0.1.** Generated and filed into the site documents (O8).
+
+        Permission (any one of): `payments.record`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+        owner:
+          - statements.read_own
+        tenant:
+          - statements.read_own
+        household:
+          - statements.read_own
+        former_occupant:
+          - statements.read_own
+      x-stability: stable
+      responses:
+        '200':
+          description: The file.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}:send-receipt:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.sendPaymentReceipt
+      summary: Send the receipt
+      description: |-
+        **Release 0.1.** Send the receipt.
+
+        Permission: `payments.record`.
+
+        Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptDelivery'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons/{person_id}/statement:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: person_id
+        in: path
+        required: true
+        description: Id of the person.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getPersonStatement
+      summary: Statement of a person (carried debt)
+      description: |-
+        **Release 0.1.** Debt carried after a move-out (S7).
+
+        Permission (any one of): `statements.read`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - statements.read
+        site_manager:
+          - statements.read
+        board_member:
+          - statements.read
+        auditor:
+          - statements.read
+        accountant:
+          - statements.read
+        owner:
+          - statements.read_own
+        tenant:
+          - statements.read_own
+        household:
+          - statements.read_own
+        former_occupant:
+          - statements.read_own
+      x-stability: stable
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statement'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/statements:send:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.sendStatement
+      summary: Generate and send a statement
+      description: |-
+        **Release 0.1.** Files the PDF into the unit folder (O8) and notifies the debtor.
+
+        Permission: `statements.read`.
+
+        Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+
+        `debtor` is a unit side or a person (carried debt).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - statements.read
+        site_manager:
+          - statements.read
+        board_member:
+          - statements.read
+        auditor:
+          - statements.read
+        accountant:
+          - statements.read
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementSend'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementSent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/income-expense:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getIncomeExpenseReport
+      summary: Cash-basis income and expense (gelir-gider)
+      description: |-
+        **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
+
+        Permission (any one of): `reports.read`, `reports.aggregate`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - reports.read
+        site_manager:
+          - reports.read
+        board_member:
+          - reports.read
+        auditor:
+          - reports.read
+        accountant:
+          - reports.read
+        owner:
+          - reports.aggregate
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+          required: true
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+          required: true
+        - name: fund_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `fund_id`.
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format=csv` selects a CSV download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeExpenseReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/trial-balance:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getTrialBalanceReport
+      summary: Trial balance
+      description: |-
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
+
+        Permission: `reports.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - reports.read
+        site_manager:
+          - reports.read
+        board_member:
+          - reports.read
+        auditor:
+          - reports.read
+        accountant:
+          - reports.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - name: fund_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `fund_id`.
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format=csv` selects a CSV download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrialBalanceReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/receivables-aging:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getReceivablesAgingReport
+      summary: Receivables aging
+      description: |-
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
+
+        Permission: `reports.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - reports.read
+        site_manager:
+          - reports.read
+        board_member:
+          - reports.read
+        auditor:
+          - reports.read
+        accountant:
+          - reports.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - name: block_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `block_id`.
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format=csv` selects a CSV download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceivablesAgingReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/fund-balances:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getFundBalancesReport
+      summary: Fund balances
+      description: |-
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
+
+        Permission: `reports.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - reports.read
+        site_manager:
+          - reports.read
+        board_member:
+          - reports.read
+        auditor:
+          - reports.read
+        accountant:
+          - reports.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format=csv` selects a CSV download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundBalancesReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/budget-vs-actual:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getBudgetVsActualReport
+      summary: Budget versus actual
+      description: |-
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
+
+        Permission (any one of): `reports.read`, `reports.aggregate`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - reports.read
+        site_manager:
+          - reports.read
+        board_member:
+          - reports.read
+        auditor:
+          - reports.read
+        accountant:
+          - reports.read
+        owner:
+          - reports.aggregate
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: fiscal_year_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `fiscal_year_id`.
+          required: true
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format=csv` selects a CSV download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetVsActualReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/money/overview:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getMoneyOverview
+      summary: Money overview
+      description: |-
+        **Release 0.1.** Receivables by side, cash and bank, aging, collection rate and accrued late fees.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoneyOverview'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/transfers:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listTransfers
+      summary: List transfers
+      description: |-
+        **Release 0.1.** Cursor-paginated list of transfers.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: account_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `account_id`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - name: kind
+          in: query
+          schema:
+            type: string
+          description: Filter by `kind`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createTransfer
+      summary: Create transfer
+      description: |-
+        **Release 0.1.** Creates a transfer.
+
+        Permission: `money.post`.
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/transfers/{transfer_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transfer_id
+        in: path
+        required: true
+        description: Id of the transfer.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getTransfer
+      summary: Get transfer
+      description: |-
+        **Release 0.1.** Get transfer.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/refunds:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listRefunds
+      summary: List refunds
+      description: |-
+        **Release 0.1.** Cursor-paginated list of refunds.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by person.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - name: kind
+          in: query
+          schema:
+            type: string
+          description: Filter by `kind`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createRefund
+      summary: Create refund
+      description: |-
+        **Release 0.1.** Creates a refund.
+
+        Permission: `money.post`.
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/refunds/{refund_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: refund_id
+        in: path
+        required: true
+        description: Id of the refund.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getRefund
+      summary: Get refund
+      description: |-
+        **Release 0.1.** Get refund.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/expenses:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listExpenses
+      summary: List expenses
+      description: |-
+        **Release 0.1.** List expenses.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: category_account_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `category_account_id`.
+        - name: fund_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `fund_id`.
+        - name: vendor_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `vendor_id`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - posted
+              - voided
+          description: Filter by `status`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createExpense
+      summary: Record an expense
+      description: |-
+        **Release 0.1.** Record an expense.
+
+        Permission: `money.post`.
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/expenses/{expense_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: expense_id
+        in: path
+        required: true
+        description: Id of the expense.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getExpense
+      summary: Get an expense
+      description: |-
+        **Release 0.1.** Get an expense.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/expenses/{expense_id}:void:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: expense_id
+        in: path
+        required: true
+        description: Id of the expense.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.voidExpense
+      summary: Void an expense
+      description: |-
+        **Release 0.1.** Reverses the posting dated today with a reason.
+
+        Permission: `money.post`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseVoid'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bills:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listBills
+      summary: List bills
+      description: |-
+        **Release 0.1.** Cursor-paginated list of bills.
+
+        Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: vendor_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `vendor_id`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - open
+              - partially_paid
+              - paid
+              - cancelled
+          description: Filter by `status`.
+        - name: due_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by `due_from`.
+        - name: due_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by `due_to`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      x-requires-setting: bills_enabled
+    post:
+      operationId: money.createBill
+      summary: Create bill
+      description: |-
+        **Release 0.1.** Creates a bill.
+
+        Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+        Permission: `money.post`.
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      x-requires-setting: bills_enabled
+  /v1/orgs/{org_id}/bills/{bill_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: bill_id
+        in: path
+        required: true
+        description: Id of the bill.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getBill
+      summary: Get bill
+      description: |-
+        **Release 0.1.** Get bill.
+
+        Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      x-requires-setting: bills_enabled
+  /v1/orgs/{org_id}/bills/{bill_id}/payments:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: bill_id
+        in: path
+        required: true
+        description: Id of the bill.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.createBillPayment
+      summary: Pay a bill (fully or partly)
+      description: |-
+        **Release 0.1.** Pay a bill (fully or partly).
+
+        Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+        Permission: `money.post`.
+
+        Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillPaymentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillPayment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      x-requires-setting: bills_enabled
+  /v1/orgs/{org_id}/budgets:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listBudgets
+      summary: List budgets
+      description: |-
+        **Release 0.1.** Cursor-paginated list of budgets.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: fiscal_year_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `fiscal_year_id`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - draft
+              - final
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createBudget
+      summary: Create budget
+      description: |-
+        **Release 0.1.** Creates a budget.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/budgets/{budget_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: budget_id
+        in: path
+        required: true
+        description: Id of the budget.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getBudget
+      summary: Get budget
+      description: |-
+        **Release 0.1.** Get budget.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: money.updateBudget
+      summary: Update budget
+      description: |-
+        **Release 0.1.** Update budget.
+
+        Permission: `money.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: money.deleteBudget
+      summary: Delete budget
+      description: |-
+        **Release 0.1.** Drafts only (409 `conflict` for a final budget).
+
+        Permission: `money.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/budgets/{budget_id}/lines:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: budget_id
+        in: path
+        required: true
+        description: Id of the budget.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getBudgetLines
+      summary: Get the lines of a budget
+      description: |-
+        **Release 0.1.** Get the lines of a budget.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetLines'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: money.putBudgetLines
+      summary: Replace the lines of a draft budget
+      description: |-
+        **Release 0.1.** Replace the lines of a draft budget.
+
+        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetLinesSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetLines'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+  /v1/orgs/{org_id}/budgets/{budget_id}:finalize:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: budget_id
+        in: path
+        required: true
+        description: Id of the budget.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.finalizeBudget
+      summary: Mark a budget final
+      description: |-
+        **Release 0.1.** From release 0.2 a decision can do this through `governance.applyDecision`.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.manage
+        site_manager:
+          - money.manage
+        board_member:
+          - money.manage
+        accountant:
+          - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetFinalize'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -12967,32 +16146,15 @@ components:
           nullable: true
           description: Block or unit tag id; null for `site`.
     DebtorRef:
-      type: object
-      description: 'Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.'
+      description: 'Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`.'
       oneOf:
-        - required:
-            - unit_id
-            - debtor_kind
-        - required:
-            - person_id
-      properties:
-        unit_id:
-          type: string
-          format: uuid
-          description: 'Unit mode: the unit.'
-        debtor_kind:
-          type: string
-          enum:
-            - owner
-            - tenant
-          description: 'Unit mode: the side of the unit that owes.'
-        person_id:
-          type: string
-          format: uuid
-          description: 'Person mode: the person who owes; covers charges carried to them and charges keyed on them.'
-      example:
-        unit_id: 0192a3f0-1000-7000-8000-000000000001
-        debtor_kind: tenant
+        - $ref: '#/components/schemas/DebtorRefUnitSide'
+        - $ref: '#/components/schemas/DebtorRefPerson'
+      discriminator:
+        propertyName: mode
+        mapping:
+          unit_side: '#/components/schemas/DebtorRefUnitSide'
+          person: '#/components/schemas/DebtorRefPerson'
     DebtorReport:
       type: object
       description: Debtor list; never public.
@@ -14455,6 +17617,2130 @@ components:
           type: string
           pattern: ^[0-9]{6}$
           description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
+    DebtorRefUnitSide:
+      type: object
+      required:
+        - mode
+        - unit_id
+        - debtor_kind
+      properties:
+        mode:
+          type: string
+          enum:
+            - unit_side
+        unit_id:
+          type: string
+          format: uuid
+          description: The unit.
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: The side of the unit that owes.
+      example:
+        mode: unit_side
+        unit_id: 0192a3f0-1000-7000-8000-000000000001
+        debtor_kind: tenant
+    DebtorRefPerson:
+      type: object
+      required:
+        - mode
+        - person_id
+      properties:
+        mode:
+          type: string
+          enum:
+            - person
+        person_id:
+          type: string
+          format: uuid
+          description: The person who owes; covers charges carried to them and charges keyed on them.
+      example:
+        mode: person
+        person_id: 0192a3f0-1000-7000-8000-000000000002
+    ChargePlanUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        due_day:
+          type: integer
+          format: int64
+          nullable: true
+        end:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - active
+            - paused
+            - ended
+          x-open-enum: true
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        allocation_key_id:
+          type: string
+          format: uuid
+        scope:
+          $ref: '#/components/schemas/ChargeScope'
+    ChargePlanRateList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargePlanRate'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            plan_id: 0192a3f0-1000-7000-8000-000000000004
+            from: '2026-03-01'
+            to: null
+            amount:
+              amount: 200000
+              currency: TRY
+            decision_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    ChargePlanRateCreate:
+      type: object
+      required:
+        - from
+        - amount
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+    ChargePlanPreviewRequest:
+      type: object
+      description: Send either `plan_id` or `plan`.
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+          description: Preview an existing plan.
+        plan:
+          allOf:
+            - $ref: '#/components/schemas/ChargePlanCreate'
+          description: Preview an unsaved plan (all fields as for creation).
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Override of the amount for an existing plan.
+        period:
+          type: string
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. Default: the next period.'
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+    ChargePreviewLine:
+      type: object
+      required:
+        - unit_id
+        - door_number
+        - debtor_kind
+        - debtor_person_id
+        - debtor_display_name
+        - weight
+        - amount
+        - effective_debtor
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        debtor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_display_name:
+          type: string
+          nullable: true
+        weight:
+          type: number
+        amount:
+          $ref: '#/components/schemas/Money'
+        effective_debtor:
+          $ref: '#/components/schemas/EffectiveDebtor'
+    ChargePlanPreview:
+      type: object
+      required:
+        - period
+        - total
+        - unit_count
+        - lines
+        - remainder_distributed
+      properties:
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        total:
+          $ref: '#/components/schemas/Money'
+        unit_count:
+          type: integer
+          format: int64
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargePreviewLine'
+        remainder_distributed:
+          type: boolean
+          description: Largest-remainder rounding was applied so the lines sum to the total.
+      example:
+        period: 2026-03
+        total:
+          amount: 200000
+          currency: TRY
+        unit_count: 1
+        lines:
+          - unit_id: 0192a3f0-1000-7000-8000-000000000002
+            door_number: door number
+            debtor_kind: owner
+            debtor_person_id: null
+            debtor_display_name: null
+            weight: 1.5
+            amount:
+              amount: 200000
+              currency: TRY
+            effective_debtor:
+              debtor_kind: owner
+              person_id: null
+              display_name: null
+              source: plan_default
+        remainder_distributed: false
+    ChargeGenerationPending:
+      type: object
+      required:
+        - plan_id
+        - period
+        - units
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        units:
+          type: integer
+          format: int64
+    ChargeGenerationStatus:
+      type: object
+      required:
+        - up_to_date
+        - last_run_at
+        - next_run_at
+        - pending
+      properties:
+        up_to_date:
+          type: boolean
+        last_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        next_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        pending:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeGenerationPending'
+    ChargeCancel:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    OpeningBalanceVoid:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          description: Why the opening position is void; audited.
+      example:
+        reason: Imported twice
+    LateFeeAccrual:
+      type: object
+      description: Computed on demand, never stored (M4).
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - as_of
+        - open_principal
+        - accrued
+        - booked
+        - frozen
+        - waived
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        as_of:
+          type: string
+          format: date
+        open_principal:
+          $ref: '#/components/schemas/Money'
+        accrued:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Computed fee to date.
+        booked:
+          $ref: '#/components/schemas/Money'
+        frozen:
+          type: boolean
+        waived:
+          $ref: '#/components/schemas/Money'
+      example:
+        unit_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_door_number: unit door number
+        debtor_kind: owner
+        as_of: '2026-03-01'
+        open_principal:
+          amount: 200000
+          currency: TRY
+        accrued:
+          amount: 200000
+          currency: TRY
+        booked:
+          amount: 200000
+          currency: TRY
+        frozen: false
+        waived:
+          amount: 200000
+          currency: TRY
+    LateFeeAccrualList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LateFeeAccrual'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - unit_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_door_number: unit door number
+            debtor_kind: owner
+            as_of: '2026-03-01'
+            open_principal:
+              amount: 200000
+              currency: TRY
+            accrued:
+              amount: 200000
+              currency: TRY
+            booked:
+              amount: 200000
+              currency: TRY
+            frozen: false
+            waived:
+              amount: 200000
+              currency: TRY
+        next_cursor: null
+    LateFeeBooking:
+      type: object
+      description: Monthly crystallization of accrued fees.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - debtor_kind
+        - period
+        - amount
+        - charge_id
+        - expected_to_date
+        - booked_to_date
+        - delta
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+          description: Door number of the unit, for display next to the debtor.
+        unit_label:
+          type: string
+          description: Block and door number ("A Blok / 12").
+        block_name:
+          type: string
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        amount:
+          $ref: '#/components/schemas/Money'
+        charge_id:
+          type: string
+          format: uuid
+          nullable: true
+        expected_to_date:
+          $ref: '#/components/schemas/Money'
+        booked_to_date:
+          $ref: '#/components/schemas/Money'
+        delta:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Expected minus booked; the reconciling job posts the delta.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
+        period: 2026-03
+        amount:
+          amount: 200000
+          currency: TRY
+        charge_id: null
+        expected_to_date:
+          amount: 200000
+          currency: TRY
+        booked_to_date:
+          amount: 200000
+          currency: TRY
+        delta:
+          amount: 200000
+          currency: TRY
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    LateFeeBookingList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LateFeeBooking'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
+            period: 2026-03
+            amount:
+              amount: 200000
+              currency: TRY
+            charge_id: null
+            expected_to_date:
+              amount: 200000
+              currency: TRY
+            booked_to_date:
+              amount: 200000
+              currency: TRY
+            delta:
+              amount: 200000
+              currency: TRY
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    LateFeeWaiver:
+      type: object
+      description: A waiver reverses accrued or booked fee with a reason.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - debtor_kind
+        - amount
+        - reason
+        - by
+        - journal_entry_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        by:
+          type: string
+          format: uuid
+        journal_entry_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
+        amount:
+          amount: 200000
+          currency: TRY
+        reason: reason
+        by: 0192a3f0-1000-7000-8000-000000000006
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    LateFeeWaiverList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LateFeeWaiver'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
+            amount:
+              amount: 200000
+              currency: TRY
+            reason: reason
+            by: 0192a3f0-1000-7000-8000-000000000006
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    LateFeeWaiverCreate:
+      type: object
+      required:
+        - site_id
+        - amount
+        - reason
+        - debtor
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Who owes: a unit side or a person (see DebtorRef).'
+    LateFeeFreeze:
+      type: object
+      description: Stops fee accrual (unit in legal collection).
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - debtor_kind
+        - from
+        - to
+        - reason
+        - case_id
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+          nullable: true
+        reason:
+          type: string
+        case_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
+        from: '2026-03-01'
+        to: null
+        reason: reason
+        case_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    LateFeeFreezeList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LateFeeFreeze'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
+            from: '2026-03-01'
+            to: null
+            reason: reason
+            case_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    LateFeeFreezeCreate:
+      type: object
+      required:
+        - site_id
+        - from
+        - reason
+        - debtor
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+          nullable: true
+        reason:
+          type: string
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Who owes: a unit side or a person (see DebtorRef).'
+    LateFeeFreezeUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        to:
+          type: string
+          format: date
+          nullable: true
+        reason:
+          type: string
+    PaymentDeclare:
+      type: object
+      required:
+        - site_id
+        - amount
+        - paid_on
+        - debtor
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        reference:
+          type: string
+        note:
+          type: string
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Who the declared transfer is for. Residents declare for their own side; a former occupant never declares.
+    PaymentConfirm:
+      type: object
+      required:
+        - asset_account_id
+      properties:
+        asset_account_id:
+          type: string
+          format: uuid
+        received_on:
+          type: string
+          format: date
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationInput'
+        bank_transaction_id:
+          type: string
+          format: uuid
+    PaymentReject:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    StatementSend:
+      type: object
+      required:
+        - debtor
+        - from
+        - to
+        - channels
+      properties:
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Whose statement to send.
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+    StatementSent:
+      type: object
+      required:
+        - document_id
+        - file_id
+        - recipient_count
+        - sms_count
+      properties:
+        document_id:
+          type: string
+          format: uuid
+        file_id:
+          type: string
+          format: uuid
+        recipient_count:
+          type: integer
+          format: int64
+        sms_count:
+          type: integer
+          format: int64
+    ReportAmountRow:
+      type: object
+      required:
+        - account_id
+        - code
+        - name
+        - amount
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+    IncomeExpenseReport:
+      type: object
+      description: Cash-basis gelir-gider by category.
+      required:
+        - from
+        - to
+        - basis
+        - income
+        - expense
+        - total_income
+        - total_expense
+        - net
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        basis:
+          type: string
+          description: Always `cash`.
+        income:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportAmountRow'
+        expense:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportAmountRow'
+        total_income:
+          $ref: '#/components/schemas/Money'
+        total_expense:
+          $ref: '#/components/schemas/Money'
+        net:
+          $ref: '#/components/schemas/Money'
+    TrialBalanceRow:
+      type: object
+      required:
+        - account_id
+        - code
+        - name
+        - type
+        - debit
+        - credit
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        debit:
+          $ref: '#/components/schemas/Money'
+        credit:
+          $ref: '#/components/schemas/Money'
+    TrialBalanceReport:
+      type: object
+      required:
+        - as_of
+        - rows
+        - total_debit
+        - total_credit
+      properties:
+        as_of:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrialBalanceRow'
+        total_debit:
+          $ref: '#/components/schemas/Money'
+        total_credit:
+          $ref: '#/components/schemas/Money'
+    AgingBucketAmount:
+      type: object
+      description: One aging bucket of a row or of the totals.
+      required:
+        - bucket
+        - amount
+      properties:
+        bucket:
+          type: string
+          description: The bucket key, one of the report's `buckets`, for example `0-30`.
+        amount:
+          $ref: '#/components/schemas/Money'
+      example:
+        bucket: 0-30
+        amount:
+          amount: 200000
+          currency: TRY
+    AgingRow:
+      type: object
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - buckets
+        - total
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingBucketAmount'
+          description: One object per report bucket, in the order of the report `buckets`.
+        total:
+          $ref: '#/components/schemas/Money'
+    ReceivablesAgingReport:
+      type: object
+      required:
+        - as_of
+        - buckets
+        - rows
+        - totals
+      properties:
+        as_of:
+          type: string
+          format: date
+        buckets:
+          type: array
+          items:
+            type: string
+          description: The ordered bucket keys, for example `0-30`, `31-60`, `61-90`, `90+`; rows and totals refer to them by key.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingRow'
+        totals:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingBucketAmount'
+          description: Totals per bucket, in the order of `buckets`.
+    FundBalanceRow:
+      type: object
+      required:
+        - fund_id
+        - name
+        - kind
+        - balance
+      properties:
+        fund_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+        balance:
+          $ref: '#/components/schemas/Money'
+    FundBalancesReport:
+      type: object
+      required:
+        - as_of
+        - rows
+        - total
+      properties:
+        as_of:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/FundBalanceRow'
+        total:
+          $ref: '#/components/schemas/Money'
+    BudgetActualRow:
+      type: object
+      required:
+        - account_id
+        - code
+        - name
+        - fund_id
+        - budget
+        - actual
+        - variance
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        fund_id:
+          type: string
+          format: uuid
+        budget:
+          $ref: '#/components/schemas/Money'
+        actual:
+          $ref: '#/components/schemas/Money'
+        variance:
+          $ref: '#/components/schemas/Money'
+    BudgetVsActualReport:
+      type: object
+      required:
+        - fiscal_year_id
+        - rows
+        - total_budget
+        - total_actual
+      properties:
+        fiscal_year_id:
+          type: string
+          format: uuid
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetActualRow'
+        total_budget:
+          $ref: '#/components/schemas/Money'
+        total_actual:
+          $ref: '#/components/schemas/Money'
+    MoneyOverview:
+      type: object
+      required:
+        - as_of
+        - receivable_owner
+        - receivable_tenant
+        - cash
+        - bank
+        - accrued_late_fees
+        - collection_rate_pct
+        - aging
+        - funds
+        - top_debtors
+      properties:
+        as_of:
+          type: string
+          format: date
+        funds:
+          type: array
+          description: The balance of every fund.
+          items:
+            $ref: '#/components/schemas/FundBalanceRow'
+        top_debtors:
+          type: array
+          maxItems: 5
+          description: The five largest overdue debtors.
+          items:
+            $ref: '#/components/schemas/DebtorRow'
+        receivable_owner:
+          $ref: '#/components/schemas/Money'
+        receivable_tenant:
+          $ref: '#/components/schemas/Money'
+        cash:
+          $ref: '#/components/schemas/Money'
+        bank:
+          $ref: '#/components/schemas/Money'
+        accrued_late_fees:
+          $ref: '#/components/schemas/Money'
+        collection_rate_pct:
+          type: number
+        aging:
+          $ref: '#/components/schemas/ReceivablesAgingReport'
+    Transfer:
+      type: object
+      description: 'Asset to asset: cash handover, bank deposit.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - from_account_id
+        - to_account_id
+        - amount
+        - transferred_on
+        - memo
+        - kind
+        - journal_entry_id
+        - created_by
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        from_account_id:
+          type: string
+          format: uuid
+        to_account_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        transferred_on:
+          type: string
+          format: date
+        memo:
+          type: string
+          nullable: true
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - cash_handover
+            - bank_deposit
+            - other
+          x-open-enum: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        from_account_id: 0192a3f0-1000-7000-8000-000000000005
+        to_account_id: 0192a3f0-1000-7000-8000-000000000006
+        amount:
+          amount: 200000
+          currency: TRY
+        transferred_on: '2026-03-01'
+        memo: null
+        kind: cash_handover
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+        created_by: 0192a3f0-1000-7000-8000-000000000008
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    TransferList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transfer'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            from_account_id: 0192a3f0-1000-7000-8000-000000000005
+            to_account_id: 0192a3f0-1000-7000-8000-000000000006
+            amount:
+              amount: 200000
+              currency: TRY
+            transferred_on: '2026-03-01'
+            memo: null
+            kind: cash_handover
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+            created_by: 0192a3f0-1000-7000-8000-000000000008
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    TransferCreate:
+      type: object
+      required:
+        - site_id
+        - from_account_id
+        - to_account_id
+        - amount
+        - transferred_on
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        from_account_id:
+          type: string
+          format: uuid
+        to_account_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        transferred_on:
+          type: string
+          format: date
+        memo:
+          type: string
+          nullable: true
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - cash_handover
+            - bank_deposit
+            - other
+          x-open-enum: true
+    Refund:
+      type: object
+      description: Outgoing money to a person or unit.
+      required:
+        - id
+        - org_id
+        - site_id
+        - person_id
+        - unit_id
+        - debtor_kind
+        - amount
+        - reason
+        - kind
+        - paid_from_account_id
+        - refunded_on
+        - credit_id
+        - payment_id
+        - journal_entry_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - overpayment
+            - deposit_return
+            - other
+          x-open-enum: true
+        paid_from_account_id:
+          type: string
+          format: uuid
+        refunded_on:
+          type: string
+          format: date
+        credit_id:
+          type: string
+          format: uuid
+          nullable: true
+        payment_id:
+          type: string
+          format: uuid
+          nullable: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        person_id: null
+        unit_id: null
+        debtor_kind: owner
+        amount:
+          amount: 200000
+          currency: TRY
+        reason: reason
+        kind: overpayment
+        paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
+        refunded_on: '2026-03-01'
+        credit_id: null
+        payment_id: null
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    RefundList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refund'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            person_id: null
+            unit_id: null
+            debtor_kind: owner
+            amount:
+              amount: 200000
+              currency: TRY
+            reason: reason
+            kind: overpayment
+            paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
+            refunded_on: '2026-03-01'
+            credit_id: null
+            payment_id: null
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    RefundCreate:
+      type: object
+      required:
+        - site_id
+        - amount
+        - reason
+        - kind
+        - paid_from_account_id
+        - refunded_on
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        reason:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - overpayment
+            - deposit_return
+            - other
+          x-open-enum: true
+        paid_from_account_id:
+          type: string
+          format: uuid
+        refunded_on:
+          type: string
+          format: date
+        credit_id:
+          type: string
+          format: uuid
+          nullable: true
+        payment_id:
+          type: string
+          format: uuid
+          nullable: true
+    Expense:
+      type: object
+      description: Light expense entry; no approval workflow (M6).
+      required:
+        - id
+        - org_id
+        - site_id
+        - category_account_id
+        - fund_id
+        - amount
+        - paid_on
+        - paid_from_account_id
+        - vendor_id
+        - vendor_name
+        - description
+        - document_no
+        - file_id
+        - recurring_expense_id
+        - status
+        - journal_entry_id
+        - voided_reason
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        category_account_id:
+          type: string
+          format: uuid
+        fund_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        paid_from_account_id:
+          type: string
+          format: uuid
+        vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+        vendor_name:
+          type: string
+          nullable: true
+        description:
+          type: string
+        document_no:
+          type: string
+          nullable: true
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
+        recurring_expense_id:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - posted
+            - voided
+          x-open-enum: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        voided_reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        category_account_id: 0192a3f0-1000-7000-8000-000000000005
+        fund_id: 0192a3f0-1000-7000-8000-000000000006
+        amount:
+          amount: 200000
+          currency: TRY
+        paid_on: '2026-03-01'
+        paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+        vendor_id: null
+        vendor_name: null
+        description: description
+        document_no: null
+        file_id: null
+        recurring_expense_id: null
+        status: posted
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+        voided_reason: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    ExpenseList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            category_account_id: 0192a3f0-1000-7000-8000-000000000005
+            fund_id: 0192a3f0-1000-7000-8000-000000000006
+            amount:
+              amount: 200000
+              currency: TRY
+            paid_on: '2026-03-01'
+            paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+            vendor_id: null
+            vendor_name: null
+            description: description
+            document_no: null
+            file_id: null
+            recurring_expense_id: null
+            status: posted
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+            voided_reason: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    ExpenseCreate:
+      type: object
+      required:
+        - site_id
+        - category_account_id
+        - fund_id
+        - amount
+        - paid_on
+        - paid_from_account_id
+        - description
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        category_account_id:
+          type: string
+          format: uuid
+        fund_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        paid_from_account_id:
+          type: string
+          format: uuid
+        vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+        description:
+          type: string
+        document_no:
+          type: string
+          nullable: true
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
+        recurring:
+          type: object
+          nullable: true
+          description: Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now).
+          required:
+            - frequency
+          properties:
+            frequency:
+              type: string
+              enum:
+                - monthly
+            day:
+              type: integer
+              minimum: 1
+              maximum: 31
+              description: Day of the month; defaults to the day of `paid_on`.
+    ExpenseVoid:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    BillPayment:
+      type: object
+      description: A (partial) payment of a bill.
+      required:
+        - id
+        - org_id
+        - bill_id
+        - amount
+        - paid_on
+        - paid_from_account_id
+        - reference
+        - journal_entry_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        bill_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        paid_from_account_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Bill:
+      type: object
+      description: Optional vendor invoice with a due date and partial payments (enabled per site).
+      required:
+        - id
+        - org_id
+        - site_id
+        - vendor_id
+        - document_no
+        - issue_date
+        - due_date
+        - amount
+        - paid
+        - balance
+        - category_account_id
+        - fund_id
+        - file_id
+        - description
+        - status
+        - journal_entry_id
+        - created_at
+        - updated_at
+        - version
+        - payments
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        vendor_id:
+          type: string
+          format: uuid
+        document_no:
+          type: string
+          nullable: true
+        issue_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid:
+          $ref: '#/components/schemas/Money'
+        balance:
+          $ref: '#/components/schemas/Money'
+        category_account_id:
+          type: string
+          format: uuid
+        fund_id:
+          type: string
+          format: uuid
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - open
+            - partially_paid
+            - paid
+            - cancelled
+          x-open-enum: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillPayment'
+          description: The payments made against the bill, oldest first.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        vendor_id: 0192a3f0-1000-7000-8000-000000000005
+        document_no: null
+        issue_date: '2026-03-01'
+        due_date: '2026-03-01'
+        amount:
+          amount: 200000
+          currency: TRY
+        paid:
+          amount: 200000
+          currency: TRY
+        balance:
+          amount: 200000
+          currency: TRY
+        category_account_id: 0192a3f0-1000-7000-8000-000000000006
+        fund_id: 0192a3f0-1000-7000-8000-000000000007
+        file_id: null
+        description: null
+        status: open
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+        payments:
+          - id: 0192a3f0-1000-7000-8000-000000000009
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            bill_id: 0192a3f0-1000-7000-8000-000000000002
+            amount:
+              amount: 200000
+              currency: TRY
+            paid_on: '2026-03-01'
+            paid_from_account_id: 0192a3f0-1000-7000-8000-000000000003
+            reference: null
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000004
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+    BillList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bill'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            vendor_id: 0192a3f0-1000-7000-8000-000000000005
+            document_no: null
+            issue_date: '2026-03-01'
+            due_date: '2026-03-01'
+            amount:
+              amount: 200000
+              currency: TRY
+            paid:
+              amount: 200000
+              currency: TRY
+            balance:
+              amount: 200000
+              currency: TRY
+            category_account_id: 0192a3f0-1000-7000-8000-000000000006
+            fund_id: 0192a3f0-1000-7000-8000-000000000007
+            file_id: null
+            description: null
+            status: open
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+            payments:
+              - id: 0192a3f0-1000-7000-8000-000000000009
+                org_id: 0192a3f0-1000-7000-8000-000000000001
+                bill_id: 0192a3f0-1000-7000-8000-000000000002
+                amount:
+                  amount: 200000
+                  currency: TRY
+                paid_on: '2026-03-01'
+                paid_from_account_id: 0192a3f0-1000-7000-8000-000000000003
+                reference: null
+                journal_entry_id: 0192a3f0-1000-7000-8000-000000000004
+                created_at: '2026-03-01T09:00:00Z'
+                updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    BillCreate:
+      type: object
+      required:
+        - site_id
+        - vendor_id
+        - issue_date
+        - due_date
+        - amount
+        - category_account_id
+        - fund_id
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        vendor_id:
+          type: string
+          format: uuid
+        document_no:
+          type: string
+          nullable: true
+        issue_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        amount:
+          $ref: '#/components/schemas/Money'
+        category_account_id:
+          type: string
+          format: uuid
+        fund_id:
+          type: string
+          format: uuid
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    BillPaymentCreate:
+      type: object
+      required:
+        - amount
+        - paid_on
+        - paid_from_account_id
+      properties:
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        paid_from_account_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+    Budget:
+      type: object
+      description: Light, optional category budget (M3); it does not drive dues.
+      required:
+        - id
+        - org_id
+        - site_id
+        - fiscal_year_id
+        - status
+        - decision_id
+        - total
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        fiscal_year_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - draft
+            - final
+          x-open-enum: true
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        total:
+          $ref: '#/components/schemas/Money'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+        status: draft
+        decision_id: null
+        total:
+          amount: 200000
+          currency: TRY
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    BudgetList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+            status: draft
+            decision_id: null
+            total:
+              amount: 200000
+              currency: TRY
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    BudgetCreate:
+      type: object
+      required:
+        - site_id
+        - fiscal_year_id
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        fiscal_year_id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+    BudgetUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+    BudgetLine:
+      type: object
+      required:
+        - expense_category_account_id
+        - fund_id
+        - amount
+      properties:
+        expense_category_account_id:
+          type: string
+          format: uuid
+        fund_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+    BudgetLines:
+      type: object
+      required:
+        - lines
+        - version
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetLine'
+        version:
+          type: integer
+          format: int64
+          description: The `version` of the budget; send it back as If-Match on `putBudgetLines`.
+    BudgetLinesSet:
+      type: object
+      required:
+        - lines
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetLine'
+    BudgetFinalize:
+      type: object
+      properties:
+        decision_id:
+          type: string
+          format: uuid
 x-openbekci-roles:
   org_admin:
     - audit.read
