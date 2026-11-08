@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { useReauthGuard } from '@/components/ReauthDialog'
+import { useLocale } from '@/app/locale'
+import { isReauthCancelled, useReauthGuard } from '@/components/ReauthDialog'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
@@ -16,7 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { currencyDigits, minorToDecimalString } from '@/lib/money'
+import { toCsv } from '@/lib/csv'
+import { currencyDigits, minorToDecimalString, parseMoneyInput } from '@/lib/money'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import {
@@ -30,7 +32,8 @@ import {
   type MoneyCtx,
   type S,
 } from './api'
-import { useAccounts, useUnits } from './pickers'
+import { useAccounts, useAllUnits, useBlocks } from './pickers'
+import { useLabels } from './labels'
 import { Field, FormRootError, Gate, PageHeader, QueryBoundary, ReasonDialog } from './ui'
 
 type Cells = Record<string, bigint | null>
@@ -79,11 +82,15 @@ export function OpeningBalancesPage() {
 
 function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
   const { t } = useLingui()
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
+  const blocks = useBlocks(ctx)
   const banks = useAccounts(ctx, 'bank')
   const boxes = useAccounts(ctx, 'cash_box')
   const idem = useIdempotencyKey()
+  const dryIdem = useIdempotencyKey()
   const guard = useReauthGuard()
+  const { intl } = useLocale()
+  const [jobId, setJobId] = useState<string | null>(null)
   const [asOf, setAsOf] = useState(todayIn(ctx.timeZone))
   const [cells, setCells] = useState<Cells>({})
   const [file, setFile] = useState<File | null>(null)
@@ -97,22 +104,40 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
     setCells((c) => ({ ...c, [k]: v }))
   }
 
+  // File layout (shown on the screen): one row per unit side or account.
+  //   kind, block, door_number, unit_id, side, principal, late_fee, account_id
+  // A unit is identified by `unit_id`; `block` + `door_number` say the same thing in words (door
+  // numbers repeat across blocks). Amounts are plain decimals with a dot ("1234.50"); cells with
+  // commas or quotes are quoted (RFC 4180).
   const csv = useMemo(() => {
-    const lines = ['kind,unit,side,principal,late_fee,account_id']
+    const rows: (string | null)[][] = [OPENING_COLUMNS.slice()]
+    const blockName = (id: string) => blocks.data?.find((b) => b.id === id)?.name ?? ''
     for (const u of units.data ?? []) {
       for (const side of ['owner', 'tenant'] as const) {
         const p = cells[`${u.id}:${side}:p`]
         const f = cells[`${u.id}:${side}:f`]
-        if (p || f) lines.push(`unit_receivable,${u.door_number},${side},${dec(p)},${dec(f)},`)
+        if (p || f)
+          rows.push([
+            'unit_receivable',
+            blockName(u.block_id),
+            u.door_number,
+            u.id,
+            side,
+            dec(p),
+            dec(f),
+            null,
+          ])
       }
     }
     for (const a of banks.data ?? [])
-      if (cells[`acc:${a.id}`]) lines.push(`bank,,,${dec(cells[`acc:${a.id}`])},0,${a.id}`)
+      if (cells[`acc:${a.id}`])
+        rows.push(['bank', null, null, null, null, dec(cells[`acc:${a.id}`]), '0', a.id])
     for (const a of boxes.data ?? [])
-      if (cells[`acc:${a.id}`]) lines.push(`cash,,,${dec(cells[`acc:${a.id}`])},0,${a.id}`)
-    return lines.join('\n')
+      if (cells[`acc:${a.id}`])
+        rows.push(['cash', null, null, null, null, dec(cells[`acc:${a.id}`]), '0', a.id])
+    return toCsv(rows)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cells, units.data, banks.data, boxes.data, digits])
+  }, [cells, units.data, blocks.data, banks.data, boxes.data, digits])
 
   const source = () => file ?? new File([csv], 'opening-balances.csv', { type: 'text/csv' })
   const send = (dry: boolean, key: string) => {
@@ -129,13 +154,21 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
       },
     })
   }
+  // A key names one payload: once the grid or file changes, the next send gets a fresh key (the
+  // server answers idempotency_mismatch when a key comes back with a different body).
+  const payloadSig = `${asOf}|${file ? `${file.name}:${file.size}:${file.lastModified}` : csv}`
+  useEffect(() => {
+    idem.renew()
+    dryIdem.renew()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payloadSig])
+  // The whole operation is re-authentication sensitive, the dry run included (M7).
   const dryRun = useMoneyMutation(async () => {
-    const res = await send(true, crypto.randomUUID())
+    const res = await guard.run(() => send(true, dryIdem.key))
     return res.data!
   })
   const commit = useMoneyMutation(async () => {
     const done = await guard.run(() => send(false, idem.key))
-    if (!done) throw new Error('reauth_cancelled')
     return done.data!
   })
   const rowsCount = csv.split('\n').length - 1
@@ -252,7 +285,7 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
                   setReport(r)
                   setError(undefined)
                 },
-                () => setError(t`The dry run failed.`),
+                (e) => setError(isReauthCancelled(e) ? undefined : t`The dry run failed.`),
               )
             }
           >
@@ -262,17 +295,17 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
             disabled={locked || !report || report.error_rows > 0 || commit.isPending}
             onClick={() =>
               commit.mutateAsync().then(
-                () => {
+                (r) => {
                   idem.renew()
                   setReport(null)
                   setCells({})
-                  toast.info(t`Opening balances saved.`)
+                  setError(undefined)
+                  // 202: the work runs in a job; the result is shown once it finishes
+                  setJobId(r.job_id)
                 },
                 (e) =>
                   setError(
-                    e instanceof Error && e.message === 'reauth_cancelled'
-                      ? undefined
-                      : t`Could not save the opening balances.`,
+                    isReauthCancelled(e) ? undefined : t`Could not save the opening balances.`,
                   ),
               )
             }
@@ -297,34 +330,168 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
                 </p>
               ))}
             {report.error_rows === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                <Trans>
-                  Total principal in this file:{' '}
-                  <Money
-                    minor={report.rows.reduce(
-                      (a, r) =>
-                        a +
-                        Math.round(
-                          Number((r.data as Record<string, string>).principal ?? 0) * 10 ** digits,
-                        ),
-                      0,
-                    )}
-                    currency={ctx.currency}
-                  />
-                </Trans>
-              </p>
+              <DryRunTotals ctx={ctx} report={report} locale={intl} />
             ) : null}
           </div>
         ) : null}
+        {jobId ? <ImportJob ctx={ctx} jobId={jobId} onClose={() => setJobId(null)} /> : null}
+        <details className="text-sm" data-testid="file-layout">
+          <summary className="cursor-pointer font-medium">
+            <Trans>File layout for a spreadsheet upload</Trans>
+          </summary>
+          <div className="mt-2 flex flex-col gap-2 text-muted-foreground">
+            <p>
+              <Trans>One row per unit side or account, with these columns in the first row:</Trans>{' '}
+              <code dir="ltr">{OPENING_COLUMNS.join(', ')}</code>
+            </p>
+            <ul className="list-disc ps-5">
+              <li>
+                <Trans>
+                  kind: <code>unit_receivable</code>, <code>bank</code> or <code>cash</code>.
+                </Trans>
+              </li>
+              <li>
+                <Trans>
+                  A unit is named by unit_id, or by block together with door_number: door numbers
+                  repeat across blocks.
+                </Trans>
+              </li>
+              <li>
+                <Trans>side: owner or tenant. Accounts use account_id instead of a unit.</Trans>
+              </li>
+              <li>
+                <Trans>
+                  principal and late_fee are plain decimals such as 1234.50. A cell with a comma
+                  goes in double quotes.
+                </Trans>
+              </li>
+            </ul>
+          </div>
+        </details>
         {guard.dialog}
       </CardContent>
     </Card>
   )
 }
 
+const OPENING_COLUMNS = [
+  'kind',
+  'block',
+  'door_number',
+  'unit_id',
+  'side',
+  'principal',
+  'late_fee',
+  'account_id',
+]
+
+/**
+ * Totals of a clean dry run in integer minor units: receivables apart from bank and cash balances.
+ * Amounts are read with the locale's separators ("1.234,50" is 123450); an unreadable cell is
+ * reported, never turned into NaN or guessed.
+ */
+export function dryRunTotals(
+  rows: { data: unknown }[],
+  currency: string,
+  locale: string,
+): { receivables: bigint; accounts: bigint; unreadable: number } {
+  let receivables = 0n
+  let accounts = 0n
+  let unreadable = 0
+  for (const r of rows) {
+    const d = (r.data ?? {}) as Record<string, string>
+    const minor = parseMoneyInput(String(d.principal ?? ''), currency, locale)
+    if (minor === null) {
+      unreadable += 1
+      continue
+    }
+    if ((d.kind ?? 'unit_receivable') === 'unit_receivable') receivables += minor
+    else accounts += minor
+  }
+  return { receivables, accounts, unreadable }
+}
+
+function DryRunTotals({
+  ctx,
+  report,
+  locale,
+}: {
+  ctx: MoneyCtx
+  report: S['ImportReport']
+  locale: string
+}) {
+  const totals = dryRunTotals(report.rows, ctx.currency, locale)
+  if (totals.unreadable > 0)
+    return (
+      <p className="text-sm text-destructive" role="alert">
+        <Trans>{totals.unreadable} amounts could not be read, so no total is shown.</Trans>
+      </p>
+    )
+  return (
+    <p className="text-sm text-muted-foreground" data-testid="dry-run-totals">
+      <Trans>
+        Receivables in this file: <Money minor={totals.receivables} currency={ctx.currency} />. Bank
+        and cash balances: <Money minor={totals.accounts} currency={ctx.currency} />.
+      </Trans>
+    </p>
+  )
+}
+
+/** Follows the 202 job of a committed import until it finishes, then shows the result. */
+function ImportJob({ ctx, jobId, onClose }: { ctx: MoneyCtx; jobId: string; onClose: () => void }) {
+  const { t } = useLingui()
+  const job = useMoneyQuery(
+    ['job', jobId],
+    () =>
+      unwrap(
+        moneyApi.GET('/v1/orgs/{org_id}/jobs/{job_id}', {
+          params: { path: { org_id: ctx.orgId, job_id: jobId } },
+        }),
+      ),
+    {
+      refetchInterval: (q) => {
+        const s = q.state.data?.status
+        return s === 'succeeded' || s === 'failed' || s === 'cancelled' ? false : 1000
+      },
+    },
+  )
+  const status = job.data?.status
+  const done = status === 'succeeded'
+  const failed = status === 'failed' || status === 'cancelled' || job.isError
+  useEffect(() => {
+    if (done) toast.info(t`Opening balances saved.`)
+  }, [done, t])
+  return (
+    <div role="status" aria-label={t`Import progress`} className="rounded-md border p-3 text-sm">
+      {done ? (
+        <p>
+          <Trans>The opening balances were imported.</Trans>
+        </p>
+      ) : failed ? (
+        <p className="text-destructive">
+          <Trans>
+            The import did not finish. Nothing was posted; check the file and try again.
+          </Trans>
+        </p>
+      ) : (
+        <p>
+          <Trans>Importing…</Trans>
+          {job.data?.progress != null ? ` ${Math.round(job.data.progress * 100)}%` : ''}
+        </p>
+      )}
+      {done || failed ? (
+        <Button size="sm" variant="ghost" onClick={onClose}>
+          <Trans>Dismiss</Trans>
+        </Button>
+      ) : null}
+    </div>
+  )
+}
+
 function EnteredCard({ ctx, items }: { ctx: MoneyCtx; items: S['OpeningBalance'][] }) {
   const { t } = useLingui()
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
+  const labels = useLabels()
   const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
   const [voidFor, setVoidFor] = useState<S['OpeningBalance'] | null>(null)
   return (
@@ -365,7 +532,7 @@ function EnteredCard({ ctx, items }: { ctx: MoneyCtx; items: S['OpeningBalance']
                 <TableCell>
                   <SiteDate value={o.as_of} timeZone={ctx.timeZone} />
                 </TableCell>
-                <TableCell>{o.kind}</TableCell>
+                <TableCell>{labels.openingKind[o.kind] ?? o.kind}</TableCell>
                 <TableCell>{door(o.unit_id)}</TableCell>
                 <TableCell className="text-end">
                   <Money minor={o.principal.amount} currency={ctx.currency} />
@@ -417,7 +584,7 @@ function VoidOpening({
   const guard = useReauthGuard()
   const [error, setError] = useState<string>()
   const m = useMoneyMutation(async (reason: string) => {
-    const done = await guard.run(() =>
+    await guard.run(() =>
       moneyApi.POST('/v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void', {
         params: {
           path: { org_id: ctx.orgId, opening_balance_id: entry.id },
@@ -426,7 +593,6 @@ function VoidOpening({
         body: { reason },
       }),
     )
-    if (!done) throw new Error('reauth_cancelled')
   })
   return (
     <>
@@ -445,12 +611,7 @@ function VoidOpening({
               idem.renew()
               onClose()
             },
-            (e) =>
-              setError(
-                e instanceof Error && e.message === 'reauth_cancelled'
-                  ? undefined
-                  : t`Could not void the entry.`,
-              ),
+            (e) => setError(isReauthCancelled(e) ? undefined : t`Could not void the entry.`),
           )
         }
       />
