@@ -1,0 +1,83 @@
+name: ci-server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+      - "sdk/**"
+      - "api/**"
+      - "clients/**"
+      - "go.work"
+      - "go.work.sum"
+      - "Taskfile.yml"
+      - "tools/**"
+      - "deploy/compose/init/**"
+      - ".github/workflows/ci-server.yml"
+  pull_request:
+    paths:
+      - "server/**"
+      - "sdk/**"
+      - "api/**"
+      - "clients/**"
+      - "go.work"
+      - "go.work.sum"
+      - "Taskfile.yml"
+      - "tools/**"
+      - "deploy/compose/init/**"
+      - ".github/workflows/ci-server.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-server-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Superuser URL: each integration test creates a throwaway database and the three roles if missing.
+      OPENBEKCI_TEST_SUPERUSER_URL: postgres://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.work
+          cache-dependency-path: |
+            server/go.sum
+            sdk/go.sum
+      # gen:check and api:lint run Redocly and openapi-typescript through `pnpm dlx`.
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: web/.nvmrc
+      - name: Build
+        working-directory: server
+        run: go build ./...
+      - name: Lint (go vet, go mod tidy -diff, golangci-lint)
+        run: sh tools/task.sh lint
+      - name: API lint
+        run: sh tools/task.sh api:lint
+      - name: Generated files are up to date
+        run: sh tools/task.sh gen:check
+      - name: Tests
+        working-directory: server
+        run: go test -p 1 -count=1 -timeout 60m ./...
