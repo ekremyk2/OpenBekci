@@ -404,3 +404,22 @@ func (s *Service) requireOwnBox(ctx context.Context, tx pgx.Tx, orgID uuid.UUID,
 	}
 	return nil
 }
+
+// GetForReceipt returns a payment to whoever may read its receipt: holders of money.read or payments.record
+// at the site (a collector sees the payments of the building), or the resident of the unit side it was paid for.
+func (s *Service) GetForReceipt(ctx context.Context, orgID, paymentID uuid.UUID) (Payment, error) {
+	var p Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) (err error) {
+		if p, err = loadPayment(ctx, tx, orgID, paymentID); err != nil {
+			return err
+		}
+		if ledger.HasSite(ctx, tx, ledger.PermMoneyRead, p.SiteID) || ledger.HasSite(ctx, tx, ledger.PermPaymentsRecord, p.SiteID) {
+			return nil
+		}
+		if p.UnitID == nil || p.DebtorKind == nil || authz.CanAccessUnit(ctx, *p.UnitID, authz.UnitSide(*p.DebtorKind)) != nil {
+			return problem.NotFound("no such payment")
+		}
+		return nil
+	})
+	return p, err
+}

@@ -191,6 +191,7 @@ func (s *apiServer) MoneyCreatePayment(ctx context.Context, req gen.MoneyCreateP
 	if err != nil {
 		return nil, err
 	}
+	s.fileReceipt(ctx, req.OrgId, v.ID)
 	out, err := conv[gen.Payment](v)
 	return gen.MoneyCreatePayment201JSONResponse(out), err
 }

@@ -29428,7 +29428,7 @@ components:
           enum:
             - active
             - paused
-            - ended
+            - archived
           x-open-enum: true
         decision_id:
           type: string
@@ -29609,7 +29609,7 @@ components:
           enum:
             - active
             - paused
-            - ended
+            - archived
           x-open-enum: true
         decision_id:
           type: string
@@ -31009,6 +31009,7 @@ components:
         received_on: '2026-03-05'
         asset_account_id: 0192a3f0-1000-7000-8000-000000000002
         debtor:
+          mode: unit_side
           unit_id: 0192a3f0-1000-7000-8000-000000000001
           debtor_kind: tenant
     PaymentVoid:

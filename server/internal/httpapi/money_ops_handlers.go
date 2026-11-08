@@ -358,6 +358,7 @@ func (s *apiServer) MoneyConfirmPayment(ctx context.Context, req gen.MoneyConfir
 	if err != nil {
 		return nil, err
 	}
+	s.fileReceipt(ctx, req.OrgId, v.ID)
 	out, err := conv[gen.Payment](v)
 	return gen.MoneyConfirmPayment200JSONResponse(out), err
 }

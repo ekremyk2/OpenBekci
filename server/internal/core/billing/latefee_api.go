@@ -34,7 +34,7 @@ func (s *Service) ListLateFeeAccruals(ctx context.Context, orgID, siteID uuid.UU
 	if err != nil {
 		return nil, "", err
 	}
-	var out []AccrualRow
+	out := []AccrualRow{}
 	more := false
 	err = s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
 		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyRead, orgID, siteID)

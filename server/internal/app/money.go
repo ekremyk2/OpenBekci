@@ -13,10 +13,13 @@ import (
 	"github.com/riverqueue/river"
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -52,13 +55,27 @@ func (n *moneyNotifier) Enqueue(ctx context.Context, tx pgx.Tx, e ledger.Notific
 }
 
 // newMoney builds the money services (phase C) served by the HTTP API.
-func newMoney(d *db.DB) httpapi.MoneyDeps {
+func newMoney(d *db.DB, fs *files.Service) httpapi.MoneyDeps {
 	tn := tenancy.NewService(d)
+	// receipts of expenses and documents of bills are files of their own scope types
+	if fs != nil {
+		fs.RegisterResolver(treasury.FileScope, treasury.FileResolver(), files.WithMaxFiles(5))
+		fs.RegisterResolver(treasury.BillFileScope, treasury.BillFileResolver(), files.WithMaxFiles(5))
+	}
+	pay := payments.NewService(d, nil, notifier)
+	rep := reports.NewService(d, nil)
+	if fs != nil {
+		fs.RegisterResolver(moneydocs.ScopePayment, moneydocs.PaymentFileResolver())
+		fs.RegisterResolver(moneydocs.ScopeMoveOut, moneydocs.MoveOutFileResolver())
+		fs.RegisterResolver(moneydocs.ScopeStatement, moneydocs.StatementFileResolver())
+	}
 	return httpapi.MoneyDeps{
+		Treasury: treasury.NewService(d, fs, nil),
 		Ledger:   ledger.NewService(d, nil),
 		Billing:  billing.NewService(d, tn, nil),
-		Payments: payments.NewService(d, nil, notifier),
-		Reports:  reports.NewService(d, nil),
+		Payments: pay,
+		Reports:  rep,
+		Docs:     moneydocs.NewService(d, fs, pay, rep, notifier, nil),
 	}
 }
 
@@ -84,6 +101,7 @@ type catchUpWorker struct {
 	river.WorkerDefaults[CatchUpArgs]
 	d   *db.DB
 	log *slog.Logger
+	fs  *files.Service
 }
 
 type siteRef struct{ org, site uuid.UUID }
@@ -127,6 +145,23 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 			w.log.Info("late fees reconciled", "site_id", s.site, "postings", n)
 		}
 	}
+	// the closing statement and debt certificate of move-outs that wait for them
+	if w.fs != nil {
+		docs := moneydocs.NewService(w.d, w.fs, payments.NewService(w.d, nil, nil), reports.NewService(w.d, nil), nil, w.log)
+		seen := map[uuid.UUID]bool{}
+		for _, s := range sites {
+			if seen[s.org] {
+				continue
+			}
+			seen[s.org] = true
+			if n, err := docs.FillMoveOutDocuments(ledger.SystemContext(ctx, s.org), s.org); err != nil {
+				w.log.Error("move-out documents", "org_id", s.org, "error", err)
+				failed++
+			} else if n > 0 {
+				w.log.Info("move-out documents made", "org_id", s.org, "count", n)
+			}
+		}
+	}
 	if failed > 0 {
 		return errors.New("money catch-up: some sites failed; they are retried with the next run")
 	}
@@ -134,13 +169,17 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 }
 
 // moneyJobs returns the job options of the money modules.
-func moneyJobs(d *db.DB, log *slog.Logger) func(o *jobs.Options) {
+func moneyJobs(d *db.DB, log *slog.Logger, fs *files.Service) func(o *jobs.Options) {
 	return func(o *jobs.Options) {
 		o.Workers = func(ws *river.Workers) {
 			river.AddWorker(ws, &logNotifyWorker{log: log})
-			river.AddWorker(ws, &catchUpWorker{d: d, log: log})
+			river.AddWorker(ws, &catchUpWorker{d: d, log: log, fs: fs})
+			river.AddWorker(ws, &recurringExpenseWorker{d: d, log: log})
 		}
-		o.Periodic = append(o.Periodic, river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
-			func() (river.JobArgs, *river.InsertOpts) { return CatchUpArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}))
+		o.Periodic = append(o.Periodic,
+			river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
+				func() (river.JobArgs, *river.InsertOpts) { return CatchUpArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}),
+			river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
+				func() (river.JobArgs, *river.InsertOpts) { return RecurringExpenseArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}))
 	}
 }

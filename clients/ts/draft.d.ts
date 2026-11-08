@@ -13059,7 +13059,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status: "active" | "paused" | "ended";
+            status: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id: string | null;
             current_rate: components["schemas"]["ChargePlanRate"] | null;
@@ -13149,7 +13149,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status?: "active" | "paused" | "ended";
+            status?: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id?: string | null;
             /** Format: uuid */
@@ -14079,6 +14079,7 @@ export interface components {
          *       "received_on": "2026-03-05",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "debtor": {
+         *         "mode": "unit_side",
          *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
          *         "debtor_kind": "tenant"
          *       }

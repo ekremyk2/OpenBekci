@@ -461,7 +461,14 @@ func (s *Service) GetCharge(ctx context.Context, orgID, chargeID uuid.UUID) (Cha
 		if c, err = scanCharge(tx.QueryRow(ctx, chargeSel+` WHERE c.org_id=$1 AND c.id=$2`, orgID, chargeID)); err != nil {
 			return err
 		}
-		return ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, c.SiteID)
+		if ledger.HasSite(ctx, tx, ledger.PermMoneyRead, c.SiteID) {
+			return nil
+		}
+		// a resident reads the charges of their own unit side
+		if c.EffectiveDebtor.DebtorKind == "person" || OwnSide(ctx, &c.UnitID, c.DebtorKind) != nil {
+			return problem.NotFound("no such charge")
+		}
+		return nil
 	})
 	return c, err
 }

@@ -17,6 +17,8 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
@@ -91,7 +93,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Money: MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: billing.NewService(d, e.tenSvc, nil), Payments: payments.NewService(d, nil, nil), Reports: reports.NewService(d, nil)}, Audit: audit.NewService(d), Files: e.files,
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Money: e.moneyDeps(d), Audit: audit.NewService(d), Files: e.files,
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	e.h = NewRouter(e.deps, Options{})
@@ -515,4 +517,14 @@ func TestIntegrationHTTPMeWithOrganization(t *testing.T) {
 		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || len(o.Permissions) == 0 || o.Sites == nil {
 		t.Errorf("org = %+v", o)
 	}
+}
+
+// moneyDeps builds the money services of the test environment, with the file scopes of their documents registered.
+func (e *idEnv) moneyDeps(d *db.DB) MoneyDeps {
+	pay := payments.NewService(d, nil, nil)
+	rep := reports.NewService(d, nil)
+	e.files.RegisterResolver(treasury.FileScope, treasury.FileResolver(), files.WithMaxFiles(5))
+	e.files.RegisterResolver(moneydocs.ScopePayment, moneydocs.PaymentFileResolver())
+	return MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: billing.NewService(d, e.tenSvc, nil), Payments: pay, Reports: rep,
+		Treasury: treasury.NewService(d, e.files, nil), Docs: moneydocs.NewService(d, e.files, pay, rep, nil, nil)}
 }

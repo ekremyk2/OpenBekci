@@ -9,8 +9,10 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -23,6 +25,10 @@ type MoneyDeps struct {
 	Billing  *billing.Service
 	Payments *payments.Service
 	Reports  *reports.Service
+	// Treasury serves transfers, refunds, expenses, bills and budgets.
+	Treasury *treasury.Service
+	// Docs makes the receipts, closing documents and sent statements.
+	Docs *moneydocs.Service
 }
 
 func (s *apiServer) lg() (*ledger.Service, error) {

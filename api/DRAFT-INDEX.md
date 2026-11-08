@@ -150,62 +150,62 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.reverseJournalEntry` | `POST /v1/orgs/{org_id}/journal-entries/{entry_id}:reverse` | 0.1 | `money.post` | required | served |
 | money | `money.listOpeningBalances` | `GET /v1/orgs/{org_id}/opening-balances` | 0.1 | `money.read` | - | served |
 | money | `money.createOpeningBalance` | `POST /v1/orgs/{org_id}/opening-balances` | 0.1 | `money.post` | required | served |
-| money | `money.getOpeningBalance` | `GET /v1/orgs/{org_id}/opening-balances/{opening_balance_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.voidOpeningBalance` | `POST /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void` | 0.1 | `money.post` | required | not yet served |
-| money | `money.importOpeningBalances` | `POST /v1/orgs/{org_id}/opening-balances:import` | 0.1 | `money.post` | required | not yet served |
-| money | `money.listBudgets` | `GET /v1/orgs/{org_id}/budgets` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createBudget` | `POST /v1/orgs/{org_id}/budgets` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.getBudget` | `GET /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.updateBudget` | `PATCH /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.deleteBudget` | `DELETE /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.getBudgetLines` | `GET /v1/orgs/{org_id}/budgets/{budget_id}/lines` | 0.1 | `money.read` | - | not yet served |
-| money | `money.putBudgetLines` | `PUT /v1/orgs/{org_id}/budgets/{budget_id}/lines` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.finalizeBudget` | `POST /v1/orgs/{org_id}/budgets/{budget_id}:finalize` | 0.1 | `money.manage` | optional | not yet served |
+| money | `money.getOpeningBalance` | `GET /v1/orgs/{org_id}/opening-balances/{opening_balance_id}` | 0.1 | `money.read` | - | served |
+| money | `money.voidOpeningBalance` | `POST /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void` | 0.1 | `money.post` | required | served |
+| money | `money.importOpeningBalances` | `POST /v1/orgs/{org_id}/opening-balances:import` | 0.1 | `money.post` | required | served |
+| money | `money.listBudgets` | `GET /v1/orgs/{org_id}/budgets` | 0.1 | `money.read` | - | served |
+| money | `money.createBudget` | `POST /v1/orgs/{org_id}/budgets` | 0.1 | `money.manage` | optional | served |
+| money | `money.getBudget` | `GET /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.read` | - | served |
+| money | `money.updateBudget` | `PATCH /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.manage` | optional | served |
+| money | `money.deleteBudget` | `DELETE /v1/orgs/{org_id}/budgets/{budget_id}` | 0.1 | `money.manage` | optional | served |
+| money | `money.getBudgetLines` | `GET /v1/orgs/{org_id}/budgets/{budget_id}/lines` | 0.1 | `money.read` | - | served |
+| money | `money.putBudgetLines` | `PUT /v1/orgs/{org_id}/budgets/{budget_id}/lines` | 0.1 | `money.manage` | optional | served |
+| money | `money.finalizeBudget` | `POST /v1/orgs/{org_id}/budgets/{budget_id}:finalize` | 0.1 | `money.manage` | optional | served |
 | money | `money.listChargePlans` | `GET /v1/orgs/{org_id}/charge-plans` | 0.1 | `money.read` | - | served |
 | money | `money.createChargePlan` | `POST /v1/orgs/{org_id}/charge-plans` | 0.1 | `money.manage` | optional | served |
-| money | `money.getChargePlan` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.updateChargePlan` | `PATCH /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.listChargePlanRates` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createChargePlanRate` | `POST /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.manage` | required | not yet served |
-| money | `money.deleteChargePlanRate` | `DELETE /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}` | 0.1 | `money.manage` | required | not yet served |
-| money | `money.previewChargePlan` | `POST /v1/orgs/{org_id}/charge-plans:preview` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.getChargeGenerationStatus` | `GET /v1/orgs/{org_id}/charge-generation` | 0.1 | `money.read` | - | not yet served |
+| money | `money.getChargePlan` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.read` | - | served |
+| money | `money.updateChargePlan` | `PATCH /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.manage` | optional | served |
+| money | `money.listChargePlanRates` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.read` | - | served |
+| money | `money.createChargePlanRate` | `POST /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.manage` | required | served |
+| money | `money.deleteChargePlanRate` | `DELETE /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}` | 0.1 | `money.manage` | required | served |
+| money | `money.previewChargePlan` | `POST /v1/orgs/{org_id}/charge-plans:preview` | 0.1 | `money.manage` | optional | served |
+| money | `money.getChargeGenerationStatus` | `GET /v1/orgs/{org_id}/charge-generation` | 0.1 | `money.read` | - | served |
 | money | `money.previewExpenseAllocation` | `POST /v1/orgs/{org_id}/expense-allocations:preview` | 0.1 | `money.manage` | optional | not yet served |
 | money | `money.createExpenseAllocation` | `POST /v1/orgs/{org_id}/expense-allocations` | 0.1 | `money.post` | required | not yet served |
 | money | `money.listCharges` | `GET /v1/orgs/{org_id}/charges` | 0.1 | `money.read`, `statements.read_own` | - | served |
 | money | `money.createCharge` | `POST /v1/orgs/{org_id}/charges` | 0.1 | `money.post` | required | served |
-| money | `money.getCharge` | `GET /v1/orgs/{org_id}/charges/{charge_id}` | 0.1 | `money.read`, `statements.read_own` | - | not yet served |
-| money | `money.cancelCharge` | `POST /v1/orgs/{org_id}/charges/{charge_id}:cancel` | 0.1 | `money.post` | required | not yet served |
+| money | `money.getCharge` | `GET /v1/orgs/{org_id}/charges/{charge_id}` | 0.1 | `money.read`, `statements.read_own` | - | served |
+| money | `money.cancelCharge` | `POST /v1/orgs/{org_id}/charges/{charge_id}:cancel` | 0.1 | `money.post` | required | served |
 | money | `money.adjustCharge` | `POST /v1/orgs/{org_id}/charges/{charge_id}:adjust` | 0.1 | `money.post` | required | not yet served |
 | money | `money.getLateFeePolicy` | `GET /v1/orgs/{org_id}/late-fee-policy` | 0.1 | `money.read` | - | served |
 | money | `money.setLateFeePolicy` | `PUT /v1/orgs/{org_id}/late-fee-policy` | 0.1 | `money.manage` | optional | served |
-| money | `money.listLateFeeAccruals` | `GET /v1/orgs/{org_id}/late-fee-accruals` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listLateFeeBookings` | `GET /v1/orgs/{org_id}/late-fee-bookings` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listLateFeeWaivers` | `GET /v1/orgs/{org_id}/late-fee-waivers` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createLateFeeWaiver` | `POST /v1/orgs/{org_id}/late-fee-waivers` | 0.1 | `money.post` | required | not yet served |
-| money | `money.listLateFeeFreezes` | `GET /v1/orgs/{org_id}/late-fee-freezes` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createLateFeeFreeze` | `POST /v1/orgs/{org_id}/late-fee-freezes` | 0.1 | `money.manage` | optional | not yet served |
-| money | `money.getLateFeeFreeze` | `GET /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.updateLateFeeFreeze` | `PATCH /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.manage` | optional | not yet served |
+| money | `money.listLateFeeAccruals` | `GET /v1/orgs/{org_id}/late-fee-accruals` | 0.1 | `money.read` | - | served |
+| money | `money.listLateFeeBookings` | `GET /v1/orgs/{org_id}/late-fee-bookings` | 0.1 | `money.read` | - | served |
+| money | `money.listLateFeeWaivers` | `GET /v1/orgs/{org_id}/late-fee-waivers` | 0.1 | `money.read` | - | served |
+| money | `money.createLateFeeWaiver` | `POST /v1/orgs/{org_id}/late-fee-waivers` | 0.1 | `money.post` | required | served |
+| money | `money.listLateFeeFreezes` | `GET /v1/orgs/{org_id}/late-fee-freezes` | 0.1 | `money.read` | - | served |
+| money | `money.createLateFeeFreeze` | `POST /v1/orgs/{org_id}/late-fee-freezes` | 0.1 | `money.manage` | optional | served |
+| money | `money.getLateFeeFreeze` | `GET /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.read` | - | served |
+| money | `money.updateLateFeeFreeze` | `PATCH /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.manage` | optional | served |
 | money | `money.listPayments` | `GET /v1/orgs/{org_id}/payments` | 0.1 | `money.read`, `statements.read_own` | - | served |
 | money | `money.createPayment` | `POST /v1/orgs/{org_id}/payments` | 0.1 | `payments.record` | required | served |
 | money | `money.getPayment` | `GET /v1/orgs/{org_id}/payments/{payment_id}` | 0.1 | `money.read`, `statements.read_own` | - | served |
 | money | `money.voidPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:void` | 0.1 | `payments.record` | required | served |
-| money | `money.getPaymentReceipt` | `GET /v1/orgs/{org_id}/payments/{payment_id}/receipt` | 0.1 | `payments.record`, `statements.read_own` | - | not yet served |
-| money | `money.sendPaymentReceipt` | `POST /v1/orgs/{org_id}/payments/{payment_id}:send-receipt` | 0.1 | `payments.record` | optional | not yet served |
+| money | `money.getPaymentReceipt` | `GET /v1/orgs/{org_id}/payments/{payment_id}/receipt` | 0.1 | `payments.record`, `statements.read_own` | - | served |
+| money | `money.sendPaymentReceipt` | `POST /v1/orgs/{org_id}/payments/{payment_id}:send-receipt` | 0.1 | `payments.record` | optional | served |
 | money | `money.setPaymentAllocations` | `PUT /v1/orgs/{org_id}/payments/{payment_id}/allocations` | 0.1 | `payments.record` | required | not yet served |
 | money | `money.previewPaymentAllocation` | `POST /v1/orgs/{org_id}/payments:preview-allocation` | 0.1 | `payments.record` | optional | not yet served |
-| money | `money.declarePayment` | `POST /v1/orgs/{org_id}/payments:declare` | 0.1 | `payments.declare` | required | not yet served |
-| money | `money.confirmPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:confirm` | 0.1 | `payments.record` | required | not yet served |
-| money | `money.rejectPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:reject` | 0.1 | `payments.record` | optional | not yet served |
+| money | `money.declarePayment` | `POST /v1/orgs/{org_id}/payments:declare` | 0.1 | `payments.declare` | required | served |
+| money | `money.confirmPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:confirm` | 0.1 | `payments.record` | required | served |
+| money | `money.rejectPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:reject` | 0.1 | `payments.record` | optional | served |
 | money | `money.listCredits` | `GET /v1/orgs/{org_id}/credits` | 0.1 | `money.read`, `statements.read_own` | - | not yet served |
 | money | `money.applyCredit` | `POST /v1/orgs/{org_id}/credits/{credit_id}:apply` | 0.1 | `payments.record` | required | not yet served |
-| money | `money.listTransfers` | `GET /v1/orgs/{org_id}/transfers` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createTransfer` | `POST /v1/orgs/{org_id}/transfers` | 0.1 | `money.post` | required | not yet served |
-| money | `money.getTransfer` | `GET /v1/orgs/{org_id}/transfers/{transfer_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listRefunds` | `GET /v1/orgs/{org_id}/refunds` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createRefund` | `POST /v1/orgs/{org_id}/refunds` | 0.1 | `money.post` | required | not yet served |
-| money | `money.getRefund` | `GET /v1/orgs/{org_id}/refunds/{refund_id}` | 0.1 | `money.read` | - | not yet served |
+| money | `money.listTransfers` | `GET /v1/orgs/{org_id}/transfers` | 0.1 | `money.read` | - | served |
+| money | `money.createTransfer` | `POST /v1/orgs/{org_id}/transfers` | 0.1 | `money.post` | required | served |
+| money | `money.getTransfer` | `GET /v1/orgs/{org_id}/transfers/{transfer_id}` | 0.1 | `money.read` | - | served |
+| money | `money.listRefunds` | `GET /v1/orgs/{org_id}/refunds` | 0.1 | `money.read` | - | served |
+| money | `money.createRefund` | `POST /v1/orgs/{org_id}/refunds` | 0.1 | `money.post` | required | served |
+| money | `money.getRefund` | `GET /v1/orgs/{org_id}/refunds/{refund_id}` | 0.1 | `money.read` | - | served |
 | money | `money.listBankImporters` | `GET /v1/orgs/{org_id}/bank-importers` | 0.1 | `money.read` | - | not yet served |
 | money | `money.listBankStatementImports` | `GET /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createBankStatementImport` | `POST /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.post` | optional | not yet served |
@@ -217,19 +217,19 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.matchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match` | 0.1 | `payments.record` | required | not yet served |
 | money | `money.unmatchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch` | 0.1 | `payments.record` | required | not yet served |
 | money | `money.ignoreBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore` | 0.1 | `payments.record` | optional | not yet served |
-| money | `money.listExpenses` | `GET /v1/orgs/{org_id}/expenses` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createExpense` | `POST /v1/orgs/{org_id}/expenses` | 0.1 | `money.post` | required | not yet served |
-| money | `money.getExpense` | `GET /v1/orgs/{org_id}/expenses/{expense_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.voidExpense` | `POST /v1/orgs/{org_id}/expenses/{expense_id}:void` | 0.1 | `money.post` | required | not yet served |
+| money | `money.listExpenses` | `GET /v1/orgs/{org_id}/expenses` | 0.1 | `money.read` | - | served |
+| money | `money.createExpense` | `POST /v1/orgs/{org_id}/expenses` | 0.1 | `money.post` | required | served |
+| money | `money.getExpense` | `GET /v1/orgs/{org_id}/expenses/{expense_id}` | 0.1 | `money.read` | - | served |
+| money | `money.voidExpense` | `POST /v1/orgs/{org_id}/expenses/{expense_id}:void` | 0.1 | `money.post` | required | served |
 | money | `money.listRecurringExpenses` | `GET /v1/orgs/{org_id}/recurring-expenses` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createRecurringExpense` | `POST /v1/orgs/{org_id}/recurring-expenses` | 0.1 | `money.post` | required | not yet served |
 | money | `money.getRecurringExpense` | `GET /v1/orgs/{org_id}/recurring-expenses/{recurring_expense_id}` | 0.1 | `money.read` | - | not yet served |
 | money | `money.updateRecurringExpense` | `PATCH /v1/orgs/{org_id}/recurring-expenses/{recurring_expense_id}` | 0.1 | `money.post` | optional | not yet served |
 | money | `money.deleteRecurringExpense` | `DELETE /v1/orgs/{org_id}/recurring-expenses/{recurring_expense_id}` | 0.1 | `money.post` | optional | not yet served |
-| money | `money.listBills` | `GET /v1/orgs/{org_id}/bills` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createBill` | `POST /v1/orgs/{org_id}/bills` | 0.1 | `money.post` | required | not yet served |
-| money | `money.getBill` | `GET /v1/orgs/{org_id}/bills/{bill_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createBillPayment` | `POST /v1/orgs/{org_id}/bills/{bill_id}/payments` | 0.1 | `money.post` | required | not yet served |
+| money | `money.listBills` | `GET /v1/orgs/{org_id}/bills` | 0.1 | `money.read` | - | served |
+| money | `money.createBill` | `POST /v1/orgs/{org_id}/bills` | 0.1 | `money.post` | required | served |
+| money | `money.getBill` | `GET /v1/orgs/{org_id}/bills/{bill_id}` | 0.1 | `money.read` | - | served |
+| money | `money.createBillPayment` | `POST /v1/orgs/{org_id}/bills/{bill_id}/payments` | 0.1 | `money.post` | required | served |
 | money | `money.listDunningStages` | `GET /v1/orgs/{org_id}/dunning-stages` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createDunningStage` | `POST /v1/orgs/{org_id}/dunning-stages` | 0.1 | `collections.manage` | optional | not yet served |
 | money | `money.getDunningStage` | `GET /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `money.read` | - | not yet served |
@@ -245,18 +245,18 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.closeCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases/{case_id}:close` | 0.1 | `collections.manage` | optional | not yet served |
 | money | `money.getDebtBreakdown` | `GET /v1/orgs/{org_id}/debt-breakdown` | 0.1 | `collections.manage` | - | not yet served |
 | money | `money.getUnitStatement` | `GET /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}` | 0.1 | `statements.read`, `statements.read_own` | - | served |
-| money | `money.getPersonStatement` | `GET /v1/orgs/{org_id}/persons/{person_id}/statement` | 0.1 | `statements.read`, `statements.read_own` | - | not yet served |
-| money | `money.sendStatement` | `POST /v1/orgs/{org_id}/statements:send` | 0.1 | `statements.read` | required | not yet served |
+| money | `money.getPersonStatement` | `GET /v1/orgs/{org_id}/persons/{person_id}/statement` | 0.1 | `statements.read`, `statements.read_own` | - | served |
+| money | `money.sendStatement` | `POST /v1/orgs/{org_id}/statements:send` | 0.1 | `statements.read` | required | served |
 | money | `money.getMyBalances` | `GET /v1/orgs/{org_id}/me/balances` | 0.1 | `statements.read_own` | - | not yet served |
-| money | `money.getIncomeExpenseReport` | `GET /v1/orgs/{org_id}/reports/income-expense` | 0.1 | `reports.read`, `reports.aggregate` | - | not yet served |
+| money | `money.getIncomeExpenseReport` | `GET /v1/orgs/{org_id}/reports/income-expense` | 0.1 | `reports.read`, `reports.aggregate` | - | served |
 | money | `money.getDebtorReport` | `GET /v1/orgs/{org_id}/reports/debtors` | 0.1 | `reports.debtors` | - | served |
-| money | `money.getBudgetVsActualReport` | `GET /v1/orgs/{org_id}/reports/budget-vs-actual` | 0.1 | `reports.read`, `reports.aggregate` | - | not yet served |
-| money | `money.getTrialBalanceReport` | `GET /v1/orgs/{org_id}/reports/trial-balance` | 0.1 | `reports.read` | - | not yet served |
-| money | `money.getReceivablesAgingReport` | `GET /v1/orgs/{org_id}/reports/receivables-aging` | 0.1 | `reports.read` | - | not yet served |
+| money | `money.getBudgetVsActualReport` | `GET /v1/orgs/{org_id}/reports/budget-vs-actual` | 0.1 | `reports.read`, `reports.aggregate` | - | served |
+| money | `money.getTrialBalanceReport` | `GET /v1/orgs/{org_id}/reports/trial-balance` | 0.1 | `reports.read` | - | served |
+| money | `money.getReceivablesAgingReport` | `GET /v1/orgs/{org_id}/reports/receivables-aging` | 0.1 | `reports.read` | - | served |
 | money | `money.getCollectorReconciliationReport` | `GET /v1/orgs/{org_id}/reports/collector-reconciliation` | 0.1 | `reports.read` | - | not yet served |
 | money | `money.getBankReconciliationReport` | `GET /v1/orgs/{org_id}/reports/bank-reconciliation` | 0.1 | `reports.read` | - | not yet served |
-| money | `money.getFundBalancesReport` | `GET /v1/orgs/{org_id}/reports/fund-balances` | 0.1 | `reports.read` | - | not yet served |
-| money | `money.getMoneyOverview` | `GET /v1/orgs/{org_id}/money/overview` | 0.1 | `money.read` | - | not yet served |
+| money | `money.getFundBalancesReport` | `GET /v1/orgs/{org_id}/reports/fund-balances` | 0.1 | `reports.read` | - | served |
+| money | `money.getMoneyOverview` | `GET /v1/orgs/{org_id}/money/overview` | 0.1 | `money.read` | - | served |
 | operations | `operations.getTicketWorkflow` | `GET /v1/orgs/{org_id}/ticket-workflow` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - | not yet served |
 | operations | `operations.updateTicketWorkflow` | `PUT /v1/orgs/{org_id}/ticket-workflow` | 0.1 | `tickets.manage` | optional | not yet served |
 | operations | `operations.listTicketCategories` | `GET /v1/orgs/{org_id}/ticket-categories` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - | not yet served |
@@ -305,10 +305,10 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | operations | `operations.getNotificationMutes` | `GET /v1/orgs/{org_id}/me/notification-mutes` | 0.1 | `notifications.read` | - | not yet served |
 | operations | `operations.setNotificationMutes` | `PUT /v1/orgs/{org_id}/me/notification-mutes` | 0.1 | `notifications.read` | optional | not yet served |
 | operations | `operations.getSmsUsage` | `GET /v1/orgs/{org_id}/sms-usage` | 0.1 | `notifications.manage` | - | not yet served |
-| operations | `operations.uploadFile` | `POST /v1/orgs/{org_id}/files` | 0.1 | `files.upload` | optional | not yet served |
-| operations | `operations.getFileMeta` | `GET /v1/orgs/{org_id}/files/{file_id}/meta` | 0.1 | `files.read` | - | not yet served |
-| operations | `operations.downloadFile` | `GET /v1/orgs/{org_id}/files/{file_id}` | 0.1 | `files.read` | - | not yet served |
-| operations | `operations.deleteFile` | `DELETE /v1/orgs/{org_id}/files/{file_id}` | 0.1 | `files.upload` | optional | not yet served |
+| operations | `operations.uploadFile` | `POST /v1/orgs/{org_id}/files` | 0.1 | `files.upload` | optional | served |
+| operations | `operations.getFileMeta` | `GET /v1/orgs/{org_id}/files/{file_id}/meta` | 0.1 | `files.read` | - | served |
+| operations | `operations.downloadFile` | `GET /v1/orgs/{org_id}/files/{file_id}` | 0.1 | `files.read` | - | served |
+| operations | `operations.deleteFile` | `DELETE /v1/orgs/{org_id}/files/{file_id}` | 0.1 | `files.upload` | optional | served |
 | operations | `operations.listJobs` | `GET /v1/orgs/{org_id}/jobs` | 0.1 | `jobs.read` | - | not yet served |
 | operations | `operations.getJob` | `GET /v1/orgs/{org_id}/jobs/{job_id}` | 0.1 | `jobs.read` | - | not yet served |
 | operations | `operations.createExport` | `POST /v1/orgs/{org_id}/exports` | 0.1 | `exports.create` | optional | not yet served |

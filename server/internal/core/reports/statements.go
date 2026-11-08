@@ -311,7 +311,7 @@ func (st Statement) PDF() []byte {
 	if st.From != nil {
 		rng = *st.From + " - " + st.AsOf
 	}
-	d.Line("Period: "+rng+"   Currency: "+string(st.Currency), 9, false)
+	d.Line("Period: "+rng+"   Currency: "+currencyLabel(st.Currency), 9, false)
 	d.Skip(6)
 	cols := []float64{50, 105, 165, 245, 400, 470, 545}
 	head := func() {

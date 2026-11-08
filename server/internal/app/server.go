@@ -165,7 +165,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		return nil, err
 	}
 	jobOpts := jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, Files: fs}
-	moneyJobs(d, log)(&jobOpts)
+	moneyJobs(d, log, fs)(&jobOpts)
 	client, err := jobs.New(d.WorkerPool(), log, jobOpts)
 	if err != nil {
 		d.Close()

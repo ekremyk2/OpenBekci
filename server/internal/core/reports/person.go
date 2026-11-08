@@ -8,14 +8,13 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
-	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // PersonStatement is the statement of a person's carried debt (statements.read): the site is
 // the one where the person has charges, the latest first. A person without carried debt is 404.
 func (s *Service) PersonStatement(ctx context.Context, orgID, personID uuid.UUID, from, to string) (Statement, error) {
 	if err := authz.RequireAnywhere(ctx, "statements.read"); err != nil {
-		return Statement{}, problem.NotFound("no such person")
+		return Statement{}, err
 	}
 	var site uuid.UUID
 	err := s.run(ctx, orgID, "person", func(tx pgx.Tx) error {
