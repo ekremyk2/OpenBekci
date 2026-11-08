@@ -22,6 +22,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -593,6 +594,16 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 				continue
 			}
 			r := s.parseImportRow(i+2, rec, idx, s.today())
+			// the plate validators of the packs enabled for the organization (Turkish plate format)
+			for _, p := range r.plates {
+				if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindPlate, "plates", p); f != nil {
+					params := map[string]any{"value": p}
+					for k, v := range f.Params {
+						params[k] = v
+					}
+					r.err("plates", f.Code, params)
+				}
+			}
 			action, uid := "skipped", uuid.Nil
 			if !r.failed() {
 				rsp, err := sp.Begin(ctx)

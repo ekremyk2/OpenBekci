@@ -496,7 +496,7 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 			}
 			return gen.MoneyGetUnitStatement200TextcsvResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
 		case gen.MoneyGetUnitStatementParamsFormatPdf:
-			b := st.PDF()
+			b := r.StatementPDF(ctx, req.OrgId, st, "statement")
 			return gen.MoneyGetUnitStatement200ApplicationpdfResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
 		case gen.MoneyGetUnitStatementParamsFormatJson:
 		default:

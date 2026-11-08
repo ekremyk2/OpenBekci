@@ -123,7 +123,7 @@ func (s *Service) GenerateMinutes(ctx context.Context, orgID, meetingID uuid.UUI
 		if err != nil {
 			return err
 		}
-		pdf, err := Minutes(data).PDF()
+		pdf, err := s.minutesModel(ctx, orgID, data).PDF()
 		if err != nil {
 			return err
 		}

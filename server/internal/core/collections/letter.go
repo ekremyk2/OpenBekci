@@ -12,7 +12,9 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/packdocs"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/pdf"
 	"github.com/openbekci/openbekci/server/internal/problem"
 	"github.com/openbekci/openbekci/server/locales"
@@ -71,6 +73,20 @@ func (s *Service) letterTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site
 		if name == "" {
 			data.DebtorName = map[string]string{"owner": "Kat Maliki", "tenant": "Kiracı"}[d.Kind]
 		}
+	}
+	// a pack's template (the Turkish ihtarname citing Law 634) replaces the generic letter
+	breakdown := make([]any, 0, len(b.Lines))
+	for _, l := range b.Lines {
+		p := ""
+		if l.Period != nil {
+			p = *l.Period
+		}
+		breakdown = append(breakdown, map[string]any{"period": p, "due": l.DueDate, "principal": FormatTL(l.Principal.Amount), "late_fee": FormatTL(l.LateFee.Amount)})
+	}
+	if out, ok := packdocs.Render(ctx, s.Templates, nil, orgID, doctpl.KindDemandLetter, "tr", map[string]any{
+		"site_name": data.SiteName, "date": data.Date, "debtor_name": data.DebtorName, "door": data.Door, "side_label": data.SideLabel, "as_of": data.AsOf,
+		"total": data.Total, "principal": data.Principal, "late_fee": data.LateFee, "days": data.Days, "breakdown": breakdown}); ok {
+		return out, nil
 	}
 	text, err := locales.Template("tr", "ihtarname")
 	if err != nil {

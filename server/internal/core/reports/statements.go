@@ -22,6 +22,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/money/statement"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/pdf"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -30,6 +31,8 @@ import (
 type Service struct {
 	db  ledger.TxRunner
 	Now func() time.Time
+	// templates renders statements with a pack template when one is enabled (nil: generic only).
+	templates doctpl.Resolver
 }
 
 // NewService returns a Service; now nil means time.Now.

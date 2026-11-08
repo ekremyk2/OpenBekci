@@ -13,6 +13,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -356,7 +357,7 @@ func (s *Service) CreateSite(ctx context.Context, orgID uuid.UUID, d Doc) (Site,
 		if err != nil {
 			return err
 		}
-		// the statutory late fee (5 % a month, no grace) applies from the day the site exists
+		// the default late fee (5 % a month, no grace; a legal preset may change it) applies from the day the site exists
 		if _, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days, is_default)
 			VALUES ($1, $2, $3, (now() AT TIME ZONE $4)::date, 500, 0, true)`, id.New(), orgID, out.ID, out.Timezone); err != nil {
 			return err
@@ -422,6 +423,14 @@ func (s *Service) UpdateSite(ctx context.Context, orgID, siteID uuid.UUID, expec
 		next, err := applySite(before, d, false)
 		if err != nil {
 			return err
+		}
+		if d.Has("bank_details") {
+			// the IBAN is checked with the validators of the packs enabled for the organization (Turkish IBAN rules)
+			if iban, _ := next.BankDetails["iban"].(string); iban != "" {
+				if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindIBAN, "bank_details.iban", iban); f != nil {
+					return problem.Validation(*f)
+				}
+			}
 		}
 		diff, err := audit.Diff("site", before.audit(), next.audit())
 		if err != nil {

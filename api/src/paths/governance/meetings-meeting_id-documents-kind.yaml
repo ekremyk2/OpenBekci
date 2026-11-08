@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+  - name: kind
+    in: path
+    required: true
+    description: "The document a pack provides (open; known: `delivery_checklist`, `proxy_form`, `decision_book_draft`)."
+    schema:
+      type: string
+get:
+  operationId: governance.getMeetingDocument
+  summary: Download a document only a pack provides
+  description: |-
+    **Release 0.4.** Documents of a meeting that have no generic equivalent and exist only when a pack enabled for the organization has a template for the site's locale: the per-owner call delivery checklist, the proxy form (blank, or filled for `person_id`) and the numbered karar defteri page draft. 404 when no enabled pack provides the document.
+
+    Permission: `meetings.manage`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [meetings.manage]
+  x-stability: preview
+  parameters:
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "The owner a proxy form is filled for."
+  responses:
+    "200":
+      description: The file.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

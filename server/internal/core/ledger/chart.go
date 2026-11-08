@@ -130,7 +130,7 @@ func EnsureChart(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (Chart
 			}
 		}
 	}
-	// the statutory late fee applies from the day the site exists (sites made through the
+	// the default late fee (5 % a month) applies from the day the site exists (sites made through the
 	// tenancy service have the row already)
 	if _, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days, is_default)
 		SELECT $3, s.org_id, s.id, (s.created_at AT TIME ZONE s.timezone)::date, 500, 0, true FROM site s

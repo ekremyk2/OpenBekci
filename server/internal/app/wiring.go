@@ -192,6 +192,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		return httpapi.Deps{}, err
 	}
 	peopleSvc.SetMoneyHooks(moneyhooks.MoveOut{})
+	peopleSvc.SetValidators(host)
 	reg, err := permissions.NewRegistry()
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -214,7 +215,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Idempotency: idem,
 		Identity:    ident,
 		Authz:       authz.NewResolver(d, reg, nil),
-		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host),
+		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host).WithValidators(host),
 		Packs:       host,
 		People:      peopleSvc,
 		Community:   communitySvc,

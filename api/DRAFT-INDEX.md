@@ -2,7 +2,7 @@
 
 The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut`, `people.updateMembership` and `people.listMyUnitClaims` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 424 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 427 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
@@ -12,12 +12,12 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | 131 |
 | operations | 55 |
 | audit | 4 |
-| governance | 44 |
+| governance | 45 |
 | community | 43 |
 | access | 21 |
 | agent | 4 |
 | dashboards | 4 |
-| codes | 1 |
+| codes | 3 |
 | platform | 9 |
 | packs | 4 |
 | auth | 2 |
@@ -332,6 +332,7 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | governance | `governance.cancelMeeting` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}:cancel` | 0.2 | `meetings.manage` | optional | served |
 | governance | `governance.getMeetingQuorum` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/quorum` | 0.2 | `meetings.manage`, `attendance.manage` | - | served |
 | governance | `governance.getCallLetter` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter` | 0.2 | `meetings.read` | - | served |
+| governance | `governance.getMeetingDocument` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/documents/{kind}` | 0.4 | `meetings.manage` | - | served (not in the original draft) |
 | governance | `governance.getAttendanceSheet` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet` | 0.2 | `attendance.manage` | - | served |
 | governance | `governance.getMyMeeting` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/me` | 0.2 | `meetings.read` | - | served |
 | governance | `governance.generateMinutes` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate` | 0.2 | `meetings.manage` | optional | served |
@@ -435,6 +436,8 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | dashboards | `dashboards.getPortfolioDashboard` | `GET /v1/orgs/{org_id}/dashboard/portfolio` | 0.1 | `dashboard.portfolio` | - | served |
 | dashboards | `dashboards.getMyDashboard` | `GET /v1/orgs/{org_id}/me/dashboard` | 0.1 | `me.dashboard` | - | served |
 | codes | `codes.listCodes` | `GET /v1/orgs/{org_id}/codes` | 0.1 | `codes.read` | - | served |
+| codes | `codes.listReference` | `GET /v1/orgs/{org_id}/reference/{kind}` | 0.4 | `codes.read` | - | served (not in the original draft) |
+| codes | `codes.listConsents` | `GET /v1/orgs/{org_id}/privacy/consents` | 0.4 | `codes.read` | - | served (not in the original draft) |
 | platform | `platform.listOrgs` | `GET /v1/platform/orgs` | 0.1 | `platform.read` | - | not yet served |
 | platform | `platform.createOrg` | `POST /v1/platform/orgs` | 0.1 | `platform.manage` | optional | not yet served |
 | platform | `platform.getOrg` | `GET /v1/platform/orgs/{org_id}` | 0.1 | `platform.read` | - | not yet served |

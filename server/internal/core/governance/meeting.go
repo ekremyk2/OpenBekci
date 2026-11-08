@@ -509,7 +509,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		if m.Title != nil {
 			title = *m.Title
 		}
-		letter := CallLetter(CallLetterData{SiteName: si.Name, Kind: m.Kind, Title: title, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt,
+		letter := s.callLetterModel(ctx, orgID, CallLetterData{SiteName: si.Name, Kind: m.Kind, Title: title, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt,
 			SecondCall: m.SecondCallAt, Location: m.Location, Agenda: agenda, Instance: s.cfg.InstanceName, IssuedAt: now})
 		pdf, err := letter.PDF()
 		if err != nil {

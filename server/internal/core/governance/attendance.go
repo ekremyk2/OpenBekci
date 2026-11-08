@@ -491,7 +491,7 @@ func (s *Service) AttendanceSheetPDF(ctx context.Context, orgID, meetingID uuid.
 		if err != nil {
 			return err
 		}
-		pdf, err = AttendanceSheet(d).PDF()
+		pdf, err = s.attendanceModel(ctx, orgID, d).PDF()
 		return err
 	})
 	return pdf, "attendance-sheet.pdf", dbErr(err, "attendance sheet")
@@ -589,7 +589,7 @@ func (s *Service) callLetterDoc(ctx context.Context, tx pgx.Tx, m Meeting, perso
 			return DocModel{}, fmt.Errorf("render qr: %w", err)
 		}
 	}
-	return CallLetter(d), nil
+	return s.callLetterModel(ctx, m.OrgID, d), nil
 }
 
 // CalledAt0 returns the call time, or def when the meeting has none.

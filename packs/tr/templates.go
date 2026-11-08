@@ -192,6 +192,43 @@ func yesNo(b bool, y, n string) string {
 	return n
 }
 
+// lineDesc is the description of a statement line from its kind code
+// (opening, charge, fee, waiver, payment) and the reference the core gives.
+func lineDesc(l data) string {
+	if d := l.s("desc"); d != "" {
+		return d
+	}
+	kind := map[string]string{"opening": "Açılış bakiyesi", "charge": "Tahakkuk", "fee": "Gecikme tazminatı", "waiver": "Gecikme tazminatı affı", "payment": "Tahsilat"}[l.s("kind")]
+	if kind == "" {
+		kind = l.s("kind")
+	}
+	if ref := l.s("ref"); ref != "" {
+		return kind + ": " + ref
+	}
+	return kind
+}
+
+// receiptDesc is the "karşılığı" text of a receipt line; an advance (a payment
+// beyond what was due) has no charge to name.
+func receiptDesc(l data) string {
+	if l.b("advance") && l.s("desc") == "" {
+		return "Avans (fazla ödeme)"
+	}
+	return l.s("desc")
+}
+
+func methodTR(m string) string {
+	switch {
+	case m == "cash":
+		return "Nakit"
+	case m == "bank_transfer":
+		return "Havale / EFT"
+	case strings.HasPrefix(m, "card"):
+		return "Kredi / banka kartı"
+	}
+	return dash(m)
+}
+
 func outcomeTR(o string) string {
 	switch o {
 	case "accepted":
@@ -258,7 +295,15 @@ func attendanceList(d data) string {
 		if no == "" {
 			no = fmt.Sprint(i + 1)
 		}
-		rows = append(rows, []string{no, r.s("name"), r.s("units"), r.s("mode"), r.s("votes"), r.s("share"), ""})
+		mode := r.s("mode")
+		switch {
+		case mode != "":
+		case r.s("proxy_for") != "":
+			mode = "vekil: " + r.s("proxy_for")
+		default:
+			mode = "kendisi"
+		}
+		rows = append(rows, []string{no, r.s("name"), r.s("units"), mode, r.s("votes"), r.s("share"), ""})
 	}
 	m.table([]string{"Sıra", "Ad soyad", "Bağımsız bölümler", "Katılım", "Oy", "Arsa payı", "İmza"}, rows)
 	m.blank()
@@ -400,10 +445,10 @@ func receipt(d data) string {
 	m.kv("Tarih", d.s("date"))
 	m.kv("Ödeyen", dash(d.s("payer")))
 	m.kv("Bağımsız bölüm", dash(d.s("unit")))
-	m.kv("Ödeme şekli", dash(d.s("method")))
+	m.kv("Ödeme şekli", methodTR(d.s("method")))
 	var rows [][]string
 	for _, l := range d.rows("lines") {
-		rows = append(rows, []string{l.s("desc"), l.s("amount")})
+		rows = append(rows, []string{receiptDesc(l), l.s("amount")})
 	}
 	if len(rows) > 0 {
 		m.table([]string{"Karşılığı", "Tutar"}, rows)
@@ -430,7 +475,7 @@ func statement(d data) string {
 	m.kv("Dönem", dash(d.s("period_from"))+" - "+dash(d.s("as_of")))
 	var rows [][]string
 	for _, l := range d.rows("lines") {
-		rows = append(rows, []string{l.s("date"), l.s("desc"), l.s("debit"), l.s("credit"), l.s("balance")})
+		rows = append(rows, []string{l.s("date"), lineDesc(l), l.s("debit"), l.s("credit"), l.s("balance")})
 	}
 	m.table([]string{"Tarih", "Açıklama", "Borç", "Alacak", "Bakiye"}, rows)
 	m.blank()
@@ -455,7 +500,7 @@ func closingStatement(d data) string {
 	m.kv("Taşınma / devir tarihi", dash(d.s("move_out_date")))
 	var rows [][]string
 	for _, l := range d.rows("lines") {
-		rows = append(rows, []string{l.s("date"), l.s("desc"), l.s("debit"), l.s("credit"), l.s("balance")})
+		rows = append(rows, []string{l.s("date"), lineDesc(l), l.s("debit"), l.s("credit"), l.s("balance")})
 	}
 	if len(rows) > 0 {
 		m.table([]string{"Tarih", "Açıklama", "Borç", "Alacak", "Bakiye"}, rows)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"slices"
 
@@ -12,6 +13,7 @@ import (
 
 	"github.com/openbekci/openbekci/sdk"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
 )
 
 // settingLegalPreset is the site setting that names the pack whose presets fill the site.
@@ -154,8 +156,44 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, raw); err != nil {
 		return err
 	}
+	if lf, ok := changed[sdk.SettingLateFee].(map[string]any); ok {
+		if err := lateFeeDefault(ctx, tx, org, site, lf); err != nil {
+			return err
+		}
+	}
 	diff, _ := audit.Diff("site_settings", nil, changed)
 	return audit.Record(ctx, tx, audit.Event{OrgID: org, SiteID: &site, Action: "pack.presets_applied", TargetType: "site", TargetID: site, Diff: diff})
+}
+
+// lateFeeDefault makes the site's automatic default late fee row (the one a
+// site has until it sets its own) follow the preset's default rate and grace
+// days. The schedule is append-only, but the default row may be replaced: it is
+// deleted and inserted again with the same start date. A site that already set
+// its own policy has no default row and is left alone.
+func lateFeeDefault(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, lf map[string]any) error {
+	rate, ok := lf["default_monthly_rate_bps"].(float64)
+	if !ok {
+		return nil
+	}
+	grace, _ := lf["grace_days"].(float64)
+	var from string
+	var curRate, curGrace int
+	err := tx.QueryRow(ctx, `SELECT from_on::text, rate_bps_per_month, grace_days FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default`, org, site).Scan(&from, &curRate, &curGrace)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if curRate == int(rate) && curGrace == int(grace) {
+		return nil
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default`, org, site); err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days, is_default) VALUES ($1, $2, $3, $4::date, $5, $6, true)`,
+		uuid.New(), org, site, from, int(rate), int(grace))
+	return err
 }
 
 // renameChart renames the site's system accounts by code from the pack's
@@ -164,6 +202,10 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) error {
 	if len(p.C.Charts) == 0 {
 		return nil
+	}
+	// the chart is created on first money use otherwise, after this hook ran: create it now so the names apply
+	if _, err := ledger.EnsureChart(ctx, tx, org, site); err != nil {
+		return err
 	}
 	var locale string
 	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, org).Scan(&locale); err != nil {
