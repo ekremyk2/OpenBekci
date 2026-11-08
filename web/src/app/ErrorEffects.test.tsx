@@ -42,6 +42,9 @@ describe('ErrorEffects', () => {
     expect(await screen.findByText('Ayşe Yılmaz', {}, { timeout: 5000 })).toBeInTheDocument()
     queryClient.setQueryData(['org', 'org-1', 'units'], [1, 2, 3])
 
+    // A 401 means the session is gone, so /v1/me answers 401 from here on; with a live session the
+    // login route would send the user straight back to `next` and the test would race that redirect.
+    server.use(expired())
     act(() => emitApiEvent({ type: 'unauthorized', error: error(401, 'invalid_grant') }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/login'))
