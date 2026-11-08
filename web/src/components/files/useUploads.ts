@@ -65,8 +65,22 @@ export function useUploads(opts: UseUploadsOptions): UploadsController {
   const sources = useRef(new Map<string, File>())
   const controllers = useRef(new Map<string, AbortController>())
   const started = useRef(new Set<string>())
+  // one Idempotency-Key per file, kept across retries of that file
+  const keys = useRef(new Map<string, string>())
+  const alive = useRef(true)
+
+  // Leaving the page cancels what is still running: no orphan files, no state updates afterwards.
+  useEffect(() => {
+    alive.current = true
+    const running = controllers.current
+    return () => {
+      alive.current = false
+      for (const c of running.values()) c.abort()
+    }
+  }, [])
 
   const patch = useCallback((id: string, change: Partial<UploadItem>) => {
+    if (!alive.current) return
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...change } : i)))
   }, [])
 
@@ -89,6 +103,7 @@ export function useUploads(opts: UseUploadsOptions): UploadsController {
           }
           room -= 1
           sources.current.set(id, file)
+          keys.current.set(id, crypto.randomUUID())
           next.push({ ...base, status: 'queued' })
         }
         return next
@@ -106,10 +121,12 @@ export function useUploads(opts: UseUploadsOptions): UploadsController {
       patch(id, { status: 'uploading', progress: 0, error: undefined })
       try {
         const body = downscale ? await downscaleImage(source) : source
+        controller.signal.throwIfAborted() // the downscale cannot be interrupted, only discarded
         const file = await uploader({
           orgId,
           siteId,
           scope,
+          idempotencyKey: keys.current.get(id),
           file: body,
           filename: source.name,
           signal: controller.signal,
@@ -162,12 +179,14 @@ export function useUploads(opts: UseUploadsOptions): UploadsController {
   const remove = useCallback((id: string) => {
     controllers.current.get(id)?.abort()
     sources.current.delete(id)
+    keys.current.delete(id)
     setItems((prev) => prev.filter((i) => i.id !== id))
   }, [])
 
   const clear = useCallback(() => {
     for (const c of controllers.current.values()) c.abort()
     sources.current.clear()
+    keys.current.clear()
     started.current.clear()
     setItems([])
   }, [])

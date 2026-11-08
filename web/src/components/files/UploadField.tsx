@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react'
 import { FileIcon, RotateCcwIcon, UploadIcon, XIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
+import { AppError } from '@/api/errors'
 import { fileUrl } from '@/api/files'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -62,7 +63,11 @@ function Row({
             </span>
           ) : item.status === 'error' ? (
             <span role="alert" className="text-destructive">
-              <Trans>Upload failed.</Trans>
+              {item.error instanceof AppError && item.error.isPayloadTooLarge ? (
+                rejectionText('too_large', controller.profile)
+              ) : (
+                <Trans>Upload failed.</Trans>
+              )}
             </span>
           ) : item.status === 'cancelled' ? (
             <Trans>Cancelled</Trans>

@@ -19,8 +19,9 @@ const IMAGE_EXT = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif']
 const MB = 1024 * 1024
 
 export const UPLOAD_LIMITS: Record<UploadProfile, UploadLimits> = {
-  // Photos are downscaled before upload, so the ceiling applies to the original.
-  photo: { mime: IMAGE_MIME, extensions: IMAGE_EXT, maxBytes: 20 * MB },
+  // The backend accepts 25 MiB for every file. Photos are downscaled before upload, but the
+  // original is only checked against the server's ceiling.
+  photo: { mime: IMAGE_MIME, extensions: IMAGE_EXT, maxBytes: 25 * MB },
   document: {
     mime: [
       ...IMAGE_MIME,

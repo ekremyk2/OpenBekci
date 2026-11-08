@@ -107,7 +107,7 @@ describe('UploadField', () => {
     // `accept` filters in a real picker; drop events bypass it, so use drop-like addFiles here
     const input = document.querySelector('input[type=file]') as HTMLInputElement
     await userEvent.upload(input, [big], { applyAccept: false })
-    expect(await screen.findByText('The file is larger than 20.0 MB.')).toBeInTheDocument()
+    expect(await screen.findByText('The file is larger than 25.0 MB.')).toBeInTheDocument()
 
     await userEvent.upload(input, [new File(['x'], 'notes.pdf', { type: 'application/pdf' })], {
       applyAccept: false,

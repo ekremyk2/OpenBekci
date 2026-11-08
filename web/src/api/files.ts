@@ -24,6 +24,11 @@ export interface UploadRequest {
   filename: string
   siteId?: string
   scope?: string
+  /**
+   * One key per file for the whole series of attempts: a retry after a lost response replays it,
+   * so the server hands back the first file instead of storing a duplicate.
+   */
+  idempotencyKey?: string
   onProgress?: (loaded: number, total: number) => void
   signal?: AbortSignal
 }
@@ -39,7 +44,7 @@ export const uploadFile: Uploader = (req) =>
     xhr.setRequestHeader('Accept', 'application/json')
     xhr.setRequestHeader('Accept-Language', getLocaleProvider()())
     xhr.setRequestHeader('X-Requested-With', 'openbekci-web')
-    xhr.setRequestHeader('Idempotency-Key', crypto.randomUUID())
+    xhr.setRequestHeader('Idempotency-Key', req.idempotencyKey ?? crypto.randomUUID())
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) req.onProgress?.(e.loaded, e.total)
