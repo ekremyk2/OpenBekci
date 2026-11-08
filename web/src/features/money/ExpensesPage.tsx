@@ -306,7 +306,12 @@ async function uploadReceipt(ctx: MoneyCtx, file: File, key: string): Promise<st
 function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
   const { t } = useLingui()
   const msg = useZodMessages()
+  // One logical save is up to three POSTs (receipt, expense, recurring). Each has its own key, kept
+  // across retries and renewed together once the whole save went through, so a lost response or a
+  // second click replays instead of creating a second recurring expense.
   const idem = useIdempotencyKey()
+  const uploadIdem = useIdempotencyKey()
+  const recurringIdem = useIdempotencyKey()
   const funds = useFunds(ctx)
   const [photo, setPhoto] = useState<File | null>(null)
   const [recurring, setRecurring] = useState(false)
@@ -345,7 +350,7 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
   }, [defaultFund, form])
   const fund = v.fund_id || defaultFund || ''
   const create = useMoneyMutation(async (values: V) => {
-    const fileId = photo ? await uploadReceipt(ctx, photo, crypto.randomUUID()) : null
+    const fileId = photo ? await uploadReceipt(ctx, photo, uploadIdem.key) : null
     const res = await moneyApi.POST('/v1/orgs/{org_id}/expenses', {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
@@ -370,7 +375,7 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
         ),
       )
       await moneyApi.POST('/v1/orgs/{org_id}/recurring-expenses', {
-        params: { path: { org_id: ctx.orgId }, header: idemHeader(crypto.randomUUID()) },
+        params: { path: { org_id: ctx.orgId }, header: idemHeader(recurringIdem.key) },
         body: {
           site_id: ctx.siteId,
           category_account_id: values.category_account_id,
@@ -403,6 +408,8 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
               try {
                 await create.mutateAsync(values)
                 idem.renew()
+                uploadIdem.renew()
+                recurringIdem.renew()
                 toast.info(t`Expense recorded.`)
                 onClose()
               } catch (er) {
