@@ -302,9 +302,10 @@ schemas:
         x-open-enum: true
       eligibility_snapshot:
         type: object
-        additionalProperties: true
         nullable: true
-        description: Who could vote and with what weight as of the call date; fixed at `:call`.
+        allOf:
+          - $ref: "#/schemas/EligibilitySnapshot"
+        description: Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only.
       call_letter_document_id:
         type: string
         format: uuid
@@ -360,6 +361,96 @@ schemas:
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
       version: 1
+  EligibilitySnapshot:
+    type: object
+    description: Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it.
+    required:
+      - taken_at
+      - as_of
+      - vote_weight
+      - share_basis
+      - unit_count
+      - total_votes
+      - total_share
+      - owners
+      - unrepresented_units
+    properties:
+      taken_at:
+        type: string
+        format: date-time
+        description: When the snapshot was computed.
+      as_of:
+        type: string
+        format: date-time
+        description: The day whose owners of record it lists.
+      vote_weight:
+        type: string
+        description: Open enum. `per_unit` or `per_owner`.
+        x-open-enum: true
+        enum:
+          - per_unit
+          - per_owner
+      share_basis:
+        type: string
+        description: "`arsa_payi`, or `equal` when the site has no arsa payi values."
+      unit_count:
+        type: integer
+        format: int64
+      total_votes:
+        type: integer
+        format: int64
+      total_share:
+        type: number
+      owners:
+        type: array
+        items:
+          $ref: "#/schemas/EligibilityOwner"
+      unrepresented_units:
+        type: array
+        description: Door numbers of units without an owner of record; nobody votes for them.
+        items:
+          type: string
+  EligibilityOwner:
+    type: object
+    description: An owner of record with the weight they vote with.
+    required:
+      - person_id
+      - display_name
+      - unit_ids
+      - unit_labels
+      - share
+      - vote_weight
+      - representative_of_unit_ids
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      unit_ids:
+        type: array
+        description: Every unit the person owns, including co-owned units another owner votes for.
+        items:
+          type: string
+          format: uuid
+      unit_labels:
+        type: array
+        description: Door numbers of `unit_ids`.
+        items:
+          type: string
+      share:
+        type: string
+        description: The arsa payi the person votes for, a decimal string (exact, not a float).
+      vote_weight:
+        type: integer
+        format: int64
+        description: Number of votes the person holds (before the per-person cap).
+      representative_of_unit_ids:
+        type: array
+        description: The units this person votes for (co-owners vote through one representative).
+        items:
+          type: string
+          format: uuid
   MeetingCreate:
     type: object
     required:

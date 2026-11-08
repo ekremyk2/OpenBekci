@@ -26,12 +26,26 @@ type SnapOwner struct {
 	DisplayName string     `json:"display_name"`
 	Units       []SnapUnit `json:"units"`
 	Votes       int64      `json:"votes"`
-	Share       float64    `json:"share"`
+	// Share is the arsa payi the owner votes for (internal, exact enough for
+	// the quorum); ShareText is how the API shows it, a decimal string.
+	Share     float64 `json:"share_value"`
+	ShareText string  `json:"share"`
+	// VoteWeight is the number of votes (the attendance desk shows it next to the share).
+	VoteWeight int64 `json:"vote_weight"`
+	// UnitIDs and UnitLabels are every unit the person owns, including co-owned
+	// units that another owner votes for; RepresentativeOfUnitIDs are the units
+	// this person votes for.
+	UnitIDs                 []uuid.UUID `json:"unit_ids"`
+	UnitLabels              []string    `json:"unit_labels"`
+	RepresentativeOfUnitIDs []uuid.UUID `json:"representative_of_unit_ids"`
 }
 
-// Snapshot is who could vote and with what weight, as of the call (G1).
+// Snapshot is who could vote and with what weight, as of the day the session
+// opened (G1); at the call it is a preview.
 type Snapshot struct {
-	AsOf       time.Time `json:"as_of"`
+	// TakenAt is when the snapshot was computed.
+	TakenAt time.Time `json:"taken_at"`
+	AsOf    time.Time `json:"as_of"`
 	VoteWeight string    `json:"vote_weight"`
 	// ShareBasis is arsa_payi, or equal when the site has no arsa payi values.
 	ShareBasis string      `json:"share_basis"`
@@ -89,7 +103,7 @@ type occRow struct {
 
 // computeSnapshot reads the owners of record of a site as of the given day.
 func computeSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, asOf time.Time, weight string) (Snapshot, error) {
-	sn := Snapshot{AsOf: asOf.UTC(), VoteWeight: weight, ShareBasis: "arsa_payi", Owners: []SnapOwner{}, Unrepresented: []string{}}
+	sn := Snapshot{TakenAt: time.Now().UTC(), AsOf: asOf.UTC(), VoteWeight: weight, ShareBasis: "arsa_payi", Owners: []SnapOwner{}, Unrepresented: []string{}}
 	type unitRow struct {
 		id     uuid.UUID
 		door   string
@@ -185,6 +199,8 @@ func computeSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, as
 	}
 
 	owners := map[uuid.UUID]*SnapOwner{}
+	ownedBy := map[uuid.UUID][]uuid.UUID{}
+	doorOf := map[uuid.UUID]string{}
 	var order []uuid.UUID
 	for _, r := range roots {
 		os := byUnit[r.id]
@@ -212,6 +228,12 @@ func computeSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, as
 			}
 			return slices.Compare(a.id[:], b.id[:])
 		})
+		for _, oc := range os {
+			if !slices.Contains(ownedBy[oc.person], r.id) {
+				ownedBy[oc.person] = append(ownedBy[oc.person], r.id)
+				doorOf[r.id] = r.door
+			}
+		}
 		rep := os[0]
 		o := owners[rep.person]
 		if o == nil {
@@ -232,10 +254,70 @@ func computeSnapshot(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, as
 		} else {
 			o.Votes = int64(len(o.Units))
 		}
+		o.VoteWeight = o.Votes
+		o.ShareText = fmtShare(o.Share)
+		o.UnitIDs, o.UnitLabels, o.RepresentativeOfUnitIDs = []uuid.UUID{}, []string{}, []uuid.UUID{}
+		for _, un := range o.Units {
+			o.RepresentativeOfUnitIDs = append(o.RepresentativeOfUnitIDs, un.UnitID)
+		}
+		for _, uid := range ownedBy[p] {
+			o.UnitIDs = append(o.UnitIDs, uid)
+			o.UnitLabels = append(o.UnitLabels, doorOf[uid])
+		}
 		sn.TotalVotes += o.Votes
 		sn.Owners = append(sn.Owners, *o)
 	}
 	return sn, nil
+}
+
+// normalizeSnapshot fills the derived fields of a stored snapshot that an older
+// writer left out, so the API always shows the typed shape.
+func normalizeSnapshot(raw []byte) []byte {
+	if len(raw) == 0 {
+		return raw
+	}
+	var sn Snapshot
+	if json.Unmarshal(raw, &sn) != nil {
+		return raw
+	}
+	if sn.Owners == nil {
+		sn.Owners = []SnapOwner{}
+	}
+	if sn.Unrepresented == nil {
+		sn.Unrepresented = []string{}
+	}
+	for i := range sn.Owners {
+		o := &sn.Owners[i]
+		if o.Units == nil {
+			o.Units = []SnapUnit{}
+		}
+		if o.VoteWeight == 0 {
+			o.VoteWeight = o.Votes
+		}
+		if o.ShareText == "" {
+			o.ShareText = fmtShare(o.Share)
+		}
+		if o.RepresentativeOfUnitIDs == nil {
+			o.RepresentativeOfUnitIDs = []uuid.UUID{}
+			for _, u := range o.Units {
+				o.RepresentativeOfUnitIDs = append(o.RepresentativeOfUnitIDs, u.UnitID)
+			}
+		}
+		if o.UnitIDs == nil {
+			o.UnitIDs, o.UnitLabels = []uuid.UUID{}, []string{}
+			for _, u := range o.Units {
+				o.UnitIDs, o.UnitLabels = append(o.UnitIDs, u.UnitID), append(o.UnitLabels, u.DoorNumber)
+			}
+		}
+		if o.UnitLabels == nil {
+			o.UnitLabels = []string{}
+		}
+	}
+	out, err := json.Marshal(sn)
+	if err != nil {
+		return raw
+	}
+	return out
 }
 
 // loadSnapshot reads the snapshot stored on a called meeting.

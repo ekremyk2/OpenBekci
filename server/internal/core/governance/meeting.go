@@ -74,7 +74,7 @@ func scanMeeting(row pgx.Row) (Meeting, error) {
 		t := m.FirstCallFailedAt.UTC()
 		m.FirstCallFailedAt = &t
 	}
-	m.EligibilitySnapshot, m.settings = snap, set
+	m.EligibilitySnapshot, m.settings = normalizeSnapshot(snap), set
 	return m, err
 }
 
@@ -457,6 +457,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		if err != nil {
 			return err
 		}
+		snap.TakenAt = now.UTC()
 		if len(snap.Owners) == 0 {
 			return problem.Conflict("the site has no owners of record to call; add owner occupancies first")
 		}
@@ -465,7 +466,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 			return err
 		}
 		snapRaw, setRaw := mustJSON(snap), mustJSON(set.Settings)
-		if _, err = tx.Exec(ctx, `UPDATE meeting SET status = 'called', called_at = $3, eligibility_snapshot = $4, settings_snapshot = $5, updated_at = now(), version = version + 1
+		if _, err = tx.Exec(ctx, `UPDATE meeting SET status = 'called', called_at = $3, eligibility_snapshot = $4, call_snapshot = $4, settings_snapshot = $5, updated_at = now(), version = version + 1
 			WHERE org_id = $1 AND id = $2`, orgID, id, now, snapRaw, setRaw); err != nil {
 			return err
 		}
@@ -569,9 +570,72 @@ func (s *Service) transition(ctx context.Context, orgID, id uuid.UUID, from []st
 // clock. It needs meetings.manage.
 func (s *Service) OpenFirstCall(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
 	return s.transition(ctx, orgID, id, []string{StatusCalled}, StatusInSession, "meeting.open_first_call", func(tx pgx.Tx, m Meeting) error {
+		if err := s.refreshSnapshot(ctx, tx, m); err != nil {
+			return err
+		}
 		_, err := tx.Exec(ctx, `UPDATE meeting SET held_call = 'first' WHERE org_id = $1 AND id = $2`, orgID, m.ID)
 		return err
 	})
+}
+
+// refreshSnapshot retakes the eligibility snapshot as of the day the session
+// opens (G1): an owner who sold after the call loses the vote and the buyer of
+// record can check in. The snapshot taken at the call stays on the meeting as
+// call_snapshot (the preview); the difference is audited. Owners who left lose
+// their check-in token, owners who arrived get a token and a pending call
+// notice (they were not noticed, and the record says so).
+func (s *Service) refreshSnapshot(ctx context.Context, tx pgx.Tx, m Meeting) error {
+	prev, err := loadSnapshot(m.EligibilitySnapshot)
+	if err != nil {
+		return problem.Conflict("the meeting has not been called yet")
+	}
+	snap, err := computeSnapshot(ctx, tx, m.OrgID, m.SiteID, s.today(), m.rules().VoteWeight)
+	if err != nil {
+		return err
+	}
+	snap.TakenAt = s.now().UTC()
+	if len(snap.Owners) == 0 {
+		return problem.Conflict("the site has no owners of record on the day of the meeting")
+	}
+	var added, removed []uuid.UUID
+	for _, o := range snap.Owners {
+		if _, ok := prev.Owner(o.PersonID); !ok {
+			added = append(added, o.PersonID)
+		}
+	}
+	for _, o := range prev.Owners {
+		if _, ok := snap.Owner(o.PersonID); !ok {
+			removed = append(removed, o.PersonID)
+		}
+	}
+	if _, err := tx.Exec(ctx, `UPDATE meeting SET eligibility_snapshot = $3 WHERE org_id = $1 AND id = $2`, m.OrgID, m.ID, mustJSON(snap)); err != nil {
+		return err
+	}
+	for _, p := range removed {
+		if _, err := tx.Exec(ctx, `DELETE FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3`, m.OrgID, m.ID, p); err != nil {
+			return err
+		}
+	}
+	for _, p := range added {
+		if _, err := tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT DO NOTHING`, m.OrgID, m.SiteID, m.ID, p, newToken()); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')
+			ON CONFLICT DO NOTHING`, newID(), m.OrgID, m.SiteID, m.ID, p); err != nil {
+			return err
+		}
+	}
+	if len(added) == 0 && len(removed) == 0 && prev.TotalVotes == snap.TotalVotes {
+		return nil
+	}
+	diff, err := audit.Diff("eligibility_snapshot",
+		map[string]any{"owners": len(prev.Owners), "total_votes": prev.TotalVotes, "as_of": prev.AsOf},
+		map[string]any{"owners": len(snap.Owners), "total_votes": snap.TotalVotes, "as_of": snap.AsOf, "owners_added": added, "owners_removed": removed})
+	if err != nil {
+		return err
+	}
+	return audit.Record(ctx, tx, audit.Event{OrgID: m.OrgID, SiteID: &m.SiteID, Action: "meeting.snapshot_refresh", TargetType: "meeting", TargetID: m.ID, Diff: diff})
 }
 
 // OpenSecondCall moves a session whose first call failed its quorum to the

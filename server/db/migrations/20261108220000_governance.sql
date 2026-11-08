@@ -33,8 +33,11 @@ CREATE TABLE meeting (
     second_call_at          timestamptz NOT NULL,
     location                text        NOT NULL,
     status                  text        NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'called', 'in_session', 'closed', 'cancelled')),
-    -- who could vote and with what weight, computed when the meeting is called (G1)
+    -- who could vote and with what weight (G1): a preview taken when the meeting
+    -- is called, retaken as of the day the session opens (open-first-call) and
+    -- fixed from then on. call_snapshot keeps the preview for the audit trail.
     eligibility_snapshot    jsonb,
+    call_snapshot           jsonb,
     -- the rules in force when it was called: a later settings change does not rewrite a past meeting
     settings_snapshot       jsonb,
     call_letter_document_id uuid,

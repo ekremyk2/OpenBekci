@@ -4244,10 +4244,8 @@ export interface components {
              * @enum {string}
              */
             status: "draft" | "called" | "in_session" | "closed" | "cancelled";
-            /** @description Who could vote and with what weight as of the call date; fixed at `:call`. */
-            eligibility_snapshot: {
-                [key: string]: unknown;
-            } | null;
+            /** @description Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only. */
+            eligibility_snapshot: components["schemas"]["EligibilitySnapshot"] | null;
             /** Format: uuid */
             call_letter_document_id: string | null;
             /** Format: uuid */
@@ -5133,6 +5131,53 @@ export interface components {
             method: "email_code";
             /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
             code: string;
+        };
+        /** @description An owner of record with the weight they vote with. */
+        EligibilityOwner: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description Every unit the person owns, including co-owned units another owner votes for. */
+            unit_ids: string[];
+            /** @description Door numbers of `unit_ids`. */
+            unit_labels: string[];
+            /** @description The arsa payi the person votes for, a decimal string (exact, not a float). */
+            share: string;
+            /**
+             * Format: int64
+             * @description Number of votes the person holds (before the per-person cap).
+             */
+            vote_weight: number;
+            /** @description The units this person votes for (co-owners vote through one representative). */
+            representative_of_unit_ids: string[];
+        };
+        /** @description Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it. */
+        EligibilitySnapshot: {
+            /**
+             * Format: date-time
+             * @description When the snapshot was computed.
+             */
+            taken_at: string;
+            /**
+             * Format: date-time
+             * @description The day whose owners of record it lists.
+             */
+            as_of: string;
+            /**
+             * @description Open enum. `per_unit` or `per_owner`.
+             * @enum {string}
+             */
+            vote_weight: "per_unit" | "per_owner";
+            /** @description `arsa_payi`, or `equal` when the site has no arsa payi values. */
+            share_basis: string;
+            /** Format: int64 */
+            unit_count: number;
+            /** Format: int64 */
+            total_votes: number;
+            total_share: number;
+            owners: components["schemas"]["EligibilityOwner"][];
+            /** @description Door numbers of units without an owner of record; nobody votes for them. */
+            unrepresented_units: string[];
         };
     };
     responses: {

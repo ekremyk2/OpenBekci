@@ -288,6 +288,7 @@ type Meeting struct {
 	Location             string
 	Status               string
 	EligibilitySnapshot  []byte
+	CallSnapshot         []byte
 	SettingsSnapshot     []byte
 	CallLetterDocumentID pgtype.UUID
 	MinutesDocumentID    pgtype.UUID

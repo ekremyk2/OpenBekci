@@ -172,10 +172,12 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 		t.Fatalf("unrepresented units = %v", un)
 	}
 	// later changes do not rewrite the snapshot
-	w.NewOccupancy(t, f, u[5], w.NewPerson(t, org), "owner")
+	late := w.NewOccupancy(t, f, u[5], w.NewPerson(t, org), "owner")
 	if again := c.must(200, mgr, "GET", base(mpath), ""); gnum(gmap(again, "eligibility_snapshot"), "total_votes") != 5 {
 		t.Fatalf("snapshot changed after the call: %v", again["eligibility_snapshot"])
 	}
+	// (the snapshot is retaken when the session opens: this late owner is taken out again first)
+	w.Exec(t, `DELETE FROM occupancy WHERE org_id = $1 AND id = $2`, org.ID, late)
 	c.must(409, mgr, "POST", base(mpath+":call"), `{}`)
 	c.must(409, mgr, "PATCH", base(mpath), `{"location":"Garden"}`, "If-Match", `"2"`)
 	// too late: less than call_min_days before the meeting
