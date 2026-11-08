@@ -178,6 +178,13 @@ func requestHash(r *http.Request, body []byte) string {
 // requestScope is (org from the path, the authenticated principal).
 func requestScope(r *http.Request, pr *authz.Principal) idempotency.Scope {
 	s := idempotency.Scope{PrincipalID: pr.ID}
+	if pr.APIKey != nil {
+		// a key's principal carries its creator's user id; the key must not
+		// share a namespace with the creator's own requests (a replay would
+		// hand it a response it was never entitled to) or with the creator's
+		// other keys
+		s.PrincipalID = pr.APIKey.KeyID
+	}
 	if v := chi.URLParam(r, "org_id"); v != "" {
 		if id, err := uuid.Parse(v); err == nil {
 			s.OrgID = &id

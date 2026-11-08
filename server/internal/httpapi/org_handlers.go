@@ -111,7 +111,7 @@ func auditDTO(e audit.Stored) gen.AuditEvent {
 	return gen.AuditEvent{
 		Id: e.ID, At: e.At, ActorKind: gen.AuditEventActorKind(e.ActorKind), Action: e.Action,
 		TargetType: e.TargetType, TargetId: e.TargetID, Diff: diff,
-		ActorUserId: nullUUID(e.ActorUserID), SiteId: nullUUID(e.SiteID), Ip: nullStr(e.IP), RequestId: nullStr(e.RequestID),
+		ActorUserId: nullUUID(e.ActorUserID), ActorKeyId: nullUUID(e.ActorKeyID), SiteId: nullUUID(e.SiteID), Ip: nullStr(e.IP), RequestId: nullStr(e.RequestID),
 	}
 }
 

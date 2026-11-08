@@ -239,6 +239,23 @@ type AnnouncementRecipient struct {
 	PersonID       pgtype.UUID
 }
 
+type ApiKey struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	Name       string
+	Prefix     string
+	SecretHash []byte
+	Scopes     []string
+	SiteID     pgtype.UUID
+	CreatedBy  pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+	RotatedAt  pgtype.Timestamptz
+	LastUsedAt pgtype.Timestamptz
+	ExpiresAt  pgtype.Timestamptz
+	RevokedAt  pgtype.Timestamptz
+	RevokedBy  pgtype.UUID
+}
+
 type AssemblyReminder struct {
 	OrgID      pgtype.UUID
 	SiteID     pgtype.UUID
@@ -287,6 +304,7 @@ type AuditEvent struct {
 	Ip          *netip.Addr
 	RequestID   pgtype.Text
 	At          pgtype.Timestamptz
+	ActorKeyID  pgtype.UUID
 }
 
 type BankStatementImport struct {
@@ -1287,6 +1305,7 @@ type PlatformAuditEvent struct {
 	Ip          *netip.Addr
 	RequestID   pgtype.Text
 	At          pgtype.Timestamptz
+	ActorKeyID  pgtype.UUID
 }
 
 type Poll struct {
@@ -1725,4 +1744,40 @@ type VoteCount struct {
 	AbstainShare pgtype.Numeric
 	RecordedBy   pgtype.UUID
 	RecordedAt   pgtype.Timestamptz
+}
+
+type WebhookDelivery struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	EndpointID   pgtype.UUID
+	EventID      pgtype.UUID
+	EventType    string
+	Body         []byte
+	Status       string
+	Attempts     int32
+	ResponseCode pgtype.Int4
+	LastError    pgtype.Text
+	NextRetryAt  pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	DeliveredAt  pgtype.Timestamptz
+}
+
+type WebhookEndpoint struct {
+	ID                      pgtype.UUID
+	OrgID                   pgtype.UUID
+	Url                     string
+	SecretSealed            []byte
+	Events                  []string
+	Active                  bool
+	Description             pgtype.Text
+	FailingSince            pgtype.Timestamptz
+	ConsecutiveFailures     int32
+	CreatedBy               pgtype.UUID
+	CreatedAt               pgtype.Timestamptz
+	UpdatedAt               pgtype.Timestamptz
+	Version                 int32
+	SecretPreviousSealed    []byte
+	SecretPreviousExpiresAt pgtype.Timestamptz
+	SecretRotatedAt         pgtype.Timestamptz
 }

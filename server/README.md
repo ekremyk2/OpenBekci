@@ -29,6 +29,8 @@ openbekci version
 
 Configuration is `OPENBEKCI_*` environment variables (secrets also accept `_FILE`), optionally a `--config file.yaml` with the lowercase names (`database_url: ...`); the environment wins. `OPENBEKCI_DATABASE_SIDE_POOL_MAX` (default 4) sizes the second app-role connection pool that transactions use when they open while the caller already holds one (generated files stored during a filing); it adds to the main pool's connections, so count it against Postgres `max_connections`. See [.env.example](../.env.example) and [deploy/compose/.env.example](../deploy/compose/.env.example).
 
+Integrations (release 0.4, [docs/integrations.md](../docs/integrations.md)): `OPENBEKCI_API_KEY_RATE_PER_MINUTE` (default 600 per organization API key; negative removes the limit), `OPENBEKCI_WEBHOOK_MAX_ATTEMPTS` (default 8, 1 to 20; backoff doubles from 30 s up to 4 h) and `OPENBEKCI_WEBHOOK_ALLOWED_CIDRS` (comma separated CIDRs or IPs that outbound webhooks may reach although they are private, loopback or link-local; empty keeps the SSRF guard strict). Webhook signing secrets are sealed with `OPENBEKCI_ENCRYPTION_KEY`, so it belongs in the backup set. Webhook deliveries are River jobs (`webhooks.deliver`) and need the worker (`OPENBEKCI_WORKER=embedded`, or a separate `openbekci worker`).
+
 ## Accounts, organizations and signing in
 
 Local walkthrough (after `tools/task.ps1 migrate`; `.env` from `.env.example` has `SMS_PROVIDER=log` and
