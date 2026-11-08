@@ -1,4 +1,4 @@
-﻿// Package permissions builds the permission registry from every module's Permissions().
+// Package permissions builds the permission registry from every module's Permissions().
 // It is a package of its own so that cmd/genpermissions can run before the API code is generated.
 package permissions
 

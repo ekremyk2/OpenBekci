@@ -23,12 +23,19 @@ import (
 // lateNotifier is the jobs.Notifier the modules are built with before the
 // River client exists (the client's workers need the modules): it queues
 // through the client once start has set it.
-type lateNotifier struct{ c atomic.Pointer[jobs.Client] }
+type lateNotifier struct {
+	c   atomic.Pointer[jobs.Client]
+	log *slog.Logger
+}
 
-// Notify implements jobs.Notifier.
+// Notify implements jobs.Notifier. Before the client exists (the start-up
+// window) a notification is dropped, loudly.
 func (l *lateNotifier) Notify(ctx context.Context, tx pgx.Tx, a jobs.NotifyArgs) error {
 	c := l.c.Load()
 	if c == nil {
+		if l.log != nil {
+			l.log.WarnContext(ctx, "notification dropped: the job client is not started yet", "type", a.Type, "key", a.Key)
+		}
 		return nil
 	}
 	return jobs.QueueNotifier{Client: c}.Notify(ctx, tx, a)
@@ -56,7 +63,7 @@ func newOps(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) (*opsServ
 	if err != nil {
 		return nil, err
 	}
-	late := &lateNotifier{}
+	late := &lateNotifier{log: log}
 	return &opsServices{
 		late:          late,
 		notifications: notifications.NewService(d, notifications.Config{Mail: mailer, SMS: gw, Log: log, BaseURL: cfg.BaseURL}),

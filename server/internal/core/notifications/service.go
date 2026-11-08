@@ -356,6 +356,16 @@ type DefaultInput struct {
 // SetDefaults replaces the site's overrides. expected is the version read
 // last (If-Match); a type that is left out goes back to its built-in default.
 func (s *Service) SetDefaults(ctx context.Context, orgID, siteID uuid.UUID, expected int, in []DefaultInput) (Defaults, error) {
+	// authorize first: somebody without notifications.manage gets 403 whatever the body says
+	if err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		sc, err := authz.ScopeOfSite(ctx, tx, siteID)
+		if err != nil {
+			return err
+		}
+		return authz.Require(ctx, PermManage, sc)
+	}); err != nil {
+		return Defaults{}, tenancy.DBProblem(err, "notification defaults")
+	}
 	var bad []problem.Field
 	seen := map[string]bool{}
 	for i, e := range in {

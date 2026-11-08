@@ -520,14 +520,35 @@ func (s *Service) CreateTicket(ctx context.Context, orgID uuid.UUID, d tenancy.D
 				return problem.Forbidden("you may open tickets for your own unit only")
 			}
 		} else if vis == VisPrivate {
-			switch len(c.units) {
-			case 1:
-				unit = &c.units[0]
-			case 0:
-				return problem.Validation(problem.Field{Field: "unit_id", Code: "required"})
-			default:
+			// the unit the ticket is about is the reporter's, not the opener's: a
+			// manager opening on a resident's behalf must name the unit, unless the
+			// resident has exactly one
+			cand := c.units
+			if reporter != c.person {
+				cand = nil
+				rows, err := tx.Query(ctx, `SELECT DISTINCT o.unit_id FROM occupancy o JOIN site st ON st.org_id = o.org_id AND st.id = o.site_id
+					WHERE o.org_id = $1 AND o.site_id = $2 AND o.person_id = $3
+					AND o.valid_from <= (now() AT TIME ZONE st.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE st.timezone)::date)`, orgID, in.SiteID, reporter)
+				if err != nil {
+					return err
+				}
+				for rows.Next() {
+					var u uuid.UUID
+					if err := rows.Scan(&u); err != nil {
+						rows.Close()
+						return err
+					}
+					cand = append(cand, u)
+				}
+				rows.Close()
+				if err := rows.Err(); err != nil {
+					return err
+				}
+			}
+			if len(cand) != 1 {
 				return problem.Validation(problem.Field{Field: "unit_id", Code: "required"})
 			}
+			unit = &cand[0]
 		}
 		var statusID uuid.UUID
 		if err := tx.QueryRow(ctx, `SELECT id FROM ticket_status WHERE org_id = $1 AND site_id = $2 AND NOT archived AND semantic = 'open_like' ORDER BY position LIMIT 1`, orgID, in.SiteID).Scan(&statusID); err != nil {

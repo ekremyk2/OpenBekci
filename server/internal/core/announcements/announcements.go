@@ -785,9 +785,9 @@ type Preview struct {
 	SMSCount       int `json:"sms_count"`
 	// SMSSegments is what the SMS bill counts: a long text or a Turkish glyph
 	// (UCS-2, 70 characters a segment) makes several per message.
-	SMSSegments    int `json:"sms_segments"`
-	MailCount      int `json:"email_count"`
-	InAppCount     int `json:"in_app_count"`
+	SMSSegments int `json:"sms_segments"`
+	MailCount   int `json:"email_count"`
+	InAppCount  int `json:"in_app_count"`
 }
 
 type recipient struct {

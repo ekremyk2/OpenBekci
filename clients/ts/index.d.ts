@@ -3253,7 +3253,7 @@ export interface paths {
         };
         /**
          * Monthly SMS counter of a site
-         * @description **Release 0.1.** Monthly SMS counter of a site.
+         * @description **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
          *
          *     Permission: `notifications.manage`.
          */
