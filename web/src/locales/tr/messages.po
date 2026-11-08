@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
+#. placeholder {0}: doc.title
+msgid "\"{0}\" will be removed. This cannot be undone."
+msgstr "\"{0}\" kaldırılacak. Bu işlem geri alınamaz."
+
 #. placeholder {0}: query.data.open_common_tickets
 msgid "{0} in common areas"
 msgstr "Ortak alanlarda {0}"
@@ -232,6 +236,9 @@ msgstr "Değişiklikler"
 msgid "Channels"
 msgstr "Kanallar"
 
+msgid "Check who will be reached before it goes out."
+msgstr "Göndermeden önce kimlere ulaşılacağını kontrol edin."
+
 msgid "Choose a block"
 msgstr "Blok seçin"
 
@@ -412,15 +419,14 @@ msgid "Delete"
 msgstr "Sil"
 
 #. placeholder {0}: doc.title
-msgid "Delete \"{0}\"?"
-msgstr "\"{0}\" silinsin mi?"
-
-#. placeholder {0}: doc.title
 msgid "Delete {0}"
 msgstr "{0} sil"
 
 msgid "Delete this announcement?"
 msgstr "Bu duyuru silinsin mi?"
+
+msgid "Delete this document?"
+msgstr "Bu belge silinsin mi?"
 
 msgid "Delivery preview"
 msgstr "Gönderim önizlemesi"
@@ -485,7 +491,7 @@ msgstr "Bana bağlantı gönder"
 msgid "Email or phone"
 msgstr "E-posta veya telefon"
 
-#. placeholder {0}: preview.data.email_count
+#. placeholder {0}: query.data.email_count
 msgid "Emails: {0}"
 msgstr "E-postalar: {0}"
 
@@ -591,7 +597,7 @@ msgstr "Devam ediyor"
 msgid "In-app"
 msgstr "Uygulama içi"
 
-#. placeholder {0}: preview.data.in_app_count
+#. placeholder {0}: query.data.in_app_count
 msgid "In-app notifications: {0}"
 msgstr "Uygulama içi bildirimler: {0}"
 
@@ -1029,6 +1035,9 @@ msgstr "Yayın zamanı (isteğe bağlı)"
 msgid "Publish now"
 msgstr "Şimdi yayımla"
 
+msgid "Publish this announcement?"
+msgstr "Bu duyuru yayınlansın mı?"
+
 msgid "Published"
 msgstr "Yayımlandı"
 
@@ -1041,7 +1050,7 @@ msgstr "Okundu bilgileri"
 msgid "Readers"
 msgstr "Okuyanlar"
 
-#. placeholder {0}: preview.data.recipient_count
+#. placeholder {0}: query.data.recipient_count
 msgid "Recipients: {0}"
 msgstr "Alıcılar: {0}"
 
@@ -1061,9 +1070,6 @@ msgstr "{0} kaldır"
 msgid "Rename {0}"
 msgstr "{0} yeniden adlandır"
 
-msgid "Replace the workflow with the default (open, in progress, done)?"
-msgstr "İş akışı varsayılanla (açık, devam ediyor, tamamlandı) değiştirilsin mi?"
-
 #. placeholder {0}: s.name
 msgid "Replacement for {0}"
 msgstr "{0} için yerine geçecek durum"
@@ -1076,8 +1082,14 @@ msgstr "İstek {0}{1}"
 msgid "Reset your password"
 msgstr "Parolanızı sıfırlayın"
 
+msgid "Restore and save"
+msgstr "Geri yükle ve kaydet"
+
 msgid "Restore default workflow"
 msgstr "Varsayılan iş akışını geri yükle"
+
+msgid "Restore the default workflow?"
+msgstr "Varsayılan iş akışı geri yüklensin mi?"
 
 #. placeholder {0}: item.name
 msgid "Retry {0}"
@@ -1175,7 +1187,7 @@ msgstr "SMS"
 msgid "SMS code"
 msgstr "SMS kodu"
 
-#. placeholder {0}: preview.data.sms_count
+#. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
 msgstr "SMS mesajları: {0} (siteye faturalanır)"
 
@@ -1274,11 +1286,17 @@ msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
 msgid "The statuses a ticket moves through at this site, in order."
 msgstr "Bu sitede bir talebin sırayla geçtiği durumlar."
 
+msgid "The statuses below replace the current ones and are saved right away. Nothing changes if you cancel."
+msgstr "Aşağıdaki durumlar mevcut olanların yerine geçer ve hemen kaydedilir. İptal ederseniz hiçbir şey değişmez."
+
 msgid "Theme"
 msgstr "Tema"
 
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
+
+msgid "This cannot be undone."
+msgstr "Bu işlem geri alınamaz."
 
 msgid "This file type cannot be previewed."
 msgstr "Bu dosya türü önizlenemiyor."
@@ -1345,6 +1363,11 @@ msgstr "Bu filtrelere uyan talepler burada görünecek."
 
 msgid "Tickets merged."
 msgstr "Talepler birleştirildi."
+
+#. placeholder {0}: m.from
+#. placeholder {1}: m.to
+msgid "Tickets of \"{0}\" move to \"{1}\"."
+msgstr "\"{0}\" durumundaki talepler \"{1}\" durumuna taşınır."
 
 msgid "Timeline"
 msgstr "Zaman çizelgesi"

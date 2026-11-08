@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
+#. placeholder {0}: doc.title
+msgid "\"{0}\" will be removed. This cannot be undone."
+msgstr ""
+
 #. placeholder {0}: query.data.open_common_tickets
 msgid "{0} in common areas"
 msgstr ""
@@ -232,6 +236,9 @@ msgstr ""
 msgid "Channels"
 msgstr ""
 
+msgid "Check who will be reached before it goes out."
+msgstr ""
+
 msgid "Choose a block"
 msgstr ""
 
@@ -412,14 +419,13 @@ msgid "Delete"
 msgstr ""
 
 #. placeholder {0}: doc.title
-msgid "Delete \"{0}\"?"
-msgstr ""
-
-#. placeholder {0}: doc.title
 msgid "Delete {0}"
 msgstr ""
 
 msgid "Delete this announcement?"
+msgstr ""
+
+msgid "Delete this document?"
 msgstr ""
 
 msgid "Delivery preview"
@@ -485,7 +491,7 @@ msgstr ""
 msgid "Email or phone"
 msgstr ""
 
-#. placeholder {0}: preview.data.email_count
+#. placeholder {0}: query.data.email_count
 msgid "Emails: {0}"
 msgstr ""
 
@@ -591,7 +597,7 @@ msgstr ""
 msgid "In-app"
 msgstr ""
 
-#. placeholder {0}: preview.data.in_app_count
+#. placeholder {0}: query.data.in_app_count
 msgid "In-app notifications: {0}"
 msgstr ""
 
@@ -1029,6 +1035,9 @@ msgstr ""
 msgid "Publish now"
 msgstr ""
 
+msgid "Publish this announcement?"
+msgstr ""
+
 msgid "Published"
 msgstr ""
 
@@ -1041,7 +1050,7 @@ msgstr ""
 msgid "Readers"
 msgstr ""
 
-#. placeholder {0}: preview.data.recipient_count
+#. placeholder {0}: query.data.recipient_count
 msgid "Recipients: {0}"
 msgstr ""
 
@@ -1061,9 +1070,6 @@ msgstr ""
 msgid "Rename {0}"
 msgstr ""
 
-msgid "Replace the workflow with the default (open, in progress, done)?"
-msgstr ""
-
 #. placeholder {0}: s.name
 msgid "Replacement for {0}"
 msgstr ""
@@ -1076,7 +1082,13 @@ msgstr ""
 msgid "Reset your password"
 msgstr ""
 
+msgid "Restore and save"
+msgstr ""
+
 msgid "Restore default workflow"
+msgstr ""
+
+msgid "Restore the default workflow?"
 msgstr ""
 
 #. placeholder {0}: item.name
@@ -1175,7 +1187,7 @@ msgstr ""
 msgid "SMS code"
 msgstr ""
 
-#. placeholder {0}: preview.data.sms_count
+#. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
 msgstr ""
 
@@ -1274,10 +1286,16 @@ msgstr ""
 msgid "The statuses a ticket moves through at this site, in order."
 msgstr ""
 
+msgid "The statuses below replace the current ones and are saved right away. Nothing changes if you cancel."
+msgstr ""
+
 msgid "Theme"
 msgstr ""
 
 msgid "This accounting period is closed and can no longer be changed."
+msgstr ""
+
+msgid "This cannot be undone."
 msgstr ""
 
 msgid "This file type cannot be previewed."
@@ -1344,6 +1362,11 @@ msgid "Tickets matching these filters will appear here."
 msgstr ""
 
 msgid "Tickets merged."
+msgstr ""
+
+#. placeholder {0}: m.from
+#. placeholder {1}: m.to
+msgid "Tickets of \"{0}\" move to \"{1}\"."
 msgstr ""
 
 msgid "Timeline"

@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
+#. placeholder {0}: doc.title
+msgid "\"{0}\" will be removed. This cannot be undone."
+msgstr "\"{0}\" will be removed. This cannot be undone."
+
 #. placeholder {0}: query.data.open_common_tickets
 msgid "{0} in common areas"
 msgstr "{0} in common areas"
@@ -232,6 +236,9 @@ msgstr "Changes"
 msgid "Channels"
 msgstr "Channels"
 
+msgid "Check who will be reached before it goes out."
+msgstr "Check who will be reached before it goes out."
+
 msgid "Choose a block"
 msgstr "Choose a block"
 
@@ -412,15 +419,14 @@ msgid "Delete"
 msgstr "Delete"
 
 #. placeholder {0}: doc.title
-msgid "Delete \"{0}\"?"
-msgstr "Delete \"{0}\"?"
-
-#. placeholder {0}: doc.title
 msgid "Delete {0}"
 msgstr "Delete {0}"
 
 msgid "Delete this announcement?"
 msgstr "Delete this announcement?"
+
+msgid "Delete this document?"
+msgstr "Delete this document?"
 
 msgid "Delivery preview"
 msgstr "Delivery preview"
@@ -485,7 +491,7 @@ msgstr "Email me a link"
 msgid "Email or phone"
 msgstr "Email or phone"
 
-#. placeholder {0}: preview.data.email_count
+#. placeholder {0}: query.data.email_count
 msgid "Emails: {0}"
 msgstr "Emails: {0}"
 
@@ -591,7 +597,7 @@ msgstr "In progress"
 msgid "In-app"
 msgstr "In-app"
 
-#. placeholder {0}: preview.data.in_app_count
+#. placeholder {0}: query.data.in_app_count
 msgid "In-app notifications: {0}"
 msgstr "In-app notifications: {0}"
 
@@ -1029,6 +1035,9 @@ msgstr "Publish at (optional)"
 msgid "Publish now"
 msgstr "Publish now"
 
+msgid "Publish this announcement?"
+msgstr "Publish this announcement?"
+
 msgid "Published"
 msgstr "Published"
 
@@ -1041,7 +1050,7 @@ msgstr "Read receipts"
 msgid "Readers"
 msgstr "Readers"
 
-#. placeholder {0}: preview.data.recipient_count
+#. placeholder {0}: query.data.recipient_count
 msgid "Recipients: {0}"
 msgstr "Recipients: {0}"
 
@@ -1061,9 +1070,6 @@ msgstr "Remove {0}"
 msgid "Rename {0}"
 msgstr "Rename {0}"
 
-msgid "Replace the workflow with the default (open, in progress, done)?"
-msgstr "Replace the workflow with the default (open, in progress, done)?"
-
 #. placeholder {0}: s.name
 msgid "Replacement for {0}"
 msgstr "Replacement for {0}"
@@ -1076,8 +1082,14 @@ msgstr "Request {0}{1}"
 msgid "Reset your password"
 msgstr "Reset your password"
 
+msgid "Restore and save"
+msgstr "Restore and save"
+
 msgid "Restore default workflow"
 msgstr "Restore default workflow"
+
+msgid "Restore the default workflow?"
+msgstr "Restore the default workflow?"
 
 #. placeholder {0}: item.name
 msgid "Retry {0}"
@@ -1175,7 +1187,7 @@ msgstr "SMS"
 msgid "SMS code"
 msgstr "SMS code"
 
-#. placeholder {0}: preview.data.sms_count
+#. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
 msgstr "SMS messages: {0} (billed to the site)"
 
@@ -1274,11 +1286,17 @@ msgstr "The request failed. Please try again."
 msgid "The statuses a ticket moves through at this site, in order."
 msgstr "The statuses a ticket moves through at this site, in order."
 
+msgid "The statuses below replace the current ones and are saved right away. Nothing changes if you cancel."
+msgstr "The statuses below replace the current ones and are saved right away. Nothing changes if you cancel."
+
 msgid "Theme"
 msgstr "Theme"
 
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "This accounting period is closed and can no longer be changed."
+
+msgid "This cannot be undone."
+msgstr "This cannot be undone."
 
 msgid "This file type cannot be previewed."
 msgstr "This file type cannot be previewed."
@@ -1345,6 +1363,11 @@ msgstr "Tickets matching these filters will appear here."
 
 msgid "Tickets merged."
 msgstr "Tickets merged."
+
+#. placeholder {0}: m.from
+#. placeholder {1}: m.to
+msgid "Tickets of \"{0}\" move to \"{1}\"."
+msgstr "Tickets of \"{0}\" move to \"{1}\"."
 
 msgid "Timeline"
 msgstr "Timeline"
