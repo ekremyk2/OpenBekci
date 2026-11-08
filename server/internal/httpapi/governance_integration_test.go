@@ -127,6 +127,7 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	bad, _ := json.Marshal(set)
 	c.must(422, mgr, "PUT", base(site+"/governance-settings"), string(bad), "If-Match", `"2"`)
 	set["call_min_days"] = 15
+	set["notice_electronic_allowed"] = true
 	set["thresholds"] = gmap(c.must(200, mgr, "GET", base(site+"/governance-settings"), ""), "settings")["thresholds"]
 	body, _ = json.Marshal(set)
 	c.must(200, mgr, "PUT", base(site+"/governance-settings"), string(body), "If-Match", `"2"`)
@@ -456,14 +457,8 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	}
 	c.must(409, mgr, "POST", base(mpath+":notify-decisions?dry_run=true"), `{"channels":["in_app"]}`, "Idempotency-Key", "notify-key-0000") // still in session
 	c.must(200, mgr, "POST", base(mpath+":close"), ``)
-	if len(rn.absent) != 1 {
-		t.Fatalf("closing did not enqueue governance.notify_absentees: %v", rn.absent)
-	}
-	if err := e.gov.RunNotifyAbsentees(context.Background(), org.ID, uuid.MustParse(mid), nil); err != nil { // what the job does
-		t.Fatal(err)
-	}
-	if dn := litems(c.must(200, mgr, "GET", base(mpath+"/notices?phase=decisions"), "")); len(dn) != 1 || gstr(dn[0], "person_id") != p5.String() || gstr(dn[0], "status") != "recorded" {
-		t.Fatalf("decision notices after the job = %v", dn)
+	if len(rn.absent) != 0 {
+		t.Fatalf("closing must not schedule the delivery of decisions: %v", rn.absent)
 	}
 	if r := nd("?dry_run=true", "notify-key-0001", 200); gnum(r, "recipient_count") != 1 || gnum(r, "sms_count") != 1 || r["dry_run"] != true {
 		t.Fatalf("dry run = %v", r)
@@ -471,9 +466,30 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	if r := nd("", "notify-key-0002", 200); gnum(r, "recipient_count") != 1 {
 		t.Fatalf("notify = %v", r)
 	}
+	if len(rn.absent) != 1 {
+		t.Fatalf(":notify-decisions did not schedule the delivery job: %v", rn.absent)
+	}
+	// the legal record is written at delivery (when the job runs), not when it is scheduled
+	if dn := litems(c.must(200, mgr, "GET", base(mpath+"/notices?phase=decisions"), "")); len(dn) != 0 {
+		t.Fatalf("decision notices before the job ran = %v", dn)
+	}
+	runJob := func() {
+		if err := e.gov.RunNotifyAbsentees(context.Background(), org.ID, uuid.MustParse(mid), []string{"in_app", "sms"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	runJob() // what the job does
 	dn := litems(c.must(200, mgr, "GET", base(mpath+"/notices?phase=decisions"), ""))
 	if len(dn) != 1 || gstr(dn[0], "status") != "recorded" || gstr(dn[0], "method") != "sms" || gstr(dn[0], "person_id") != p5.String() {
 		t.Fatalf("decision notices = %v", dn)
+	}
+	nBefore := len(rn.notifies)
+	runJob() // a repeat does nothing
+	if len(rn.notifies) != nBefore {
+		t.Fatalf("a repeated delivery notified again")
+	}
+	if r := nd("", "notify-key-0003", 200); gnum(r, "recipient_count") != 0 {
+		t.Fatalf("an owner whose delivery is recorded must be skipped: %v", r)
 	}
 	if g1 := c.must(200, mgr, "GET", base("/decisions/"+gstr(d1, "id")), ""); g1["notified_at"] == nil {
 		t.Fatalf("decision not stamped notified: %v", g1)

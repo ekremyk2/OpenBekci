@@ -58,6 +58,9 @@ type Settings struct {
 	DefaultTermMonths        int64       `json:"default_term_months"`
 	// DissentWindowDays is how long after the meeting closed a dissent can still be added to a decision.
 	DissentWindowDays int64 `json:"dissent_window_days"`
+	// NoticeElectronicAllowed says the site's yonetim plani allows email and SMS
+	// as a legal way to give notice (default off, verify).
+	NoticeElectronicAllowed bool `json:"notice_electronic_allowed"`
 }
 
 // PresetNote is a legal remark attached to a preset; Verify says a person

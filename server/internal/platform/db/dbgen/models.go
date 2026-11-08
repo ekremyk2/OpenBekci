@@ -331,6 +331,7 @@ type MeetingNotice struct {
 	TrackingNo  pgtype.Text
 	ProofFileID pgtype.UUID
 	Note        pgtype.Text
+	Late        bool
 	RecordedBy  pgtype.UUID
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz

@@ -84,10 +84,10 @@ func (r RiverNotifier) EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, or
 	return err
 }
 
-// RunNotifyAbsentees sends the decisions of a closed meeting to the owners who
-// were absent (in-app by default; the manager can send again through other
-// channels with the notify-decisions operation) and records the delivery like
-// the call. It does nothing when the decisions were already sent.
+// RunNotifyAbsentees is the delivery job of :notify-decisions: it sends the
+// decisions of a closed meeting to the owners who were absent and records the
+// delivery (a decisions notice with the time of delivery) like the call. An
+// owner whose delivery is already recorded is skipped, so a repeat is harmless.
 func (s *Service) RunNotifyAbsentees(ctx context.Context, orgID, meetingID uuid.UUID, channels []string) error {
 	if len(channels) == 0 {
 		channels = []string{"in_app"}
@@ -103,19 +103,11 @@ func (s *Service) RunNotifyAbsentees(ctx context.Context, orgID, meetingID uuid.
 		if m.Status != StatusClosed || len(m.EligibilitySnapshot) == 0 {
 			return nil
 		}
-		var done bool
-		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM meeting_notice WHERE org_id = $1 AND meeting_id = $2 AND phase = 'decisions' AND status = 'recorded')`, orgID, meetingID).Scan(&done); err != nil {
-			return err
-		}
-		if done {
-			return nil
-		}
 		sc, err := authz.ScopeOfSite(ctx, tx, m.SiteID)
 		if err != nil {
 			return err
 		}
-		_, err = s.notifyAbsentees(ctx, tx, m, sc, channels, false)
-		return err
+		return s.deliverDecisions(ctx, tx, m, sc, channels)
 	})
 }
 

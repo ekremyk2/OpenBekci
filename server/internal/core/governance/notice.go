@@ -3,7 +3,6 @@ package governance
 import (
 	"context"
 	"errors"
-	"fmt"
 	"slices"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
-	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -33,16 +31,18 @@ type Notice struct {
 	TrackingNo  *string    `json:"tracking_no"`
 	ProofFileID *uuid.UUID `json:"proof_file_id"`
 	Note        *string    `json:"note"`
+	// Late says the call reached the owner less than call_min_days before the meeting.
+	Late bool `json:"late"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-const noticeSelect = `SELECT n.id, n.org_id, n.meeting_id, n.person_id, p.display_name, n.phase, n.method, n.status, n.sent_at, n.tracking_no, n.proof_file_id, n.note, n.created_at, n.updated_at
+const noticeSelect = `SELECT n.id, n.org_id, n.meeting_id, n.person_id, p.display_name, n.phase, n.method, n.status, n.sent_at, n.tracking_no, n.proof_file_id, n.note, n.late, n.created_at, n.updated_at
 	FROM meeting_notice n JOIN person p ON p.org_id = n.org_id AND p.id = n.person_id`
 
 func scanNotice(row pgx.Row) (Notice, error) {
 	var n Notice
-	err := row.Scan(&n.ID, &n.OrgID, &n.MeetingID, &n.PersonID, &n.PersonName, &n.Phase, &n.Method, &n.Status, &n.SentAt, &n.TrackingNo, &n.ProofFileID, &n.Note, &n.CreatedAt, &n.UpdatedAt)
+	err := row.Scan(&n.ID, &n.OrgID, &n.MeetingID, &n.PersonID, &n.PersonName, &n.Phase, &n.Method, &n.Status, &n.SentAt, &n.TrackingNo, &n.ProofFileID, &n.Note, &n.Late, &n.CreatedAt, &n.UpdatedAt)
 	n.CreatedAt, n.UpdatedAt = n.CreatedAt.UTC(), n.UpdatedAt.UTC()
 	if n.SentAt != nil {
 		t := n.SentAt.UTC()
@@ -61,7 +61,7 @@ func loadNotice(ctx context.Context, tx pgx.Tx, orgID, meetingID, person uuid.UU
 
 func (n Notice) auditView() map[string]any {
 	return map[string]any{"person_id": n.PersonID, "phase": n.Phase, "method": n.Method, "status": n.Status, "sent_at": n.SentAt,
-		"tracking_no": n.TrackingNo, "proof_file_id": n.ProofFileID, "note": n.Note}
+		"tracking_no": n.TrackingNo, "proof_file_id": n.ProofFileID, "note": n.Note, "late": n.Late}
 }
 
 // NoticeFilter narrows ListMeetingNotices.
@@ -132,20 +132,66 @@ func (r NoticeRecord) validate() []problem.Field {
 	return fs
 }
 
-// recordNotice upserts the notice of one owner and phase as recorded.
-func (s *Service) recordNotice(ctx context.Context, tx pgx.Tx, m Meeting, sc authz.Scope, snap Snapshot, person uuid.UUID, r NoticeRecord) (Notice, error) {
+// checkDelivery validates what a manager records about a delivery against the
+// meeting: the date cannot be in the future nor before the call, an electronic
+// method needs the site's setting, and the proof must be a file of the
+// organization.
+func (s *Service) checkDelivery(ctx context.Context, tx pgx.Tx, m Meeting, r NoticeRecord) error {
+	var fs []problem.Field
+	day := func(t time.Time) time.Time {
+		t = t.UTC()
+		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	}
+	if day(r.SentAt).After(s.today()) {
+		fs = append(fs, problem.Field{Field: "sent_at", Code: "invalid_value", Params: map[string]any{"reason": "in_the_future"}})
+	}
+	floor, what := m.CalledAt0(m.CreatedAt), "call"
+	if r.Phase == "decisions" {
+		floor, what = m.ScheduledAt, "meeting"
+	}
+	if day(r.SentAt).Before(day(floor)) {
+		fs = append(fs, problem.Field{Field: "sent_at", Code: "invalid_value", Params: map[string]any{"reason": "before_the_" + what}})
+	}
+	if (r.Method == "email" || r.Method == "sms") && !m.rules().NoticeElectronicAllowed {
+		fs = append(fs, problem.Field{Field: "method", Code: "invalid_value", Params: map[string]any{"reason": "electronic_notice_not_allowed"}})
+	}
+	if r.ProofFileID != nil {
+		ok, err := s.files.FileExists(ctx, tx, m.OrgID, *r.ProofFileID)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			fs = append(fs, problem.Field{Field: "proof_file_id", Code: "invalid_value", Params: map[string]any{"reason": "unknown_file"}})
+		}
+	}
+	if len(fs) > 0 {
+		return problem.Validation(fs...)
+	}
+	return nil
+}
+
+// recordNotice upserts the notice of one owner and phase as recorded. With
+// check the manager's input is validated (RecordMeetingNotice); the delivery
+// job records what it did itself.
+func (s *Service) recordNotice(ctx context.Context, tx pgx.Tx, m Meeting, sc authz.Scope, snap Snapshot, person uuid.UUID, r NoticeRecord, check bool) (Notice, error) {
 	if _, ok := snap.Owner(person); !ok {
 		return Notice{}, problem.Validation(problem.Field{Field: "person_id", Code: "invalid_value", Params: map[string]any{"reason": "not_an_owner_called_to_the_meeting"}})
 	}
+	if check {
+		if err := s.checkDelivery(ctx, tx, m, r); err != nil {
+			return Notice{}, err
+		}
+	}
+	late := r.Phase == "call" && r.SentAt.After(m.ScheduledAt.Add(-time.Duration(m.rules().CallMinDays)*24*time.Hour))
 	before, berr := loadNotice(ctx, tx, m.OrgID, m.ID, person, r.Phase)
 	if berr != nil && !isNotFound(berr) {
 		return Notice{}, berr
 	}
-	if _, err := tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase, method, status, sent_at, tracking_no, proof_file_id, note, recorded_by)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, 'recorded', $8, $9, $10, $11, $12)
+	if _, err := tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase, method, status, sent_at, tracking_no, proof_file_id, note, recorded_by, late)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, 'recorded', $8, $9, $10, $11, $12, $13)
 		ON CONFLICT (org_id, meeting_id, person_id, phase) DO UPDATE SET method = $7, status = 'recorded', sent_at = $8, tracking_no = $9, proof_file_id = $10, note = $11,
-			recorded_by = $12, updated_at = now()`,
-		newID(), m.OrgID, m.SiteID, m.ID, person, r.Phase, r.Method, r.SentAt, r.TrackingNo, r.ProofFileID, r.Note, principalID(ctx)); err != nil {
+			recorded_by = $12, late = $13, updated_at = now()`,
+		newID(), m.OrgID, m.SiteID, m.ID, person, r.Phase, r.Method, r.SentAt, r.TrackingNo, r.ProofFileID, r.Note, principalID(ctx), late); err != nil {
 		return Notice{}, err
 	}
 	n, err := loadNotice(ctx, tx, m.OrgID, m.ID, person, r.Phase)
@@ -182,7 +228,7 @@ func (s *Service) RecordMeetingNotice(ctx context.Context, orgID, meetingID, per
 		if err != nil {
 			return problem.Conflict("the meeting has not been called yet")
 		}
-		out, err = s.recordNotice(ctx, tx, m, sc, snap, person, r)
+		out, err = s.recordNotice(ctx, tx, m, sc, snap, person, r, true)
 		return err
 	})
 	return out, dbErr(err, "notice")
@@ -226,7 +272,7 @@ func (s *Service) RecordMeetingNoticesBulk(ctx context.Context, orgID, meetingID
 				continue
 			}
 			seen[p] = true
-			if _, err := s.recordNotice(ctx, tx, m, sc, snap, p, r); err != nil {
+			if _, err := s.recordNotice(ctx, tx, m, sc, snap, p, r, true); err != nil {
 				return err
 			}
 			n++
@@ -306,59 +352,3 @@ func absentees(ctx context.Context, tx pgx.Tx, m Meeting) ([]SnapOwner, Snapshot
 	return out, snap, nil
 }
 
-// notifyAbsentees records a decisions notice for every absent owner, enqueues
-// the notification and stamps the meeting's decisions notified_at.
-func (s *Service) notifyAbsentees(ctx context.Context, tx pgx.Tx, m Meeting, sc authz.Scope, channels []string, dryRun bool) (DecisionNotifyResult, error) {
-	res := DecisionNotifyResult{DryRun: dryRun}
-	if m.Status != StatusClosed {
-		return res, problem.Conflict("the decisions are sent after the meeting is closed")
-	}
-	abs, _, err := absentees(ctx, tx, m)
-	if err != nil {
-		return res, err
-	}
-	res.RecipientCount = int64(len(abs))
-	if slices.Contains(channels, "sms") {
-		res.SMSCount = res.RecipientCount
-	}
-	if dryRun || len(abs) == 0 {
-		return res, nil
-	}
-	now := s.now().UTC()
-	method := "other"
-	switch {
-	case slices.Contains(channels, "email"):
-		method = "email"
-	case slices.Contains(channels, "sms"):
-		method = "sms"
-	}
-	si, err := loadSiteInfo(ctx, tx, m.OrgID, m.SiteID)
-	if err != nil {
-		return res, err
-	}
-	var people []uuid.UUID
-	for _, o := range abs {
-		people = append(people, o.PersonID)
-		note := "channels: " + fmt.Sprint(channels)
-		if _, err := s.recordNotice(ctx, tx, m, sc, Snapshot{Owners: abs}, o.PersonID, NoticeRecord{Phase: "decisions", Method: method, SentAt: now, Note: &note}); err != nil {
-			return res, err
-		}
-	}
-	if s.notifier != nil {
-		for _, p := range people {
-			if err := s.notifier.Notify(ctx, tx, jobs.NotifyArgs{OrgID: m.OrgID, SiteID: &m.SiteID, Type: "governance.decisions", Recipients: recipients([]uuid.UUID{p}), Channels: channels,
-				Payload: map[string]any{"title": si.Name, "body": fmt.Sprintf("%s: %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale)), "meeting_id": m.ID},
-				Link:    "/meetings/" + m.ID.String(), Key: "governance.decisions:" + m.ID.String() + ":" + p.String()}); err != nil {
-				return res, err
-			}
-		}
-	}
-	if _, err := tx.Exec(ctx, `UPDATE decision SET notified_at = $3, updated_at = now(), version = version + 1 WHERE org_id = $1 AND meeting_id = $2 AND notified_at IS NULL`, m.OrgID, m.ID, now); err != nil {
-		return res, err
-	}
-	diff, err := audit.Diff("meeting", nil, map[string]any{"decisions_notified": len(abs), "channels": channels})
-	if err != nil {
-		return res, err
-	}
-	return res, audit.Record(ctx, tx, audit.Event{OrgID: m.OrgID, SiteID: sc.SiteID, Action: "meeting.notify_decisions", TargetType: "meeting", TargetID: m.ID, Diff: diff})
-}

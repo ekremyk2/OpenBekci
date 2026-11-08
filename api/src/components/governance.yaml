@@ -115,6 +115,9 @@ schemas:
         format: int64
         minimum: 1
         description: "Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision."
+      notice_electronic_allowed:
+        type: boolean
+        description: "Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`."
       dissent_window_days:
         type: integer
         format: int64
@@ -744,9 +747,13 @@ schemas:
         type: string
         format: uuid
         nullable: true
+        description: A file of the organization (the scanned receipt or signature page); checked when recorded.
       note:
         type: string
         nullable: true
+      late:
+        type: boolean
+        description: The call reached this owner less than `call_min_days` before the meeting (computed when recorded).
       created_at:
         type: string
         format: date-time
@@ -766,6 +773,7 @@ schemas:
       tracking_no: null
       proof_file_id: null
       note: null
+      late: false
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
   MeetingNoticeList:

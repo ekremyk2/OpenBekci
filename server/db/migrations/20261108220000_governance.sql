@@ -124,6 +124,8 @@ CREATE TABLE meeting_notice (
     -- the scanned receipt or signature page; a plain id until the file store is in
     proof_file_id uuid,
     note          text,
+    -- the call reached this owner less than call_min_days before the meeting
+    late          boolean     NOT NULL DEFAULT false,
     recorded_by   uuid,
     created_at    timestamptz NOT NULL DEFAULT now(),
     updated_at    timestamptz NOT NULL DEFAULT now(),

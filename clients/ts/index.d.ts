@@ -2106,7 +2106,7 @@ export interface paths {
         put?: never;
         /**
          * Send the decisions to absent owners
-         * @description **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+         * @description **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
          *
          *     Permission: `meetings.manage`.
          *
@@ -4089,6 +4089,8 @@ export interface components {
              * @description Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
              */
             default_term_months?: number;
+            /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
+            notice_electronic_allowed?: boolean;
             /**
              * Format: int64
              * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
@@ -4402,6 +4404,7 @@ export interface components {
          *       "tracking_no": null,
          *       "proof_file_id": null,
          *       "note": null,
+         *       "late": false,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z"
          *     }
@@ -4434,9 +4437,14 @@ export interface components {
             /** Format: date-time */
             sent_at: string | null;
             tracking_no: string | null;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A file of the organization (the scanned receipt or signature page); checked when recorded.
+             */
             proof_file_id: string | null;
             note: string | null;
+            /** @description The call reached this owner less than `call_min_days` before the meeting (computed when recorded). */
+            late?: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */

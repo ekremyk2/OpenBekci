@@ -659,15 +659,11 @@ func (s *Service) OpenSecondCall(ctx context.Context, orgID, id uuid.UUID) (Meet
 	})
 }
 
-// CloseMeeting closes a session. The decisions go to the absent owners
-// afterwards (governance.notify_absentees, enqueued here). It needs meetings.manage.
+// CloseMeeting closes a session. Closing does not notify anybody: the decisions
+// may not exist yet, so they go to the absent owners with :notify-decisions.
+// It needs meetings.manage.
 func (s *Service) CloseMeeting(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
-	return s.transition(ctx, orgID, id, []string{StatusInSession}, StatusClosed, "meeting.close", func(tx pgx.Tx, m Meeting) error {
-		if s.notifier == nil {
-			return nil
-		}
-		return s.notifier.EnqueueNotifyAbsentees(ctx, tx, orgID, m.ID, []string{"in_app"})
-	})
+	return s.transition(ctx, orgID, id, []string{StatusInSession}, StatusClosed, "meeting.close", nil)
 }
 
 // CancelMeeting cancels a meeting that has not closed; the reason is kept. It needs meetings.manage.

@@ -136,6 +136,7 @@ type Service struct {
 	cfg      Config
 	effects  DecisionEffects
 	filer    DocumentFiler
+	files    FileChecker
 	notifier Notifier
 	log      *slog.Logger
 	now      func() time.Time
@@ -149,6 +150,9 @@ func NewService(db TxRunner, platform PlatformTx, cfg Config) *Service {
 	}
 	if s.filer == nil {
 		s.filer = LocalFiler{}
+	}
+	if s.files == nil {
+		s.files = noFiles{}
 	}
 	if s.log == nil {
 		s.log = slog.Default()
