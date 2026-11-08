@@ -100,10 +100,3 @@ func checkDay(field, day, today string) error {
 	}
 	return nil
 }
-
-func actorOrNil(ctx context.Context) uuid.UUID {
-	if u := ledger.Actor(ctx); u != nil {
-		return *u
-	}
-	return uuid.Nil
-}

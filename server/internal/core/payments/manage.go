@@ -191,11 +191,6 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 	return out, err
 }
 
-func jsonString(s string) string {
-	b, _ := json.Marshal(s)
-	return string(b)
-}
-
 // Void reverses a confirmed payment (payments.record; a collector only in their own cash box): its entry is reversed dated
 // today, its allocations are voided and the charges re-derive their status.
 func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason string) (Payment, error) {

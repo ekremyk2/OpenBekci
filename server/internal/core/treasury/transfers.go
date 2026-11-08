@@ -184,21 +184,20 @@ func (s *Service) GetTransfer(ctx context.Context, orgID, transferID uuid.UUID) 
 // Refund is money paid back to a person or unit side: prepayment credit returned, a deposit
 // given back, or another payment out.
 type Refund struct {
-	ID               uuid.UUID   `json:"id"`
-	SiteID           uuid.UUID   `json:"site_id"`
-	PersonID         *uuid.UUID  `json:"person_id"`
-	UnitID           *uuid.UUID  `json:"unit_id"`
-	DebtorKind       *string     `json:"debtor_kind"`
-	Amount           money.Money `json:"amount"`
-	Reason           string      `json:"reason"`
-	Kind             string      `json:"kind"`
-	PaidFromAccount  uuid.UUID   `json:"paid_from_account_id"`
-	RefundedOn       string      `json:"refunded_on"`
-	CreditID         *uuid.UUID  `json:"credit_id"`
-	PaymentID        *uuid.UUID  `json:"payment_id"`
-	JournalEntryID   uuid.UUID   `json:"journal_entry_id"`
-	CreatedAt        time.Time   `json:"created_at"`
-	createdByPending uuid.UUID
+	ID              uuid.UUID   `json:"id"`
+	SiteID          uuid.UUID   `json:"site_id"`
+	PersonID        *uuid.UUID  `json:"person_id"`
+	UnitID          *uuid.UUID  `json:"unit_id"`
+	DebtorKind      *string     `json:"debtor_kind"`
+	Amount          money.Money `json:"amount"`
+	Reason          string      `json:"reason"`
+	Kind            string      `json:"kind"`
+	PaidFromAccount uuid.UUID   `json:"paid_from_account_id"`
+	RefundedOn      string      `json:"refunded_on"`
+	CreditID        *uuid.UUID  `json:"credit_id"`
+	PaymentID       *uuid.UUID  `json:"payment_id"`
+	JournalEntryID  uuid.UUID   `json:"journal_entry_id"`
+	CreatedAt       time.Time   `json:"created_at"`
 }
 
 // RefundInput creates a refund.

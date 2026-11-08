@@ -202,7 +202,8 @@ func (s *Service) ImportOpeningCSV(ctx context.Context, orgID, siteID uuid.UUID,
 			if in.Kind == "" {
 				in.Kind = "unit_receivable"
 			}
-			if in.Kind == "unit_receivable" {
+			switch in.Kind {
+			case "unit_receivable":
 				door := get("unit")
 				if door == "" {
 					fail("unit", "required")
@@ -221,14 +222,14 @@ func (s *Service) ImportOpeningCSV(ctx context.Context, orgID, siteID uuid.UUID,
 				if in.DebtorKind != "owner" && in.DebtorKind != "tenant" {
 					fail("side", "invalid_value")
 				}
-			} else if in.Kind == "bank" || in.Kind == "cash" {
+			case "bank", "cash":
 				a, err := uuid.Parse(get("account_id"))
 				if err != nil {
 					fail("account_id", "required")
 				} else {
 					in.AccountID = &a
 				}
-			} else {
+			default:
 				fail("kind", "invalid_value")
 			}
 			if v, ok := ParseMinor(get("principal")); !ok {

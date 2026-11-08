@@ -124,22 +124,21 @@ func offsetPage(p ledger.PageParams) (limit, after int, err error) {
 
 // BookingRow is one late fee booking.
 type BookingRow struct {
-	ID            uuid.UUID   `json:"id"`
-	SiteID        uuid.UUID   `json:"site_id"`
-	UnitID        uuid.UUID   `json:"unit_id"`
-	DoorNumber    string      `json:"unit_door_number"`
-	UnitLabel     string      `json:"unit_label"`
-	BlockName     *string     `json:"block_name"`
-	DebtorKind    string      `json:"debtor_kind"`
-	Period        string      `json:"period"`
-	Kind          string      `json:"kind"`
-	Amount        money.Money `json:"amount"`
-	ChargeID      *uuid.UUID  `json:"charge_id"`
-	ExpectedTo    money.Money `json:"expected_to_date"`
-	BookedTo      money.Money `json:"booked_to_date"`
-	Delta         money.Money `json:"delta"`
-	CreatedAt     time.Time   `json:"created_at"`
-	runningBefore int64
+	ID         uuid.UUID   `json:"id"`
+	SiteID     uuid.UUID   `json:"site_id"`
+	UnitID     uuid.UUID   `json:"unit_id"`
+	DoorNumber string      `json:"unit_door_number"`
+	UnitLabel  string      `json:"unit_label"`
+	BlockName  *string     `json:"block_name"`
+	DebtorKind string      `json:"debtor_kind"`
+	Period     string      `json:"period"`
+	Kind       string      `json:"kind"`
+	Amount     money.Money `json:"amount"`
+	ChargeID   *uuid.UUID  `json:"charge_id"`
+	ExpectedTo money.Money `json:"expected_to_date"`
+	BookedTo   money.Money `json:"booked_to_date"`
+	Delta      money.Money `json:"delta"`
+	CreatedAt  time.Time   `json:"created_at"`
 }
 
 // ListLateFeeBookings lists the fee bookings of a site (money.read), oldest first.
