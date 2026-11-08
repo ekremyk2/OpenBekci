@@ -240,7 +240,8 @@ func (b *backend) Events(ctx context.Context, ref session.Ref, offsetMS *int64, 
 			plate := NormalizePlate(e.ObservedPlate)
 			ct, err := tx.Exec(ctx, `INSERT INTO access_event (id, org_id, site_id, point_id, agent_id, credential_id, decision, reason, presented_kind,
 					observed_plate, actor_user_id, actor_display, command_id, visitor_entry_id, occurred_at, synced_at, raw_ref, raw_payload)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NULLIF($9, ''), NULLIF($10, ''), $11, $12, $13, $14, $15, $16, NULLIF($17, ''), $18)
+				SELECT $1, $2, $3, $4, $5, $6, $7, $8, NULLIF($9, ''), NULLIF($10, ''), $11, $12, $13, $14, $15, $16, NULLIF($17, ''), $18
+				WHERE NOT EXISTS (SELECT 1 FROM access_event WHERE org_id = $2 AND id = $1)
 				ON CONFLICT (org_id, id) DO NOTHING`,
 				eid, ref.OrgID, ref.SiteID, pid, ref.AgentID, credID, e.Decision, e.Reason, e.PresentedKind,
 				plate, actor, actorName, cmdID, visitorID, occurred, now, e.RawRef, payload)
