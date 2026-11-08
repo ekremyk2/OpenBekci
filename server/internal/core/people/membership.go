@@ -266,9 +266,12 @@ func (s *Service) EndMembership(ctx context.Context, orgID, membershipID uuid.UU
 			if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('org_admin:' || $1::text, 0))`, orgID); err != nil {
 				return err
 			}
+			// Count against the application clock read after the lock, not SQL now():
+			// now() is this transaction's start time, which precedes a concurrent
+			// removal's end-date, so the removal that just committed would still count.
 			var others int
 			if err := tx.QueryRow(ctx, `SELECT count(*) FROM membership WHERE org_id = $1 AND role = 'org_admin' AND scope_type = 'org' AND id <> $2
-				AND valid_from <= now() AND (valid_to IS NULL OR valid_to > now())`, orgID, membershipID).Scan(&others); err != nil {
+				AND valid_from <= $3 AND (valid_to IS NULL OR valid_to > $3)`, orgID, membershipID, s.now().UTC()).Scan(&others); err != nil {
 				return err
 			}
 			if others == 0 {
