@@ -455,16 +455,10 @@ func (s *Service) GetSMSUsage(ctx context.Context, orgID, siteID uuid.UUID, mont
 		}
 		var first time.Time
 		if month == "" {
-			var tz string
-			if err := tx.QueryRow(ctx, `SELECT timezone FROM site WHERE org_id = $1 AND id = $2`, orgID, siteID).Scan(&tz); err != nil {
+			first, err = s.siteMonth(ctx, tx, orgID, siteID, s.nowTime())
+			if err != nil {
 				return err
 			}
-			loc, lerr := time.LoadLocation(tz)
-			if lerr != nil {
-				loc = time.UTC
-			}
-			n := s.cfg.Now().In(loc)
-			first = time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC)
 		} else {
 			first, err = time.Parse("2006-01", month)
 			if err != nil {
@@ -479,7 +473,8 @@ func (s *Service) GetSMSUsage(ctx context.Context, orgID, siteID uuid.UUID, mont
 		}
 		u.Delivered = u.Sent
 		return tx.QueryRow(ctx, `SELECT count(*) FROM notification_delivery d JOIN notification n ON n.org_id = d.org_id AND n.id = d.notification_id
-			WHERE d.org_id = $1 AND n.site_id = $2 AND d.channel = 'sms' AND d.status = 'failed' AND date_trunc('month', d.updated_at) = $3`, orgID, siteID, first).Scan(&u.Failed)
+			WHERE d.org_id = $1 AND n.site_id = $2 AND d.channel = 'sms' AND d.status = 'failed'
+			AND date_trunc('month', d.updated_at AT TIME ZONE (SELECT timezone FROM site WHERE org_id = $1 AND id = $2))::date = $3`, orgID, siteID, first).Scan(&u.Failed)
 	})
 	return u, tenancy.DBProblem(err, "sms usage")
 }

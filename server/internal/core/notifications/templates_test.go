@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"slices"
 	"strings"
 	"testing"
 )
@@ -36,7 +37,7 @@ func TestRenderMissingKeysAndUnknownTypes(t *testing.T) {
 
 func TestEveryTypeHasTemplatesInBothLocales(t *testing.T) {
 	for _, loc := range []string{"en", "tr"} {
-		for _, typ := range Vocabulary {
+		for _, typ := range append(slices.Clone(Vocabulary), Unmutable...) {
 			if _, ok := catalogs[loc][loc][typ+"/body"]; !ok {
 				t.Errorf("no %s template for %s", loc, typ)
 			}

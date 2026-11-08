@@ -115,13 +115,17 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				link = &a.Link
 			}
 			tag, err := tx.Exec(ctx, `INSERT INTO notification (id, org_id, site_id, person_id, type, payload, link, dedupe_key)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (org_id, person_id, dedupe_key) WHERE dedupe_key IS NOT NULL DO NOTHING`,
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (org_id, person_id, type, dedupe_key) WHERE dedupe_key IS NOT NULL DO NOTHING`,
 				nid, a.OrgID, a.SiteID, p.person, a.Type, raw, link, a.Key)
 			if err != nil {
 				return err
 			}
 			if tag.RowsAffected() == 1 {
-				for _, ch := range channels {
+				chs := channels
+				if IsUnmutable(a.Type) && len(NormalizeChannels(a.Channels)) == 0 {
+					chs = []string{UnmutableChannel(p.phone != "")} // sign-in codes and invitations: one address, never both
+				}
+				for _, ch := range chs {
 					status, why := "pending", ""
 					switch {
 					case ch == jobs.ChannelInApp:
@@ -140,10 +144,16 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				}
 			}
 		}
-		// every unfinished email and SMS delivery of this job (first try or retry)
-		rows, err := tx.Query(ctx, `SELECT d.id, d.channel, d.attempts, n.person_id, n.link
-			FROM notification n JOIN notification_delivery d ON d.org_id = n.org_id AND d.notification_id = n.id
-			WHERE n.org_id = $1 AND n.dedupe_key = $2 AND d.channel IN ('email', 'sms') AND d.status IN ('pending', 'failed') AND d.attempts < $3`, a.OrgID, a.Key, maxAttempts)
+		// Claim every unfinished email and SMS delivery of this event (first try or
+		// retry). The claim is one atomic UPDATE: two workers running the same event
+		// at once never get the same row, so nothing is sent twice. A claim that a
+		// crashed worker left behind is taken over after ten minutes.
+		rows, err := tx.Query(ctx, `UPDATE notification_delivery d SET status = 'sending', claimed_at = now(), updated_at = now()
+			FROM notification n
+			WHERE n.org_id = d.org_id AND n.id = d.notification_id AND n.org_id = $1 AND n.dedupe_key = $2 AND n.type = $4
+			  AND d.channel IN ('email', 'sms') AND d.attempts < $3
+			  AND (d.status IN ('pending', 'failed') OR (d.status = 'sending' AND d.claimed_at < now() - interval '10 minutes'))
+			RETURNING d.id, d.channel, d.attempts, n.person_id, n.link`, a.OrgID, a.Key, maxAttempts, a.Type)
 		if err != nil {
 			return err
 		}
@@ -253,11 +263,10 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 			}
 		}
 		if msgs > 0 && a.SiteID != nil {
-			month := time.Now().UTC()
-			if s.cfg.Now != nil {
-				month = s.cfg.Now().UTC()
+			first, err := s.siteMonth(ctx, tx, a.OrgID, *a.SiteID, s.nowTime())
+			if err != nil {
+				return err
 			}
-			first := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, time.UTC)
 			if _, err := tx.Exec(ctx, `INSERT INTO sms_usage (org_id, site_id, month, messages, segments) VALUES ($1, $2, $3, $4, $5)
 				ON CONFLICT (org_id, site_id, month) DO UPDATE SET messages = sms_usage.messages + EXCLUDED.messages, segments = sms_usage.segments + EXCLUDED.segments`,
 				a.OrgID, *a.SiteID, first, msgs, segs); err != nil {
@@ -273,6 +282,30 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		return fmt.Errorf("%d deliveries failed", failed)
 	}
 	return nil
+}
+
+// nowTime is the service clock.
+func (s *Service) nowTime() time.Time {
+	if s.cfg.Now != nil {
+		return s.cfg.Now()
+	}
+	return time.Now()
+}
+
+// siteMonth is the first day of the month containing t in the site's time
+// zone, as the date the SMS counter is keyed by. Writing and reading the
+// counter both go through it.
+func (s *Service) siteMonth(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, t time.Time) (time.Time, error) {
+	var tz string
+	if err := tx.QueryRow(ctx, `SELECT timezone FROM site WHERE org_id = $1 AND id = $2`, orgID, siteID).Scan(&tz); err != nil {
+		return time.Time{}, err
+	}
+	loc, err := time.LoadLocation(tz)
+	if err != nil {
+		loc = time.UTC
+	}
+	n := t.In(loc)
+	return time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC), nil
 }
 
 func skipReason(cond bool, a, b string) string {

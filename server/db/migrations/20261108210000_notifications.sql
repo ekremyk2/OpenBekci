@@ -23,7 +23,8 @@ CREATE TABLE notification (
     FOREIGN KEY (org_id, person_id) REFERENCES person (org_id, id),
     FOREIGN KEY (org_id, site_id) REFERENCES site (org_id, id)
 );
-CREATE UNIQUE INDEX notification_dedupe ON notification (org_id, person_id, dedupe_key) WHERE dedupe_key IS NOT NULL;
+-- a key names one event of one type for one person: another type may reuse the same key
+CREATE UNIQUE INDEX notification_dedupe ON notification (org_id, person_id, type, dedupe_key) WHERE dedupe_key IS NOT NULL;
 CREATE INDEX notification_person ON notification (org_id, person_id, created_at DESC, id DESC);
 CREATE INDEX notification_person_unread ON notification (org_id, person_id) WHERE read_at IS NULL;
 SELECT openbekci_enable_rls('notification');
@@ -34,7 +35,9 @@ CREATE TABLE notification_delivery (
     notification_id uuid        NOT NULL,
     channel         text        NOT NULL CHECK (channel IN ('in_app', 'email', 'sms', 'push')),
     -- skipped: the person has no address for the channel, or muted the type
-    status          text        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed', 'skipped')),
+    -- sending: claimed by a worker (two workers never send the same row); a claim older than ten minutes is taken over
+    status          text        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sending', 'sent', 'failed', 'skipped')),
+    claimed_at      timestamptz,
     attempts        int         NOT NULL DEFAULT 0,
     last_error      text,
     provider_id     text,

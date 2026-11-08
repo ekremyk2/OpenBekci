@@ -68,19 +68,31 @@ var validChannels = []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelS
 func ValidChannel(c string) bool { return slices.Contains(validChannels, c) }
 
 // DefaultChannels is the built-in channel set of an automatic message (the O5
-// table): dues reminders and payment receipts in-app plus SMS, ticket updates
-// in-app plus email, everything else in-app only. A site overrides them per
-// type (site_channel_default).
+// table): dues reminders and payment receipts in-app plus SMS (the site pays
+// for them); statements and payment confirmations or rejections, ticket
+// updates and comments in-app plus email; everything else in-app only. SMS is
+// off by default for all the rest; a site turns it on per type
+// (site_channel_default). Sign-in codes and invitations are not in this table:
+// they go to one address (see UnmutableChannel).
 func DefaultChannels(t string) []string {
 	switch t {
-	case TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt, TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent:
+	case TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt:
 		return []string{jobs.ChannelInApp, jobs.ChannelSMS}
-	case TypeTicketUpdated, TypeTicketCommented:
+	case TypeStatementSent, TypePaymentConfirmed, TypePaymentRejected, TypeTicketUpdated, TypeTicketCommented:
 		return []string{jobs.ChannelInApp, jobs.ChannelEmail}
 	case TypeSignInCode, TypeInvitation:
-		return []string{jobs.ChannelSMS, jobs.ChannelEmail}
+		return []string{jobs.ChannelSMS, jobs.ChannelEmail} // candidates; UnmutableChannel picks one
 	}
 	return []string{jobs.ChannelInApp}
+}
+
+// UnmutableChannel is the one channel a sign-in code or an invitation takes
+// (O5): SMS when the person has a phone, otherwise email, never both.
+func UnmutableChannel(hasPhone bool) string {
+	if hasPhone {
+		return jobs.ChannelSMS
+	}
+	return jobs.ChannelEmail
 }
 
 // NormalizeChannels drops duplicates and unknown names and orders the rest.
