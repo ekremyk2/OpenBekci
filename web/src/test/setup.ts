@@ -4,6 +4,7 @@ import { cleanup, configure } from '@testing-library/react'
 import { i18n } from '@lingui/core'
 import { setupServer } from 'msw/node'
 import { handlers } from './handlers'
+import { runResets } from './reset'
 
 export const server = setupServer(...handlers)
 
@@ -21,8 +22,8 @@ if (!window.matchMedia) {
   })) as unknown as typeof window.matchMedia
 }
 
-// the full suite runs many jsdom workers in parallel; single findBy*/waitFor calls need headroom
-configure({ asyncUtilTimeout: 4000 })
+// the whole route tree is transformed on first import; give async queries room on a busy machine
+configure({ asyncUtilTimeout: 5000 })
 
 i18n.load('en', {})
 i18n.activate('en')
@@ -31,5 +32,6 @@ beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => {
   cleanup()
   server.resetHandlers()
+  runResets()
 })
 afterAll(() => server.close())

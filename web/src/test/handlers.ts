@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 import type { DiscoveryDocument, Me } from '@/api/schema'
 import { peopleHandlers } from './handlers/people'
 import { tenancyHandlers } from './handlers/tenancy'
+import { operationsHandlers } from './handlers/operations'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -67,4 +68,5 @@ export const handlers = [
   http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
   ...tenancyHandlers,
   ...peopleHandlers,
+  ...operationsHandlers,
 ]

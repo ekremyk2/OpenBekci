@@ -24,18 +24,36 @@ import { Route as OrgsOrgIdClaimsRouteImport } from './routes/orgs.$orgId.claims
 import { Route as OrgsOrgIdDirectoryRouteImport } from './routes/orgs.$orgId.directory'
 import { Route as OrgsOrgIdImportRouteImport } from './routes/orgs.$orgId.import'
 import { Route as OrgsOrgIdMeRouteImport } from './routes/orgs.$orgId.me'
+import { Route as OrgsOrgIdNotificationsRouteImport } from './routes/orgs.$orgId.notifications'
 import { Route as OrgsOrgIdPortfolioRouteImport } from './routes/orgs.$orgId.portfolio'
+import { Route as OrgsOrgIdSettingsRouteImport } from './routes/orgs.$orgId.settings'
 import { Route as OrgsOrgIdVendorsRouteImport } from './routes/orgs.$orgId.vendors'
+import { Route as OrgsOrgIdAnnouncementsIndexRouteImport } from './routes/orgs.$orgId.announcements.index'
+import { Route as OrgsOrgIdAnnouncementsNewRouteImport } from './routes/orgs.$orgId.announcements.new'
+import { Route as OrgsOrgIdDocumentsIndexRouteImport } from './routes/orgs.$orgId.documents.index'
 import { Route as OrgsOrgIdMoveOutOccupancyIdRouteImport } from './routes/orgs.$orgId.move-out.$occupancyId'
 import { Route as OrgsOrgIdPeopleIndexRouteImport } from './routes/orgs.$orgId.people.index'
 import { Route as OrgsOrgIdPeoplePersonIdRouteImport } from './routes/orgs.$orgId.people.$personId'
 import { Route as OrgsOrgIdPeopleInvitationsRouteImport } from './routes/orgs.$orgId.people.invitations'
 import { Route as OrgsOrgIdPeopleNewRouteImport } from './routes/orgs.$orgId.people.new'
+import { Route as OrgsOrgIdSettingsIndexRouteImport } from './routes/orgs.$orgId.settings.index'
+import { Route as OrgsOrgIdSettingsAuditRouteImport } from './routes/orgs.$orgId.settings.audit'
+import { Route as OrgsOrgIdSettingsCodesRouteImport } from './routes/orgs.$orgId.settings.codes'
+import { Route as OrgsOrgIdSettingsNotificationsRouteImport } from './routes/orgs.$orgId.settings.notifications'
+import { Route as OrgsOrgIdSettingsSiteRouteImport } from './routes/orgs.$orgId.settings.site'
+import { Route as OrgsOrgIdSettingsTicketsRouteImport } from './routes/orgs.$orgId.settings.tickets'
 import { Route as OrgsOrgIdSitesIndexRouteImport } from './routes/orgs.$orgId.sites.index'
 import { Route as OrgsOrgIdSitesNewRouteImport } from './routes/orgs.$orgId.sites.new'
+import { Route as OrgsOrgIdTicketsIndexRouteImport } from './routes/orgs.$orgId.tickets.index'
+import { Route as OrgsOrgIdTicketsTicketIdRouteImport } from './routes/orgs.$orgId.tickets.$ticketId'
+import { Route as OrgsOrgIdTicketsNewRouteImport } from './routes/orgs.$orgId.tickets.new'
+import { Route as OrgsOrgIdTicketsQueueRouteImport } from './routes/orgs.$orgId.tickets.queue'
 import { Route as OrgsOrgIdUnitsIndexRouteImport } from './routes/orgs.$orgId.units.index'
 import { Route as OrgsOrgIdUnitsUnitIdRouteImport } from './routes/orgs.$orgId.units.$unitId'
 import { Route as OrgsOrgIdUnitsNewRouteImport } from './routes/orgs.$orgId.units.new'
+import { Route as OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.index'
+import { Route as OrgsOrgIdAnnouncementsAnnouncementIdEditRouteImport } from './routes/orgs.$orgId.announcements.$announcementId.edit'
+import { Route as OrgsOrgIdDocumentsFFolderIdRouteImport } from './routes/orgs.$orgId.documents.f.$folderId'
 import { Route as OrgsOrgIdSitesSiteIdIndexRouteImport } from './routes/orgs.$orgId.sites.$siteId.index'
 import { Route as OrgsOrgIdSitesSiteIdQrRouteImport } from './routes/orgs.$orgId.sites.$siteId.qr'
 
@@ -114,14 +132,41 @@ const OrgsOrgIdMeRoute = OrgsOrgIdMeRouteImport.update({
   path: '/me',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdNotificationsRoute = OrgsOrgIdNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdPortfolioRoute = OrgsOrgIdPortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdSettingsRoute = OrgsOrgIdSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdVendorsRoute = OrgsOrgIdVendorsRouteImport.update({
   id: '/vendors',
   path: '/vendors',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdAnnouncementsIndexRoute =
+  OrgsOrgIdAnnouncementsIndexRouteImport.update({
+    id: '/announcements/',
+    path: '/announcements/',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdAnnouncementsNewRoute =
+  OrgsOrgIdAnnouncementsNewRouteImport.update({
+    id: '/announcements/new',
+    path: '/announcements/new',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdDocumentsIndexRoute = OrgsOrgIdDocumentsIndexRouteImport.update({
+  id: '/documents/',
+  path: '/documents/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
 const OrgsOrgIdMoveOutOccupancyIdRoute =
@@ -151,6 +196,38 @@ const OrgsOrgIdPeopleNewRoute = OrgsOrgIdPeopleNewRouteImport.update({
   path: '/people/new',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdSettingsIndexRoute = OrgsOrgIdSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgsOrgIdSettingsRoute,
+} as any)
+const OrgsOrgIdSettingsAuditRoute = OrgsOrgIdSettingsAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => OrgsOrgIdSettingsRoute,
+} as any)
+const OrgsOrgIdSettingsCodesRoute = OrgsOrgIdSettingsCodesRouteImport.update({
+  id: '/codes',
+  path: '/codes',
+  getParentRoute: () => OrgsOrgIdSettingsRoute,
+} as any)
+const OrgsOrgIdSettingsNotificationsRoute =
+  OrgsOrgIdSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
+const OrgsOrgIdSettingsSiteRoute = OrgsOrgIdSettingsSiteRouteImport.update({
+  id: '/site',
+  path: '/site',
+  getParentRoute: () => OrgsOrgIdSettingsRoute,
+} as any)
+const OrgsOrgIdSettingsTicketsRoute =
+  OrgsOrgIdSettingsTicketsRouteImport.update({
+    id: '/tickets',
+    path: '/tickets',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
 const OrgsOrgIdSitesIndexRoute = OrgsOrgIdSitesIndexRouteImport.update({
   id: '/sites/',
   path: '/sites/',
@@ -159,6 +236,27 @@ const OrgsOrgIdSitesIndexRoute = OrgsOrgIdSitesIndexRouteImport.update({
 const OrgsOrgIdSitesNewRoute = OrgsOrgIdSitesNewRouteImport.update({
   id: '/sites/new',
   path: '/sites/new',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdTicketsIndexRoute = OrgsOrgIdTicketsIndexRouteImport.update({
+  id: '/tickets/',
+  path: '/tickets/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdTicketsTicketIdRoute =
+  OrgsOrgIdTicketsTicketIdRouteImport.update({
+    id: '/tickets/$ticketId',
+    path: '/tickets/$ticketId',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdTicketsNewRoute = OrgsOrgIdTicketsNewRouteImport.update({
+  id: '/tickets/new',
+  path: '/tickets/new',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdTicketsQueueRoute = OrgsOrgIdTicketsQueueRouteImport.update({
+  id: '/tickets/queue',
+  path: '/tickets/queue',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
 const OrgsOrgIdUnitsIndexRoute = OrgsOrgIdUnitsIndexRouteImport.update({
@@ -176,6 +274,24 @@ const OrgsOrgIdUnitsNewRoute = OrgsOrgIdUnitsNewRouteImport.update({
   path: '/units/new',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute =
+  OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport.update({
+    id: '/announcements/$announcementId/',
+    path: '/announcements/$announcementId/',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdAnnouncementsAnnouncementIdEditRoute =
+  OrgsOrgIdAnnouncementsAnnouncementIdEditRouteImport.update({
+    id: '/announcements/$announcementId/edit',
+    path: '/announcements/$announcementId/edit',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
+const OrgsOrgIdDocumentsFFolderIdRoute =
+  OrgsOrgIdDocumentsFFolderIdRouteImport.update({
+    id: '/documents/f/$folderId',
+    path: '/documents/f/$folderId',
+    getParentRoute: () => OrgsOrgIdRoute,
+  } as any)
 const OrgsOrgIdSitesSiteIdIndexRoute =
   OrgsOrgIdSitesSiteIdIndexRouteImport.update({
     id: '/sites/$siteId/',
@@ -203,20 +319,38 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
+  '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsRouteWithChildren
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
+  '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
+  '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
+  '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
+  '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
+  '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
+  '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/tickets/': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
+  '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -233,20 +367,37 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
+  '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
+  '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
+  '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
+  '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
+  '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/announcements': typeof OrgsOrgIdAnnouncementsIndexRoute
+  '/orgs/$orgId/documents': typeof OrgsOrgIdDocumentsIndexRoute
   '/orgs/$orgId/people': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/tickets': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
+  '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/announcements/$announcementId': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/sites/$siteId': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesById {
@@ -265,20 +416,38 @@ export interface FileRoutesById {
   '/orgs/$orgId/directory': typeof OrgsOrgIdDirectoryRoute
   '/orgs/$orgId/import': typeof OrgsOrgIdImportRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/notifications': typeof OrgsOrgIdNotificationsRoute
   '/orgs/$orgId/portfolio': typeof OrgsOrgIdPortfolioRoute
+  '/orgs/$orgId/settings': typeof OrgsOrgIdSettingsRouteWithChildren
   '/orgs/$orgId/vendors': typeof OrgsOrgIdVendorsRoute
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/announcements/new': typeof OrgsOrgIdAnnouncementsNewRoute
   '/orgs/$orgId/move-out/$occupancyId': typeof OrgsOrgIdMoveOutOccupancyIdRoute
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
+  '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
+  '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
+  '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
+  '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
+  '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
+  '/orgs/$orgId/tickets/queue': typeof OrgsOrgIdTicketsQueueRoute
   '/orgs/$orgId/units/$unitId': typeof OrgsOrgIdUnitsUnitIdRoute
   '/orgs/$orgId/units/new': typeof OrgsOrgIdUnitsNewRoute
+  '/orgs/$orgId/announcements/': typeof OrgsOrgIdAnnouncementsIndexRoute
+  '/orgs/$orgId/documents/': typeof OrgsOrgIdDocumentsIndexRoute
   '/orgs/$orgId/people/': typeof OrgsOrgIdPeopleIndexRoute
+  '/orgs/$orgId/settings/': typeof OrgsOrgIdSettingsIndexRoute
   '/orgs/$orgId/sites/': typeof OrgsOrgIdSitesIndexRoute
+  '/orgs/$orgId/tickets/': typeof OrgsOrgIdTicketsIndexRoute
   '/orgs/$orgId/units/': typeof OrgsOrgIdUnitsIndexRoute
+  '/orgs/$orgId/announcements/$announcementId/edit': typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
+  '/orgs/$orgId/documents/f/$folderId': typeof OrgsOrgIdDocumentsFFolderIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
+  '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -298,20 +467,38 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/directory'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
+    | '/orgs/$orgId/settings'
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/announcements/new'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/codes'
+    | '/orgs/$orgId/settings/notifications'
+    | '/orgs/$orgId/settings/site'
+    | '/orgs/$orgId/settings/tickets'
     | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/tickets/$ticketId'
+    | '/orgs/$orgId/tickets/new'
+    | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/announcements/'
+    | '/orgs/$orgId/documents/'
     | '/orgs/$orgId/people/'
+    | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
+    | '/orgs/$orgId/tickets/'
     | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/announcements/$announcementId/edit'
+    | '/orgs/$orgId/documents/f/$folderId'
     | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/announcements/$announcementId/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -328,20 +515,37 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/directory'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId'
+    | '/orgs/$orgId/announcements/new'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/codes'
+    | '/orgs/$orgId/settings/notifications'
+    | '/orgs/$orgId/settings/site'
+    | '/orgs/$orgId/settings/tickets'
     | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/tickets/$ticketId'
+    | '/orgs/$orgId/tickets/new'
+    | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/announcements'
+    | '/orgs/$orgId/documents'
     | '/orgs/$orgId/people'
+    | '/orgs/$orgId/settings'
     | '/orgs/$orgId/sites'
+    | '/orgs/$orgId/tickets'
     | '/orgs/$orgId/units'
+    | '/orgs/$orgId/announcements/$announcementId/edit'
+    | '/orgs/$orgId/documents/f/$folderId'
     | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/announcements/$announcementId'
     | '/orgs/$orgId/sites/$siteId'
   id:
     | '__root__'
@@ -359,20 +563,38 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/directory'
     | '/orgs/$orgId/import'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/notifications'
     | '/orgs/$orgId/portfolio'
+    | '/orgs/$orgId/settings'
     | '/orgs/$orgId/vendors'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/announcements/new'
     | '/orgs/$orgId/move-out/$occupancyId'
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/codes'
+    | '/orgs/$orgId/settings/notifications'
+    | '/orgs/$orgId/settings/site'
+    | '/orgs/$orgId/settings/tickets'
     | '/orgs/$orgId/sites/new'
+    | '/orgs/$orgId/tickets/$ticketId'
+    | '/orgs/$orgId/tickets/new'
+    | '/orgs/$orgId/tickets/queue'
     | '/orgs/$orgId/units/$unitId'
     | '/orgs/$orgId/units/new'
+    | '/orgs/$orgId/announcements/'
+    | '/orgs/$orgId/documents/'
     | '/orgs/$orgId/people/'
+    | '/orgs/$orgId/settings/'
     | '/orgs/$orgId/sites/'
+    | '/orgs/$orgId/tickets/'
     | '/orgs/$orgId/units/'
+    | '/orgs/$orgId/announcements/$announcementId/edit'
+    | '/orgs/$orgId/documents/f/$folderId'
     | '/orgs/$orgId/sites/$siteId/qr'
+    | '/orgs/$orgId/announcements/$announcementId/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesById: FileRoutesById
 }
@@ -495,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdMeRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/notifications': {
+      id: '/orgs/$orgId/notifications'
+      path: '/notifications'
+      fullPath: '/orgs/$orgId/notifications'
+      preLoaderRoute: typeof OrgsOrgIdNotificationsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/portfolio': {
       id: '/orgs/$orgId/portfolio'
       path: '/portfolio'
@@ -502,11 +731,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdPortfolioRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/settings': {
+      id: '/orgs/$orgId/settings'
+      path: '/settings'
+      fullPath: '/orgs/$orgId/settings'
+      preLoaderRoute: typeof OrgsOrgIdSettingsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/vendors': {
       id: '/orgs/$orgId/vendors'
       path: '/vendors'
       fullPath: '/orgs/$orgId/vendors'
       preLoaderRoute: typeof OrgsOrgIdVendorsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/announcements/': {
+      id: '/orgs/$orgId/announcements/'
+      path: '/announcements'
+      fullPath: '/orgs/$orgId/announcements/'
+      preLoaderRoute: typeof OrgsOrgIdAnnouncementsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/announcements/new': {
+      id: '/orgs/$orgId/announcements/new'
+      path: '/announcements/new'
+      fullPath: '/orgs/$orgId/announcements/new'
+      preLoaderRoute: typeof OrgsOrgIdAnnouncementsNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/documents/': {
+      id: '/orgs/$orgId/documents/'
+      path: '/documents'
+      fullPath: '/orgs/$orgId/documents/'
+      preLoaderRoute: typeof OrgsOrgIdDocumentsIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
     '/orgs/$orgId/move-out/$occupancyId': {
@@ -544,6 +801,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdPeopleNewRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/settings/': {
+      id: '/orgs/$orgId/settings/'
+      path: '/'
+      fullPath: '/orgs/$orgId/settings/'
+      preLoaderRoute: typeof OrgsOrgIdSettingsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/audit': {
+      id: '/orgs/$orgId/settings/audit'
+      path: '/audit'
+      fullPath: '/orgs/$orgId/settings/audit'
+      preLoaderRoute: typeof OrgsOrgIdSettingsAuditRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/codes': {
+      id: '/orgs/$orgId/settings/codes'
+      path: '/codes'
+      fullPath: '/orgs/$orgId/settings/codes'
+      preLoaderRoute: typeof OrgsOrgIdSettingsCodesRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/notifications': {
+      id: '/orgs/$orgId/settings/notifications'
+      path: '/notifications'
+      fullPath: '/orgs/$orgId/settings/notifications'
+      preLoaderRoute: typeof OrgsOrgIdSettingsNotificationsRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/site': {
+      id: '/orgs/$orgId/settings/site'
+      path: '/site'
+      fullPath: '/orgs/$orgId/settings/site'
+      preLoaderRoute: typeof OrgsOrgIdSettingsSiteRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/tickets': {
+      id: '/orgs/$orgId/settings/tickets'
+      path: '/tickets'
+      fullPath: '/orgs/$orgId/settings/tickets'
+      preLoaderRoute: typeof OrgsOrgIdSettingsTicketsRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
     '/orgs/$orgId/sites/': {
       id: '/orgs/$orgId/sites/'
       path: '/sites'
@@ -556,6 +855,34 @@ declare module '@tanstack/react-router' {
       path: '/sites/new'
       fullPath: '/orgs/$orgId/sites/new'
       preLoaderRoute: typeof OrgsOrgIdSitesNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/tickets/': {
+      id: '/orgs/$orgId/tickets/'
+      path: '/tickets'
+      fullPath: '/orgs/$orgId/tickets/'
+      preLoaderRoute: typeof OrgsOrgIdTicketsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/tickets/$ticketId': {
+      id: '/orgs/$orgId/tickets/$ticketId'
+      path: '/tickets/$ticketId'
+      fullPath: '/orgs/$orgId/tickets/$ticketId'
+      preLoaderRoute: typeof OrgsOrgIdTicketsTicketIdRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/tickets/new': {
+      id: '/orgs/$orgId/tickets/new'
+      path: '/tickets/new'
+      fullPath: '/orgs/$orgId/tickets/new'
+      preLoaderRoute: typeof OrgsOrgIdTicketsNewRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/tickets/queue': {
+      id: '/orgs/$orgId/tickets/queue'
+      path: '/tickets/queue'
+      fullPath: '/orgs/$orgId/tickets/queue'
+      preLoaderRoute: typeof OrgsOrgIdTicketsQueueRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
     '/orgs/$orgId/units/': {
@@ -579,6 +906,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdUnitsNewRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/announcements/$announcementId/': {
+      id: '/orgs/$orgId/announcements/$announcementId/'
+      path: '/announcements/$announcementId'
+      fullPath: '/orgs/$orgId/announcements/$announcementId/'
+      preLoaderRoute: typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/announcements/$announcementId/edit': {
+      id: '/orgs/$orgId/announcements/$announcementId/edit'
+      path: '/announcements/$announcementId/edit'
+      fullPath: '/orgs/$orgId/announcements/$announcementId/edit'
+      preLoaderRoute: typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/documents/f/$folderId': {
+      id: '/orgs/$orgId/documents/f/$folderId'
+      path: '/documents/f/$folderId'
+      fullPath: '/orgs/$orgId/documents/f/$folderId'
+      preLoaderRoute: typeof OrgsOrgIdDocumentsFFolderIdRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/sites/$siteId/': {
       id: '/orgs/$orgId/sites/$siteId/'
       path: '/sites/$siteId'
@@ -596,26 +944,59 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface OrgsOrgIdSettingsRouteChildren {
+  OrgsOrgIdSettingsAuditRoute: typeof OrgsOrgIdSettingsAuditRoute
+  OrgsOrgIdSettingsCodesRoute: typeof OrgsOrgIdSettingsCodesRoute
+  OrgsOrgIdSettingsNotificationsRoute: typeof OrgsOrgIdSettingsNotificationsRoute
+  OrgsOrgIdSettingsSiteRoute: typeof OrgsOrgIdSettingsSiteRoute
+  OrgsOrgIdSettingsTicketsRoute: typeof OrgsOrgIdSettingsTicketsRoute
+  OrgsOrgIdSettingsIndexRoute: typeof OrgsOrgIdSettingsIndexRoute
+}
+
+const OrgsOrgIdSettingsRouteChildren: OrgsOrgIdSettingsRouteChildren = {
+  OrgsOrgIdSettingsAuditRoute: OrgsOrgIdSettingsAuditRoute,
+  OrgsOrgIdSettingsCodesRoute: OrgsOrgIdSettingsCodesRoute,
+  OrgsOrgIdSettingsNotificationsRoute: OrgsOrgIdSettingsNotificationsRoute,
+  OrgsOrgIdSettingsSiteRoute: OrgsOrgIdSettingsSiteRoute,
+  OrgsOrgIdSettingsTicketsRoute: OrgsOrgIdSettingsTicketsRoute,
+  OrgsOrgIdSettingsIndexRoute: OrgsOrgIdSettingsIndexRoute,
+}
+
+const OrgsOrgIdSettingsRouteWithChildren =
+  OrgsOrgIdSettingsRoute._addFileChildren(OrgsOrgIdSettingsRouteChildren)
+
 interface OrgsOrgIdRouteChildren {
   OrgsOrgIdAllocationKeysRoute: typeof OrgsOrgIdAllocationKeysRoute
   OrgsOrgIdClaimsRoute: typeof OrgsOrgIdClaimsRoute
   OrgsOrgIdDirectoryRoute: typeof OrgsOrgIdDirectoryRoute
   OrgsOrgIdImportRoute: typeof OrgsOrgIdImportRoute
   OrgsOrgIdMeRoute: typeof OrgsOrgIdMeRoute
+  OrgsOrgIdNotificationsRoute: typeof OrgsOrgIdNotificationsRoute
   OrgsOrgIdPortfolioRoute: typeof OrgsOrgIdPortfolioRoute
+  OrgsOrgIdSettingsRoute: typeof OrgsOrgIdSettingsRouteWithChildren
   OrgsOrgIdVendorsRoute: typeof OrgsOrgIdVendorsRoute
   OrgsOrgIdIndexRoute: typeof OrgsOrgIdIndexRoute
+  OrgsOrgIdAnnouncementsNewRoute: typeof OrgsOrgIdAnnouncementsNewRoute
   OrgsOrgIdMoveOutOccupancyIdRoute: typeof OrgsOrgIdMoveOutOccupancyIdRoute
   OrgsOrgIdPeoplePersonIdRoute: typeof OrgsOrgIdPeoplePersonIdRoute
   OrgsOrgIdPeopleInvitationsRoute: typeof OrgsOrgIdPeopleInvitationsRoute
   OrgsOrgIdPeopleNewRoute: typeof OrgsOrgIdPeopleNewRoute
   OrgsOrgIdSitesNewRoute: typeof OrgsOrgIdSitesNewRoute
+  OrgsOrgIdTicketsTicketIdRoute: typeof OrgsOrgIdTicketsTicketIdRoute
+  OrgsOrgIdTicketsNewRoute: typeof OrgsOrgIdTicketsNewRoute
+  OrgsOrgIdTicketsQueueRoute: typeof OrgsOrgIdTicketsQueueRoute
   OrgsOrgIdUnitsUnitIdRoute: typeof OrgsOrgIdUnitsUnitIdRoute
   OrgsOrgIdUnitsNewRoute: typeof OrgsOrgIdUnitsNewRoute
+  OrgsOrgIdAnnouncementsIndexRoute: typeof OrgsOrgIdAnnouncementsIndexRoute
+  OrgsOrgIdDocumentsIndexRoute: typeof OrgsOrgIdDocumentsIndexRoute
   OrgsOrgIdPeopleIndexRoute: typeof OrgsOrgIdPeopleIndexRoute
   OrgsOrgIdSitesIndexRoute: typeof OrgsOrgIdSitesIndexRoute
+  OrgsOrgIdTicketsIndexRoute: typeof OrgsOrgIdTicketsIndexRoute
   OrgsOrgIdUnitsIndexRoute: typeof OrgsOrgIdUnitsIndexRoute
+  OrgsOrgIdAnnouncementsAnnouncementIdEditRoute: typeof OrgsOrgIdAnnouncementsAnnouncementIdEditRoute
+  OrgsOrgIdDocumentsFFolderIdRoute: typeof OrgsOrgIdDocumentsFFolderIdRoute
   OrgsOrgIdSitesSiteIdQrRoute: typeof OrgsOrgIdSitesSiteIdQrRoute
+  OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute: typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   OrgsOrgIdSitesSiteIdIndexRoute: typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 
@@ -625,20 +1006,34 @@ const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
   OrgsOrgIdDirectoryRoute: OrgsOrgIdDirectoryRoute,
   OrgsOrgIdImportRoute: OrgsOrgIdImportRoute,
   OrgsOrgIdMeRoute: OrgsOrgIdMeRoute,
+  OrgsOrgIdNotificationsRoute: OrgsOrgIdNotificationsRoute,
   OrgsOrgIdPortfolioRoute: OrgsOrgIdPortfolioRoute,
+  OrgsOrgIdSettingsRoute: OrgsOrgIdSettingsRouteWithChildren,
   OrgsOrgIdVendorsRoute: OrgsOrgIdVendorsRoute,
   OrgsOrgIdIndexRoute: OrgsOrgIdIndexRoute,
+  OrgsOrgIdAnnouncementsNewRoute: OrgsOrgIdAnnouncementsNewRoute,
   OrgsOrgIdMoveOutOccupancyIdRoute: OrgsOrgIdMoveOutOccupancyIdRoute,
   OrgsOrgIdPeoplePersonIdRoute: OrgsOrgIdPeoplePersonIdRoute,
   OrgsOrgIdPeopleInvitationsRoute: OrgsOrgIdPeopleInvitationsRoute,
   OrgsOrgIdPeopleNewRoute: OrgsOrgIdPeopleNewRoute,
   OrgsOrgIdSitesNewRoute: OrgsOrgIdSitesNewRoute,
+  OrgsOrgIdTicketsTicketIdRoute: OrgsOrgIdTicketsTicketIdRoute,
+  OrgsOrgIdTicketsNewRoute: OrgsOrgIdTicketsNewRoute,
+  OrgsOrgIdTicketsQueueRoute: OrgsOrgIdTicketsQueueRoute,
   OrgsOrgIdUnitsUnitIdRoute: OrgsOrgIdUnitsUnitIdRoute,
   OrgsOrgIdUnitsNewRoute: OrgsOrgIdUnitsNewRoute,
+  OrgsOrgIdAnnouncementsIndexRoute: OrgsOrgIdAnnouncementsIndexRoute,
+  OrgsOrgIdDocumentsIndexRoute: OrgsOrgIdDocumentsIndexRoute,
   OrgsOrgIdPeopleIndexRoute: OrgsOrgIdPeopleIndexRoute,
   OrgsOrgIdSitesIndexRoute: OrgsOrgIdSitesIndexRoute,
+  OrgsOrgIdTicketsIndexRoute: OrgsOrgIdTicketsIndexRoute,
   OrgsOrgIdUnitsIndexRoute: OrgsOrgIdUnitsIndexRoute,
+  OrgsOrgIdAnnouncementsAnnouncementIdEditRoute:
+    OrgsOrgIdAnnouncementsAnnouncementIdEditRoute,
+  OrgsOrgIdDocumentsFFolderIdRoute: OrgsOrgIdDocumentsFFolderIdRoute,
   OrgsOrgIdSitesSiteIdQrRoute: OrgsOrgIdSitesSiteIdQrRoute,
+  OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute:
+    OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute,
   OrgsOrgIdSitesSiteIdIndexRoute: OrgsOrgIdSitesSiteIdIndexRoute,
 }
 

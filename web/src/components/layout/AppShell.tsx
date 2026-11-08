@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { OrgSwitcher } from './OrgSwitcher'
+import { NotificationBell } from '@/features/notifications/NotificationBell'
 import { LocaleToggle, ThemeToggle } from './Toggles'
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -50,6 +51,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 function Topbar({ onMenu }: { onMenu: () => void }) {
   const { t } = useLingui()
+  const { org, can } = useSession()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -80,6 +82,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
       </Button>
       <OrgSwitcher />
       <div className="ms-auto flex items-center gap-1">
+        {org && can('notifications.read') ? <NotificationBell orgId={org.id} /> : null}
         <LocaleToggle />
         <ThemeToggle />
         <Button variant="ghost" size="icon" onClick={() => void signOut()} aria-label={t`Sign out`}>

@@ -29,7 +29,7 @@ function mockServiceWorker(): Plugin {
 
 const backend = process.env.OPENBEKCI_DEV_BACKEND ?? 'http://localhost:8484'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react(),
@@ -38,6 +38,12 @@ export default defineConfig({
     tailwindcss(),
     mockServiceWorker(),
   ],
+  // `--mode mock` (or `--mode=mock`) runs next to the normal dev server (e2e): its own dependency
+  // cache, or the two optimizers invalidate each other's chunks mid-test
+  cacheDir: mode === 'mock' ? 'node_modules/.vite-mock' : 'node_modules/.vite',
+  // lazily loaded dependencies: pre-bundled up front so the dev server never re-optimizes (and
+  // reloads the page) the first time a lazy chunk is opened
+  optimizeDeps: { include: ['react-markdown', 'msw/browser'] },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   // The Go server replaces __CSP_NONCE__ with a per-response nonce (backend §16).
   html: { cspNonce: '__CSP_NONCE__' },
@@ -49,4 +55,4 @@ export default defineConfig({
     },
   },
   build: { outDir: 'dist', sourcemap: false, target: 'es2023' },
-})
+}))

@@ -11,7 +11,7 @@ import { installChunkLoadRecovery } from '@/lib/chunk-recovery'
 installChunkLoadRecovery()
 
 async function bootstrap() {
-  if (import.meta.env.MODE === 'mock') {
+  if (import.meta.env.MODE === 'mock' && !import.meta.env.PROD) {
     // MSW answers /v1 in the browser (pnpm dev:mock); dead code in production builds
     await (await import('./mocks/browser')).startMocks()
   }

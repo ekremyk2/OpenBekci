@@ -1,10 +1,14 @@
 import type { LucideIcon } from 'lucide-react'
 import {
+  BellIcon,
   Building2,
   DoorOpen,
+  FolderOpenIcon,
   HomeIcon,
   LayoutDashboard,
   LifeBuoy,
+  MegaphoneIcon,
+  SettingsIcon,
   UserRound,
   Users,
   Wallet,
@@ -83,8 +87,42 @@ export const NAV_ITEMS: NavItem[] = [
     label: msg`Tickets`,
     to: '/orgs/$orgId/tickets',
     icon: LifeBuoy,
-    permission: 'ticket.read',
-    planned: true,
+    visible: ({ me, orgId }) =>
+      ['tickets.read', 'tickets.read_assigned', 'tickets.work', 'tickets.open'].some((p) =>
+        can(me, orgId, p),
+      ),
+  },
+  {
+    id: 'announcements',
+    label: msg`Announcements`,
+    to: '/orgs/$orgId/announcements',
+    icon: MegaphoneIcon,
+    visible: ({ me, orgId }) =>
+      can(me, orgId, 'announcements.read') || can(me, orgId, 'announcements.publish'),
+  },
+  {
+    id: 'documents',
+    label: msg`Documents`,
+    to: '/orgs/$orgId/documents',
+    icon: FolderOpenIcon,
+    permission: 'documents.read',
+  },
+  {
+    id: 'notifications',
+    label: msg`Notifications`,
+    to: '/orgs/$orgId/notifications',
+    icon: BellIcon,
+    permission: 'notifications.read',
+  },
+  {
+    id: 'settings',
+    label: msg`Settings`,
+    to: '/orgs/$orgId/settings',
+    icon: SettingsIcon,
+    visible: ({ me, orgId }) =>
+      ['org.read', 'org.manage', 'audit.read', 'tickets.manage', 'notifications.manage'].some((p) =>
+        can(me, orgId, p),
+      ),
   },
   { id: 'me', label: msg`My account`, to: '/orgs/$orgId/me', icon: UserRound },
 ]

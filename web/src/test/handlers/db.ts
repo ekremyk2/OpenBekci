@@ -1,3 +1,4 @@
+import { registerReset } from '../reset'
 import type { Schema } from '@/api/draft'
 
 /**
@@ -441,3 +442,4 @@ export function resetDb() {
   db = seed()
   return db
 }
+registerReset(() => resetDb())

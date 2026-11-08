@@ -10,6 +10,7 @@ desktop.ini
 .env
 .env.*
 !.env.example
+!.env.mock
 
 # Go
 server/bin/

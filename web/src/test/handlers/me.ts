@@ -37,6 +37,21 @@ export const ALL_PERMISSIONS = [
   'money.post',
   'money.lock',
   'dashboard.portfolio',
+  // operations
+  'tickets.read',
+  'tickets.manage',
+  'tickets.open',
+  'announcements.read',
+  'announcements.publish',
+  'documents.read',
+  'documents.manage',
+  'files.upload',
+  'files.read',
+  'notifications.read',
+  'notifications.manage',
+  'audit.read',
+  'dashboard.site',
+  'codes.read',
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */

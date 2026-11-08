@@ -53,6 +53,9 @@ export class AppError extends Error {
   get isVersionConflict() {
     return this.status === 412 || this.code === 'version_conflict'
   }
+  get isPayloadTooLarge() {
+    return this.status === 413 || this.code === 'payload_too_large'
+  }
   get isValidation() {
     return this.status === 422
   }

@@ -13,6 +13,36 @@ export type DraftSchemas = components['schemas']
 /** The draft contract's schema `Name`, for example `Schema<'Unit'>`. */
 export type Schema<K extends keyof components['schemas']> = components['schemas'][K]
 
+type S = components['schemas']
+// Short names used by the operations screens (tickets, announcements, documents, notifications,
+// audit, dashboards, platform). Anything else: `Schema<'Name'>`.
+export type Ticket = S['Ticket']
+export type TicketStatus = S['TicketStatus']
+export type TicketWorkflow = S['TicketWorkflow']
+export type TicketCategory = S['TicketCategory']
+export type TicketComment = S['TicketComment']
+export type TicketAttachment = S['TicketAttachment']
+export type TicketStatusChange = S['TicketStatusChange']
+export type Announcement = S['Announcement']
+export type AnnouncementAudience = S['AnnouncementAudience']
+export type AnnouncementPreview = S['AnnouncementPreview']
+export type AnnouncementRead = S['AnnouncementRead']
+export type Folder = S['Folder']
+export type Document = S['Document']
+export type DocumentVisibility = S['DocumentVisibility']
+export type Notification = S['Notification']
+export type NotificationDefault = S['NotificationDefault']
+export type AuditEvent = S['AuditEvent']
+export type SiteDashboard = S['SiteDashboard']
+export type PlatformOrg = S['PlatformOrg']
+export type PlatformHealth = S['PlatformHealth']
+export type BackupStatus = S['BackupStatus']
+export type PlatformJob = S['PlatformJob']
+export type PlatformSettings = S['PlatformSettings']
+export type Job = S['Job']
+export type ApiFile = S['File']
+export type Channel = 'in_app' | 'email' | 'sms' | 'push'
+
 /** Client typed with the draft paths (same middleware as `api`). */
 export const draftApi = createApiClient<paths>()
 
