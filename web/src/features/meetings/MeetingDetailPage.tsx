@@ -36,20 +36,23 @@ function StatusActions({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }
   const closeKey = useIdempotencyKey()
   const cancelKey = useIdempotencyKey()
   const [cancelling, setCancelling] = useState(false)
-  const path = (a: 'start' | 'close') =>
-    a === 'start'
-      ? ('/v1/orgs/{org_id}/meetings/{meeting_id}:start' as const)
-      : ('/v1/orgs/{org_id}/meetings/{meeting_id}:close' as const)
-  const move = useOrgMutation(async (a: 'start' | 'close') =>
-    unwrap(
-      gApi.POST(path(a), {
-        params: {
-          path: { org_id: ctx.orgId, meeting_id: meeting.id },
-          header: idemHeader(a === 'start' ? startKey.key : closeKey.key),
-        },
-      }),
-    ),
-  )
+  const secondKey = useIdempotencyKey()
+  // The session opens at a call that the server records (`held_call`): `:open-first-call`, then,
+  // when the first call lacks its quorum, `:open-second-call`.
+  const move = useOrgMutation(async (a: 'open-first-call' | 'open-second-call' | 'close') => {
+    const key = a === 'open-first-call' ? startKey : a === 'open-second-call' ? secondKey : closeKey
+    const params = {
+      path: { org_id: ctx.orgId, meeting_id: meeting.id },
+      header: idemHeader(key.key),
+    }
+    return unwrap(
+      a === 'open-first-call'
+        ? gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call', { params })
+        : a === 'open-second-call'
+          ? gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call', { params })
+          : gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:close', { params }),
+    )
+  })
   const cancel = useOrgMutation(async (reason: string) =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:cancel', {
@@ -67,12 +70,28 @@ function StatusActions({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }
       {s === 'called' ? (
         <Button
           onClick={() =>
-            move.mutate('start', { onError: () => toast.error(t`Could not start the assembly.`) })
+            move.mutate('open-first-call', {
+              onError: () => toast.error(t`Could not start the assembly.`),
+            })
           }
           disabled={move.isPending}
         >
           <PlayIcon />
           <Trans>Start the assembly</Trans>
+        </Button>
+      ) : null}
+      {s === 'in_session' && meeting.held_call === 'first' ? (
+        <Button
+          variant="outline"
+          onClick={() =>
+            move.mutate('open-second-call', {
+              onError: () =>
+                toast.error(t`The second call opens only when the first lacks its quorum.`),
+            })
+          }
+          disabled={move.isPending}
+        >
+          <Trans>Open the second call</Trans>
         </Button>
       ) : null}
       {s === 'in_session' ? (

@@ -8,7 +8,7 @@ import { http, HttpResponse } from 'msw'
 import { server } from '@/test/setup'
 import { recordRequests } from '@/test/gov-utils'
 import { createGuardApi, getGuardSession, GUARD_HEADER, setGuardSession } from './guardApi'
-import { manualOpenState } from './openState'
+import { agentOnline, manualOpenState } from './openState'
 import { OpenButton } from './panels'
 import { ExitGate } from './ExitGate'
 import { PinSwitch } from './PinSwitch'
@@ -31,49 +31,51 @@ const ctx: SiteCtx = {
 const NOW = '2026-03-01T12:00:00Z'
 
 describe('manualOpenState', () => {
-  const point = { enabled: true }
-  const agent = { connected: true, last_seen_at: '2026-03-01T11:59:30Z' }
-  it('is enabled when permitted, enabled and the agent was heard recently', () => {
-    expect(manualOpenState({ canOpen: true, point, agent, serverTime: NOW })).toEqual({
+  const point = { enabled: true, online: true, clock_suspect: false }
+  const agent = { online: true, clock_suspect: false }
+  it('is enabled when permitted, enabled and the agent is online', () => {
+    expect(manualOpenState({ canOpen: true, point, agent })).toEqual({
       enabled: true,
       reason: null,
     })
   })
   it('says why it is disabled', () => {
-    expect(manualOpenState({ canOpen: false, point, agent, serverTime: NOW }).reason).toBe(
-      'no_permission',
+    expect(manualOpenState({ canOpen: false, point, agent }).reason).toBe('no_permission')
+    expect(manualOpenState({ canOpen: true, point: { enabled: false }, agent }).reason).toBe(
+      'point_disabled',
     )
     expect(
-      manualOpenState({ canOpen: true, point: { enabled: false }, agent, serverTime: NOW }).reason,
-    ).toBe('point_disabled')
-    expect(
-      manualOpenState({
-        canOpen: true,
-        point,
-        agent: { ...agent, connected: false },
-        serverTime: NOW,
-      }).reason,
+      manualOpenState({ canOpen: true, point, agent: { ...agent, online: false } }).reason,
     ).toBe('agent_offline')
+    expect(manualOpenState({ canOpen: true, point, agent: null }).reason).toBe('agent_offline')
     expect(
-      manualOpenState({
-        canOpen: true,
-        point,
-        agent: { connected: true, last_seen_at: '2026-03-01T11:50:00Z' },
-        serverTime: NOW,
-      }).reason,
-    ).toBe('agent_offline')
-    expect(manualOpenState({ canOpen: true, point, agent: null, serverTime: NOW }).reason).toBe(
-      'agent_offline',
+      manualOpenState({ canOpen: true, point: { ...point, online: false }, agent }).reason,
+    ).toBe('point_offline')
+    expect(manualOpenState({ canOpen: true, point, agent, clockSuspect: true }).reason).toBe(
+      'clock_suspect',
     )
     expect(
-      manualOpenState({ canOpen: true, point, agent, serverTime: NOW, clockSuspect: true }).reason,
+      manualOpenState({ canOpen: true, point, agent: { ...agent, clock_suspect: true } }).reason,
     ).toBe('clock_suspect')
+    expect(
+      manualOpenState({ canOpen: true, point: { ...point, clock_suspect: true }, agent }).reason,
+    ).toBe('clock_suspect')
+  })
+})
+
+describe('agentOnline', () => {
+  const now = Date.parse(NOW)
+  it('needs a connection and a recent heartbeat', () => {
+    expect(agentOnline({ connected: true, last_seen: '2026-03-01T11:59:30Z' }, now)).toBe(true)
+    expect(agentOnline({ connected: true, last_seen: '2026-03-01T11:50:00Z' }, now)).toBe(false)
+    expect(agentOnline({ connected: false, last_seen: '2026-03-01T11:59:30Z' }, now)).toBe(false)
+    expect(agentOnline({ connected: true, last_seen: null }, now)).toBe(false)
   })
 })
 
 function renderOpen(over: {
   canOpen?: boolean
-  agent?: { connected: boolean; last_seen_at: string | null } | null
+  agent?: { connected: boolean; online: boolean; last_seen_at: string | null } | null
   clockSuspect?: boolean
 }) {
   const qc = new QueryClient()
@@ -88,13 +90,21 @@ function renderOpen(over: {
             kind: 'vehicle_gate',
             direction: 'both',
             enabled: true,
+            online: true,
+            clock_suspect: false,
           }}
           console={{
             server_time: NOW,
             agent:
               over.agent === undefined
-                ? { connected: true, last_seen_at: '2026-03-01T11:59:50Z', points: [] }
-                : over.agent && { ...over.agent, points: [] },
+                ? {
+                    connected: true,
+                    online: true,
+                    clock_suspect: false,
+                    last_seen_at: '2026-03-01T11:59:50Z',
+                    points: [],
+                  }
+                : over.agent && { ...over.agent, clock_suspect: false, points: [] },
           }}
           canOpen={over.canOpen ?? true}
           clockSuspect={over.clockSuspect}
@@ -110,7 +120,7 @@ describe('manual open button', () => {
     expect(screen.getByRole('button', { name: /Open Main gate/ })).toBeEnabled()
   })
   it('is disabled with the reason when the agent is offline', () => {
-    renderOpen({ agent: { connected: false, last_seen_at: null } })
+    renderOpen({ agent: { connected: false, online: false, last_seen_at: null } })
     expect(screen.getByRole('button', { name: /Open Main gate/ })).toBeDisabled()
     expect(screen.getByText('The gate agent is offline.')).toBeInTheDocument()
   })
@@ -212,6 +222,8 @@ describe('manual open, learned block', () => {
       kind: 'vehicle_gate',
       direction: 'both',
       enabled: true,
+      online: true,
+      clock_suspect: false,
     } as const
     const mk = (serverTime: string) => (
       <I18nProvider i18n={i18n}>
@@ -221,7 +233,13 @@ describe('manual open, learned block', () => {
             point={point}
             console={{
               server_time: serverTime,
-              agent: { connected: true, last_seen_at: serverTime, points: [] },
+              agent: {
+                connected: true,
+                online: true,
+                clock_suspect: false,
+                last_seen_at: serverTime,
+                points: [],
+              },
             }}
             canOpen
           />

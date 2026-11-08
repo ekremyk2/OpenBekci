@@ -169,7 +169,7 @@ export function TicketSettingsPage() {
   const { site } = useSite()
   const orgId = org?.id ?? ''
   const workflow = useWorkflow(orgId, site?.id)
-  const categories = useCategories(orgId, site?.id, undefined)
+  const categories = useCategories(orgId, site?.id, 'all')
 
   if (!can('tickets.manage')) {
     return (

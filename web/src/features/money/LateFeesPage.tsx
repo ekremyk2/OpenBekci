@@ -34,6 +34,7 @@ import {
   useMoneyQuery,
   type MoneyCtx,
   type S,
+  unitSideRef,
 } from './api'
 import {
   Field,
@@ -355,7 +356,7 @@ export function WaiveDialog({
         params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
         body: {
           site_id: ctx.siteId,
-          debtor: { unit_id: accrual.unit_id, debtor_kind: accrual.debtor_kind },
+          debtor: unitSideRef(accrual.unit_id, accrual.debtor_kind),
           amount: minorMoney(amount!, ctx.currency),
           reason,
         },
@@ -447,7 +448,7 @@ function FreezeDialog({
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        debtor: { unit_id: accrual.unit_id, debtor_kind: accrual.debtor_kind },
+        debtor: unitSideRef(accrual.unit_id, accrual.debtor_kind),
         from: v.from,
         to: v.to || null,
         reason: v.reason,

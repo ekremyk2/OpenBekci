@@ -28,6 +28,7 @@ import {
   useMoneyQuery,
   type MoneyCtx,
   type S,
+  unitSideRef,
 } from './api'
 import { useIdempotencyKeys } from './forms'
 import { DebtorPicker, debtorRef, emptyTarget, type DebtorTarget } from './DebtorPicker'
@@ -101,7 +102,7 @@ export function BankImportsPage() {
                           <SiteDate value={i.period_to} timeZone={ctx.timeZone} />
                         </>
                       ) : (
-                        i.file_id
+                        i.filename
                       )}
                     </Link>
                   </TableCell>
@@ -273,7 +274,7 @@ export function BankMatchPage({ importId }: { importId: string }) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                {i.file_id} <StatusBadge status={i.status} />
+                {i.filename} <StatusBadge status={i.status} />
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -419,7 +420,7 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
       )
     if (!s) return setManualFor(tx.id)
     match.mutate(
-      { tx, debtor: { unit_id: s.unit_id, debtor_kind: s.debtor_kind } },
+      { tx, debtor: unitSideRef(s.unit_id, s.debtor_kind) },
       {
         onSuccess: () => toast.info(t`Matched to ${s.unit_door_number}.`),
         onError: () => toast.error(t`Could not match the line.`),

@@ -97,17 +97,11 @@ function Reads({
   )
 }
 
-/**
- * Gallery entries for an announcement. The contract lists `file_ids` only; when it grows inline
- * file info (`files: [{ id, name, mime }]`) the names and thumbnails appear, until then each file
- * is shown by id as a download.
- */
-function galleryItems(x: { file_ids: string[] }): GalleryItem[] {
-  const files = (x as { files?: { id: string; name?: string; mime?: string }[] }).files
-  return x.file_ids.map((id) => {
-    const f = files?.find((candidate) => candidate.id === id)
-    return { id, fileId: id, mime: f?.mime ?? 'application/octet-stream', name: f?.name }
-  })
+/** Gallery entries for an announcement: attachments carry name and type, so images get thumbnails. */
+function galleryItems(x: {
+  attachments: { id: string; name: string; mime: string }[]
+}): GalleryItem[] {
+  return x.attachments.map((a) => ({ id: a.id, fileId: a.id, mime: a.mime, name: a.name }))
 }
 
 export function AnnouncementDetailPage({ announcementId }: { announcementId: string }) {

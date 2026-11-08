@@ -671,7 +671,7 @@ function PlanSettings({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
               >
                 <option value="active">{t`Active`}</option>
                 <option value="paused">{t`Paused`}</option>
-                <option value="ended">{t`Ended`}</option>
+                <option value="archived">{t`Archived`}</option>
               </Select>
             </Field>
             <Field label={t`Due day`} htmlFor="ps-due">

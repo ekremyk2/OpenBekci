@@ -5,6 +5,7 @@
 export const idempotentOperations: ReadonlySet<string> = new Set<string>([
   'DELETE /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}',
   'POST /v1/orgs/{org_id}/access-points/{point_id}:open',
+  'POST /v1/orgs/{org_id}/access/credentials',
   'POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish',
   'POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match',
   'POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch',
@@ -16,7 +17,6 @@ export const idempotentOperations: ReadonlySet<string> = new Set<string>([
   'POST /v1/orgs/{org_id}/charges',
   'POST /v1/orgs/{org_id}/charges/{charge_id}:adjust',
   'POST /v1/orgs/{org_id}/charges/{charge_id}:cancel',
-  'POST /v1/orgs/{org_id}/credentials',
   'POST /v1/orgs/{org_id}/credits/{credit_id}:apply',
   'POST /v1/orgs/{org_id}/decisions/{decision_id}:apply',
   'POST /v1/orgs/{org_id}/dunning-runs',

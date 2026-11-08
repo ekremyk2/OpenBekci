@@ -34,7 +34,8 @@ import {
   type S,
 } from './api'
 import { useLabels } from './labels'
-import { PersonPicker, UnitPicker, useAllUnits } from './pickers'
+import { DebtorPicker, debtorRef, emptyTarget, targetId, type DebtorTarget } from './DebtorPicker'
+import { UnitPicker, usePersons, useAllUnits } from './pickers'
 import {
   LabeledCheckbox,
   ExportButtons,
@@ -359,7 +360,13 @@ function TimelineCard({ ctx }: { ctx: MoneyCtx }) {
 function CasesCard({ ctx }: { ctx: MoneyCtx }) {
   const { t } = useLingui()
   const units = useAllUnits(ctx)
-  const door = (id: string) => units.data?.find((u) => u.id === id)?.door_number ?? id
+  const persons = usePersons(ctx)
+  const debtorName = (c: S['CollectionCase']) =>
+    c.unit_id
+      ? (units.data?.find((u) => u.id === c.unit_id)?.door_number ?? c.unit_id)
+      : (persons.data?.find((p) => p.id === c.debtor_person_id)?.display_name ??
+        c.debtor_person_id ??
+        '–')
   const [creating, setCreating] = useState(false)
   const [closing, setClosing] = useState<S['CollectionCase'] | null>(null)
   const q = useMoneyQuery(['cases', ctx.siteId], () =>
@@ -428,7 +435,7 @@ function CasesCard({ ctx }: { ctx: MoneyCtx }) {
                   const frozen = freezes.data?.some((f) => f.case_id === c.id)
                   return (
                     <TableRow key={c.id}>
-                      <TableCell>{door(c.unit_id)}</TableCell>
+                      <TableCell>{debtorName(c)}</TableCell>
                       <TableCell>
                         <SideBadge side={c.debtor_kind} />
                       </TableCell>
@@ -474,9 +481,7 @@ function CasesCard({ ctx }: { ctx: MoneyCtx }) {
 function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
-  const [unit, setUnit] = useState('')
-  const [side, setSide] = useState<DebtorSide>('owner')
-  const [person, setPerson] = useState('')
+  const [target, setTarget] = useState<DebtorTarget>(emptyTarget())
   const [lawyer, setLawyer] = useState('')
   const [fileNo, setFileNo] = useState('')
   const [error, setError] = useState<string>()
@@ -485,9 +490,7 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        unit_id: unit,
-        debtor_kind: side,
-        debtor_person_id: person,
+        debtor: debtorRef(target),
         opened_on: todayIn(ctx.timeZone),
         lawyer: lawyer || null,
         file_no: fileNo || null,
@@ -506,26 +509,22 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault()
-            if (!unit || !person) return setError(t`Choose the unit and the debtor.`)
+            if (!targetId(target)) return setError(t`Choose who owes.`)
             m.mutateAsync().then(
               () => {
                 idem.renew()
-                toast.info(t`Case opened; late fees are frozen for this unit side.`)
+                toast.info(
+                  target.mode === 'unit'
+                    ? t`Case opened; late fees are frozen for this unit side.`
+                    : t`Case opened.`,
+                )
                 onClose()
               },
               () => setError(t`Could not open the case.`),
             )
           }}
         >
-          <Field label={t`Unit`} htmlFor="nc-unit">
-            <UnitPicker ctx={ctx} id="nc-unit" value={unit} onChange={setUnit} />
-          </Field>
-          <Field label={t`Side`}>
-            <SidePicker value={side} onChange={setSide} />
-          </Field>
-          <Field label={t`Debtor person`} htmlFor="nc-person">
-            <PersonPicker ctx={ctx} id="nc-person" value={person} onChange={setPerson} />
-          </Field>
+          <DebtorPicker ctx={ctx} idPrefix="nc" value={target} onChange={setTarget} />
           <Field label={t`Lawyer`} htmlFor="nc-lawyer">
             <Input id="nc-lawyer" value={lawyer} onChange={(e) => setLawyer(e.target.value)} />
           </Field>

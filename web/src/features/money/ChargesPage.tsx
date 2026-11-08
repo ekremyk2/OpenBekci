@@ -38,6 +38,7 @@ import {
   useMoneyQuery,
   type MoneyCtx,
   type S,
+  unitSideRef,
 } from './api'
 import { CHARGE_TYPES, useLabels } from './labels'
 import { UnitPicker } from './pickers'
@@ -450,7 +451,7 @@ function RemindDialog({
             debtors: selection.length
               ? selection.map((k) => {
                   const [unit_id, debtor_kind] = k.split(':') as [string, 'owner' | 'tenant']
-                  return { unit_id, debtor_kind }
+                  return unitSideRef(unit_id, debtor_kind)
                 })
               : undefined,
             channels: [...channels],

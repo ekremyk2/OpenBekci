@@ -41,7 +41,7 @@ interface FormState {
   role: string
   validFrom: string
   validTo: string
-  endPrevious: boolean
+  replacesMembershipIds: string[]
   budgetId: string
   saName: string
   saAmount: bigint | null
@@ -75,7 +75,9 @@ export function buildApplyBody(
         scope_id: ctx.siteId,
         valid_from: f.validFrom,
         valid_to: f.validTo,
-        end_previous: f.endPrevious,
+        ...(f.replacesMembershipIds.length
+          ? { replaces_membership_ids: f.replacesMembershipIds }
+          : {}),
       }
     case 'budget_final':
       if (!f.budgetId) return null
@@ -154,7 +156,7 @@ export function ApplyDecisionDialog({
     role: 'site_manager',
     validFrom: today,
     validTo: addDays(today, 365),
-    endPrevious: true,
+    replacesMembershipIds: [],
     budgetId: '',
     saName: '',
     saAmount: null,
@@ -162,6 +164,24 @@ export function ApplyDecisionDialog({
     keyId: '',
   })
   const set = (patch: Partial<FormState>) => setF((cur) => ({ ...cur, ...patch }))
+  // Electing someone ends nobody by default; the people replaced are chosen from the current
+  // holders of the same role at this site.
+  const holders = useOrgQuery(['role-holders', ctx.siteId, f.role], () =>
+    unwrap(
+      gApi.GET('/v1/orgs/{org_id}/memberships', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: {
+            role: f.role,
+            scope_type: 'site',
+            scope_id: ctx.siteId,
+            active: true,
+            limit: 100,
+          },
+        },
+      }),
+    ).then((r) => r.items),
+  )
   const [step, setStep] = useState<'form' | 'confirm'>('form')
   const [preview, setPreview] = useState<Record<string, unknown> | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -292,7 +312,7 @@ export function ApplyDecisionDialog({
                   <Select
                     id="ap-role"
                     value={f.role}
-                    onChange={(e) => set({ role: e.target.value })}
+                    onChange={(e) => set({ role: e.target.value, replacesMembershipIds: [] })}
                   >
                     {ELECTED_ROLES.map((r) => (
                       <option key={r} value={r}>
@@ -321,11 +341,27 @@ export function ApplyDecisionDialog({
                     />
                   </Field>
                 </div>
-                <LabeledCheckbox
-                  label={t`End the previous holder's term`}
-                  checked={f.endPrevious}
-                  onChange={(e) => set({ endPrevious: e.target.checked })}
-                />
+                {(holders.data ?? []).length ? (
+                  <fieldset className="flex flex-col gap-2">
+                    <legend className="text-sm font-medium">
+                      <Trans>Current holders this election replaces</Trans>
+                    </legend>
+                    {(holders.data ?? []).map((h) => (
+                      <LabeledCheckbox
+                        key={h.id}
+                        label={h.person_display_name}
+                        checked={f.replacesMembershipIds.includes(h.id)}
+                        onChange={(e) =>
+                          set({
+                            replacesMembershipIds: e.target.checked
+                              ? [...f.replacesMembershipIds, h.id]
+                              : f.replacesMembershipIds.filter((x) => x !== h.id),
+                          })
+                        }
+                      />
+                    ))}
+                  </fieldset>
+                ) : null}
               </>
             ) : null}
             {kind === 'budget_final' ? (

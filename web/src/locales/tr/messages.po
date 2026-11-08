@@ -932,6 +932,9 @@ msgstr "Ayrılan kişinin kendi hesabına devret"
 msgid "Case opened; late fees are frozen for this unit side."
 msgstr "Dosya açıldı; bu birim tarafı için gecikme tazminatı donduruldu."
 
+msgid "Case opened."
+msgstr "Dosya açıldı."
+
 msgid "Cash"
 msgstr "Nakit"
 
@@ -1157,9 +1160,6 @@ msgstr "Başlangıç tarihini seçin"
 msgid "Choose the unit"
 msgstr "Bağımsız bölümü seçin"
 
-msgid "Choose the unit and the debtor."
-msgstr "Birimi ve borçluyu seçin."
-
 msgid "Choose the unit the visitor is for."
 msgstr "Ziyaretçinin geleceği bağımsız bölümü seçin."
 
@@ -1178,6 +1178,9 @@ msgstr "Kimlerin rezerve edebileceğini seçin."
 
 msgid "Choose who may open this folder and the documents in it."
 msgstr "Bu klasörü ve içindeki belgeleri kimlerin açabileceğini seçin."
+
+msgid "Choose who owes."
+msgstr "Borçluyu seçin."
 
 msgid "Choose who the statement is for."
 msgstr "Ekstrenin kimin için olduğunu seçin."
@@ -1693,6 +1696,9 @@ msgstr "Alacaklar (peşin ödemeler)"
 msgid "Currency"
 msgstr "Para birimi"
 
+msgid "Current holders this election replaces"
+msgstr "Bu seçimin yerini aldığı mevcut görevliler"
+
 msgid "Current lock date:"
 msgstr "Geçerli kilit tarihi:"
 
@@ -1739,9 +1745,6 @@ msgstr "Borç"
 
 msgid "Debt status certificate"
 msgstr "Borç durum belgesi"
-
-msgid "Debtor person"
-msgstr "Borçlu kişi"
 
 msgid "Debtors"
 msgstr "Borçlular"
@@ -2107,9 +2110,6 @@ msgstr "Etkin"
 
 msgid "End membership"
 msgstr "Üyeliği bitir"
-
-msgid "End the previous holder's term"
-msgstr "Önceki yöneticinin görev süresini bitir"
 
 msgid "Ended"
 msgstr "Sona erdi"
@@ -3925,6 +3925,9 @@ msgstr "Açık talepler"
 msgid "Open the assembly"
 msgstr "Toplantıyı aç"
 
+msgid "Open the second call"
+msgstr "İkinci toplantıyı aç"
+
 msgid "Open ticket"
 msgstr "Talebi aç"
 
@@ -5464,6 +5467,9 @@ msgstr "Bu saat zaten dolu veya engelli. Başka bir saat seçin."
 msgid "The accounting period of this change is locked."
 msgstr "Bu değişikliğin muhasebe dönemi kilitli."
 
+msgid "The agent cannot reach this point."
+msgstr "Ajan bu noktaya ulaşamıyor."
+
 msgid "The agent is offline."
 msgstr "Ajan çevrim dışı."
 
@@ -5702,6 +5708,9 @@ msgstr "Arama başarısız oldu."
 msgid "The second call also needs a quorum"
 msgstr "İkinci çağrıda da toplantı yeter sayısı aranır"
 
+msgid "The second call opens only when the first lacks its quorum."
+msgstr "İkinci toplantı yalnızca ilk toplantıda toplantı yeter sayısı sağlanamazsa açılır."
+
 msgid "The second meeting must come after the first."
 msgstr "İkinci toplantı ilkinden sonra olmalıdır."
 
@@ -5812,6 +5821,9 @@ msgstr "Bu dosya türüne izin verilmiyor."
 
 msgid "This folder is empty"
 msgstr "Bu klasör boş"
+
+msgid "This gate cannot be reached through the agent."
+msgstr "Bu geçişe ajan üzerinden ulaşılamıyor."
 
 msgid "This gate is switched off."
 msgstr "Bu kapı kapalı."

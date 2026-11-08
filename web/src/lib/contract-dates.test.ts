@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { toContractDate } from './contract-dates'
 import { siteMidnight } from './dates'
 
-const RFC3339 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
-
 describe('siteMidnight', () => {
   it('is local midnight with the site offset, not the browser timezone', () => {
     expect(siteMidnight('2026-03-05', 'Europe/Istanbul')).toBe('2026-03-05T00:00:00+03:00')
@@ -27,15 +25,9 @@ describe('siteMidnight', () => {
 })
 
 describe('toContractDate', () => {
-  it('sends an RFC 3339 timestamp under the contract field name', () => {
-    const r = toContractDate('received', '2026-03-05', 'Europe/Istanbul')
-    expect(r).toEqual({ received_at: '2026-03-05T00:00:00+03:00' })
-    expect(r.received_at).toMatch(RFC3339)
-    expect(toContractDate('transferred', '2026-03-05', 'UTC')).toEqual({
-      transferred_at: '2026-03-05T00:00:00+00:00',
-    })
-    expect(toContractDate('refunded', '2026-03-05', 'UTC')).toEqual({
-      refunded_at: '2026-03-05T00:00:00+00:00',
-    })
+  it('sends the calendar day under the contract field name, with no instant', () => {
+    expect(toContractDate('received', '2026-03-05')).toEqual({ received_on: '2026-03-05' })
+    expect(toContractDate('transferred', '2026-03-05')).toEqual({ transferred_on: '2026-03-05' })
+    expect(toContractDate('refunded', '2026-03-05')).toEqual({ refunded_on: '2026-03-05' })
   })
 })

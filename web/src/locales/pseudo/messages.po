@@ -932,6 +932,9 @@ msgstr ""
 msgid "Case opened; late fees are frozen for this unit side."
 msgstr ""
 
+msgid "Case opened."
+msgstr ""
+
 msgid "Cash"
 msgstr ""
 
@@ -1157,9 +1160,6 @@ msgstr ""
 msgid "Choose the unit"
 msgstr ""
 
-msgid "Choose the unit and the debtor."
-msgstr ""
-
 msgid "Choose the unit the visitor is for."
 msgstr ""
 
@@ -1177,6 +1177,9 @@ msgid "Choose who may book."
 msgstr ""
 
 msgid "Choose who may open this folder and the documents in it."
+msgstr ""
+
+msgid "Choose who owes."
 msgstr ""
 
 msgid "Choose who the statement is for."
@@ -1693,6 +1696,9 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
+msgid "Current holders this election replaces"
+msgstr ""
+
 msgid "Current lock date:"
 msgstr ""
 
@@ -1738,9 +1744,6 @@ msgid "Debit"
 msgstr ""
 
 msgid "Debt status certificate"
-msgstr ""
-
-msgid "Debtor person"
 msgstr ""
 
 msgid "Debtors"
@@ -2106,9 +2109,6 @@ msgid "Enabled"
 msgstr ""
 
 msgid "End membership"
-msgstr ""
-
-msgid "End the previous holder's term"
 msgstr ""
 
 msgid "Ended"
@@ -3925,6 +3925,9 @@ msgstr ""
 msgid "Open the assembly"
 msgstr ""
 
+msgid "Open the second call"
+msgstr ""
+
 msgid "Open ticket"
 msgstr ""
 
@@ -5464,6 +5467,9 @@ msgstr ""
 msgid "The accounting period of this change is locked."
 msgstr ""
 
+msgid "The agent cannot reach this point."
+msgstr ""
+
 msgid "The agent is offline."
 msgstr ""
 
@@ -5702,6 +5708,9 @@ msgstr ""
 msgid "The second call also needs a quorum"
 msgstr ""
 
+msgid "The second call opens only when the first lacks its quorum."
+msgstr ""
+
 msgid "The second meeting must come after the first."
 msgstr ""
 
@@ -5811,6 +5820,9 @@ msgid "This file type is not allowed."
 msgstr ""
 
 msgid "This folder is empty"
+msgstr ""
+
+msgid "This gate cannot be reached through the agent."
 msgstr ""
 
 msgid "This gate is switched off."

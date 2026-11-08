@@ -16,7 +16,11 @@ export const workflowQuery = (orgId: string, siteId: string) =>
       ),
   })
 
-export const categoriesQuery = (orgId: string, siteId: string, archived = false) =>
+export const categoriesQuery = (
+  orgId: string,
+  siteId: string,
+  archived: 'active' | 'archived' | 'all' = 'active',
+) =>
   queryOptions({
     queryKey: ['operations.listTicketCategories', orgId, siteId, archived],
     staleTime: FIVE_MIN,
@@ -68,7 +72,11 @@ export function useWorkflow(orgId: string, siteId: string | undefined) {
   return useQuery({ ...workflowQuery(orgId, siteId ?? ''), enabled: !!siteId })
 }
 
-export function useCategories(orgId: string, siteId: string | undefined, archived = false) {
+export function useCategories(
+  orgId: string,
+  siteId: string | undefined,
+  archived: 'active' | 'archived' | 'all' = 'active',
+) {
   return useQuery({ ...categoriesQuery(orgId, siteId ?? '', archived), enabled: !!siteId })
 }
 

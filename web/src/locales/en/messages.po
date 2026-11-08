@@ -932,6 +932,9 @@ msgstr "Carry them to the leaving person's own account"
 msgid "Case opened; late fees are frozen for this unit side."
 msgstr "Case opened; late fees are frozen for this unit side."
 
+msgid "Case opened."
+msgstr "Case opened."
+
 msgid "Cash"
 msgstr "Cash"
 
@@ -1157,9 +1160,6 @@ msgstr "Choose the start date"
 msgid "Choose the unit"
 msgstr "Choose the unit"
 
-msgid "Choose the unit and the debtor."
-msgstr "Choose the unit and the debtor."
-
 msgid "Choose the unit the visitor is for."
 msgstr "Choose the unit the visitor is for."
 
@@ -1178,6 +1178,9 @@ msgstr "Choose who may book."
 
 msgid "Choose who may open this folder and the documents in it."
 msgstr "Choose who may open this folder and the documents in it."
+
+msgid "Choose who owes."
+msgstr "Choose who owes."
 
 msgid "Choose who the statement is for."
 msgstr "Choose who the statement is for."
@@ -1693,6 +1696,9 @@ msgstr "Credits (prepayments)"
 msgid "Currency"
 msgstr "Currency"
 
+msgid "Current holders this election replaces"
+msgstr "Current holders this election replaces"
+
 msgid "Current lock date:"
 msgstr "Current lock date:"
 
@@ -1739,9 +1745,6 @@ msgstr "Debit"
 
 msgid "Debt status certificate"
 msgstr "Debt status certificate"
-
-msgid "Debtor person"
-msgstr "Debtor person"
 
 msgid "Debtors"
 msgstr "Debtors"
@@ -2107,9 +2110,6 @@ msgstr "Enabled"
 
 msgid "End membership"
 msgstr "End membership"
-
-msgid "End the previous holder's term"
-msgstr "End the previous holder's term"
 
 msgid "Ended"
 msgstr "Ended"
@@ -3925,6 +3925,9 @@ msgstr "Open requests"
 msgid "Open the assembly"
 msgstr "Open the assembly"
 
+msgid "Open the second call"
+msgstr "Open the second call"
+
 msgid "Open ticket"
 msgstr "Open ticket"
 
@@ -5464,6 +5467,9 @@ msgstr "That time is already taken or blocked. Choose another slot."
 msgid "The accounting period of this change is locked."
 msgstr "The accounting period of this change is locked."
 
+msgid "The agent cannot reach this point."
+msgstr "The agent cannot reach this point."
+
 msgid "The agent is offline."
 msgstr "The agent is offline."
 
@@ -5702,6 +5708,9 @@ msgstr "The search failed."
 msgid "The second call also needs a quorum"
 msgstr "The second call also needs a quorum"
 
+msgid "The second call opens only when the first lacks its quorum."
+msgstr "The second call opens only when the first lacks its quorum."
+
 msgid "The second meeting must come after the first."
 msgstr "The second meeting must come after the first."
 
@@ -5812,6 +5821,9 @@ msgstr "This file type is not allowed."
 
 msgid "This folder is empty"
 msgstr "This folder is empty"
+
+msgid "This gate cannot be reached through the agent."
+msgstr "This gate cannot be reached through the agent."
 
 msgid "This gate is switched off."
 msgstr "This gate is switched off."

@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { SidePicker } from '@/components/forms/SidePicker'
-import type { MoneyCtx, Side } from './api'
+import { personRef, unitSideRef, type MoneyCtx, type S, type Side } from './api'
 import { PersonPicker, UnitPicker } from './pickers'
 import { Field, Select } from './ui'
 
@@ -15,13 +15,9 @@ export const emptyTarget = (): DebtorTarget => ({ mode: 'unit', unitId: '', side
 
 export const targetId = (t: DebtorTarget) => (t.mode === 'unit' ? t.unitId : t.personId)
 
-/** `DebtorRef` request value for a target. */
-export function debtorRef(t: DebtorTarget): {
-  unit_id?: string
-  debtor_kind?: Side
-  person_id?: string
-} {
-  return t.mode === 'unit' ? { unit_id: t.unitId, debtor_kind: t.side } : { person_id: t.personId }
+/** `DebtorRef` request value for a target: the contract tells the two modes apart by `mode`. */
+export function debtorRef(t: DebtorTarget): S['DebtorRef'] {
+  return t.mode === 'unit' ? unitSideRef(t.unitId, t.side) : personRef(t.personId)
 }
 
 export function DebtorPicker({
