@@ -1,0 +1,950 @@
+{
+  "blocks": [
+    {
+      "id": "A",
+      "name": "A Blok"
+    },
+    {
+      "id": "B",
+      "name": "B Blok"
+    }
+  ],
+  "currency": "TRY",
+  "description": "OpenBekci golden site: two blocks, a shop, a co-owned unit, a tenant change, an owner sale, opening balances, consumption and water tables, a waiver, a frozen unit (collection case).",
+  "freezes": [
+    {
+      "from": "2026-03-01",
+      "reason": "legal collection case opened",
+      "side": "owner",
+      "unit": "A-10"
+    }
+  ],
+  "late_fee": {
+    "grace_days": 5,
+    "rate_bps": 500
+  },
+  "lump_payments": [
+    {
+      "covers": "principal",
+      "extra": 3000,
+      "on": "2026-03-20",
+      "side": "tenant",
+      "unit": "A-8"
+    },
+    {
+      "covers": "all",
+      "extra": 20000,
+      "on": "2026-09-20",
+      "side": "owner",
+      "unit": "B-6"
+    }
+  ],
+  "occupancies": [
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-1",
+      "share_pct": 100,
+      "unit": "A-1"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-2",
+      "share_pct": 100,
+      "unit": "A-2"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-A-2",
+      "share_pct": 100,
+      "unit": "A-2"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-3",
+      "share_pct": 100,
+      "unit": "A-3"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-4",
+      "share_pct": 100,
+      "unit": "A-4"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-5",
+      "share_pct": 100,
+      "unit": "A-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-06-01",
+      "kind": "tenant",
+      "person": "tenant-A-5-first",
+      "share_pct": 100,
+      "to": "2026-05-31",
+      "unit": "A-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2026-06-01",
+      "kind": "tenant",
+      "person": "tenant-A-5-second",
+      "share_pct": 100,
+      "unit": "A-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-6",
+      "share_pct": 100,
+      "unit": "A-6"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-7",
+      "share_pct": 100,
+      "unit": "A-7"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-8",
+      "share_pct": 100,
+      "unit": "A-8"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-A-8",
+      "share_pct": 100,
+      "unit": "A-8"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-9",
+      "share_pct": 100,
+      "unit": "A-9"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-10",
+      "share_pct": 100,
+      "unit": "A-10"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-11",
+      "share_pct": 100,
+      "unit": "A-11"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-A-11",
+      "share_pct": 100,
+      "unit": "A-11"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-A-12",
+      "share_pct": 100,
+      "unit": "A-12"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-1",
+      "share_pct": 100,
+      "unit": "B-1"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-2-a",
+      "share_pct": 50,
+      "unit": "B-2"
+    },
+    {
+      "correspondent": false,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-2-b",
+      "share_pct": 50,
+      "unit": "B-2"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-B-2",
+      "share_pct": 100,
+      "unit": "B-2"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-3",
+      "share_pct": 100,
+      "unit": "B-3"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-4",
+      "share_pct": 100,
+      "unit": "B-4"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-5-seller",
+      "share_pct": 100,
+      "to": "2026-07-14",
+      "unit": "B-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2026-07-15",
+      "kind": "owner",
+      "person": "owner-B-5-buyer",
+      "share_pct": 100,
+      "unit": "B-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-B-5",
+      "share_pct": 100,
+      "unit": "B-5"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-6",
+      "share_pct": 100,
+      "unit": "B-6"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-7",
+      "share_pct": 100,
+      "unit": "B-7"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-8",
+      "share_pct": 100,
+      "unit": "B-8"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-B-8",
+      "share_pct": 100,
+      "unit": "B-8"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-9",
+      "share_pct": 100,
+      "unit": "B-9"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-10",
+      "share_pct": 100,
+      "unit": "B-10"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-11",
+      "share_pct": 100,
+      "unit": "B-11"
+    },
+    {
+      "correspondent": true,
+      "from": "2025-01-01",
+      "kind": "tenant",
+      "person": "tenant-B-11",
+      "share_pct": 100,
+      "unit": "B-11"
+    },
+    {
+      "correspondent": true,
+      "from": "2020-01-01",
+      "kind": "owner",
+      "person": "owner-B-12",
+      "share_pct": 100,
+      "unit": "B-12"
+    }
+  ],
+  "opening": [
+    {
+      "fee": 0,
+      "principal": 120000,
+      "side": "owner",
+      "unit": "A-3"
+    },
+    {
+      "fee": 5000,
+      "principal": 120000,
+      "side": "tenant",
+      "unit": "A-8"
+    },
+    {
+      "fee": 0,
+      "principal": 120000,
+      "side": "owner",
+      "unit": "B-1"
+    },
+    {
+      "fee": 0,
+      "principal": 120000,
+      "side": "owner",
+      "unit": "B-6"
+    },
+    {
+      "fee": 0,
+      "principal": 120000,
+      "side": "tenant",
+      "unit": "B-11"
+    }
+  ],
+  "payment_behaviours": [
+    {
+      "delay_days": 0,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-1"
+    },
+    {
+      "delay_days": 3,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-2"
+    },
+    {
+      "delay_days": 20,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-3"
+    },
+    {
+      "delay_days": 2,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 45,
+      "unit": "A-4"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 50,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-5"
+    },
+    {
+      "mode": "none",
+      "unit": "A-6"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-7"
+    },
+    {
+      "delay_days": 3,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-8"
+    },
+    {
+      "delay_days": 20,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-9"
+    },
+    {
+      "mode": "none",
+      "unit": "A-10"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 50,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "A-11"
+    },
+    {
+      "mode": "none",
+      "unit": "A-12"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-1"
+    },
+    {
+      "delay_days": 3,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-2"
+    },
+    {
+      "delay_days": 20,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-3"
+    },
+    {
+      "delay_days": 2,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 45,
+      "unit": "B-4"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 50,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-5"
+    },
+    {
+      "mode": "none",
+      "unit": "B-6"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-7"
+    },
+    {
+      "delay_days": 3,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-8"
+    },
+    {
+      "delay_days": 20,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-9"
+    },
+    {
+      "delay_days": 2,
+      "fraction_pct": 100,
+      "mode": "pay",
+      "record_lag_days": 45,
+      "unit": "B-10"
+    },
+    {
+      "delay_days": 0,
+      "fraction_pct": 50,
+      "mode": "pay",
+      "record_lag_days": 0,
+      "unit": "B-11"
+    },
+    {
+      "mode": "none",
+      "unit": "B-12"
+    }
+  ],
+  "plans": [
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 5,
+      "frequency": "monthly",
+      "key": {
+        "kind": "share"
+      },
+      "name": "aidat",
+      "rates": [
+        {
+          "amount": 3600000,
+          "from": "2026-01-01",
+          "to": "2026-06-30"
+        },
+        {
+          "amount": 3960000,
+          "decision": "assembly-2026-06-rate-increase",
+          "from": "2026-07-01"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-01-01"
+    },
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 5,
+      "frequency": "monthly",
+      "key": {
+        "kind": "equal"
+      },
+      "name": "staff-A",
+      "rates": [
+        {
+          "amount": 800000,
+          "from": "2026-01-01",
+          "to": "2026-07-09"
+        },
+        {
+          "amount": 850000,
+          "decision": "assembly-2026-06-staff-raise",
+          "from": "2026-07-10"
+        }
+      ],
+      "scope": "block:A",
+      "start": "2026-01-01"
+    },
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 5,
+      "frequency": "monthly",
+      "key": {
+        "kind": "equal"
+      },
+      "name": "staff-B",
+      "rates": [
+        {
+          "amount": 750000,
+          "from": "2026-01-01"
+        }
+      ],
+      "scope": "block:B",
+      "start": "2026-01-01"
+    },
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 15,
+      "frequency": "quarterly",
+      "key": {
+        "kind": "area"
+      },
+      "name": "elevator",
+      "rates": [
+        {
+          "amount": 600000,
+          "from": "2026-01-01"
+        }
+      ],
+      "scope": "block:A",
+      "start": "2026-01-01"
+    },
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 15,
+      "frequency": "quarterly",
+      "key": {
+        "kind": "equal"
+      },
+      "name": "garden",
+      "rates": [
+        {
+          "amount": 480000,
+          "from": "2026-02-15"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-02-15"
+    },
+    {
+      "charge_type": "utility",
+      "default_debtor": "tenant",
+      "due_day": 25,
+      "end": "2026-01-31",
+      "frequency": "monthly",
+      "key": {
+        "kind": "composite",
+        "parts": [
+          {
+            "fraction": "7/10",
+            "key": {
+              "kind": "consumption",
+              "table": "heating-2026-01"
+            }
+          },
+          {
+            "fraction": "3/10",
+            "key": {
+              "kind": "area"
+            }
+          }
+        ]
+      },
+      "name": "heating",
+      "rates": [
+        {
+          "amount": 1800000,
+          "from": "2026-01-01"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-01-01"
+    },
+    {
+      "charge_type": "utility",
+      "default_debtor": "tenant",
+      "due_day": 12,
+      "end": "2026-02-28",
+      "frequency": "monthly",
+      "key": {
+        "kind": "table",
+        "table": "water-2026-02"
+      },
+      "name": "water",
+      "rates": [
+        {
+          "amount": 234000,
+          "from": "2026-02-01"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-02-01"
+    },
+    {
+      "charge_type": "special_assessment",
+      "default_debtor": "owner",
+      "due_day": 10,
+      "end": "2026-03-31",
+      "frequency": "monthly",
+      "key": {
+        "kind": "area"
+      },
+      "name": "roof-repair",
+      "rates": [
+        {
+          "amount": 9000000,
+          "decision": "assembly-2026-02-roof",
+          "from": "2026-03-01"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-03-01"
+    },
+    {
+      "charge_type": "special_assessment",
+      "default_debtor": "owner",
+      "due_day": 10,
+      "end": "2026-08-31",
+      "frequency": "monthly",
+      "key": {
+        "kind": "area"
+      },
+      "name": "facade",
+      "rates": [
+        {
+          "amount": 6000000,
+          "decision": "assembly-2026-06-facade",
+          "from": "2026-08-01"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-08-01"
+    }
+  ],
+  "share_denominator": 1000,
+  "tables": {
+    "heating-2026-01": {
+      "A-1": 40,
+      "A-10": 21,
+      "A-11": 0,
+      "A-12": 12,
+      "A-2": 11,
+      "A-3": 18,
+      "A-4": 2,
+      "A-5": 9,
+      "A-6": 16,
+      "A-7": 23,
+      "A-8": 7,
+      "A-9": 14,
+      "B-1": 19,
+      "B-10": 13,
+      "B-11": 20,
+      "B-12": 4,
+      "B-2": 3,
+      "B-3": 10,
+      "B-4": 17,
+      "B-5": 1,
+      "B-6": 8,
+      "B-7": 15,
+      "B-8": 22,
+      "B-9": 6
+    },
+    "water-2026-02": {
+      "A-1": 20000,
+      "A-10": 8000,
+      "A-11": 9500,
+      "A-12": 11000,
+      "A-2": 6500,
+      "A-3": 8000,
+      "A-4": 9500,
+      "A-5": 11000,
+      "A-6": 12500,
+      "A-7": 14000,
+      "A-8": 5000,
+      "A-9": 6500,
+      "B-1": 12500,
+      "B-10": 5000,
+      "B-11": 6500,
+      "B-12": 8000,
+      "B-2": 14000,
+      "B-3": 5000,
+      "B-4": 6500,
+      "B-5": 8000,
+      "B-6": 9500,
+      "B-7": 11000,
+      "B-8": 12500,
+      "B-9": 14000
+    }
+  },
+  "timezone": "Europe/Istanbul",
+  "units": [
+    {
+      "area_m2": "90",
+      "block": "A",
+      "door": "A-1",
+      "exempt_plans": [
+        "elevator"
+      ],
+      "kind": "shop",
+      "share_num": 30
+    },
+    {
+      "area_m2": "80",
+      "block": "A",
+      "door": "A-2",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "A",
+      "door": "A-3",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "A",
+      "door": "A-4",
+      "kind": "flat",
+      "share_num": 43
+    },
+    {
+      "area_m2": "70",
+      "block": "A",
+      "door": "A-5",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "80",
+      "block": "A",
+      "door": "A-6",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "A",
+      "door": "A-7",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "A",
+      "door": "A-8",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "70",
+      "block": "A",
+      "door": "A-9",
+      "kind": "flat",
+      "share_num": 43
+    },
+    {
+      "area_m2": "80",
+      "block": "A",
+      "door": "A-10",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "A",
+      "door": "A-11",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "A",
+      "door": "A-12",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "70",
+      "block": "B",
+      "door": "B-1",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "80",
+      "block": "B",
+      "door": "B-2",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "B",
+      "door": "B-3",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "B",
+      "door": "B-4",
+      "kind": "flat",
+      "share_num": 43
+    },
+    {
+      "area_m2": "70",
+      "block": "B",
+      "door": "B-5",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "80",
+      "block": "B",
+      "door": "B-6",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "B",
+      "door": "B-7",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "B",
+      "door": "B-8",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "70",
+      "block": "B",
+      "door": "B-9",
+      "kind": "flat",
+      "share_num": 43
+    },
+    {
+      "area_m2": "80",
+      "block": "B",
+      "door": "B-10",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "90",
+      "block": "B",
+      "door": "B-11",
+      "kind": "flat",
+      "share_num": 42
+    },
+    {
+      "area_m2": "100",
+      "block": "B",
+      "door": "B-12",
+      "kind": "flat",
+      "share_num": 42
+    }
+  ],
+  "waivers": [
+    {
+      "amount": 50000,
+      "on": "2026-06-10",
+      "reason": "goodwill after a documented bank error",
+      "side": "owner",
+      "unit": "A-6"
+    }
+  ],
+  "year": 2026
+}
