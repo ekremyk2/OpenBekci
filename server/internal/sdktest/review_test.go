@@ -11,6 +11,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/packs/example"
@@ -319,5 +320,47 @@ func TestPanicInPackTransactionReleasesTheConnection(t *testing.T) {
 	h.Router.ServeHTTP(rec, r)
 	if rec.Code == http.StatusInternalServerError || rec.Code == http.StatusServiceUnavailable {
 		t.Fatalf("the host is wedged after pack panics: %d %s", rec.Code, rec.Body)
+	}
+}
+
+// disableProbe records pack.disabled deliveries and whether the pack was
+// already disabled when OnDisable ran.
+type disableProbe struct {
+	*example.Pack
+	host         **packs.Host
+	delivered    *int
+	enabledInOnD *bool
+}
+
+func (d disableProbe) Register(ctx context.Context, r sdk.Registry) error {
+	if err := d.Pack.Register(ctx, r); err != nil {
+		return err
+	}
+	r.Subscribe(sdk.EventPackDisabled, "example.on_disabled", func(context.Context, sdk.Event) error { *d.delivered++; return nil })
+	return nil
+}
+
+func (d disableProbe) OnDisable(ctx context.Context, org sdk.ID) error {
+	id, _ := uuid.Parse(string(org))
+	on, _ := (*d.host).Enabled(ctx, id, "example")
+	*d.enabledInOnD = on
+	return d.Pack.OnDisable(ctx, org)
+}
+
+// pack.disabled reaches the pack's own subscriber although the pack is
+// disabled by then, and OnDisable runs after the disablement committed.
+func TestPackDisabledEventAndOnDisableAfterCommit(t *testing.T) {
+	var delivered int
+	enabledInOnDisable := true
+	var host *packs.Host
+	h := sdktest.New(t, disableProbe{example.New(), &host, &delivered, &enabledInOnDisable}, sdktest.WithSettings(settings))
+	host = h.Host
+	h.Disable()
+	h.RunPendingEvents()
+	if delivered != 1 {
+		t.Fatalf("pack.disabled delivered %d times, want 1", delivered)
+	}
+	if enabledInOnDisable {
+		t.Fatal("OnDisable ran while the pack was still enabled (before the disablement committed)")
 	}
 }
