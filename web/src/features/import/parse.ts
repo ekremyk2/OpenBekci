@@ -5,6 +5,8 @@ export interface ParsedTable {
   rows: string[][]
   delimiter: string | null
   sheet: string | null
+  /** Columns holding a non-empty cell that is not a whole number (set when the wizard trims the table). */
+  nonIntegerColumns?: string[]
 }
 
 /** Picks the delimiter that splits the first line into the most cells (`,` `;` tab). */

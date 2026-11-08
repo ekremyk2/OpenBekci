@@ -157,3 +157,22 @@ describe('report csv', () => {
     ])
   })
 })
+
+describe('import wizard privacy and amounts', () => {
+  it('masks the national id column in the preview', async () => {
+    await mountApp('/orgs/org-1/import?kind=people')
+    await upload('Ad Soyad,TCKN\nAli Veli,10000000146\n', 'people.csv')
+    const table = await screen.findByRole('table', { name: 'First rows of the file' })
+    expect(within(table).queryByText('10000000146')).not.toBeInTheDocument()
+    expect(within(table).getByText('•••••••••46')).toBeInTheDocument()
+    expect(within(table).getByText('Ali Veli')).toBeInTheDocument()
+  })
+
+  it('explains integer minor units and blocks decimal amount columns', async () => {
+    await mountApp('/orgs/org-1/import?kind=opening_balances')
+    await upload('Daire,Malik borc\nA-1,"1.234,50"\n', 'ob.csv')
+    expect(await screen.findByText(/123450 means/)).toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent('Malik borc')
+    expect(screen.getByRole('button', { name: 'Check the file' })).toBeDisabled()
+  })
+})

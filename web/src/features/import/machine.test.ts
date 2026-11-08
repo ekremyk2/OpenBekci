@@ -5,6 +5,9 @@ import {
   importReducer,
   initialState,
   mappingStore,
+  maskCell,
+  piiColumns,
+  PREVIEW_ROWS,
   type ImportEvent,
   type ImportState,
 } from './machine'
@@ -162,5 +165,44 @@ describe('csv', () => {
       ['1', 'q"r'],
     ]
     expect(parseCsv(toCsv(rows))).toEqual(rows)
+  })
+})
+
+describe('import preview privacy', () => {
+  it('keeps only the preview rows in state', () => {
+    const big = { ...table, rows: Array.from({ length: 50 }, (_, i) => [`A-${i}`, 'A', '90']) }
+    const next = importReducer('units')(initialState, {
+      type: 'FILE_PARSED',
+      file,
+      table: big,
+      mapping: {},
+    })
+    expect(next.step === 'mapping' && next.table.rows).toHaveLength(PREVIEW_ROWS)
+  })
+
+  it('discards the table once the import is committed', () => {
+    const reducer = importReducer('units')
+    let state = reducer(initialState, {
+      type: 'FILE_PARSED',
+      file,
+      table,
+      mapping: { door_number: 'Daire' },
+    })
+    state = reducer(state, { type: 'CHECK' })
+    state = reducer(state, { type: 'CHECKED', report: report(0) })
+    state = reducer(state, { type: 'CONFIRM' })
+    state = reducer(state, { type: 'COMMITTED', jobId: 'job-1' })
+    expect(state).toEqual({ step: 'progress', jobId: 'job-1' })
+  })
+
+  it('masks national id, phone and email columns, mapped or recognised by header', () => {
+    const headers = ['Ad Soyad', 'TCKN', 'Cep', 'Notes']
+    expect([...piiColumns(headers, { national_id: 'Notes' })].sort()).toEqual([
+      'Cep',
+      'Notes',
+      'TCKN',
+    ])
+    expect(maskCell('10000000146')).toBe('•••••••••46')
+    expect(maskCell('')).toBe('')
   })
 })

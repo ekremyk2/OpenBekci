@@ -66,6 +66,62 @@ export const TARGETS: Record<ImportKind, TargetField[]> = {
   ],
 }
 
+/** Rows kept for the mapping preview; the rest of the parsed table is dropped (it may hold PII). */
+export const PREVIEW_ROWS = 4
+
+/** The table as the wizard keeps it: headers, delimiter and only the preview rows. */
+export function previewTable(table: ParsedTable): ParsedTable {
+  // checked on the whole table, once, so the preview rows are all that has to stay in memory
+  const nonIntegerColumns = table.headers.filter((_, c) =>
+    table.rows.some((r) => {
+      const cell = (r[c] ?? '').trim()
+      return cell !== '' && !/^-?\d+$/.test(cell)
+    }),
+  )
+  return { ...table, rows: table.rows.slice(0, PREVIEW_ROWS), nonIntegerColumns }
+}
+
+/** Opening-balance targets that carry money in integer minor units (123450 = 1.234,50). */
+export const MONEY_TARGETS = [
+  'owner_principal',
+  'owner_late_fee',
+  'tenant_principal',
+  'tenant_late_fee',
+]
+
+/** Mapped money columns whose cells are not whole numbers: the server would reject the rows. */
+export function nonIntegerMoneyColumns(
+  table: ParsedTable,
+  mapping: Record<string, string>,
+): string[] {
+  const bad = new Set(table.nonIntegerColumns ?? [])
+  return MONEY_TARGETS.map((t) => mapping[t]).filter((src): src is string => !!src && bad.has(src))
+}
+
+/** Targets whose cells are personal data and are masked in the preview. */
+const PII_TARGETS = ['national_id', 'phone', 'email']
+const PII_HEADERS = TARGETS.people
+  .filter((t) => PII_TARGETS.includes(t.id))
+  .flatMap((t) => [t.id.replace(/_/g, ' '), ...t.synonyms])
+
+/**
+ * Source columns to mask in the preview: those mapped to a PII field, plus any whose header looks
+ * like one (so the national id is hidden even before the user maps it).
+ */
+export function piiColumns(headers: string[], mapping: Record<string, string>): Set<string> {
+  const out = new Set<string>()
+  for (const target of PII_TARGETS) if (mapping[target]) out.add(mapping[target])
+  for (const h of headers) if (PII_HEADERS.includes(normalizeHeader(h))) out.add(h)
+  return out
+}
+
+/** Masks a preview cell, keeping only the last two characters. */
+export function maskCell(value: string | undefined): string {
+  const v = (value ?? '').trim()
+  if (v === '') return ''
+  return `${'•'.repeat(Math.max(4, v.length - 2))}${v.slice(-2)}`
+}
+
 /** Best-effort first guess of the mapping from the header row. */
 export function guessMapping(kind: ImportKind, headers: string[]): Record<string, string> {
   const normalized = headers.map((h) => ({ h, n: normalizeHeader(h) }))
@@ -157,7 +213,12 @@ export function importReducer(kind: ImportKind) {
     switch (state.step) {
       case 'upload':
         if (event.type === 'FILE_PARSED')
-          return { step: 'mapping', file: event.file, table: event.table, mapping: event.mapping }
+          return {
+            step: 'mapping',
+            file: event.file,
+            table: previewTable(event.table),
+            mapping: event.mapping,
+          }
         if (event.type === 'FILE_FAILED') return { step: 'upload', error: event.error }
         return state
       case 'mapping':

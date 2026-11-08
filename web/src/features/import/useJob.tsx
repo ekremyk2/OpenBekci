@@ -46,7 +46,10 @@ export function JobProgress({ orgId, jobId }: { orgId: string; jobId: string }) 
     return (
       <p role="alert" className="flex items-center gap-2 text-sm text-destructive">
         <XCircleIcon className="size-4" aria-hidden="true" />
-        <Trans>The job did not finish. Nothing was changed.</Trans>
+        <Trans>
+          The job did not finish. Some rows may already have been applied: check the units and
+          people pages before you try again.
+        </Trans>
       </p>
     )
   }

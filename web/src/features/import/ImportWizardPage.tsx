@@ -3,7 +3,10 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { DownloadIcon, UploadIcon } from 'lucide-react'
 import { draftApi, multipart, type Schema } from '@/api/draft'
 import { AppError } from '@/api/errors'
+import { useLocale } from '@/app/locale'
 import { runWithReauth } from '@/app/reauth'
+import { formatMoney } from '@/lib/money'
+import { todayInZone } from '@/lib/dates'
 import { useSession } from '@/app/session'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { FormError } from '@/components/forms/FormBits'
@@ -28,7 +31,10 @@ import {
   guessMapping,
   importReducer,
   initialState,
+  maskCell,
+  nonIntegerMoneyColumns,
   mappingStore,
+  piiColumns,
   requiredMapped,
   TARGETS,
   type ImportKind,
@@ -103,10 +109,11 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
   const { org, can } = useSession()
   const { t } = useLingui()
   const orgId = org?.id ?? ''
-  const { siteId, sites, setSite } = useActiveSite(search.site)
+  const { siteId, sites, setSite, timezone, currency } = useActiveSite(search.site)
+  const { intl } = useLocale()
   const [kind, setKind] = useState<ImportKind>(search.kind ?? 'units')
   const [state, dispatch] = useReducer(importReducer(kind), initialState)
-  const [asOf, setAsOf] = useState(() => new Date().toISOString().slice(0, 10))
+  const [asOf, setAsOf] = useState(() => todayInZone(timezone))
   const [error, setError] = useState<string | null>(null)
   const idem = useIdempotencyKey()
   const job = useJob(orgId, state.step === 'progress' ? state.jobId : null)
@@ -206,11 +213,23 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
       idem.renew()
       dispatch({ type: 'COMMITTED', jobId })
     } catch {
-      setError(t`The import could not be started. Nothing was changed.`)
+      setError(
+        t`The import could not be started. Please try again; a retry never applies it twice.`,
+      )
       dispatch({ type: 'COMMIT_FAILED' })
     }
   }
 
+  const badMoney =
+    kind === 'opening_balances' && (state.step === 'mapping' || state.step === 'checking')
+      ? nonIntegerMoneyColumns(state.table, state.mapping)
+      : []
+  const pii =
+    state.step === 'mapping' || state.step === 'checking'
+      ? piiColumns(state.table.headers, state.mapping)
+      : new Set<string>()
+  const exampleMinor = '123450'
+  const exampleFormatted = formatMoney(123450, currency, intl)
   const permitted = kind === 'opening_balances' ? can('money.post') : can('units.import')
   const stepIndex = {
     upload: 1,
@@ -324,6 +343,22 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
               </label>
             ))}
           </div>
+          {kind === 'opening_balances' ? (
+            <p className="text-sm text-muted-foreground">
+              <Trans>
+                Amounts are whole numbers in the smallest currency unit, without separators:{' '}
+                {exampleMinor} means {exampleFormatted}.
+              </Trans>
+            </p>
+          ) : null}
+          {badMoney.length > 0 ? (
+            <p role="alert" className="text-sm text-destructive">
+              <Trans>
+                These columns have values that are not whole numbers: {badMoney.join(', ')}. Write
+                amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}.
+              </Trans>
+            </p>
+          ) : null}
           <div className="overflow-x-auto rounded-md border">
             <Table aria-label={t`First rows of the file`}>
               <TableHeader>
@@ -336,10 +371,10 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {state.table.rows.slice(0, 4).map((r, i) => (
+                {state.table.rows.map((r, i) => (
                   <TableRow key={i}>
                     {state.table.headers.map((h, c) => (
-                      <TableCell key={h}>{r[c]}</TableCell>
+                      <TableCell key={h}>{pii.has(h) ? maskCell(r[c]) : r[c]}</TableCell>
                     ))}
                   </TableRow>
                 ))}
@@ -354,7 +389,10 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
             <Button
               onClick={() => void check()}
               disabled={
-                !requiredMapped(kind, state.mapping) || state.step === 'checking' || !siteId
+                !requiredMapped(kind, state.mapping) ||
+                badMoney.length > 0 ||
+                state.step === 'checking' ||
+                !siteId
               }
             >
               <Trans>Check the file</Trans>
@@ -391,7 +429,10 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
             {state.ok ? (
               <Trans>The data is in. You can review it on the units and people pages.</Trans>
             ) : (
-              <Trans>Nothing was changed. Fix the file and try again.</Trans>
+              <Trans>
+                The import did not complete. Some rows may already have been applied: check the
+                units and people pages, fix the file and try again.
+              </Trans>
             )}
           </p>
           <div>
