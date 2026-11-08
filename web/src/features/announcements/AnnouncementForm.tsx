@@ -1,11 +1,10 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { LoaderCircleIcon } from 'lucide-react'
 import {
   apiDraft,
   ifMatch,
@@ -29,85 +28,12 @@ import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { must } from '@/lib/pagination'
 import { isoToZonedLocal, zonedLocalToIso } from '@/lib/zoned'
 import { toast } from '@/lib/toast'
+import { DeliveryPreviewPanel, useDeliveryPreview } from './DeliveryPreview'
 
 // The editor pulls in the Markdown renderer; readers of announcements never load it.
 const MarkdownEditor = lazy(() => import('./MarkdownEditor'))
 
 const CHANNELS: Channel[] = ['in_app', 'email', 'sms']
-
-/** Recipient and SMS counts for the audience and channels chosen so far (O5), fetched before publish. */
-export function ChannelPreview({
-  orgId,
-  siteId,
-  audience,
-  channels,
-}: {
-  orgId: string
-  siteId: string
-  audience: AnnouncementAudience
-  channels: Channel[]
-}) {
-  const { t } = useLingui()
-  const idem = useIdempotencyKey()
-  const ready = audience.kind !== 'units' || (audience.unit_ids?.length ?? 0) > 0
-  const preview = useQuery({
-    queryKey: ['operations.previewAnnouncement', orgId, siteId, audience, [...channels].sort()],
-    enabled: ready && channels.length > 0,
-    staleTime: 0,
-    queryFn: async () =>
-      must(
-        await apiDraft.POST('/v1/orgs/{org_id}/announcements:preview', {
-          params: { path: { org_id: orgId } },
-          body: { site_id: siteId, audience, channels },
-          ...withIdempotencyKey(idem.key),
-        }),
-      ),
-  })
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-label={t`Delivery preview`}
-      className="rounded-md border bg-muted/40 p-3 text-sm"
-    >
-      {!ready || channels.length === 0 ? (
-        <p className="text-muted-foreground">
-          <Trans>Choose an audience and at least one channel to see who will be reached.</Trans>
-        </p>
-      ) : preview.isPending ? (
-        <p className="flex items-center gap-2 text-muted-foreground">
-          <LoaderCircleIcon className="size-4 animate-spin" aria-hidden="true" />
-          <Trans>Counting recipients</Trans>
-        </p>
-      ) : preview.isError ? (
-        <p className="text-destructive">
-          <Trans>Could not count the recipients.</Trans>
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-1">
-          <li>
-            <Trans>Recipients: {preview.data.recipient_count}</Trans>
-          </li>
-          {channels.includes('in_app') ? (
-            <li>
-              <Trans>In-app notifications: {preview.data.in_app_count}</Trans>
-            </li>
-          ) : null}
-          {channels.includes('email') ? (
-            <li>
-              <Trans>Emails: {preview.data.email_count}</Trans>
-            </li>
-          ) : null}
-          {channels.includes('sms') ? (
-            <li className="font-medium">
-              <Trans>SMS messages: {preview.data.sms_count} (billed to the site)</Trans>
-            </li>
-          ) : null}
-        </ul>
-      )}
-    </div>
-  )
-}
 
 function AudiencePicker({
   orgId,
@@ -259,6 +185,12 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
 
   const audience = useWatch({ control: form.control, name: 'audience' })
   const channels = useWatch({ control: form.control, name: 'channels' })
+  const preview = useDeliveryPreview({
+    orgId,
+    siteId: site?.id,
+    audience: audience as AnnouncementAudience,
+    channels: channels as Channel[],
+  })
   const publishAt = useWatch({ control: form.control, name: 'publish_at' })
   const scheduled = !!publishAt && zonedLocalToIso(publishAt, tz) > new Date().toISOString()
 
@@ -408,14 +340,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
               {errors.channels.message}
             </p>
           ) : null}
-          {site ? (
-            <ChannelPreview
-              orgId={orgId}
-              siteId={site.id}
-              audience={audience as AnnouncementAudience}
-              channels={channels as Channel[]}
-            />
-          ) : null}
+          <DeliveryPreviewPanel preview={preview} channels={channels as Channel[]} />
         </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2">

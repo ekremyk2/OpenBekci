@@ -143,6 +143,19 @@ interface Db {
 }
 
 export const db: Db = {} as Db
+
+/**
+ * Idempotency model (draft contract, `draft-common.yaml`): the same `Idempotency-Key` replays the
+ * first successful response; the same key with a different request is 422 `idempotency_mismatch`.
+ * It lets tests catch a client that reuses one key for different bodies.
+ */
+interface Remembered {
+  fingerprint: string
+  status: number
+  body: string
+  headers: [string, string][]
+}
+const idempotent = new Map<string, Remembered>()
 const NOW = () => new Date().toISOString()
 const hours = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString()
 
@@ -169,6 +182,7 @@ const DEFAULT_TYPES: [string, string[]][] = [
 const LOCKED = new Set(['auth.sign_in_code', 'auth.invitation'])
 
 export function resetOperationsDb(role: MockRole = 'manager') {
+  idempotent.clear()
   db.role = role
   db.seq = 100
   db.workflow = {
@@ -1660,6 +1674,20 @@ resetOperationsDb()
 /** Role-aware `/v1/me` for mock mode and tests; list it before the generic fixture handler. */
 export const meByRoleHandler = http.get('*/v1/me', () => HttpResponse.json(meForRole(db.role)))
 
+async function fingerprintOf(request: Request): Promise<string> {
+  const head = `${request.method} ${new URL(request.url).pathname}`
+  const type = request.headers.get('Content-Type') ?? ''
+  if (type.startsWith('multipart/')) {
+    // boundaries differ per request: compare the parts instead
+    const form = await request.clone().formData()
+    const parts = [...form.entries()].map(([k, v]) =>
+      v instanceof Blob ? `${k}=${(v as File).name}:${v.size}:${v.type}` : `${k}=${String(v)}`,
+    )
+    return `${head} ${parts.join('&')}`
+  }
+  return `${head} ${await request.clone().text()}`
+}
+
 export const operationsHandlers = [
   http.all('*/v1/*', async ({ request }) => {
     const url = new URL(request.url)
@@ -1667,7 +1695,31 @@ export const operationsHandlers = [
     for (const r of routes) {
       if (r.method !== request.method) continue
       const m = r.re.exec(path)
-      if (m) return r.fn({ p: m.slice(1).map(decodeURIComponent), url, request })
+      if (!m) continue
+      const ctx = { p: m.slice(1).map(decodeURIComponent), url, request }
+      const key = request.headers.get('Idempotency-Key')
+      if (!key) return r.fn(ctx)
+      const fingerprint = await fingerprintOf(request)
+      const seen = idempotent.get(key)
+      if (seen) {
+        if (seen.fingerprint !== fingerprint)
+          return problem(
+            422,
+            'idempotency_mismatch',
+            'This Idempotency-Key was used with a different request.',
+          )
+        return new HttpResponse(seen.body || null, { status: seen.status, headers: seen.headers })
+      }
+      const res = await r.fn(ctx)
+      if (res.status >= 200 && res.status < 300) {
+        idempotent.set(key, {
+          fingerprint,
+          status: res.status,
+          body: await res.clone().text(),
+          headers: [...res.headers.entries()],
+        })
+      }
+      return res
     }
     return undefined
   }),
