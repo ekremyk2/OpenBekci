@@ -4,11 +4,9 @@ post:
   operationId: operations.previewAnnouncement
   summary: Preview recipient and SMS counts
   description: |-
-    **Release 0.1.** Preview recipient and SMS counts.
+    Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
 
     Permission: `announcements.publish`.
-
-    Problems: `conflict` (409).
   tags:
     - operations
   security:
@@ -21,10 +19,7 @@ post:
       - announcements.publish
     board_member:
       - announcements.publish
-  x-idempotent: optional
-  x-stability: stable
-  parameters:
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  x-idempotent: none
   requestBody:
     required: true
     content:

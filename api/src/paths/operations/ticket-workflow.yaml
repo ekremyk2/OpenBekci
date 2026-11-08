@@ -4,7 +4,7 @@ get:
   operationId: operations.getTicketWorkflow
   summary: Get the ticket workflow of a site
   description: |-
-    **Release 0.1.** Get the ticket workflow of a site.
+    Get the ticket workflow of a site.
 
     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
@@ -33,7 +33,6 @@ get:
       - tickets.open
     household:
       - tickets.open
-  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
   responses:
@@ -55,7 +54,7 @@ put:
   operationId: operations.updateTicketWorkflow
   summary: Replace the ticket workflow of a site
   description: |-
-    **Release 0.1.** Reopen is just a transition back to an open-like status. A removed status in use needs a replacement.
+    Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
 
     Permission: `tickets.manage`.
 
@@ -73,7 +72,6 @@ put:
     board_member:
       - tickets.manage
   x-idempotent: optional
-  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

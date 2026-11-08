@@ -166,7 +166,7 @@ func isUploadRequest(r *http.Request) bool {
 // buffered: its body is streamed, so a chunked upload over the cap fails
 // while it is being read (413 from the upload handler). Other multipart
 // bodies (spreadsheet and archive imports) are capped at multipartLimit.
-func maxBody(jsonLimit, multipartLimit, uploadLimit int64) func(http.Handler) http.Handler {
+func maxBody(jsonLimit, uploadLimit, multipartLimit int64) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			limit := jsonLimit

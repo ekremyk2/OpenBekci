@@ -4,7 +4,7 @@ get:
   operationId: operations.getUnreadCount
   summary: Unread notification count
   description: |-
-    **Release 0.1.** Cheap enough to poll.
+    Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
 
     Permission: `notifications.read`.
   tags:
@@ -15,7 +15,6 @@ get:
   x-openbekci-roles:
     member:
       - notifications.read
-  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteId
   responses:

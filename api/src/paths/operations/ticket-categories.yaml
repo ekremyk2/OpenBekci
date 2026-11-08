@@ -4,7 +4,7 @@ get:
   operationId: operations.listTicketCategories
   summary: List ticket categories
   description: |-
-    **Release 0.1.** Cursor-paginated list of ticket categorys.
+    Cursor-paginated list of ticket categorys.
 
     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
@@ -33,14 +33,15 @@ get:
       - tickets.open
     household:
       - tickets.open
-  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: archived
       in: query
       schema:
-        type: boolean
-      description: Filter by `archived`.
+        type: string
+        enum: [active, archived, all]
+        default: active
+      description: "`active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`."
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
@@ -62,7 +63,7 @@ post:
   operationId: operations.createTicketCategory
   summary: Create ticket category
   description: |-
-    **Release 0.1.** Creates a ticket category.
+    Creates a ticket category.
 
     Permission: `tickets.manage`.
 
@@ -80,7 +81,6 @@ post:
     board_member:
       - tickets.manage
   x-idempotent: optional
-  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

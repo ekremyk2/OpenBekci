@@ -36,6 +36,48 @@ type AllocationKeyValue struct {
 	Version   int32
 }
 
+type Announcement struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Title          string
+	BodyMd         string
+	Status         string
+	Audience       []byte
+	PublishAt      pgtype.Timestamptz
+	ExpiresAt      pgtype.Timestamptz
+	Pinned         bool
+	Channels       []string
+	RecipientCount pgtype.Int4
+	SmsCount       pgtype.Int4
+	SmsSegments    pgtype.Int4
+	PublishedAt    pgtype.Timestamptz
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	Version        int32
+}
+
+type AnnouncementFile struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	FileID         pgtype.UUID
+	Position       int32
+}
+
+type AnnouncementRead struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	PersonID       pgtype.UUID
+	ReadAt         pgtype.Timestamptz
+}
+
+type AnnouncementRecipient struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	PersonID       pgtype.UUID
+}
+
 type AuditEvent struct {
 	ID          pgtype.UUID
 	OrgID       pgtype.UUID
@@ -86,6 +128,25 @@ type DirectoryConsent struct {
 	Version    int32
 }
 
+type Document struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	FolderID          pgtype.UUID
+	Title             string
+	FileID            pgtype.UUID
+	VisibilityLevel   pgtype.Text
+	VisibilityUnitIds []pgtype.UUID
+	Source            string
+	GeneratedType     pgtype.Text
+	GeneratedID       pgtype.UUID
+	AddressedPersonID pgtype.UUID
+	UploadedBy        pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
 type Facility struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
@@ -117,6 +178,23 @@ type File struct {
 	UpdatedAt      pgtype.Timestamptz
 	DeletedAt      pgtype.Timestamptz
 	PurgedAt       pgtype.Timestamptz
+}
+
+type Folder struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	ParentID          pgtype.UUID
+	Name              string
+	Kind              string
+	UnitID            pgtype.UUID
+	VisibilityLevel   string
+	VisibilityUnitIds []pgtype.UUID
+	IsSystem          bool
+	SystemKey         pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
 }
 
 type IdempotencyKey struct {
@@ -255,6 +333,41 @@ type MoveOut struct {
 	Version                int32
 }
 
+type Notification struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	Type      string
+	Payload   []byte
+	Link      pgtype.Text
+	DedupeKey pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	ReadAt    pgtype.Timestamptz
+}
+
+type NotificationDelivery struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	NotificationID pgtype.UUID
+	Channel        string
+	Status         string
+	ClaimedAt      pgtype.Timestamptz
+	Attempts       int32
+	LastError      pgtype.Text
+	ProviderID     pgtype.Text
+	SmsSegments    int32
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type NotificationMute struct {
+	OrgID     pgtype.UUID
+	PersonID  pgtype.UUID
+	Type      string
+	CreatedAt pgtype.Timestamptz
+}
+
 type Occupancy struct {
 	ID              pgtype.UUID
 	OrgID           pgtype.UUID
@@ -374,6 +487,14 @@ type Site struct {
 	Version              int32
 }
 
+type SiteChannelDefault struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Type      string
+	Channels  []string
+	UpdatedAt pgtype.Timestamptz
+}
+
 type SiteExport struct {
 	ID          pgtype.UUID
 	OrgID       pgtype.UUID
@@ -390,6 +511,121 @@ type SiteExport struct {
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
 	Version     int32
+}
+
+type SiteNotificationConfig struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Version   int32
+	UpdatedAt pgtype.Timestamptz
+}
+
+type SmsUsage struct {
+	OrgID    pgtype.UUID
+	SiteID   pgtype.UUID
+	Month    pgtype.Date
+	Messages int32
+	Segments int32
+}
+
+type Ticket struct {
+	ID               pgtype.UUID
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	UnitID           pgtype.UUID
+	ReporterPersonID pgtype.UUID
+	CategoryID       pgtype.UUID
+	Title            string
+	Description      string
+	StatusID         pgtype.UUID
+	Visibility       string
+	AssigneePersonID pgtype.UUID
+	AssigneeVendorID pgtype.UUID
+	MergedIntoID     pgtype.UUID
+	ClosedAt         pgtype.Timestamptz
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+	Version          int32
+}
+
+type TicketAttachment struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	TicketID  pgtype.UUID
+	CommentID pgtype.UUID
+	FileID    pgtype.UUID
+	Mime      string
+	Size      int64
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
+type TicketCategory struct {
+	ID                  pgtype.UUID
+	OrgID               pgtype.UUID
+	SiteID              pgtype.UUID
+	Name                string
+	DefaultVisibility   string
+	DefaultAssigneeRole pgtype.Text
+	Position            int32
+	Archived            bool
+	CreatedAt           pgtype.Timestamptz
+	UpdatedAt           pgtype.Timestamptz
+	Version             int32
+}
+
+type TicketComment struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	TicketID       pgtype.UUID
+	AuthorPersonID pgtype.UUID
+	Body           string
+	Visibility     string
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type TicketStatus struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Semantic  string
+	Position  int32
+	Key       pgtype.Text
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+}
+
+type TicketStatusHistory struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	TicketID        pgtype.UUID
+	FromStatusID    pgtype.UUID
+	ToStatusID      pgtype.UUID
+	ChangedBy       pgtype.UUID
+	ChangedByName   pgtype.Text
+	Comment         pgtype.Text
+	CommentInternal bool
+	At              pgtype.Timestamptz
+}
+
+type TicketVote struct {
+	OrgID     pgtype.UUID
+	TicketID  pgtype.UUID
+	PersonID  pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+}
+
+type TicketWorkflow struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	IsDefault bool
+	Version   int32
+	UpdatedAt pgtype.Timestamptz
 }
 
 type Unit struct {

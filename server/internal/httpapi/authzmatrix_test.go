@@ -273,7 +273,9 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 		if hasRoles {
 			got := make([]string, len(row.perms))
 			for i, p := range row.perms {
-				got[i] = string(p)
+				alts := strings.Split(string(p), "|")
+				sort.Strings(alts)
+				got[i] = strings.Join(alts, "|")
 			}
 			want := slices.Clone(required)
 			sort.Strings(got)
@@ -336,7 +338,11 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 
 func holdsAll(have, need []string) bool {
 	for _, n := range need {
-		if !slices.Contains(have, n) {
+		ok := false
+		for _, alt := range authz.Permission(n).Alternatives() { // "a|b" is any of
+			ok = ok || slices.Contains(have, string(alt))
+		}
+		if !ok {
 			return false
 		}
 	}

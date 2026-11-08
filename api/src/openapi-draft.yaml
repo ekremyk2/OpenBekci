@@ -396,6 +396,8 @@ paths:
     $ref: ./paths/money/money-overview.yaml
   /v1/orgs/{org_id}/ticket-workflow:
     $ref: ./paths/operations/ticket-workflow.yaml
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    $ref: ./paths/operations/ticket-workflow_restore-default.yaml
   /v1/orgs/{org_id}/ticket-categories:
     $ref: ./paths/operations/ticket-categories.yaml
   /v1/orgs/{org_id}/ticket-categories/{category_id}:
@@ -1294,6 +1296,18 @@ components:
       $ref: ./components/money.yaml#/schemas/MoneyOverview
     NotificationType:
       $ref: ./components/operations.yaml#/schemas/NotificationType
+    FileVariant:
+      $ref: ./components/files.yaml#/schemas/FileVariant
+    FileLinks:
+      $ref: ./components/files.yaml#/schemas/FileLinks
+    File:
+      $ref: ./components/files.yaml#/schemas/File
+    FileList:
+      $ref: ./components/files.yaml#/schemas/FileList
+    FileUpload:
+      $ref: ./components/files.yaml#/schemas/FileUpload
+    TicketSemantic:
+      $ref: ./components/operations.yaml#/schemas/TicketSemantic
     TicketStatus:
       $ref: ./components/operations.yaml#/schemas/TicketStatus
     TicketWorkflow:
@@ -1404,16 +1418,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/NotificationMutesSet
     SmsUsage:
       $ref: ./components/operations.yaml#/schemas/SmsUsage
-    FileVariant:
-      $ref: ./components/files.yaml#/schemas/FileVariant
-    FileLinks:
-      $ref: ./components/files.yaml#/schemas/FileLinks
-    File:
-      $ref: ./components/files.yaml#/schemas/File
-    FileList:
-      $ref: ./components/files.yaml#/schemas/FileList
-    FileUpload:
-      $ref: ./components/files.yaml#/schemas/FileUpload
     ExportRequest:
       $ref: ./components/operations.yaml#/schemas/ExportRequest
     AuditEvent:

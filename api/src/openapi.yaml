@@ -26,7 +26,9 @@ tags:
   - name: codes
     description: Labels for open enums and site-defined statuses.
   - name: operations
-    description: Everyday operation of the building; for now the files (uploaded and generated, streamed through the server).
+    description: Everyday operation of the building; files, tickets, announcements, documents, notifications.
+  - name: dashboards
+    description: Site, portfolio and resident dashboards.
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
@@ -63,12 +65,6 @@ paths:
     $ref: ./paths/me-sessions-id.yaml
   /v1/orgs/{org_id}/audit:
     $ref: ./paths/orgs-org-id-audit.yaml
-  /v1/orgs/{org_id}/files:
-    $ref: './paths/operations/files.yaml'
-  /v1/orgs/{org_id}/files/{file_id}:
-    $ref: './paths/operations/files-file_id.yaml'
-  /v1/orgs/{org_id}/files/{file_id}/meta:
-    $ref: './paths/operations/files-file_id-meta.yaml'
   /v1/platform/audit:
     $ref: ./paths/platform-audit.yaml
   /v1/orgs/{org_id}:
@@ -193,6 +189,82 @@ paths:
     $ref: ./paths/people/me-household-occupancies-occupancy_id.yaml
   /v1/orgs/{org_id}/codes:
     $ref: ./paths/codes/codes.yaml
+  /v1/orgs/{org_id}/ticket-workflow:
+    $ref: ./paths/operations/ticket-workflow.yaml
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    $ref: ./paths/operations/ticket-workflow_restore-default.yaml
+  /v1/orgs/{org_id}/ticket-categories:
+    $ref: ./paths/operations/ticket-categories.yaml
+  /v1/orgs/{org_id}/ticket-categories/{category_id}:
+    $ref: ./paths/operations/ticket-categories-category_id.yaml
+  /v1/orgs/{org_id}/tickets:
+    $ref: ./paths/operations/tickets.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:
+    $ref: ./paths/operations/tickets-ticket_id.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:transition:
+    $ref: ./paths/operations/tickets-ticket_id_transition.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:merge:
+    $ref: ./paths/operations/tickets-ticket_id_merge.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/vote:
+    $ref: ./paths/operations/tickets-ticket_id-vote.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/comments:
+    $ref: ./paths/operations/tickets-ticket_id-comments.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments:
+    $ref: ./paths/operations/tickets-ticket_id-attachments.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}:
+    $ref: ./paths/operations/tickets-ticket_id-attachments-attachment_id.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/history:
+    $ref: ./paths/operations/tickets-ticket_id-history.yaml
+  /v1/orgs/{org_id}/announcements:
+    $ref: ./paths/operations/announcements.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:
+    $ref: ./paths/operations/announcements-announcement_id.yaml
+  /v1/orgs/{org_id}/announcements:preview:
+    $ref: ./paths/operations/announcements_preview.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:publish:
+    $ref: ./paths/operations/announcements-announcement_id_publish.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:archive:
+    $ref: ./paths/operations/announcements-announcement_id_archive.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}/reads:
+    $ref: ./paths/operations/announcements-announcement_id-reads.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}/read:
+    $ref: ./paths/operations/announcements-announcement_id-read.yaml
+  /v1/orgs/{org_id}/folders:
+    $ref: ./paths/operations/folders.yaml
+  /v1/orgs/{org_id}/folders/{folder_id}:
+    $ref: ./paths/operations/folders-folder_id.yaml
+  /v1/orgs/{org_id}/documents:
+    $ref: ./paths/operations/documents.yaml
+  /v1/orgs/{org_id}/documents/{document_id}:
+    $ref: ./paths/operations/documents-document_id.yaml
+  /v1/orgs/{org_id}/me/notifications:
+    $ref: ./paths/operations/me-notifications.yaml
+  /v1/orgs/{org_id}/me/notifications/unread-count:
+    $ref: ./paths/operations/me-notifications-unread-count.yaml
+  /v1/orgs/{org_id}/me/notifications/{notification_id}:read:
+    $ref: ./paths/operations/me-notifications-notification_id_read.yaml
+  /v1/orgs/{org_id}/me/notifications:read-all:
+    $ref: ./paths/operations/me-notifications_read-all.yaml
+  /v1/orgs/{org_id}/notification-defaults:
+    $ref: ./paths/operations/notification-defaults.yaml
+  /v1/orgs/{org_id}/me/notification-mutes:
+    $ref: ./paths/operations/me-notification-mutes.yaml
+  /v1/orgs/{org_id}/sms-usage:
+    $ref: ./paths/operations/sms-usage.yaml
+  /v1/orgs/{org_id}/files:
+    $ref: ./paths/operations/files.yaml
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    $ref: ./paths/operations/files-file_id-meta.yaml
+  /v1/orgs/{org_id}/files/{file_id}:
+    $ref: ./paths/operations/files-file_id.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/dashboard:
+    $ref: ./paths/dashboards/sites-site_id-dashboard.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard:
+    $ref: ./paths/dashboards/sites-site_id-staff-dashboard.yaml
+  /v1/orgs/{org_id}/dashboard/portfolio:
+    $ref: ./paths/dashboards/dashboard-portfolio.yaml
+  /v1/orgs/{org_id}/me/dashboard:
+    $ref: ./paths/dashboards/me-dashboard.yaml
 components:
   securitySchemes:
     cookieAuth:
@@ -489,13 +561,152 @@ components:
       $ref: ./components/auth.yaml#/schemas/MeOccupancy
     MePolicies:
       $ref: ./components/auth.yaml#/schemas/MePolicies
+
+    NotificationType:
+      $ref: ./components/operations.yaml#/schemas/NotificationType
     FileVariant:
-      $ref: './components/files.yaml#/schemas/FileVariant'
+      $ref: ./components/files.yaml#/schemas/FileVariant
     FileLinks:
-      $ref: './components/files.yaml#/schemas/FileLinks'
+      $ref: ./components/files.yaml#/schemas/FileLinks
     File:
-      $ref: './components/files.yaml#/schemas/File'
+      $ref: ./components/files.yaml#/schemas/File
     FileList:
-      $ref: './components/files.yaml#/schemas/FileList'
+      $ref: ./components/files.yaml#/schemas/FileList
     FileUpload:
-      $ref: './components/files.yaml#/schemas/FileUpload'
+      $ref: ./components/files.yaml#/schemas/FileUpload
+    TicketSemantic:
+      $ref: ./components/operations.yaml#/schemas/TicketSemantic
+    TicketStatus:
+      $ref: ./components/operations.yaml#/schemas/TicketStatus
+    TicketWorkflow:
+      $ref: ./components/operations.yaml#/schemas/TicketWorkflow
+    TicketStatusInput:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusInput
+    TicketWorkflowUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketWorkflowUpdate
+    TicketCategory:
+      $ref: ./components/operations.yaml#/schemas/TicketCategory
+    TicketCategoryCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryCreate
+    TicketCategoryUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryUpdate
+    TicketCategoryList:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryList
+    TicketAssignee:
+      $ref: ./components/operations.yaml#/schemas/TicketAssignee
+    TicketAttachment:
+      $ref: ./components/operations.yaml#/schemas/TicketAttachment
+    TicketAttachmentCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketAttachmentCreate
+    Ticket:
+      $ref: ./components/operations.yaml#/schemas/Ticket
+    TicketCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCreate
+    TicketUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketUpdate
+    TicketList:
+      $ref: ./components/operations.yaml#/schemas/TicketList
+    TicketTransition:
+      $ref: ./components/operations.yaml#/schemas/TicketTransition
+    TicketMerge:
+      $ref: ./components/operations.yaml#/schemas/TicketMerge
+    TicketVote:
+      $ref: ./components/operations.yaml#/schemas/TicketVote
+    TicketComment:
+      $ref: ./components/operations.yaml#/schemas/TicketComment
+    TicketCommentCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCommentCreate
+    TicketCommentList:
+      $ref: ./components/operations.yaml#/schemas/TicketCommentList
+    TicketStatusChange:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusChange
+    TicketStatusChangeList:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusChangeList
+    AnnouncementAudience:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementAudience
+    Announcement:
+      $ref: ./components/operations.yaml#/schemas/Announcement
+    AnnouncementCreate:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementCreate
+    AnnouncementUpdate:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementUpdate
+    AnnouncementList:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementList
+    AnnouncementPreviewRequest:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPreviewRequest
+    AnnouncementPreview:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPreview
+    AnnouncementPublish:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPublish
+    AnnouncementRead:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementRead
+    AnnouncementReadList:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementReadList
+    DocumentVisibility:
+      $ref: ./components/operations.yaml#/schemas/DocumentVisibility
+    FolderCrumb:
+      $ref: ./components/operations.yaml#/schemas/FolderCrumb
+    Folder:
+      $ref: ./components/operations.yaml#/schemas/Folder
+    FolderCreate:
+      $ref: ./components/operations.yaml#/schemas/FolderCreate
+    FolderUpdate:
+      $ref: ./components/operations.yaml#/schemas/FolderUpdate
+    FolderList:
+      $ref: ./components/operations.yaml#/schemas/FolderList
+    GeneratedFrom:
+      $ref: ./components/operations.yaml#/schemas/GeneratedFrom
+    Document:
+      $ref: ./components/operations.yaml#/schemas/Document
+    DocumentCreate:
+      $ref: ./components/operations.yaml#/schemas/DocumentCreate
+    DocumentUpdate:
+      $ref: ./components/operations.yaml#/schemas/DocumentUpdate
+    DocumentList:
+      $ref: ./components/operations.yaml#/schemas/DocumentList
+    Notification:
+      $ref: ./components/operations.yaml#/schemas/Notification
+    NotificationList:
+      $ref: ./components/operations.yaml#/schemas/NotificationList
+    UnreadCount:
+      $ref: ./components/operations.yaml#/schemas/UnreadCount
+    NotificationsReadAll:
+      $ref: ./components/operations.yaml#/schemas/NotificationsReadAll
+    NotificationDefault:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefault
+    NotificationDefaults:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaults
+    NotificationDefaultsSet:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaultsSet
+    NotificationDefaultInput:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaultInput
+    NotificationMutes:
+      $ref: ./components/operations.yaml#/schemas/NotificationMutes
+    NotificationMutesSet:
+      $ref: ./components/operations.yaml#/schemas/NotificationMutesSet
+    SmsUsage:
+      $ref: ./components/operations.yaml#/schemas/SmsUsage
+    ExportRequest:
+      $ref: ./components/operations.yaml#/schemas/ExportRequest
+    AuditNote:
+      $ref: ./components/operations.yaml#/schemas/AuditNote
+    AuditNoteCreate:
+      $ref: ./components/operations.yaml#/schemas/AuditNoteCreate
+    AuditNoteList:
+      $ref: ./components/operations.yaml#/schemas/AuditNoteList
+    DashboardMeeting:
+      $ref: ./components/dashboards.yaml#/schemas/DashboardMeeting
+    DashboardTerm:
+      $ref: ./components/dashboards.yaml#/schemas/DashboardTerm
+    SiteDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/SiteDashboard
+    PortfolioSite:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioSite
+    PortfolioTotals:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioTotals
+    PortfolioDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioDashboard
+    MeDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/MeDashboard
+    StaffDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/StaffDashboard

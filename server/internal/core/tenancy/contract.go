@@ -116,6 +116,9 @@ func (s *Service) DeleteUnit(ctx context.Context, orgID, unitID uuid.UUID, expec
 		for _, q := range []string{
 			`DELETE FROM unit_tag WHERE org_id = $1 AND unit_id = $2`,
 			`DELETE FROM allocation_key_value WHERE org_id = $1 AND unit_id = $2`,
+			// the unit's own folder (created with the unit), unless documents are filed in it
+			`DELETE FROM folder f WHERE f.org_id = $1 AND f.unit_id = $2 AND NOT EXISTS
+				(SELECT 1 FROM document d WHERE d.org_id = f.org_id AND d.folder_id = f.id)`,
 		} {
 			if _, err := tx.Exec(ctx, q, orgID, unitID); err != nil {
 				return err

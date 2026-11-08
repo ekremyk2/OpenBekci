@@ -26,7 +26,9 @@ tags:
   - name: codes
     description: Labels for open enums and site-defined statuses.
   - name: operations
-    description: Everyday operation of the building; for now the files (uploaded and generated, streamed through the server).
+    description: Everyday operation of the building; files, tickets, announcements, documents, notifications.
+  - name: dashboards
+    description: Site, portfolio and resident dashboards.
   - name: platform
     description: Instance operation (platform administrators).
 paths:
@@ -393,6 +395,10 @@ paths:
       x-openbekci-roles:
         - me.read
       summary: The signed-in user, organizations, roles and permissions
+      description: |
+        Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+        `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+        administrator needs a membership of that organization like anybody else.
       tags:
         - me
       security:
@@ -548,292 +554,6 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
         '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/files:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-    post:
-      operationId: operations.uploadFile
-      summary: Upload a file
-      description: |
-        **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
-        sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
-        the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
-        `multipart_order`, and so is a field this operation does not know.
-
-        Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
-        `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
-        the caller to add files there; without it the file is a draft that expires after 7 days and that
-        only its uploader can see, read and discard.
-
-        The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
-        plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
-        Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
-        metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
-        `medium` variants. A file the virus scanner flags is stored as `quarantined`.
-
-        Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
-        is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
-        decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
-        `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
-        has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
-        then 429 `rate_limited`.
-
-        `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
-        the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
-        encoding) replays the first response, and a different file under the same key is 422
-        `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
-      tags:
-        - operations
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        - files.upload
-      x-idempotent: optional
-      x-openbekci-stream: true
-      x-stability: stable
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/FileUpload'
-      responses:
-        '201':
-          description: The stored file.
-          headers:
-            Location:
-              description: The file's metadata URL.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/File'
-        '400':
-          $ref: '#/components/responses/Problem'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '409':
-          $ref: '#/components/responses/Problem'
-        '413':
-          $ref: '#/components/responses/Problem'
-        '415':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        '429':
-          $ref: '#/components/responses/Problem'
-        '503':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    get:
-      operationId: operations.listFiles
-      summary: List files
-      description: |
-        **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
-        access to it (the module that owns the resource decides; administrators with `files.manage` always have
-        it). Without a scope, an administrator sees every file of the organization and anyone else the files
-        they uploaded. Needs `files.read`.
-
-        Not in the first draft of the contract: added with the module, because the web app needs the files of a
-        resource and an administrator needs to see what is stored.
-      tags:
-        - operations
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        - files.read
-      x-stability: stable
-      parameters:
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Cursor'
-        - name: scope
-          in: query
-          description: Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: One page of files.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FileList'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/files/{file_id}:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-      - $ref: '#/components/parameters/FileId'
-    get:
-      operationId: operations.downloadFile
-      summary: Download a file
-      description: |
-        **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
-        everything else is sent with `Content-Disposition: attachment`. All responses carry
-        `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
-        `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
-        answer is a 302 to a short-lived presigned URL instead of the bytes.
-
-        Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
-        a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
-        resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
-        a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
-        storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
-        or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
-        quarantined file has no downloadable content (404).
-      tags:
-        - operations
-      security:
-        - {}
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        - files.read
-      x-openbekci-stream: true
-      x-stability: stable
-      parameters:
-        - name: variant
-          in: query
-          description: Image variant, `thumb` or `medium`. Absent for the original.
-          schema:
-            type: string
-            enum:
-              - thumb
-              - medium
-        - name: exp
-          in: query
-          description: Expiry of a signed URL, Unix seconds. Sent with `sig`.
-          schema:
-            type: integer
-            format: int64
-        - name: sig
-          in: query
-          description: Signature of a signed URL. Sent with `exp`.
-          schema:
-            type: string
-            maxLength: 128
-      responses:
-        '200':
-          description: The file's bytes, with the stored type as `Content-Type`.
-          headers:
-            Content-Disposition:
-              schema:
-                type: string
-            Content-Security-Policy:
-              schema:
-                type: string
-            Cache-Control:
-              schema:
-                type: string
-            X-Content-Type-Options:
-              schema:
-                type: string
-          content:
-            '*/*':
-              schema:
-                type: string
-                format: binary
-        '302':
-          description: Short-lived signed URL (S3 driver).
-          headers:
-            Location:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    delete:
-      operationId: operations.deleteFile
-      summary: Delete an unattached file
-      description: |
-        **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
-        and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
-        file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
-        who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
-        `maintenance.prune_files` job. Recorded in the audit trail.
-      tags:
-        - operations
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        - files.upload
-      x-idempotent: optional
-      x-stability: stable
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
-      responses:
-        '204':
-          description: Deleted.
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '409':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/files/{file_id}/meta:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-      - $ref: '#/components/parameters/FileId'
-    get:
-      operationId: operations.getFileMeta
-      summary: Get file metadata
-      description: |
-        **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
-        anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
-        `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
-      tags:
-        - operations
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        - files.read
-      x-stability: stable
-      responses:
-        '200':
-          description: The file.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/File'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -5727,7 +5447,7 @@ paths:
       operationId: codes.listCodes
       summary: Labels for enums, error codes and site statuses
       description: |-
-        **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+        Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
 
         Permission: `codes.read`.
       tags:
@@ -5738,7 +5458,6 @@ paths:
       x-openbekci-roles:
         member:
           - codes.read
-      x-stability: stable
       parameters:
         - name: locale
           in: query
@@ -5753,6 +5472,3103 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Codes'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-workflow:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.getTicketWorkflow
+      summary: Get the ticket workflow of a site
+      description: |-
+        Get the ticket workflow of a site.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWorkflow'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: operations.updateTicketWorkflow
+      summary: Replace the ticket workflow of a site
+      description: |-
+        Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
+
+        Permission: `tickets.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketWorkflowUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWorkflow'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.restoreTicketWorkflow
+      summary: Restore the default ticket workflow of a site
+      description: |-
+        Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+
+        Permission: `tickets.manage`.
+
+        Problems: `version_conflict` (409), `validation_failed` (422).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-stability: stable
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketWorkflowRestore'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWorkflow'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-categories:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listTicketCategories
+      summary: List ticket categories
+      description: |-
+        Cursor-paginated list of ticket categorys.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: archived
+          in: query
+          schema:
+            type: string
+            enum:
+              - active
+              - archived
+              - all
+            default: active
+          description: '`active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`.'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketCategoryList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createTicketCategory
+      summary: Create ticket category
+      description: |-
+        Creates a ticket category.
+
+        Permission: `tickets.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketCategoryCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketCategory'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-categories/{category_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: category_id
+        in: path
+        required: true
+        description: Id of the category.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getTicketCategory
+      summary: Get ticket category
+      description: |-
+        **Release 0.1.** Get ticket category.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketCategory'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateTicketCategory
+      summary: Update ticket category
+      description: |-
+        **Release 0.1.** Update ticket category.
+
+        Permission: `tickets.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketCategoryUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketCategory'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listTickets
+      summary: List tickets
+      description: |-
+        **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
+
+        Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: category_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `category_id`.
+        - name: status_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `status_id`.
+        - name: semantic
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - open_like
+              - closed_like
+          description: Filter by `semantic`.
+        - name: assignee_person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `assignee_person_id`.
+        - name: assignee_vendor_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `assignee_vendor_id`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: visibility
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - private
+              - common
+          description: Filter by `visibility`.
+        - name: reporter_person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `reporter_person_id`.
+        - name: mine
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `mine`.
+        - name: queue
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `queue`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createTicket
+      summary: Open a ticket
+      description: |-
+        **Release 0.1.** Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
+
+        Permission: `tickets.open`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getTicket
+      summary: Get a ticket
+      description: |-
+        Get a ticket.
+
+        Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateTicket
+      summary: Edit, reassign or change visibility of a ticket
+      description: |-
+        The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
+
+        Permission: `tickets.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}:transition:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.transitionTicket
+      summary: Move a ticket to another status
+      description: |-
+        **Release 0.1.** Appends to the status history.
+
+        Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+        staff:
+          - tickets.work
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketTransition'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}:merge:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.mergeTicket
+      summary: Merge a duplicate into another ticket
+      description: |-
+        **Release 0.1.** Votes carry over to the target; the merged ticket points to it.
+
+        Permission: `tickets.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketMerge'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}/vote:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: operations.voteTicket
+      summary: '"+1" a common ticket'
+      description: |-
+        **Release 0.1.** One vote per person; repeating is harmless. Only common tickets.
+
+        Permission: `tickets.open`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketVote'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.unvoteTicket
+      summary: Take back a "+1"
+      description: |-
+        **Release 0.1.** Take back a "+1".
+
+        Permission: `tickets.open`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketVote'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}/comments:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.listTicketComments
+      summary: List ticket comments
+      description: |-
+        **Release 0.1.** Residents never receive internal comments.
+
+        Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketCommentList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createTicketComment
+      summary: Comment on a ticket
+      description: |-
+        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
+
+        Permission (any one of): `tickets.open`, `tickets.work`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+          - tickets.work
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketCommentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketComment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.createTicketAttachment
+      summary: Attach an uploaded file to a ticket
+      description: |-
+        **Release 0.1.** At most 10 per ticket or comment.
+
+        Permission: `tickets.open`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketAttachmentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketAttachment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+      - name: attachment_id
+        in: path
+        required: true
+        description: Id of the attachment.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: operations.deleteTicketAttachment
+      summary: Remove an attachment
+      description: |-
+        **Release 0.1.** Remove an attachment.
+
+        Permission: `tickets.open`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.open
+        site_manager:
+          - tickets.open
+        board_member:
+          - tickets.open
+        staff:
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/tickets/{ticket_id}/history:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: ticket_id
+        in: path
+        required: true
+        description: Id of the ticket.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.listTicketHistory
+      summary: Status history of a ticket
+      description: |-
+        **Release 0.1.** Status history of a ticket.
+
+        Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+
+        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.read
+          - tickets.open
+        site_manager:
+          - tickets.read
+          - tickets.open
+        board_member:
+          - tickets.read
+          - tickets.open
+        auditor:
+          - tickets.read
+        staff:
+          - tickets.read_assigned
+          - tickets.open
+        owner:
+          - tickets.open
+        tenant:
+          - tickets.open
+        household:
+          - tickets.open
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketStatusChangeList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listAnnouncements
+      summary: List announcements
+      description: |-
+        **Release 0.1.** List announcements.
+
+        Permission (any one of): `announcements.read`, `announcements.publish` (residents: published announcements addressed to them).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+        member:
+          - announcements.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - draft
+              - scheduled
+              - published
+              - archived
+          description: Filter by `status`.
+        - name: pinned
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `pinned`.
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `unread`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createAnnouncement
+      summary: Create an announcement
+      description: |-
+        **Release 0.1.** Created as a draft; `publish_at` schedules it.
+
+        Permission: `announcements.publish`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements/{announcement_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: announcement_id
+        in: path
+        required: true
+        description: Id of the announcement.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getAnnouncement
+      summary: Get an announcement
+      description: |-
+        **Release 0.1.** Get an announcement.
+
+        Permission (any one of): `announcements.read`, `announcements.publish`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+        member:
+          - announcements.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateAnnouncement
+      summary: Edit an announcement
+      description: |-
+        **Release 0.1.** Content of a published announcement can no longer change; pin, expiry and archive can.
+
+        Permission: `announcements.publish`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.deleteAnnouncement
+      summary: Delete a draft announcement
+      description: |-
+        **Release 0.1.** Delete a draft announcement.
+
+        Permission: `announcements.publish`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements:preview:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.previewAnnouncement
+      summary: Preview recipient and SMS counts
+      description: |-
+        Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
+
+        Permission: `announcements.publish`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: none
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementPreviewRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementPreview'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements/{announcement_id}:publish:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: announcement_id
+        in: path
+        required: true
+        description: Id of the announcement.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.publishAnnouncement
+      summary: Publish an announcement now
+      description: |-
+        **Release 0.1.** Sends by the chosen channels and fixes `recipient_count` and `sms_count`.
+
+        Permission: `announcements.publish`.
+
+        Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementPublish'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements/{announcement_id}:archive:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: announcement_id
+        in: path
+        required: true
+        description: Id of the announcement.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.archiveAnnouncement
+      summary: Archive an announcement
+      description: |-
+        **Release 0.1.** Archive an announcement.
+
+        Permission: `announcements.publish`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements/{announcement_id}/reads:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: announcement_id
+        in: path
+        required: true
+        description: Id of the announcement.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.listAnnouncementReads
+      summary: Who has read an announcement
+      description: |-
+        Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
+
+        Permission: `announcements.publish`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - announcements.publish
+        site_manager:
+          - announcements.publish
+        board_member:
+          - announcements.publish
+      parameters:
+        - name: read
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `read`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementReadList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/announcements/{announcement_id}/read:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: announcement_id
+        in: path
+        required: true
+        description: Id of the announcement.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: operations.markAnnouncementRead
+      summary: Mark an announcement read
+      description: |-
+        **Release 0.1.** Counted when the announcement is opened in the web or app.
+
+        Permission: `announcements.read`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - announcements.read
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/folders:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listFolders
+      summary: List folders
+      description: |-
+        **Release 0.1.** Cursor-paginated list of folders.
+
+        Permission: `documents.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.read
+        site_manager:
+          - documents.read
+        board_member:
+          - documents.read
+        auditor:
+          - documents.read
+        owner:
+          - documents.read
+        tenant:
+          - documents.read
+        household:
+          - documents.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: parent_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `parent_id`.
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - site
+              - unit
+          description: Filter by `kind`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createFolder
+      summary: Create folder
+      description: |-
+        **Release 0.1.** Creates a folder.
+
+        Permission: `documents.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/folders/{folder_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: folder_id
+        in: path
+        required: true
+        description: Id of the folder.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getFolder
+      summary: Get folder
+      description: |-
+        **Release 0.1.** Get folder.
+
+        Permission: `documents.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.read
+        site_manager:
+          - documents.read
+        board_member:
+          - documents.read
+        auditor:
+          - documents.read
+        owner:
+          - documents.read
+        tenant:
+          - documents.read
+        household:
+          - documents.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateFolder
+      summary: Update folder
+      description: |-
+        **Release 0.1.** Update folder.
+
+        Permission: `documents.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.deleteFolder
+      summary: Delete folder
+      description: |-
+        **Release 0.1.** Only an empty, non-system folder.
+
+        Permission: `documents.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/documents:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listDocuments
+      summary: List documents
+      description: |-
+        **Release 0.1.** Cursor-paginated list of documents.
+
+        A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+        Permission (any one of): `documents.read`, `documents.read_addressed`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.read
+        site_manager:
+          - documents.read
+        board_member:
+          - documents.read
+        auditor:
+          - documents.read
+        owner:
+          - documents.read
+        tenant:
+          - documents.read
+        household:
+          - documents.read
+        former_occupant:
+          - documents.read_addressed
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: folder_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `folder_id`.
+        - name: source
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - uploaded
+              - generated
+          description: Filter by `source`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: operations.createDocument
+      summary: Create document
+      description: |-
+        **Release 0.1.** Creates a document.
+
+        Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+        owner:
+          - documents.upload_own
+        tenant:
+          - documents.upload_own
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/documents/{document_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: document_id
+        in: path
+        required: true
+        description: Id of the document.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getDocument
+      summary: Get document
+      description: |-
+        **Release 0.1.** Get document.
+
+        A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+        Permission (any one of): `documents.read`, `documents.read_addressed`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.read
+        site_manager:
+          - documents.read
+        board_member:
+          - documents.read
+        auditor:
+          - documents.read
+        owner:
+          - documents.read
+        tenant:
+          - documents.read
+        household:
+          - documents.read
+        former_occupant:
+          - documents.read_addressed
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateDocument
+      summary: Update document
+      description: |-
+        **Release 0.1.** Update document.
+
+        Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+        owner:
+          - documents.upload_own
+        tenant:
+          - documents.upload_own
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.deleteDocument
+      summary: Delete document
+      description: |-
+        **Release 0.1.** Deletes the document; generated documents can be regenerated.
+
+        Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - documents.manage
+        site_manager:
+          - documents.manage
+        board_member:
+          - documents.manage
+        owner:
+          - documents.upload_own
+        tenant:
+          - documents.upload_own
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/notifications:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.listNotifications
+      summary: List my notifications
+      description: |-
+        **Release 0.1.** List my notifications.
+
+        Permission: `notifications.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteId'
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `unread`.
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: Filter by `type`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/notifications/unread-count:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.getUnreadCount
+      summary: Unread notification count
+      description: |-
+        Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
+
+        Permission: `notifications.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      parameters:
+        - $ref: '#/components/parameters/SiteId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/notifications/{notification_id}:read:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: notification_id
+        in: path
+        required: true
+        description: Id of the notification.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.markNotificationRead
+      summary: Mark a notification read
+      description: |-
+        **Release 0.1.** Mark a notification read.
+
+        Permission: `notifications.read`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/notifications:read-all:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.markAllNotificationsRead
+      summary: Mark all notifications read
+      description: |-
+        **Release 0.1.** Mark all notifications read.
+
+        Permission: `notifications.read`.
+
+        Problems: `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationsReadAll'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/notification-defaults:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.getNotificationDefaults
+      summary: Get the site defaults for automatic messages
+      description: |-
+        **Release 0.1.** Get the site defaults for automatic messages.
+
+        Permission: `notifications.manage`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - notifications.manage
+        site_manager:
+          - notifications.manage
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDefaults'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: operations.setNotificationDefaults
+      summary: Set the site defaults for automatic messages
+      description: |-
+        **Release 0.1.** Set the site defaults for automatic messages.
+
+        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+        Permission: `notifications.manage`.
+
+        Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - notifications.manage
+        site_manager:
+          - notifications.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationDefaultsSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationDefaults'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/notification-mutes:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.getNotificationMutes
+      summary: My muted notification types
+      description: |-
+        My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
+
+        Permission: `notifications.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationMutes'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: operations.setNotificationMutes
+      summary: Set my muted notification types
+      description: |-
+        Set my muted notification types.
+
+        Permission: `notifications.read`.
+
+        Problems: `validation_failed` (422), `conflict` (409).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationMutesSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationMutes'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sms-usage:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: operations.getSmsUsage
+      summary: Monthly SMS counter of a site
+      description: |-
+        **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
+
+        Permission: `notifications.manage`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - notifications.manage
+        site_manager:
+          - notifications.manage
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: month
+          in: query
+          schema:
+            type: string
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: Filter by month, `YYYY-MM`.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsUsage'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.uploadFile
+      summary: Upload a file
+      description: |
+        **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+        sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+        the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+        `multipart_order`, and so is a field this operation does not know.
+
+        Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+        `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+        the caller to add files there; without it the file is a draft that expires after 7 days and that
+        only its uploader can see, read and discard.
+
+        The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+        plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+        Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+        metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+        `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+
+        Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+        is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+        decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+        `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+        has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+        then 429 `rate_limited`.
+
+        `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+        the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+        encoding) replays the first response, and a different file under the same key is 422
+        `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.upload
+      x-idempotent: optional
+      x-openbekci-stream: true
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUpload'
+      responses:
+        '201':
+          description: The stored file.
+          headers:
+            Location:
+              description: The file's metadata URL.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '413':
+          $ref: '#/components/responses/Problem'
+        '415':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      operationId: operations.listFiles
+      summary: List files
+      description: |
+        **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+        access to it (the module that owns the resource decides; administrators with `files.manage` always have
+        it). Without a scope, an administrator sees every file of the organization and anyone else the files
+        they uploaded. Needs `files.read`.
+
+        Not in the first draft of the contract: added with the module, because the web app needs the files of a
+        resource and an administrator needs to see what is stored.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: scope
+          in: query
+          description: Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: One page of files.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: operations.getFileMeta
+      summary: Get file metadata
+      description: |
+        **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+        anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+        `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-stability: stable
+      responses:
+        '200':
+          description: The file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files/{file_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: operations.downloadFile
+      summary: Download a file
+      description: |
+        **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+        everything else is sent with `Content-Disposition: attachment`. All responses carry
+        `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+        `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+        answer is a 302 to a short-lived presigned URL instead of the bytes.
+
+        Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+        a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+        resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+        a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+        storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+        or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+        quarantined file has no downloadable content (404).
+      tags:
+        - operations
+      security:
+        - {}
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-openbekci-stream: true
+      x-stability: stable
+      parameters:
+        - name: variant
+          in: query
+          description: Image variant, `thumb` or `medium`. Absent for the original.
+          schema:
+            type: string
+            enum:
+              - thumb
+              - medium
+        - name: exp
+          in: query
+          description: Expiry of a signed URL, Unix seconds. Sent with `sig`.
+          schema:
+            type: integer
+            format: int64
+        - name: sig
+          in: query
+          description: Signature of a signed URL. Sent with `exp`.
+          schema:
+            type: string
+            maxLength: 128
+      responses:
+        '200':
+          description: The file's bytes, with the stored type as `Content-Type`.
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Security-Policy:
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+            X-Content-Type-Options:
+              schema:
+                type: string
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '302':
+          description: Short-lived signed URL (S3 driver).
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.deleteFile
+      summary: Delete an unattached file
+      description: |
+        **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+        and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+        file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+        who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+        `maintenance.prune_files` job. Recorded in the audit trail.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.upload
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: Deleted.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/dashboard:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: dashboards.getSiteDashboard
+      summary: Site dashboard
+      description: |-
+        **Release 0.1.** Site dashboard.
+
+        Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
+
+        Permission: `dashboard.site`.
+      tags:
+        - dashboards
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - dashboard.site
+        site_manager:
+          - dashboard.site
+        board_member:
+          - dashboard.site
+        auditor:
+          - dashboard.site
+        accountant:
+          - dashboard.site
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteDashboard'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: dashboards.getStaffDashboard
+      summary: Staff dashboard (counts only)
+      description: |-
+        **Release 0.1.** Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
+
+        Permission: `dashboard.staff`.
+      tags:
+        - dashboards
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        staff:
+          - dashboard.staff
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDashboard'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dashboard/portfolio:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: dashboards.getPortfolioDashboard
+      summary: Organization portfolio dashboard
+      description: |-
+        **Release 0.1.** In release 0.1 (S5).
+
+        Permission: `dashboard.portfolio`.
+      tags:
+        - dashboards
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - dashboard.portfolio
+        site_manager:
+          - dashboard.portfolio
+        auditor:
+          - dashboard.portfolio
+        accountant:
+          - dashboard.portfolio
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioDashboard'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/dashboard:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: dashboards.getMyDashboard
+      summary: My home summary
+      description: |-
+        **Release 0.1.** Resident summary, or the role-appropriate home.
+
+        Permission: `me.dashboard`.
+      tags:
+        - dashboards
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - me.dashboard
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeDashboard'
         '401':
           $ref: '#/components/responses/Problem'
         '403':
@@ -6610,11 +9426,20 @@ components:
       x-open-enum: true
       description: 'Open enum: every permission a role can hold (backend plan section 7).'
       enum:
+        - announcements.publish
+        - announcements.read
         - audit.read
         - audit.report
         - claims.decide
         - codes.read
+        - dashboard.portfolio
+        - dashboard.site
+        - dashboard.staff
         - directory.read
+        - documents.manage
+        - documents.read
+        - documents.read_addressed
+        - documents.upload_own
         - exports.create
         - files.manage
         - files.read
@@ -6622,10 +9447,13 @@ components:
         - invitations.household
         - invitations.manage
         - jobs.read
+        - me.dashboard
         - me.manage
         - me.read
         - memberships.manage
         - memberships.read
+        - notifications.manage
+        - notifications.read
         - occupancies.grant_money
         - occupancies.household
         - occupancies.manage
@@ -6645,6 +9473,11 @@ components:
         - sites.manage
         - sites.offboard
         - sites.read
+        - tickets.manage
+        - tickets.open
+        - tickets.read
+        - tickets.read_assigned
+        - tickets.work
         - units.import
         - units.manage
         - units.read
@@ -9830,6 +12663,33 @@ components:
       example:
         app_lock_required: false
         reauth_window_minutes: 10
+    NotificationType:
+      type: string
+      description: 'Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values.'
+      x-known-values:
+        - announcement.published
+        - charge.due_soon
+        - charge.overdue
+        - payment.receipt
+        - payment.declared
+        - payment.confirmed
+        - payment.rejected
+        - statement.sent
+        - ticket.updated
+        - ticket.commented
+        - claim.requested
+        - claim.decided
+        - meeting.called
+        - meeting.decisions
+        - term.expiring
+        - visitor.approval_requested
+        - visitor.arrived
+        - booking.confirmed
+        - booking.cancelled
+        - delivery.received
+        - access.agent_silent
+        - access.agent_clock_skew
+        - access.agent_stopped
     FileVariant:
       type: object
       description: A rendition of an image, generated on upload.
@@ -10001,6 +12861,2256 @@ components:
         file:
           type: string
           format: binary
+    TicketSemantic:
+      type: string
+      description: Whether a status counts as open work or as finished. Open enum.
+      enum:
+        - open_like
+        - closed_like
+      x-open-enum: true
+    TicketStatus:
+      type: object
+      required:
+        - id
+        - name
+        - semantic
+        - position
+        - key
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        semantic:
+          type: string
+          description: Open enum.
+          enum:
+            - open_like
+            - closed_like
+          x-open-enum: true
+        position:
+          type: integer
+          format: int64
+        key:
+          type: string
+          nullable: true
+          description: 'Stable key of the built-in statuses: open, in_progress, done.'
+    TicketWorkflow:
+      type: object
+      description: Ordered statuses per site (O1). A site inherits the default until it edits it.
+      required:
+        - site_id
+        - statuses
+        - is_default
+        - version
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        statuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketStatus'
+        is_default:
+          type: boolean
+          description: The site still uses the default open, in progress, done flow.
+        version:
+          type: integer
+          format: int64
+    TicketStatusInput:
+      type: object
+      required:
+        - name
+        - semantic
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Existing status; omitted: a new one.'
+        name:
+          type: string
+        semantic:
+          type: string
+          enum:
+            - open_like
+            - closed_like
+    TicketWorkflowUpdate:
+      type: object
+      required:
+        - statuses
+      properties:
+        statuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketStatusInput'
+          description: The complete ordered list.
+        replacements:
+          type: object
+          additionalProperties:
+            type: string
+            format: uuid
+          description: 'Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`.'
+    TicketCategory:
+      type: object
+      description: 'Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - default_visibility
+        - default_assignee_role
+        - position
+        - archived
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        default_visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        default_assignee_role:
+          type: string
+          description: Open enum.
+          enum:
+            - site_manager
+            - staff
+            - board_member
+          x-open-enum: true
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        name: Ali Veli
+        default_visibility: private
+        default_assignee_role: site_manager
+        position: 1
+        archived: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    TicketCategoryCreate:
+      type: object
+      required:
+        - site_id
+        - name
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        default_visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        default_assignee_role:
+          type: string
+          description: Open enum.
+          enum:
+            - site_manager
+            - staff
+            - board_member
+          x-open-enum: true
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+    TicketCategoryUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        default_visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        default_assignee_role:
+          type: string
+          description: Open enum.
+          enum:
+            - site_manager
+            - staff
+            - board_member
+          x-open-enum: true
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        archived:
+          type: boolean
+    TicketCategoryList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketCategory'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            name: Ali Veli
+            default_visibility: private
+            default_assignee_role: site_manager
+            position: 1
+            archived: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    TicketAssignee:
+      type: object
+      required:
+        - kind
+        - person_id
+        - vendor_id
+        - display_name
+      properties:
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - person
+            - vendor
+          x-open-enum: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+        display_name:
+          type: string
+    TicketAttachment:
+      type: object
+      description: A photo or file on a ticket (up to 10 per ticket or comment).
+      required:
+        - id
+        - org_id
+        - ticket_id
+        - comment_id
+        - file_id
+        - mime
+        - size
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        comment_id:
+          type: string
+          format: uuid
+          nullable: true
+        file_id:
+          type: string
+          format: uuid
+        mime:
+          type: string
+        size:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TicketAttachmentCreate:
+      type: object
+      required:
+        - file_id
+      properties:
+        file_id:
+          type: string
+          format: uuid
+        comment_id:
+          type: string
+          format: uuid
+    Ticket:
+      type: object
+      description: A ticket. Every request is a ticket; there is no chat (O6).
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - unit_door_number
+        - reporter_person_id
+        - reporter_display_name
+        - category_id
+        - title
+        - description
+        - status_id
+        - status_name
+        - status_semantic
+        - visibility
+        - assignee
+        - vote_count
+        - voted_by_me
+        - merged_into_id
+        - comment_count
+        - attachments
+        - closed_at
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_door_number:
+          type: string
+          nullable: true
+        reporter_person_id:
+          type: string
+          format: uuid
+        reporter_display_name:
+          type: string
+        category_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        status_id:
+          type: string
+          format: uuid
+        status_name:
+          type: string
+        status_semantic:
+          $ref: '#/components/schemas/TicketSemantic'
+        visibility:
+          type: string
+          description: 'Private: that unit and management. Common: the whole site or block. Open enum.'
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        assignee:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/TicketAssignee'
+          nullable: true
+        vote_count:
+          type: integer
+          format: int64
+          description: '"+1" count; visible to residents.'
+        voted_by_me:
+          type: boolean
+        merged_into_id:
+          type: string
+          format: uuid
+          nullable: true
+        comment_count:
+          type: integer
+          format: int64
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketAttachment'
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_id: null
+        unit_door_number: null
+        reporter_person_id: 0192a3f0-1000-7000-8000-000000000001
+        reporter_display_name: reporter display name
+        category_id: 0192a3f0-1000-7000-8000-000000000003
+        title: Elevator stuck on floor 3
+        description: description
+        status_id: 0192a3f0-1000-7000-8000-000000000001
+        status_name: Open
+        status_semantic: open_like
+        visibility: common
+        assignee: null
+        vote_count: 4
+        voted_by_me: false
+        merged_into_id: null
+        comment_count: 1
+        attachments:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            ticket_id: 0192a3f0-1000-7000-8000-000000000001
+            comment_id: null
+            file_id: 0192a3f0-1000-7000-8000-000000000002
+            mime: mime
+            size: 1
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        closed_at: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    TicketCreate:
+      type: object
+      required:
+        - site_id
+        - category_id
+        - title
+        - description
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        reporter_person_id:
+          type: string
+          format: uuid
+        attachment_file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    TicketUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        category_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - private
+            - common
+          x-open-enum: true
+        assignee_person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 'A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.'
+        assignee_vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+    TicketList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_id: null
+            unit_door_number: null
+            reporter_person_id: 0192a3f0-1000-7000-8000-000000000001
+            reporter_display_name: reporter display name
+            category_id: 0192a3f0-1000-7000-8000-000000000003
+            title: Elevator stuck on floor 3
+            description: description
+            status_id: 0192a3f0-1000-7000-8000-000000000001
+            status_name: Open
+            status_semantic: open_like
+            visibility: common
+            assignee: null
+            vote_count: 4
+            voted_by_me: false
+            merged_into_id: null
+            comment_count: 1
+            attachments:
+              - id: 0192a3f0-1000-7000-8000-000000000003
+                org_id: 0192a3f0-1000-7000-8000-000000000001
+                ticket_id: 0192a3f0-1000-7000-8000-000000000001
+                comment_id: null
+                file_id: 0192a3f0-1000-7000-8000-000000000002
+                mime: mime
+                size: 1
+                created_at: '2026-03-01T09:00:00Z'
+                updated_at: '2026-03-01T09:00:00Z'
+            closed_at: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    TicketTransition:
+      type: object
+      required:
+        - status_id
+      properties:
+        status_id:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        comment_visibility:
+          type: string
+          enum:
+            - public
+            - internal
+    TicketMerge:
+      type: object
+      required:
+        - into_ticket_id
+      properties:
+        into_ticket_id:
+          type: string
+          format: uuid
+    TicketVote:
+      type: object
+      required:
+        - ticket_id
+        - vote_count
+        - voted
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+        vote_count:
+          type: integer
+          format: int64
+        voted:
+          type: boolean
+    TicketComment:
+      type: object
+      description: A comment. Internal notes are hidden from residents.
+      required:
+        - id
+        - org_id
+        - ticket_id
+        - author_person_id
+        - author_display_name
+        - body
+        - visibility
+        - attachments
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        author_person_id:
+          type: string
+          format: uuid
+        author_display_name:
+          type: string
+        body:
+          type: string
+        visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - public
+            - internal
+          x-open-enum: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketAttachment'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        ticket_id: 0192a3f0-1000-7000-8000-000000000004
+        author_person_id: 0192a3f0-1000-7000-8000-000000000005
+        author_display_name: Ali Veli
+        body: body
+        visibility: public
+        attachments:
+          - id: 0192a3f0-1000-7000-8000-000000000006
+            org_id: 0192a3f0-1000-7000-8000-000000000007
+            ticket_id: 0192a3f0-1000-7000-8000-000000000008
+            comment_id: null
+            file_id: 0192a3f0-1000-7000-8000-000000000009
+            mime: mime
+            size: 1
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    TicketCommentCreate:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string
+        visibility:
+          type: string
+          description: Open enum.
+          enum:
+            - public
+            - internal
+          x-open-enum: true
+        attachment_file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    TicketCommentList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketComment'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            ticket_id: 0192a3f0-1000-7000-8000-000000000004
+            author_person_id: 0192a3f0-1000-7000-8000-000000000005
+            author_display_name: Ali Veli
+            body: body
+            visibility: public
+            attachments:
+              - id: 0192a3f0-1000-7000-8000-000000000006
+                org_id: 0192a3f0-1000-7000-8000-000000000007
+                ticket_id: 0192a3f0-1000-7000-8000-000000000008
+                comment_id: null
+                file_id: 0192a3f0-1000-7000-8000-000000000009
+                mime: mime
+                size: 1
+                created_at: '2026-03-01T09:00:00Z'
+                updated_at: '2026-03-01T09:00:00Z'
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    TicketStatusChange:
+      type: object
+      description: Append-only status history.
+      required:
+        - id
+        - org_id
+        - ticket_id
+        - from_status_id
+        - from_status_name
+        - to_status_id
+        - to_status_name
+        - changed_by
+        - comment
+        - at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        from_status_id:
+          type: string
+          format: uuid
+          nullable: true
+        from_status_name:
+          type: string
+          nullable: true
+          description: Name of the status at the time of reading; statuses removed from the workflow keep their name.
+        to_status_id:
+          type: string
+          format: uuid
+        to_status_name:
+          type: string
+        changed_by:
+          type: object
+          nullable: true
+          description: Who made the change, with the name they had then. Null for changes made by the system.
+          required:
+            - id
+            - display_name
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The user id.
+            display_name:
+              type: string
+        comment:
+          type: string
+          nullable: true
+          description: The comment given with a transition; an internal one is null for people who may not read internal notes.
+        at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        ticket_id: 0192a3f0-1000-7000-8000-000000000004
+        from_status_id: null
+        from_status_name: null
+        to_status_id: 0192a3f0-1000-7000-8000-000000000005
+        to_status_name: Open
+        changed_by:
+          id: 0192a3f0-1000-7000-8000-000000000006
+          display_name: Ayse Yilmaz
+        comment: null
+        at: '2026-03-01T09:00:00Z'
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    TicketStatusChangeList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketStatusChange'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            ticket_id: 0192a3f0-1000-7000-8000-000000000004
+            from_status_id: null
+            from_status_name: null
+            to_status_id: 0192a3f0-1000-7000-8000-000000000005
+            to_status_name: Open
+            changed_by:
+              id: 0192a3f0-1000-7000-8000-000000000006
+              display_name: Ayse Yilmaz
+            comment: null
+            at: '2026-03-01T09:00:00Z'
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    AnnouncementAudience:
+      type: object
+      required:
+        - kind
+      properties:
+        kind:
+          type: string
+          enum:
+            - site
+            - block
+            - owners
+            - tenants
+            - units
+        block_id:
+          type: string
+          format: uuid
+        unit_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    Announcement:
+      type: object
+      description: 'A one-way announcement (O4): no comments, reactions or polls.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - title
+        - body_md
+        - status
+        - audience
+        - publish_at
+        - expires_at
+        - pinned
+        - channels
+        - recipient_count
+        - sms_count
+        - read_count
+        - read_at
+        - attachments
+        - published_at
+        - created_by
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body_md:
+          type: string
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - draft
+            - scheduled
+            - published
+            - archived
+          x-open-enum: true
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudience'
+        publish_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        pinned:
+          type: boolean
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+            x-open-enum: true
+          description: Chosen by the sender (O5).
+        recipient_count:
+          type: integer
+          format: int64
+          nullable: true
+          description: Set at publish.
+        sms_count:
+          type: integer
+          format: int64
+          nullable: true
+        sms_segments:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.'
+        read_count:
+          type: integer
+          format: int64
+          description: Opened in web or app; a delivered SMS or email is not a read.
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the caller read it.
+        attachments:
+          type: array
+          description: The attached files with what a client needs to show them; download through `files.download` with the `id`.
+          items:
+            $ref: '#/components/schemas/AnnouncementAttachment'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        title: Water cut on Saturday
+        body_md: body md
+        status: published
+        audience:
+          kind: site
+        publish_at: null
+        expires_at: null
+        pinned: false
+        channels:
+          - in_app
+          - sms
+        recipient_count: 120
+        sms_count: 80
+        read_count: 1
+        read_at: null
+        attachments:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            name: schedule.pdf
+            mime: application/pdf
+            size: 48211
+        published_at: null
+        created_by: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    AnnouncementCreate:
+      type: object
+      required:
+        - site_id
+        - title
+        - body_md
+        - audience
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body_md:
+          type: string
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudience'
+        publish_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        pinned:
+          type: boolean
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+            x-open-enum: true
+        file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    AnnouncementUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        title:
+          type: string
+        body_md:
+          type: string
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudience'
+        publish_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        pinned:
+          type: boolean
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+            x-open-enum: true
+        file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    AnnouncementList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Announcement'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            title: Water cut on Saturday
+            body_md: body md
+            status: published
+            audience:
+              kind: site
+            publish_at: null
+            expires_at: null
+            pinned: false
+            channels:
+              - in_app
+              - sms
+            recipient_count: 120
+            sms_count: 80
+            read_count: 1
+            read_at: null
+            attachments:
+              - id: 0192a3f0-1000-7000-8000-000000000003
+                name: schedule.pdf
+                mime: application/pdf
+                size: 48211
+            published_at: null
+            created_by: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    AnnouncementPreviewRequest:
+      type: object
+      required:
+        - site_id
+        - audience
+        - channels
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudience'
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+        title:
+          type: string
+          maxLength: 200
+          description: 'The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed.'
+    AnnouncementPreview:
+      type: object
+      description: What publishing would cost, before the sender presses publish (O5).
+      required:
+        - recipient_count
+        - sms_count
+        - sms_segments
+        - email_count
+        - in_app_count
+      properties:
+        recipient_count:
+          type: integer
+          format: int64
+          description: People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
+        sms_count:
+          type: integer
+          format: int64
+          description: Text messages (recipients with a phone who did not mute).
+        sms_segments:
+          type: integer
+          format: int64
+          description: Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
+        email_count:
+          type: integer
+          format: int64
+        in_app_count:
+          type: integer
+          format: int64
+    AnnouncementPublish:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+          description: Overrides the stored channels.
+    AnnouncementRead:
+      type: object
+      required:
+        - person_id
+        - display_name
+        - unit_door_numbers
+        - read_at
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        unit_door_numbers:
+          type: array
+          items:
+            type: string
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        person_id: 0192a3f0-1000-7000-8000-000000000002
+        display_name: Ali Veli
+        unit_door_numbers:
+          - unit door numbers
+        read_at: null
+    AnnouncementReadList:
+      type: object
+      required:
+        - items
+        - next_cursor
+        - audience_count
+        - read_count
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnouncementRead'
+        next_cursor:
+          type: string
+          nullable: true
+        audience_count:
+          type: integer
+        read_count:
+          type: integer
+      example:
+        items:
+          - person_id: 0192a3f0-1000-7000-8000-000000000002
+            display_name: Ali Veli
+            unit_door_numbers:
+              - unit door numbers
+            read_at: null
+        next_cursor: null
+        audience_count: 3
+        read_count: 3
+    DocumentVisibility:
+      type: object
+      required:
+        - level
+      properties:
+        level:
+          type: string
+          enum:
+            - board
+            - owners
+            - everyone
+            - units
+        unit_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: 'With `level: units`.'
+    FolderCrumb:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    Folder:
+      type: object
+      description: A site folder or the private folder of a unit (O8).
+      required:
+        - id
+        - org_id
+        - site_id
+        - parent_id
+        - name
+        - kind
+        - unit_id
+        - visibility
+        - breadcrumb
+        - is_system
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        kind:
+          type: string
+          description: Unit folders are private and created with the unit. Open enum.
+          enum:
+            - site
+            - unit
+          x-open-enum: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        visibility:
+          $ref: '#/components/schemas/DocumentVisibility'
+        breadcrumb:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderCrumb'
+        is_system:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        parent_id: null
+        name: Ali Veli
+        kind: site
+        unit_id: null
+        visibility:
+          level: board
+          unit_ids:
+            - 0192a3f0-1000-7000-8000-000000000005
+        breadcrumb:
+          - id: 0192a3f0-1000-7000-8000-000000000006
+            name: Ali Veli
+        is_system: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    FolderCreate:
+      type: object
+      required:
+        - site_id
+        - name
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        visibility:
+          $ref: '#/components/schemas/DocumentVisibility'
+    FolderUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        visibility:
+          $ref: '#/components/schemas/DocumentVisibility'
+    FolderList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Folder'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            parent_id: null
+            name: Ali Veli
+            kind: site
+            unit_id: null
+            visibility:
+              level: board
+              unit_ids:
+                - 0192a3f0-1000-7000-8000-000000000005
+            breadcrumb:
+              - id: 0192a3f0-1000-7000-8000-000000000006
+                name: Ali Veli
+            is_system: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    GeneratedFrom:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          description: For example statement, receipt, certificate, closing_statement, minutes.
+        id:
+          type: string
+          format: uuid
+    Document:
+      type: object
+      description: 'A document. No versions: replacing the file (`file_id`) overwrites it.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - folder_id
+        - title
+        - file_id
+        - mime
+        - size
+        - visibility
+        - source
+        - generated_from
+        - uploaded_by
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        folder_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        file_id:
+          type: string
+          format: uuid
+        mime:
+          type: string
+        size:
+          type: integer
+          format: int64
+        visibility:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DocumentVisibility'
+          nullable: true
+          description: 'Null: inherits the folder.'
+        source:
+          type: string
+          description: Open enum.
+          enum:
+            - uploaded
+            - generated
+          x-open-enum: true
+        generated_from:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GeneratedFrom'
+          nullable: true
+        uploaded_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        folder_id: 0192a3f0-1000-7000-8000-000000000005
+        title: Ali Veli
+        file_id: 0192a3f0-1000-7000-8000-000000000006
+        mime: mime
+        size: 1
+        visibility:
+          level: board
+          unit_ids:
+            - 0192a3f0-1000-7000-8000-000000000007
+        source: uploaded
+        generated_from:
+          type: type
+          id: 0192a3f0-1000-7000-8000-000000000008
+        uploaded_by: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    DocumentCreate:
+      type: object
+      required:
+        - site_id
+        - folder_id
+        - title
+        - file_id
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        folder_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        file_id:
+          type: string
+          format: uuid
+        visibility:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DocumentVisibility'
+          nullable: true
+    DocumentUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        file_id:
+          type: string
+          format: uuid
+        visibility:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DocumentVisibility'
+          nullable: true
+    DocumentList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            folder_id: 0192a3f0-1000-7000-8000-000000000005
+            title: Ali Veli
+            file_id: 0192a3f0-1000-7000-8000-000000000006
+            mime: mime
+            size: 1
+            visibility:
+              level: board
+              unit_ids:
+                - 0192a3f0-1000-7000-8000-000000000007
+            source: uploaded
+            generated_from:
+              type: type
+              id: 0192a3f0-1000-7000-8000-000000000008
+            uploaded_by: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    Notification:
+      type: object
+      description: An in-app notification of the caller.
+      required:
+        - id
+        - site_id
+        - type
+        - payload
+        - read_at
+        - link
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        payload:
+          type: object
+          additionalProperties: true
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        link:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        site_id: null
+        type: type
+        payload: {}
+        read_at: null
+        link: null
+        created_at: '2026-03-01T09:00:00Z'
+    NotificationList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            site_id: null
+            type: type
+            payload: {}
+            read_at: null
+            link: null
+            created_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    UnreadCount:
+      type: object
+      required:
+        - unread
+        - visitor_approvals_pending
+      properties:
+        unread:
+          type: integer
+          format: int64
+        visitor_approvals_pending:
+          type: integer
+          format: int64
+          description: Pending visitor approval requests (0.3); polled together.
+    NotificationsReadAll:
+      type: object
+      properties:
+        site_id:
+          type: string
+          format: uuid
+    NotificationDefault:
+      type: object
+      required:
+        - type
+        - channels
+        - locked
+      properties:
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+            x-open-enum: true
+        locked:
+          type: boolean
+          description: Sign-in codes and invitations always go by SMS or email and cannot be changed.
+    NotificationDefaults:
+      type: object
+      description: 'Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app.'
+      required:
+        - site_id
+        - defaults
+        - version
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        defaults:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefault'
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on the next write.
+    NotificationDefaultsSet:
+      type: object
+      required:
+        - defaults
+      properties:
+        defaults:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationDefaultInput'
+    NotificationDefaultInput:
+      type: object
+      required:
+        - type
+        - channels
+      properties:
+        type:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+              - push
+    NotificationMutes:
+      type: object
+      required:
+        - muted_types
+        - unmutable_types
+        - available_types
+      properties:
+        muted_types:
+          type: array
+          items:
+            type: string
+        unmutable_types:
+          type: array
+          items:
+            type: string
+          description: Sign-in codes and invitations.
+        available_types:
+          type: array
+          items:
+            type: string
+          description: The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own.
+    NotificationMutesSet:
+      type: object
+      required:
+        - muted_types
+      properties:
+        muted_types:
+          type: array
+          items:
+            type: string
+    SmsUsage:
+      type: object
+      required:
+        - site_id
+        - month
+        - sent
+        - delivered
+        - failed
+        - monthly_limit
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        month:
+          type: string
+          description: The month, `YYYY-MM`.
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        sent:
+          type: integer
+          format: int64
+        delivered:
+          type: integer
+          format: int64
+        failed:
+          type: integer
+          format: int64
+        monthly_limit:
+          type: integer
+          format: int64
+          nullable: true
+    ExportRequest:
+      type: object
+      required:
+        - kind
+        - format
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          x-known-values:
+            - income_expense
+            - debtors
+            - budget_vs_actual
+            - trial_balance
+            - receivables_aging
+            - collector_reconciliation
+            - bank_reconciliation
+            - fund_balances
+            - statements
+            - charges
+            - payments
+            - journal
+            - vehicles
+            - debt_breakdown
+        format:
+          type: string
+          enum:
+            - csv
+            - xlsx
+            - pdf
+        params:
+          type: object
+          additionalProperties: true
+          description: Kind-specific parameters, the same as the matching GET.
+    AuditNote:
+      type: object
+      description: An auditor's note.
+      required:
+        - id
+        - org_id
+        - site_id
+        - target_type
+        - target_id
+        - body
+        - author_person_id
+        - author_display_name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        target_type:
+          type: string
+          nullable: true
+        target_id:
+          type: string
+          format: uuid
+          nullable: true
+        body:
+          type: string
+        author_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        author_display_name:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        target_type: null
+        target_id: null
+        body: body
+        author_person_id: null
+        author_display_name: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    AuditNoteCreate:
+      type: object
+      required:
+        - site_id
+        - body
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        target_type:
+          type: string
+          nullable: true
+        target_id:
+          type: string
+          format: uuid
+          nullable: true
+        body:
+          type: string
+    AuditNoteList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditNote'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            target_type: null
+            target_id: null
+            body: body
+            author_person_id: null
+            author_display_name: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    DashboardMeeting:
+      type: object
+      required:
+        - id
+        - title
+        - scheduled_at
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          nullable: true
+        scheduled_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+    DashboardTerm:
+      type: object
+      required:
+        - membership_id
+        - person_display_name
+        - role
+        - valid_to
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        person_display_name:
+          type: string
+        role:
+          type: string
+        valid_to:
+          type: string
+          format: date
+    SiteDashboard:
+      type: object
+      description: Per-site dashboard for managers, board, auditors and accountants.
+      required:
+        - site_id
+        - as_of
+        - receivable_owner
+        - receivable_tenant
+        - overdue_total
+        - overdue_units
+        - cash
+        - bank
+        - collection_rate_pct
+        - accrued_late_fees
+        - open_tickets
+        - open_common_tickets
+        - pending_unit_claims
+        - pending_declared_payments
+        - waiting_deliveries
+        - pending_visitor_approvals
+        - upcoming_meeting
+        - expiring_terms
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date-time
+        receivable_owner:
+          $ref: '#/components/schemas/Money'
+        receivable_tenant:
+          $ref: '#/components/schemas/Money'
+        overdue_total:
+          $ref: '#/components/schemas/Money'
+        overdue_units:
+          type: integer
+          format: int64
+        cash:
+          $ref: '#/components/schemas/Money'
+        bank:
+          $ref: '#/components/schemas/Money'
+        collection_rate_pct:
+          type: number
+        accrued_late_fees:
+          $ref: '#/components/schemas/Money'
+        open_tickets:
+          type: integer
+          format: int64
+        open_common_tickets:
+          type: integer
+          format: int64
+        pending_unit_claims:
+          type: integer
+          format: int64
+        pending_declared_payments:
+          type: integer
+          format: int64
+        waiting_deliveries:
+          type: integer
+          format: int64
+          description: 0 before release 0.3.
+        pending_visitor_approvals:
+          type: integer
+          format: int64
+          description: 0 before release 0.3.
+        upcoming_meeting:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DashboardMeeting'
+          nullable: true
+          description: Null before release 0.2.
+        expiring_terms:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTerm'
+          description: Empty before release 0.2.
+    PortfolioSite:
+      type: object
+      required:
+        - site_id
+        - name
+        - overdue
+        - overdue_units
+        - cash
+        - bank
+        - open_tickets
+        - collection_rate_pct
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        overdue:
+          $ref: '#/components/schemas/Money'
+        overdue_units:
+          type: integer
+          format: int64
+        cash:
+          $ref: '#/components/schemas/Money'
+        bank:
+          $ref: '#/components/schemas/Money'
+        open_tickets:
+          type: integer
+          format: int64
+        collection_rate_pct:
+          type: number
+    PortfolioTotals:
+      type: object
+      required:
+        - overdue
+        - cash
+        - bank
+        - open_tickets
+      properties:
+        overdue:
+          $ref: '#/components/schemas/Money'
+        cash:
+          $ref: '#/components/schemas/Money'
+        bank:
+          $ref: '#/components/schemas/Money'
+        open_tickets:
+          type: integer
+          format: int64
+    PortfolioDashboard:
+      type: object
+      description: 'Cross-site view for management companies (S5): overdue, cash and open tickets per site.'
+      required:
+        - as_of
+        - sites
+        - totals
+      properties:
+        as_of:
+          type: string
+          format: date-time
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/PortfolioSite'
+        totals:
+          $ref: '#/components/schemas/PortfolioTotals'
+    MeDashboard:
+      type: object
+      description: The caller's home summary in the organization.
+      required:
+        - home
+        - sides
+        - unread_notifications
+        - unread_announcements
+        - my_open_tickets
+        - upcoming_meetings
+        - pending_visitor_approvals
+        - waiting_deliveries
+      properties:
+        home:
+          type: string
+          description: Which home the web app should show. Open enum.
+          enum:
+            - portfolio
+            - site
+            - resident
+          x-open-enum: true
+        sides:
+          type: array
+          items:
+            $ref: '#/components/schemas/MySide'
+          description: Resident money summary (what do I owe today); empty without money visibility.
+        unread_notifications:
+          type: integer
+          format: int64
+        unread_announcements:
+          type: integer
+          format: int64
+        my_open_tickets:
+          type: integer
+          format: int64
+        upcoming_meetings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardMeeting'
+        pending_visitor_approvals:
+          type: integer
+          format: int64
+        waiting_deliveries:
+          type: integer
+          format: int64
+    StaffDashboard:
+      type: object
+      description: 'Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names.'
+      required:
+        - site_id
+        - as_of
+        - assigned_open_tickets
+        - assigned_overdue_tickets
+        - open_common_tickets
+        - expected_visitors_today
+        - waiting_deliveries
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date-time
+        assigned_open_tickets:
+          type: integer
+          format: int64
+          description: Open tickets assigned to the caller.
+        assigned_overdue_tickets:
+          type: integer
+          format: int64
+          description: Assigned tickets past their category's target time.
+        open_common_tickets:
+          type: integer
+          format: int64
+          description: Open common (site-wide) tickets.
+        expected_visitors_today:
+          type: integer
+          format: int64
+        waiting_deliveries:
+          type: integer
+          format: int64
+          description: Parcels logged and not yet collected.
+      example:
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        as_of: '2026-03-05T09:00:00Z'
+        assigned_open_tickets: 3
+        assigned_overdue_tickets: 0
+        open_common_tickets: 5
+        expected_visitors_today: 4
+        waiting_deliveries: 2
     ReauthEmailCode:
       type: object
       required:
@@ -10014,12 +15124,93 @@ components:
           type: string
           pattern: ^[0-9]{6}$
           description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
+    TicketWorkflowRestore:
+      type: object
+      description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+      properties:
+        replacements:
+          type: object
+          additionalProperties:
+            type: string
+            format: uuid
+          description: 'For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`.'
+    AnnouncementAttachment:
+      type: object
+      description: A file attached to an announcement.
+      required:
+        - id
+        - name
+        - mime
+        - size
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The file id; download it with `files.download`.
+        name:
+          type: string
+        mime:
+          type: string
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
+    MySide:
+      type: object
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - principal
+        - accrued_late_fee
+        - total
+        - credit
+        - next_due_date
+        - bank_details
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        principal:
+          $ref: '#/components/schemas/Money'
+        accrued_late_fee:
+          $ref: '#/components/schemas/Money'
+        total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: What do I owe today.
+        credit:
+          $ref: '#/components/schemas/Money'
+        next_due_date:
+          type: string
+          format: date
+          nullable: true
+        bank_details:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/BankDetails'
+          nullable: true
 x-openbekci-roles:
   org_admin:
+    - announcements.publish
+    - announcements.read
     - audit.read
     - claims.decide
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.manage
     - files.read
@@ -10027,10 +15218,13 @@ x-openbekci-roles:
     - invitations.household
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.manage
     - memberships.read
+    - notifications.manage
+    - notifications.read
     - occupancies.grant_money
     - occupancies.household
     - occupancies.manage
@@ -10049,6 +15243,9 @@ x-openbekci-roles:
     - sites.manage
     - sites.offboard
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.import
     - units.manage
     - units.read
@@ -10057,9 +15254,15 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   site_manager:
+    - announcements.publish
+    - announcements.read
     - claims.decide
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.manage
     - files.read
@@ -10067,10 +15270,13 @@ x-openbekci-roles:
     - invitations.household
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.manage
     - memberships.read
+    - notifications.manage
+    - notifications.read
     - occupancies.grant_money
     - occupancies.household
     - occupancies.manage
@@ -10085,6 +15291,9 @@ x-openbekci-roles:
     - sites.bank_details
     - sites.manage
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.import
     - units.manage
     - units.read
@@ -10093,16 +15302,23 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   board_member:
+    - announcements.publish
+    - announcements.read
     - codes.read
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.read
     - files.upload
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.read
+    - notifications.read
     - occupancies.manage
     - occupancies.read
     - org.read
@@ -10113,6 +15329,9 @@ x-openbekci-roles:
     - sites.bank_details
     - sites.manage
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.manage
     - units.read
     - vehicles.manage
@@ -10120,17 +15339,23 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   auditor:
+    - announcements.read
     - audit.read
     - audit.report
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.read
     - exports.create
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.read
+    - notifications.read
     - occupancies.read
     - org.read
     - people.read
@@ -10138,17 +15363,23 @@ x-openbekci-roles:
     - sessions.manage_own
     - sites.bank_details
     - sites.read
+    - tickets.read
     - units.read
     - vehicles.read
     - vendors.read
   accountant:
+    - announcements.read
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - exports.create
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - org.read
     - sessions.manage_own
     - sites.bank_details
@@ -10157,24 +15388,34 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   staff:
+    - announcements.read
     - codes.read
+    - dashboard.staff
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - org.read
     - sessions.manage_own
     - sites.read
+    - tickets.open
+    - tickets.read_assigned
+    - tickets.work
     - units.read
     - vendors.read
   guard:
+    - announcements.read
     - codes.read
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - sessions.manage_own
     - sites.read
   platform_admin:

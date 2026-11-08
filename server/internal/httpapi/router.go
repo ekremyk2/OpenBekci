@@ -50,6 +50,10 @@ type Deps struct {
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service
+	// Ops serves the daily-operations operations (tickets, announcements,
+	// documents, notifications, dashboards, codes). Nil fields answer their
+	// operations with an internal error (unit tests only).
+	Ops OpsDeps
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).
@@ -88,7 +92,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
-		maxBody(o.MaxBodyBytes, MaxUploadBytes+1<<20, o.MaxUploadBytes),
+		maxBody(o.MaxBodyBytes, o.MaxUploadBytes, MaxUploadBytes+1<<20),
 		requestTimeout(o.RequestTimeout),
 		noStoreSensitive,
 	)

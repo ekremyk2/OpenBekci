@@ -48,12 +48,33 @@ func (s *Service) SystemImportSiteWithOptions(ctx context.Context, orgID uuid.UU
 var siteScopedTables = map[string]bool{
 	"block": true, "unit": true, "allocation_key": true, "allocation_key_value": true, "unit_tag": true,
 	"vehicle": true, "facility": true, "occupancy": true, "move_out": true, "directory_consent": true, "vendor": true,
+	// operations
+	"file": true, "ticket_workflow": true, "ticket_status": true, "ticket_category": true, "ticket": true,
+	"ticket_comment": true, "ticket_attachment": true, "ticket_status_history": true, "announcement": true,
+	"folder": true, "document": true, "site_notification_config": true, "site_channel_default": true,
+}
+
+// childTables have no site column: each row hangs off a site-scoped parent of
+// the archive (table, column), which must be one of the archive's own rows.
+var childTables = map[string][2]string{
+	"ticket_vote":            {"ticket", "ticket_id"},
+	"announcement_file":      {"announcement", "announcement_id"},
+	"announcement_recipient": {"announcement", "announcement_id"},
+	"announcement_read":      {"announcement", "announcement_id"},
+}
+
+// personColumns are the columns of tables, besides occupancy, directory consent
+// and membership, that point at a person of the archive.
+var personColumns = map[string][]string{
+	"ticket": {"reporter_person_id", "assignee_person_id"}, "ticket_comment": {"author_person_id"},
+	"ticket_vote": {"person_id"}, "announcement_recipient": {"person_id"}, "announcement_read": {"person_id"},
+	"document": {"addressed_person_id"},
 }
 
 // neverFromArchive are columns that name an account or an action of the source
 // instance. They are cleared on import: an archive never links a person to a
 // login, and records of who did something do not carry over.
-var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "decision_id"}
+var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "decision_id", "uploaded_by", "changed_by"}
 
 func invalidArchive(reason string) error {
 	return problem.Validation(problem.Field{Field: "file", Code: "invalid_value", Params: map[string]any{"reason": reason}})
@@ -125,6 +146,19 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 		}
 	}
 
+	for tn, parent := range childTables {
+		ids := map[string]bool{}
+		for _, r := range plan.rows[parent[0]] {
+			ids[fmt.Sprint(r["id"])] = true
+		}
+		for _, r := range a.Tables[tn] {
+			if !ids[fmt.Sprint(r[parent[1]])] {
+				return importPlan{}, invalidArchive("foreign_site_row_" + tn)
+			}
+			plan.rows[tn] = append(plan.rows[tn], r)
+		}
+	}
+
 	// memberships: site-owned board/auditor inside the site only
 	keptMembers := []map[string]any{}
 	droppedMembers := 0
@@ -160,6 +194,20 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 				return importPlan{}, invalidArchive("unknown_person_in_" + tn)
 			}
 			referenced[pid] = true
+		}
+	}
+	for tn, columns := range personColumns {
+		for _, r := range plan.rows[tn] {
+			for _, c := range columns {
+				if r[c] == nil {
+					continue
+				}
+				pid := fmt.Sprint(r[c])
+				if !personIDs[pid] {
+					return importPlan{}, invalidArchive("unknown_person_in_" + tn)
+				}
+				referenced[pid] = true
+			}
 		}
 	}
 	for _, r := range a.Tables["person"] {
@@ -250,6 +298,13 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte, 
 		}
 		for _, t := range exportTables {
 			rows := plan.rows[t.Name]
+			if t.Name == "folder" && len(rows) > 0 {
+				// inserting the units created their folders (trigger); the archive
+				// carries the originals, with their ids and the documents in them
+				if _, err := tx.Exec(ctx, `DELETE FROM folder WHERE org_id = $1 AND site_id = $2 AND kind = 'unit'`, orgID, a.SiteID); err != nil {
+					return err
+				}
+			}
 			if len(rows) > 0 {
 				blob, err := json.Marshal(rows)
 				if err != nil {

@@ -6,11 +6,20 @@ schemas:
     x-open-enum: true
     description: 'Open enum: every permission a role can hold (backend plan section 7).'
     enum:
+      - announcements.publish
+      - announcements.read
       - audit.read
       - audit.report
       - claims.decide
       - codes.read
+      - dashboard.portfolio
+      - dashboard.site
+      - dashboard.staff
       - directory.read
+      - documents.manage
+      - documents.read
+      - documents.read_addressed
+      - documents.upload_own
       - exports.create
       - files.manage
       - files.read
@@ -18,10 +27,13 @@ schemas:
       - invitations.household
       - invitations.manage
       - jobs.read
+      - me.dashboard
       - me.manage
       - me.read
       - memberships.manage
       - memberships.read
+      - notifications.manage
+      - notifications.read
       - occupancies.grant_money
       - occupancies.household
       - occupancies.manage
@@ -41,6 +53,11 @@ schemas:
       - sites.manage
       - sites.offboard
       - sites.read
+      - tickets.manage
+      - tickets.open
+      - tickets.read
+      - tickets.read_assigned
+      - tickets.work
       - units.import
       - units.manage
       - units.read
@@ -50,10 +67,16 @@ schemas:
       - vendors.read
 x-openbekci-roles:
   org_admin:
+    - announcements.publish
+    - announcements.read
     - audit.read
     - claims.decide
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.manage
     - files.read
@@ -61,10 +84,13 @@ x-openbekci-roles:
     - invitations.household
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.manage
     - memberships.read
+    - notifications.manage
+    - notifications.read
     - occupancies.grant_money
     - occupancies.household
     - occupancies.manage
@@ -83,6 +109,9 @@ x-openbekci-roles:
     - sites.manage
     - sites.offboard
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.import
     - units.manage
     - units.read
@@ -91,9 +120,15 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   site_manager:
+    - announcements.publish
+    - announcements.read
     - claims.decide
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.manage
     - files.read
@@ -101,10 +136,13 @@ x-openbekci-roles:
     - invitations.household
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.manage
     - memberships.read
+    - notifications.manage
+    - notifications.read
     - occupancies.grant_money
     - occupancies.household
     - occupancies.manage
@@ -119,6 +157,9 @@ x-openbekci-roles:
     - sites.bank_details
     - sites.manage
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.import
     - units.manage
     - units.read
@@ -127,16 +168,23 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   board_member:
+    - announcements.publish
+    - announcements.read
     - codes.read
+    - dashboard.site
     - directory.read
+    - documents.manage
+    - documents.read
     - exports.create
     - files.read
     - files.upload
     - invitations.manage
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.read
+    - notifications.read
     - occupancies.manage
     - occupancies.read
     - org.read
@@ -147,6 +195,9 @@ x-openbekci-roles:
     - sites.bank_details
     - sites.manage
     - sites.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - units.manage
     - units.read
     - vehicles.manage
@@ -154,17 +205,23 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   auditor:
+    - announcements.read
     - audit.read
     - audit.report
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.read
+    - documents.read
     - exports.create
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
     - memberships.read
+    - notifications.read
     - occupancies.read
     - org.read
     - people.read
@@ -172,17 +229,23 @@ x-openbekci-roles:
     - sessions.manage_own
     - sites.bank_details
     - sites.read
+    - tickets.read
     - units.read
     - vehicles.read
     - vendors.read
   accountant:
+    - announcements.read
     - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - exports.create
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - org.read
     - sessions.manage_own
     - sites.bank_details
@@ -191,24 +254,34 @@ x-openbekci-roles:
     - vendors.manage
     - vendors.read
   staff:
+    - announcements.read
     - codes.read
+    - dashboard.staff
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - org.read
     - sessions.manage_own
     - sites.read
+    - tickets.open
+    - tickets.read_assigned
+    - tickets.work
     - units.read
     - vendors.read
   guard:
+    - announcements.read
     - codes.read
     - files.read
     - files.upload
     - jobs.read
+    - me.dashboard
     - me.manage
     - me.read
+    - notifications.read
     - sessions.manage_own
     - sites.read
   platform_admin:

@@ -264,7 +264,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The signed-in user, organizations, roles and permissions */
+        /**
+         * The signed-in user, organizations, roles and permissions
+         * @description Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+         *     `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+         *     administrator needs a membership of that organization like anybody else.
+         */
         get: operations["me.get"];
         put?: never;
         post?: never;
@@ -333,137 +338,6 @@ export interface paths {
          *     Personal data in a `diff` appears only as hashes.
          */
         get: operations["audit.list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List files
-         * @description **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
-         *     access to it (the module that owns the resource decides; administrators with `files.manage` always have
-         *     it). Without a scope, an administrator sees every file of the organization and anyone else the files
-         *     they uploaded. Needs `files.read`.
-         *
-         *     Not in the first draft of the contract: added with the module, because the web app needs the files of a
-         *     resource and an administrator needs to see what is stored.
-         */
-        get: operations["operations.listFiles"];
-        put?: never;
-        /**
-         * Upload a file
-         * @description **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
-         *     sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
-         *     the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
-         *     `multipart_order`, and so is a field this operation does not know.
-         *
-         *     Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
-         *     `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
-         *     the caller to add files there; without it the file is a draft that expires after 7 days and that
-         *     only its uploader can see, read and discard.
-         *
-         *     The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
-         *     plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
-         *     Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
-         *     metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
-         *     `medium` variants. A file the virus scanner flags is stored as `quarantined`.
-         *
-         *     Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
-         *     is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
-         *     decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
-         *     `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
-         *     has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
-         *     then 429 `rate_limited`.
-         *
-         *     `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
-         *     the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
-         *     encoding) replays the first response, and a different file under the same key is 422
-         *     `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
-         */
-        post: operations["operations.uploadFile"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/files/{file_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Download a file
-         * @description **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
-         *     everything else is sent with `Content-Disposition: attachment`. All responses carry
-         *     `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
-         *     `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
-         *     answer is a 302 to a short-lived presigned URL instead of the bytes.
-         *
-         *     Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
-         *     a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
-         *     resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
-         *     a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
-         *     storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
-         *     or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
-         *     quarantined file has no downloadable content (404).
-         */
-        get: operations["operations.downloadFile"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete an unattached file
-         * @description **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
-         *     and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
-         *     file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
-         *     who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
-         *     `maintenance.prune_files` job. Recorded in the audit trail.
-         */
-        delete: operations["operations.deleteFile"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/files/{file_id}/meta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * Get file metadata
-         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
-         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
-         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
-         */
-        get: operations["operations.getFileMeta"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2388,11 +2262,1239 @@ export interface paths {
         };
         /**
          * Labels for enums, error codes and site statuses
-         * @description **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+         * @description Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
          *
          *     Permission: `codes.read`.
          */
         get: operations["codes.listCodes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the ticket workflow of a site
+         * @description Get the ticket workflow of a site.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicketWorkflow"];
+        /**
+         * Replace the ticket workflow of a site
+         * @description Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["operations.updateTicketWorkflow"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow:restore-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore the default ticket workflow of a site
+         * @description Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        post: operations["operations.restoreTicketWorkflow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List ticket categories
+         * @description Cursor-paginated list of ticket categorys.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketCategories"];
+        put?: never;
+        /**
+         * Create ticket category
+         * @description Creates a ticket category.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-categories/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the category. */
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get ticket category
+         * @description **Release 0.1.** Get ticket category.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicketCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update ticket category
+         * @description **Release 0.1.** Update ticket category.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateTicketCategory"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List tickets
+         * @description **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
+         *
+         *     Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
+         */
+        get: operations["operations.listTickets"];
+        put?: never;
+        /**
+         * Open a ticket
+         * @description **Release 0.1.** Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a ticket
+         * @description Get a ticket.
+         *
+         *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.getTicket"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit, reassign or change visibility of a ticket
+         * @description The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateTicket"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}:transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move a ticket to another status
+         * @description **Release 0.1.** Appends to the status history.
+         *
+         *     Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.transitionTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}:merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge a duplicate into another ticket
+         * @description **Release 0.1.** Votes carry over to the target; the merged ticket points to it.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.mergeTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * "+1" a common ticket
+         * @description **Release 0.1.** One vote per person; repeating is harmless. Only common tickets.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["operations.voteTicket"];
+        post?: never;
+        /**
+         * Take back a "+1"
+         * @description **Release 0.1.** Take back a "+1".
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["operations.unvoteTicket"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List ticket comments
+         * @description **Release 0.1.** Residents never receive internal comments.
+         *
+         *     Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketComments"];
+        put?: never;
+        /**
+         * Comment on a ticket
+         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
+         *
+         *     Permission (any one of): `tickets.open`, `tickets.work`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketComment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach an uploaded file to a ticket
+         * @description **Release 0.1.** At most 10 per ticket or comment.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createTicketAttachment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+                /** @description Id of the attachment. */
+                attachment_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an attachment
+         * @description **Release 0.1.** Remove an attachment.
+         *
+         *     Permission: `tickets.open`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["operations.deleteTicketAttachment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/tickets/{ticket_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Status history of a ticket
+         * @description **Release 0.1.** Status history of a ticket.
+         *
+         *     Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+         */
+        get: operations["operations.listTicketHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List announcements
+         * @description **Release 0.1.** List announcements.
+         *
+         *     Permission (any one of): `announcements.read`, `announcements.publish` (residents: published announcements addressed to them).
+         */
+        get: operations["operations.listAnnouncements"];
+        put?: never;
+        /**
+         * Create an announcement
+         * @description **Release 0.1.** Created as a draft; `publish_at` schedules it.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get an announcement
+         * @description **Release 0.1.** Get an announcement.
+         *
+         *     Permission (any one of): `announcements.read`, `announcements.publish`.
+         */
+        get: operations["operations.getAnnouncement"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft announcement
+         * @description **Release 0.1.** Delete a draft announcement.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        delete: operations["operations.deleteAnnouncement"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit an announcement
+         * @description **Release 0.1.** Content of a published announcement can no longer change; pin, expiry and archive can.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        patch: operations["operations.updateAnnouncement"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements:preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview recipient and SMS counts
+         * @description Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
+         *
+         *     Permission: `announcements.publish`.
+         */
+        post: operations["operations.previewAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}:publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish an announcement now
+         * @description **Release 0.1.** Sends by the chosen channels and fixes `recipient_count` and `sms_count`.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["operations.publishAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}:archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive an announcement
+         * @description **Release 0.1.** Archive an announcement.
+         *
+         *     Permission: `announcements.publish`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.archiveAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}/reads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Who has read an announcement
+         * @description Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
+         *
+         *     Permission: `announcements.publish`.
+         */
+        get: operations["operations.listAnnouncementReads"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/announcements/{announcement_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark an announcement read
+         * @description **Release 0.1.** Counted when the announcement is opened in the web or app.
+         *
+         *     Permission: `announcements.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["operations.markAnnouncementRead"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List folders
+         * @description **Release 0.1.** Cursor-paginated list of folders.
+         *
+         *     Permission: `documents.read`.
+         */
+        get: operations["operations.listFolders"];
+        put?: never;
+        /**
+         * Create folder
+         * @description **Release 0.1.** Creates a folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createFolder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/folders/{folder_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the folder. */
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get folder
+         * @description **Release 0.1.** Get folder.
+         *
+         *     Permission: `documents.read`.
+         */
+        get: operations["operations.getFolder"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete folder
+         * @description **Release 0.1.** Only an empty, non-system folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["operations.deleteFolder"];
+        options?: never;
+        head?: never;
+        /**
+         * Update folder
+         * @description **Release 0.1.** Update folder.
+         *
+         *     Permission: `documents.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateFolder"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List documents
+         * @description **Release 0.1.** Cursor-paginated list of documents.
+         *
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
+         */
+        get: operations["operations.listDocuments"];
+        put?: never;
+        /**
+         * Create document
+         * @description **Release 0.1.** Creates a document.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.createDocument"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the document. */
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get document
+         * @description **Release 0.1.** Get document.
+         *
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
+         */
+        get: operations["operations.getDocument"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete document
+         * @description **Release 0.1.** Deletes the document; generated documents can be regenerated.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["operations.deleteDocument"];
+        options?: never;
+        head?: never;
+        /**
+         * Update document
+         * @description **Release 0.1.** Update document.
+         *
+         *     Permission (any one of): `documents.manage`, `documents.upload_own`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["operations.updateDocument"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List my notifications
+         * @description **Release 0.1.** List my notifications.
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.listNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Unread notification count
+         * @description Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.getUnreadCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications/{notification_id}:read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the notification. */
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a notification read
+         * @description **Release 0.1.** Mark a notification read.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.markNotificationRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications:read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark all notifications read
+         * @description **Release 0.1.** Mark all notifications read.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["operations.markAllNotificationsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/notification-defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the site defaults for automatic messages
+         * @description **Release 0.1.** Get the site defaults for automatic messages.
+         *
+         *     Permission: `notifications.manage`.
+         */
+        get: operations["operations.getNotificationDefaults"];
+        /**
+         * Set the site defaults for automatic messages
+         * @description **Release 0.1.** Set the site defaults for automatic messages.
+         *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
+         *     Permission: `notifications.manage`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["operations.setNotificationDefaults"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notification-mutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My muted notification types
+         * @description My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.getNotificationMutes"];
+        /**
+         * Set my muted notification types
+         * @description Set my muted notification types.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409).
+         */
+        put: operations["operations.setNotificationMutes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sms-usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Monthly SMS counter of a site
+         * @description **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
+         *
+         *     Permission: `notifications.manage`.
+         */
+        get: operations["operations.getSmsUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List files
+         * @description **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+         *     access to it (the module that owns the resource decides; administrators with `files.manage` always have
+         *     it). Without a scope, an administrator sees every file of the organization and anyone else the files
+         *     they uploaded. Needs `files.read`.
+         *
+         *     Not in the first draft of the contract: added with the module, because the web app needs the files of a
+         *     resource and an administrator needs to see what is stored.
+         */
+        get: operations["operations.listFiles"];
+        put?: never;
+        /**
+         * Upload a file
+         * @description **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+         *     sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+         *     the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+         *     `multipart_order`, and so is a field this operation does not know.
+         *
+         *     Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+         *     `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+         *     the caller to add files there; without it the file is a draft that expires after 7 days and that
+         *     only its uploader can see, read and discard.
+         *
+         *     The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+         *     plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+         *     Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+         *     metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+         *     `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+         *
+         *     Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+         *     is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+         *     decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+         *     `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+         *     has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+         *     then 429 `rate_limited`.
+         *
+         *     `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+         *     the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+         *     encoding) replays the first response, and a different file under the same key is 422
+         *     `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
+         */
+        post: operations["operations.uploadFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/files/{file_id}/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get file metadata
+         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
+         */
+        get: operations["operations.getFileMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/files/{file_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Download a file
+         * @description **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+         *     everything else is sent with `Content-Disposition: attachment`. All responses carry
+         *     `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+         *     `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+         *     answer is a 302 to a short-lived presigned URL instead of the bytes.
+         *
+         *     Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+         *     a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+         *     resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+         *     a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+         *     storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+         *     or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+         *     quarantined file has no downloadable content (404).
+         */
+        get: operations["operations.downloadFile"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete an unattached file
+         * @description **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+         *     and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+         *     file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+         *     who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+         *     `maintenance.prune_files` job. Recorded in the audit trail.
+         */
+        delete: operations["operations.deleteFile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Site dashboard
+         * @description **Release 0.1.** Site dashboard.
+         *
+         *     Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
+         *
+         *     Permission: `dashboard.site`.
+         */
+        get: operations["dashboards.getSiteDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/staff-dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Staff dashboard (counts only)
+         * @description **Release 0.1.** Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
+         *
+         *     Permission: `dashboard.staff`.
+         */
+        get: operations["dashboards.getStaffDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/dashboard/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Organization portfolio dashboard
+         * @description **Release 0.1.** In release 0.1 (S5).
+         *
+         *     Permission: `dashboard.portfolio`.
+         */
+        get: operations["dashboards.getPortfolioDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My home summary
+         * @description **Release 0.1.** Resident summary, or the role-appropriate home.
+         *
+         *     Permission: `me.dashboard`.
+         */
+        get: operations["dashboards.getMyDashboard"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2792,7 +3894,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "directory.read" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        Permission: "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -4882,6 +5984,8 @@ export interface components {
              */
             reauth_window_minutes: number;
         };
+        /** @description Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values. */
+        NotificationType: string;
         /** @description A rendition of an image, generated on upload. */
         FileVariant: {
             width: number;
@@ -4988,6 +6092,1402 @@ export interface components {
             /** Format: binary */
             file: string;
         };
+        /**
+         * @description Whether a status counts as open work or as finished. Open enum.
+         * @enum {string}
+         */
+        TicketSemantic: "open_like" | "closed_like";
+        TicketStatus: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            semantic: "open_like" | "closed_like";
+            /** Format: int64 */
+            position: number;
+            /** @description Stable key of the built-in statuses: open, in_progress, done. */
+            key: string | null;
+        };
+        /** @description Ordered statuses per site (O1). A site inherits the default until it edits it. */
+        TicketWorkflow: {
+            /** Format: uuid */
+            site_id: string;
+            statuses: components["schemas"]["TicketStatus"][];
+            /** @description The site still uses the default open, in progress, done flow. */
+            is_default: boolean;
+            /** Format: int64 */
+            version: number;
+        };
+        TicketStatusInput: {
+            /**
+             * Format: uuid
+             * @description Existing status; omitted: a new one.
+             */
+            id?: string;
+            name: string;
+            /** @enum {string} */
+            semantic: "open_like" | "closed_like";
+        };
+        TicketWorkflowUpdate: {
+            /** @description The complete ordered list. */
+            statuses: components["schemas"]["TicketStatusInput"][];
+            /** @description Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`. */
+            replacements?: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * @description Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "default_visibility": "private",
+         *       "default_assignee_role": "site_manager",
+         *       "position": 1,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        TicketCategory: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_visibility: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position: number;
+            archived: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        TicketCategoryCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_visibility?: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position?: number;
+            archived?: boolean;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        TicketCategoryUpdate: {
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_visibility?: "private" | "common";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            default_assignee_role?: "site_manager" | "staff" | "board_member" | null;
+            /** Format: int64 */
+            position?: number;
+            archived?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "default_visibility": "private",
+         *           "default_assignee_role": "site_manager",
+         *           "position": 1,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        TicketCategoryList: {
+            items: components["schemas"]["TicketCategory"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        TicketAssignee: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "person" | "vendor";
+            /** Format: uuid */
+            person_id: string | null;
+            /** Format: uuid */
+            vendor_id: string | null;
+            display_name: string;
+        };
+        /** @description A photo or file on a ticket (up to 10 per ticket or comment). */
+        TicketAttachment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: uuid */
+            comment_id: string | null;
+            /** Format: uuid */
+            file_id: string;
+            mime: string;
+            /** Format: int64 */
+            size: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        TicketAttachmentCreate: {
+            /** Format: uuid */
+            file_id: string;
+            /** Format: uuid */
+            comment_id?: string;
+        };
+        /**
+         * @description A ticket. Every request is a ticket; there is no chat (O6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": null,
+         *       "unit_door_number": null,
+         *       "reporter_person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "reporter_display_name": "reporter display name",
+         *       "category_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "title": "Elevator stuck on floor 3",
+         *       "description": "description",
+         *       "status_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "status_name": "Open",
+         *       "status_semantic": "open_like",
+         *       "visibility": "common",
+         *       "assignee": null,
+         *       "vote_count": 4,
+         *       "voted_by_me": false,
+         *       "merged_into_id": null,
+         *       "comment_count": 1,
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "comment_id": null,
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "closed_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Ticket: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string | null;
+            unit_door_number: string | null;
+            /** Format: uuid */
+            reporter_person_id: string;
+            reporter_display_name: string;
+            /** Format: uuid */
+            category_id: string;
+            title: string;
+            description: string;
+            /** Format: uuid */
+            status_id: string;
+            status_name: string;
+            status_semantic: components["schemas"]["TicketSemantic"];
+            /**
+             * @description Private: that unit and management. Common: the whole site or block. Open enum.
+             * @enum {string}
+             */
+            visibility: "private" | "common";
+            assignee: components["schemas"]["TicketAssignee"] | null;
+            /**
+             * Format: int64
+             * @description "+1" count; visible to residents.
+             */
+            vote_count: number;
+            voted_by_me: boolean;
+            /** Format: uuid */
+            merged_into_id: string | null;
+            /** Format: int64 */
+            comment_count: number;
+            attachments: components["schemas"]["TicketAttachment"][];
+            /** Format: date-time */
+            closed_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        TicketCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id?: string | null;
+            /** Format: uuid */
+            category_id: string;
+            title: string;
+            description: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            visibility?: "private" | "common";
+            /** Format: uuid */
+            reporter_person_id?: string;
+            attachment_file_ids?: string[];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        TicketUpdate: {
+            /** Format: uuid */
+            unit_id?: string | null;
+            /** Format: uuid */
+            category_id?: string;
+            title?: string;
+            description?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            visibility?: "private" | "common";
+            /**
+             * Format: uuid
+             * @description A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+             */
+            assignee_person_id?: string | null;
+            /**
+             * Format: uuid
+             * @description A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+             */
+            assignee_vendor_id?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": null,
+         *           "unit_door_number": null,
+         *           "reporter_person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "reporter_display_name": "reporter display name",
+         *           "category_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "title": "Elevator stuck on floor 3",
+         *           "description": "description",
+         *           "status_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "status_name": "Open",
+         *           "status_semantic": "open_like",
+         *           "visibility": "common",
+         *           "assignee": null,
+         *           "vote_count": 4,
+         *           "voted_by_me": false,
+         *           "merged_into_id": null,
+         *           "comment_count": 1,
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "comment_id": null,
+         *               "file_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "mime": "mime",
+         *               "size": 1,
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ],
+         *           "closed_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        TicketList: {
+            items: components["schemas"]["Ticket"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        TicketTransition: {
+            /** Format: uuid */
+            status_id: string;
+            comment?: string;
+            /** @enum {string} */
+            comment_visibility?: "public" | "internal";
+        };
+        TicketMerge: {
+            /** Format: uuid */
+            into_ticket_id: string;
+        };
+        TicketVote: {
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: int64 */
+            vote_count: number;
+            voted: boolean;
+        };
+        /**
+         * @description A comment. Internal notes are hidden from residents.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "author_person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "author_display_name": "Ali Veli",
+         *       "body": "body",
+         *       "visibility": "public",
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "comment_id": null,
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000009",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        TicketComment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: uuid */
+            author_person_id: string;
+            author_display_name: string;
+            body: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            visibility: "public" | "internal";
+            attachments: components["schemas"]["TicketAttachment"][];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        TicketCommentCreate: {
+            body: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            visibility?: "public" | "internal";
+            attachment_file_ids?: string[];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "author_person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "author_display_name": "Ali Veli",
+         *           "body": "body",
+         *           "visibility": "public",
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000007",
+         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000008",
+         *               "comment_id": null,
+         *               "file_id": "0192a3f0-1000-7000-8000-000000000009",
+         *               "mime": "mime",
+         *               "size": 1,
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        TicketCommentList: {
+            items: components["schemas"]["TicketComment"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description Append-only status history.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "from_status_id": null,
+         *       "from_status_name": null,
+         *       "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "to_status_name": "Open",
+         *       "changed_by": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000006",
+         *         "display_name": "Ayse Yilmaz"
+         *       },
+         *       "comment": null,
+         *       "at": "2026-03-01T09:00:00Z",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        TicketStatusChange: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: uuid */
+            from_status_id: string | null;
+            /** @description Name of the status at the time of reading; statuses removed from the workflow keep their name. */
+            from_status_name: string | null;
+            /** Format: uuid */
+            to_status_id: string;
+            to_status_name: string;
+            /** @description Who made the change, with the name they had then. Null for changes made by the system. */
+            changed_by: {
+                /**
+                 * Format: uuid
+                 * @description The user id.
+                 */
+                id: string;
+                display_name: string;
+            } | null;
+            /** @description The comment given with a transition; an internal one is null for people who may not read internal notes. */
+            comment: string | null;
+            /** Format: date-time */
+            at: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "from_status_id": null,
+         *           "from_status_name": null,
+         *           "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "to_status_name": "Open",
+         *           "changed_by": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000006",
+         *             "display_name": "Ayse Yilmaz"
+         *           },
+         *           "comment": null,
+         *           "at": "2026-03-01T09:00:00Z",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        TicketStatusChangeList: {
+            items: components["schemas"]["TicketStatusChange"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AnnouncementAudience: {
+            /** @enum {string} */
+            kind: "site" | "block" | "owners" | "tenants" | "units";
+            /** Format: uuid */
+            block_id?: string;
+            unit_ids?: string[];
+        };
+        /**
+         * @description A one-way announcement (O4): no comments, reactions or polls.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "title": "Water cut on Saturday",
+         *       "body_md": "body md",
+         *       "status": "published",
+         *       "audience": {
+         *         "kind": "site"
+         *       },
+         *       "publish_at": null,
+         *       "expires_at": null,
+         *       "pinned": false,
+         *       "channels": [
+         *         "in_app",
+         *         "sms"
+         *       ],
+         *       "recipient_count": 120,
+         *       "sms_count": 80,
+         *       "read_count": 1,
+         *       "read_at": null,
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "schedule.pdf",
+         *           "mime": "application/pdf",
+         *           "size": 48211
+         *         }
+         *       ],
+         *       "published_at": null,
+         *       "created_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Announcement: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            title: string;
+            body_md: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "draft" | "scheduled" | "published" | "archived";
+            audience: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at: string | null;
+            /** Format: date-time */
+            expires_at: string | null;
+            pinned: boolean;
+            /** @description Chosen by the sender (O5). */
+            channels: ("in_app" | "email" | "sms" | "push")[];
+            /**
+             * Format: int64
+             * @description Set at publish.
+             */
+            recipient_count: number | null;
+            /** Format: int64 */
+            sms_count: number | null;
+            /**
+             * Format: int64
+             * @description Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.
+             */
+            sms_segments?: number | null;
+            /**
+             * Format: int64
+             * @description Opened in web or app; a delivered SMS or email is not a read.
+             */
+            read_count: number;
+            /**
+             * Format: date-time
+             * @description When the caller read it.
+             */
+            read_at: string | null;
+            /** @description The attached files with what a client needs to show them; download through `files.download` with the `id`. */
+            attachments: components["schemas"]["AnnouncementAttachment"][];
+            /** Format: date-time */
+            published_at: string | null;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        AnnouncementCreate: {
+            /** Format: uuid */
+            site_id: string;
+            title: string;
+            body_md: string;
+            audience: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            pinned?: boolean;
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+            file_ids?: string[];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AnnouncementUpdate: {
+            title?: string;
+            body_md?: string;
+            audience?: components["schemas"]["AnnouncementAudience"];
+            /** Format: date-time */
+            publish_at?: string | null;
+            /** Format: date-time */
+            expires_at?: string | null;
+            pinned?: boolean;
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+            file_ids?: string[];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "title": "Water cut on Saturday",
+         *           "body_md": "body md",
+         *           "status": "published",
+         *           "audience": {
+         *             "kind": "site"
+         *           },
+         *           "publish_at": null,
+         *           "expires_at": null,
+         *           "pinned": false,
+         *           "channels": [
+         *             "in_app",
+         *             "sms"
+         *           ],
+         *           "recipient_count": 120,
+         *           "sms_count": 80,
+         *           "read_count": 1,
+         *           "read_at": null,
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "name": "schedule.pdf",
+         *               "mime": "application/pdf",
+         *               "size": 48211
+         *             }
+         *           ],
+         *           "published_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AnnouncementList: {
+            items: components["schemas"]["Announcement"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AnnouncementPreviewRequest: {
+            /** Format: uuid */
+            site_id: string;
+            audience: components["schemas"]["AnnouncementAudience"];
+            channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
+            title?: string;
+        };
+        /** @description What publishing would cost, before the sender presses publish (O5). */
+        AnnouncementPreview: {
+            /**
+             * Format: int64
+             * @description People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
+             */
+            recipient_count: number;
+            /**
+             * Format: int64
+             * @description Text messages (recipients with a phone who did not mute).
+             */
+            sms_count: number;
+            /**
+             * Format: int64
+             * @description Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
+             */
+            sms_segments: number;
+            /** Format: int64 */
+            email_count: number;
+            /** Format: int64 */
+            in_app_count: number;
+        };
+        AnnouncementPublish: {
+            /** @description Overrides the stored channels. */
+            channels?: ("in_app" | "email" | "sms" | "push")[];
+        };
+        /**
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "display_name": "Ali Veli",
+         *       "unit_door_numbers": [
+         *         "unit door numbers"
+         *       ],
+         *       "read_at": null
+         *     }
+         */
+        AnnouncementRead: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            unit_door_numbers: string[];
+            /** Format: date-time */
+            read_at: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "display_name": "Ali Veli",
+         *           "unit_door_numbers": [
+         *             "unit door numbers"
+         *           ],
+         *           "read_at": null
+         *         }
+         *       ],
+         *       "next_cursor": null,
+         *       "audience_count": 3,
+         *       "read_count": 3
+         *     }
+         */
+        AnnouncementReadList: {
+            items: components["schemas"]["AnnouncementRead"][];
+            next_cursor: string | null;
+            audience_count: number;
+            read_count: number;
+        };
+        DocumentVisibility: {
+            /** @enum {string} */
+            level: "board" | "owners" | "everyone" | "units";
+            /** @description With `level: units`. */
+            unit_ids?: string[];
+        };
+        FolderCrumb: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        /**
+         * @description A site folder or the private folder of a unit (O8).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "parent_id": null,
+         *       "name": "Ali Veli",
+         *       "kind": "site",
+         *       "unit_id": null,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000005"
+         *         ]
+         *       },
+         *       "breadcrumb": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "name": "Ali Veli"
+         *         }
+         *       ],
+         *       "is_system": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Folder: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            parent_id: string | null;
+            name: string;
+            /**
+             * @description Unit folders are private and created with the unit. Open enum.
+             * @enum {string}
+             */
+            kind: "site" | "unit";
+            /** Format: uuid */
+            unit_id: string | null;
+            visibility: components["schemas"]["DocumentVisibility"];
+            breadcrumb: components["schemas"]["FolderCrumb"][];
+            is_system: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        FolderCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            parent_id?: string | null;
+            name: string;
+            visibility?: components["schemas"]["DocumentVisibility"];
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        FolderUpdate: {
+            /** Format: uuid */
+            parent_id?: string | null;
+            name?: string;
+            visibility?: components["schemas"]["DocumentVisibility"];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "parent_id": null,
+         *           "name": "Ali Veli",
+         *           "kind": "site",
+         *           "unit_id": null,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000005"
+         *             ]
+         *           },
+         *           "breadcrumb": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "name": "Ali Veli"
+         *             }
+         *           ],
+         *           "is_system": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FolderList: {
+            items: components["schemas"]["Folder"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        GeneratedFrom: {
+            /** @description For example statement, receipt, certificate, closing_statement, minutes. */
+            type: string;
+            /** Format: uuid */
+            id: string;
+        };
+        /**
+         * @description A document. No versions: replacing the file (`file_id`) overwrites it.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "title": "Ali Veli",
+         *       "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "mime": "mime",
+         *       "size": 1,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000007"
+         *         ]
+         *       },
+         *       "source": "uploaded",
+         *       "generated_from": {
+         *         "type": "type",
+         *         "id": "0192a3f0-1000-7000-8000-000000000008"
+         *       },
+         *       "uploaded_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Document: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            folder_id: string;
+            title: string;
+            /** Format: uuid */
+            file_id: string;
+            mime: string;
+            /** Format: int64 */
+            size: number;
+            /** @description Null: inherits the folder. */
+            visibility: components["schemas"]["DocumentVisibility"] | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            generated_from: components["schemas"]["GeneratedFrom"] | null;
+            /** Format: uuid */
+            uploaded_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        DocumentCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            folder_id: string;
+            title: string;
+            /** Format: uuid */
+            file_id: string;
+            visibility?: components["schemas"]["DocumentVisibility"] | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        DocumentUpdate: {
+            /** Format: uuid */
+            folder_id?: string;
+            title?: string;
+            /** Format: uuid */
+            file_id?: string;
+            visibility?: components["schemas"]["DocumentVisibility"] | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "title": "Ali Veli",
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000007"
+         *             ]
+         *           },
+         *           "source": "uploaded",
+         *           "generated_from": {
+         *             "type": "type",
+         *             "id": "0192a3f0-1000-7000-8000-000000000008"
+         *           },
+         *           "uploaded_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        DocumentList: {
+            items: components["schemas"]["Document"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description An in-app notification of the caller.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "site_id": null,
+         *       "type": "type",
+         *       "payload": {},
+         *       "read_at": null,
+         *       "link": null,
+         *       "created_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Notification: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            type: components["schemas"]["NotificationType"];
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            read_at: string | null;
+            link: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "site_id": null,
+         *           "type": "type",
+         *           "payload": {},
+         *           "read_at": null,
+         *           "link": null,
+         *           "created_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        NotificationList: {
+            items: components["schemas"]["Notification"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        UnreadCount: {
+            /** Format: int64 */
+            unread: number;
+            /**
+             * Format: int64
+             * @description Pending visitor approval requests (0.3); polled together.
+             */
+            visitor_approvals_pending: number;
+        };
+        NotificationsReadAll: {
+            /** Format: uuid */
+            site_id?: string;
+        };
+        NotificationDefault: {
+            type: components["schemas"]["NotificationType"];
+            channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description Sign-in codes and invitations always go by SMS or email and cannot be changed. */
+            locked: boolean;
+        };
+        /** @description Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app. */
+        NotificationDefaults: {
+            /** Format: uuid */
+            site_id: string;
+            defaults: components["schemas"]["NotificationDefault"][];
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
+        };
+        NotificationDefaultsSet: {
+            defaults: components["schemas"]["NotificationDefaultInput"][];
+        };
+        NotificationDefaultInput: {
+            type: string;
+            channels: ("in_app" | "email" | "sms" | "push")[];
+        };
+        NotificationMutes: {
+            muted_types: string[];
+            /** @description Sign-in codes and invitations. */
+            unmutable_types: string[];
+            /** @description The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own. */
+            available_types: string[];
+        };
+        NotificationMutesSet: {
+            muted_types: string[];
+        };
+        SmsUsage: {
+            /** Format: uuid */
+            site_id: string;
+            /** @description The month, `YYYY-MM`. */
+            month: string;
+            /** Format: int64 */
+            sent: number;
+            /** Format: int64 */
+            delivered: number;
+            /** Format: int64 */
+            failed: number;
+            /** Format: int64 */
+            monthly_limit: number | null;
+        };
+        ExportRequest: {
+            /** Format: uuid */
+            site_id?: string;
+            kind: string;
+            /** @enum {string} */
+            format: "csv" | "xlsx" | "pdf";
+            /** @description Kind-specific parameters, the same as the matching GET. */
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * @description An auditor's note.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "target_type": null,
+         *       "target_id": null,
+         *       "body": "body",
+         *       "author_person_id": null,
+         *       "author_display_name": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        AuditNote: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            target_type: string | null;
+            /** Format: uuid */
+            target_id: string | null;
+            body: string;
+            /** Format: uuid */
+            author_person_id: string | null;
+            author_display_name: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        AuditNoteCreate: {
+            /** Format: uuid */
+            site_id: string;
+            target_type?: string | null;
+            /** Format: uuid */
+            target_id?: string | null;
+            body: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "target_type": null,
+         *           "target_id": null,
+         *           "body": "body",
+         *           "author_person_id": null,
+         *           "author_display_name": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AuditNoteList: {
+            items: components["schemas"]["AuditNote"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        DashboardMeeting: {
+            /** Format: uuid */
+            id: string;
+            title: string | null;
+            /** Format: date-time */
+            scheduled_at: string;
+            status: string;
+        };
+        DashboardTerm: {
+            /** Format: uuid */
+            membership_id: string;
+            person_display_name: string;
+            role: string;
+            /** Format: date */
+            valid_to: string;
+        };
+        /** @description Per-site dashboard for managers, board, auditors and accountants. */
+        SiteDashboard: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date-time */
+            as_of: string;
+            receivable_owner: components["schemas"]["Money"];
+            receivable_tenant: components["schemas"]["Money"];
+            overdue_total: components["schemas"]["Money"];
+            /** Format: int64 */
+            overdue_units: number;
+            cash: components["schemas"]["Money"];
+            bank: components["schemas"]["Money"];
+            collection_rate_pct: number;
+            accrued_late_fees: components["schemas"]["Money"];
+            /** Format: int64 */
+            open_tickets: number;
+            /** Format: int64 */
+            open_common_tickets: number;
+            /** Format: int64 */
+            pending_unit_claims: number;
+            /** Format: int64 */
+            pending_declared_payments: number;
+            /**
+             * Format: int64
+             * @description 0 before release 0.3.
+             */
+            waiting_deliveries: number;
+            /**
+             * Format: int64
+             * @description 0 before release 0.3.
+             */
+            pending_visitor_approvals: number;
+            /** @description Null before release 0.2. */
+            upcoming_meeting: components["schemas"]["DashboardMeeting"] | null;
+            /** @description Empty before release 0.2. */
+            expiring_terms: components["schemas"]["DashboardTerm"][];
+        };
+        PortfolioSite: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            overdue: components["schemas"]["Money"];
+            /** Format: int64 */
+            overdue_units: number;
+            cash: components["schemas"]["Money"];
+            bank: components["schemas"]["Money"];
+            /** Format: int64 */
+            open_tickets: number;
+            collection_rate_pct: number;
+        };
+        PortfolioTotals: {
+            overdue: components["schemas"]["Money"];
+            cash: components["schemas"]["Money"];
+            bank: components["schemas"]["Money"];
+            /** Format: int64 */
+            open_tickets: number;
+        };
+        /** @description Cross-site view for management companies (S5): overdue, cash and open tickets per site. */
+        PortfolioDashboard: {
+            /** Format: date-time */
+            as_of: string;
+            sites: components["schemas"]["PortfolioSite"][];
+            totals: components["schemas"]["PortfolioTotals"];
+        };
+        /** @description The caller's home summary in the organization. */
+        MeDashboard: {
+            /**
+             * @description Which home the web app should show. Open enum.
+             * @enum {string}
+             */
+            home: "portfolio" | "site" | "resident";
+            /** @description Resident money summary (what do I owe today); empty without money visibility. */
+            sides: components["schemas"]["MySide"][];
+            /** Format: int64 */
+            unread_notifications: number;
+            /** Format: int64 */
+            unread_announcements: number;
+            /** Format: int64 */
+            my_open_tickets: number;
+            upcoming_meetings: components["schemas"]["DashboardMeeting"][];
+            /** Format: int64 */
+            pending_visitor_approvals: number;
+            /** Format: int64 */
+            waiting_deliveries: number;
+        };
+        /**
+         * @description Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names.
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "as_of": "2026-03-05T09:00:00Z",
+         *       "assigned_open_tickets": 3,
+         *       "assigned_overdue_tickets": 0,
+         *       "open_common_tickets": 5,
+         *       "expected_visitors_today": 4,
+         *       "waiting_deliveries": 2
+         *     }
+         */
+        StaffDashboard: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date-time */
+            as_of: string;
+            /**
+             * Format: int64
+             * @description Open tickets assigned to the caller.
+             */
+            assigned_open_tickets: number;
+            /**
+             * Format: int64
+             * @description Assigned tickets past their category's target time.
+             */
+            assigned_overdue_tickets: number;
+            /**
+             * Format: int64
+             * @description Open common (site-wide) tickets.
+             */
+            open_common_tickets: number;
+            /** Format: int64 */
+            expected_visitors_today: number;
+            /**
+             * Format: int64
+             * @description Parcels logged and not yet collected.
+             */
+            waiting_deliveries: number;
+        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -4996,6 +7496,46 @@ export interface components {
             method: "email_code";
             /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
             code: string;
+        };
+        /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
+        TicketWorkflowRestore: {
+            /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
+            replacements?: {
+                [key: string]: string;
+            };
+        };
+        /** @description A file attached to an announcement. */
+        AnnouncementAttachment: {
+            /**
+             * Format: uuid
+             * @description The file id; download it with `files.download`.
+             */
+            id: string;
+            name: string;
+            mime: string;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+        };
+        MySide: {
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            principal: components["schemas"]["Money"];
+            accrued_late_fee: components["schemas"]["Money"];
+            /** @description What do I owe today. */
+            total: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+            /** Format: date */
+            next_due_date: string | null;
+            bank_details: components["schemas"]["BankDetails"] | null;
         };
     };
     responses: {
@@ -5484,193 +8024,6 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.listFiles": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
-                scope?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description One page of files. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FileList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.uploadFile": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["FileUpload"];
-            };
-        };
-        responses: {
-            /** @description The stored file. */
-            201: {
-                headers: {
-                    /** @description The file's metadata URL. */
-                    Location?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["File"];
-                };
-            };
-            400: components["responses"]["Problem"];
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            413: components["responses"]["Problem"];
-            415: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            503: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.downloadFile": {
-        parameters: {
-            query?: {
-                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
-                variant?: "thumb" | "medium";
-                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
-                exp?: number;
-                /** @description Signature of a signed URL. Sent with `exp`. */
-                sig?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The file's bytes, with the stored type as `Content-Type`. */
-            200: {
-                headers: {
-                    "Content-Disposition"?: string;
-                    "Content-Security-Policy"?: string;
-                    "Cache-Control"?: string;
-                    "X-Content-Type-Options"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string;
-                };
-            };
-            /** @description Short-lived signed URL (S3 driver). */
-            302: {
-                headers: {
-                    Location?: string;
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.deleteFile": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.getFileMeta": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description The file id. */
-                file_id: components["parameters"]["FileId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The file. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["File"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -8986,6 +11339,2007 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Codes"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketWorkflowUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.restoreTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TicketWorkflowRestore"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listTicketCategories": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`. */
+                archived?: "active" | "archived" | "all";
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketCategoryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createTicketCategory": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketCategoryCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketCategory"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getTicketCategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the category. */
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketCategory"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateTicketCategory": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the category. */
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketCategoryUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketCategory"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listTickets": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `category_id`. */
+                category_id?: string;
+                /** @description Filter by `status_id`. */
+                status_id?: string;
+                /** @description Filter by `semantic`. */
+                semantic?: string;
+                /** @description Filter by `assignee_person_id`. */
+                assignee_person_id?: string;
+                /** @description Filter by `assignee_vendor_id`. */
+                assignee_vendor_id?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `visibility`. */
+                visibility?: string;
+                /** @description Filter by `reporter_person_id`. */
+                reporter_person_id?: string;
+                /** @description Filter by `mine`. */
+                mine?: boolean;
+                /** @description Filter by `queue`. */
+                queue?: boolean;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createTicket": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getTicket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateTicket": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.transitionTicket": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketTransition"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.mergeTicket": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketMerge"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticket"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.voteTicket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketVote"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.unvoteTicket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketVote"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listTicketComments": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketCommentList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createTicketComment": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketCommentCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketComment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createTicketAttachment": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketAttachmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketAttachment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteTicketAttachment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+                /** @description Id of the attachment. */
+                attachment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listTicketHistory": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the ticket. */
+                ticket_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketStatusChangeList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listAnnouncements": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `pinned`. */
+                pinned?: boolean;
+                /** @description Filter by `unread`. */
+                unread?: boolean;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createAnnouncement": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getAnnouncement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteAnnouncement": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateAnnouncement": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.previewAnnouncement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementPreviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementPreview"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.publishAnnouncement": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AnnouncementPublish"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.archiveAnnouncement": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Announcement"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listAnnouncementReads": {
+        parameters: {
+            query?: {
+                /** @description Filter by `read`. */
+                read?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementReadList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.markAnnouncementRead": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the announcement. */
+                announcement_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listFolders": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `parent_id`. */
+                parent_id?: string;
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FolderList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createFolder": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FolderCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getFolder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the folder. */
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteFolder": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the folder. */
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateFolder": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the folder. */
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FolderUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Folder"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listDocuments": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `folder_id`. */
+                folder_id?: string;
+                /** @description Filter by `source`. */
+                source?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.createDocument": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getDocument": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the document. */
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteDocument": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the document. */
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateDocument": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the document. */
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listNotifications": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+                /** @description Filter by `unread`. */
+                unread?: boolean;
+                /** @description Filter by `type`. */
+                type?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getUnreadCount": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCount"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.markNotificationRead": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the notification. */
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notification"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.markAllNotificationsRead": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["NotificationsReadAll"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getNotificationDefaults": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDefaults"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.setNotificationDefaults": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationDefaultsSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDefaults"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getNotificationMutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationMutes"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.setNotificationMutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationMutesSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationMutes"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getSmsUsage": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by month, `YYYY-MM`. */
+                month?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsUsage"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listFiles": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of files. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.uploadFile": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["FileUpload"];
+            };
+        };
+        responses: {
+            /** @description The stored file. */
+            201: {
+                headers: {
+                    /** @description The file's metadata URL. */
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["File"];
+                };
+            };
+            400: components["responses"]["Problem"];
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            413: components["responses"]["Problem"];
+            415: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getFileMeta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["File"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.downloadFile": {
+        parameters: {
+            query?: {
+                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
+                variant?: "thumb" | "medium";
+                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
+                exp?: number;
+                /** @description Signature of a signed URL. Sent with `exp`. */
+                sig?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file's bytes, with the stored type as `Content-Type`. */
+            200: {
+                headers: {
+                    "Content-Disposition"?: string;
+                    "Content-Security-Policy"?: string;
+                    "Cache-Control"?: string;
+                    "X-Content-Type-Options"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+            /** @description Short-lived signed URL (S3 driver). */
+            302: {
+                headers: {
+                    Location?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteFile": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "dashboards.getSiteDashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteDashboard"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "dashboards.getStaffDashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDashboard"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "dashboards.getPortfolioDashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioDashboard"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "dashboards.getMyDashboard": {
+        parameters: {
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDashboard"];
                 };
             };
             401: components["responses"]["Problem"];

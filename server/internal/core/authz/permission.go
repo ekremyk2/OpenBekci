@@ -79,6 +79,10 @@ type PermissionDef struct {
 	// occupancy's unit. Services narrow it to the occupant's own unit with
 	// CanActOnUnit / CanAccessUnit. Optional; roles above still apply.
 	Occupants []OccupancyKind
+	// Former makes the permission held, at the site of the unit, by people whose
+	// occupancy there has ended (the S7 read right: closing statements, addressed
+	// documents). Services bound it to what is dated or addressed to them.
+	Former bool
 }
 
 var permissionName = regexp.MustCompile(`^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$`)
@@ -113,8 +117,8 @@ func (r *Registry) Register(module string, defs ...PermissionDef) error {
 			return fmt.Errorf("authz: %s: permission %q is already registered by %s", module, d.Name, r.modules[d.Name])
 		case d.Description == "":
 			return fmt.Errorf("authz: %s: permission %q has no description", module, d.Name)
-		case len(d.Roles) == 0:
-			return fmt.Errorf("authz: %s: permission %q has no roles", module, d.Name)
+		case len(d.Roles) == 0 && len(d.Occupants) == 0 && !d.Former:
+			return fmt.Errorf("authz: %s: permission %q has no roles, occupants or former occupants", module, d.Name)
 		case len(d.Scopes) == 0:
 			return fmt.Errorf("authz: %s: permission %q has no scopes", module, d.Name)
 		}

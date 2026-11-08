@@ -9,7 +9,7 @@ import (
 )
 
 // contractTags are the modules whose draft definitions the served spec adopts verbatim.
-var contractTags = map[string]bool{"tenancy": true, "people": true, "codes": true, "operations": true}
+var contractTags = map[string]bool{"tenancy": true, "people": true, "codes": true, "operations": true, "dashboards": true}
 
 func inContract(path string, op *openapi3.Operation) bool {
 	if !strings.HasPrefix(path, "/v1/orgs/") && !strings.HasPrefix(path, "/v1/invitations/") && !strings.HasPrefix(path, "/v1/join/") {

@@ -403,6 +403,10 @@ paths:
       x-openbekci-roles:
         - me.read
       summary: The signed-in user, organizations, roles and permissions
+      description: |
+        Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+        `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+        administrator needs a membership of that organization like anybody else.
       tags:
         - me
       security:
@@ -13635,7 +13639,7 @@ paths:
       operationId: operations.getTicketWorkflow
       summary: Get the ticket workflow of a site
       description: |-
-        **Release 0.1.** Get the ticket workflow of a site.
+        Get the ticket workflow of a site.
 
         Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
       tags:
@@ -13664,7 +13668,6 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
       responses:
@@ -13686,7 +13689,7 @@ paths:
       operationId: operations.updateTicketWorkflow
       summary: Replace the ticket workflow of a site
       description: |-
-        **Release 0.1.** Reopen is just a transition back to an open-like status. A removed status in use needs a replacement.
+        Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
 
         Permission: `tickets.manage`.
 
@@ -13704,7 +13707,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - $ref: '#/components/parameters/IfMatch'
@@ -13731,6 +13733,60 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.restoreTicketWorkflow
+      summary: Restore the default ticket workflow of a site
+      description: |-
+        Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+
+        Permission: `tickets.manage`.
+
+        Problems: `version_conflict` (409), `validation_failed` (422).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-stability: stable
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketWorkflowRestore'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWorkflow'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/ticket-categories:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -13738,7 +13794,7 @@ paths:
       operationId: operations.listTicketCategories
       summary: List ticket categories
       description: |-
-        **Release 0.1.** Cursor-paginated list of ticket categorys.
+        Cursor-paginated list of ticket categorys.
 
         Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
       tags:
@@ -13767,14 +13823,18 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: archived
           in: query
           schema:
-            type: boolean
-          description: Filter by `archived`.
+            type: string
+            enum:
+              - active
+              - archived
+              - all
+            default: active
+          description: '`active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`.'
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
       responses:
@@ -13796,7 +13856,7 @@ paths:
       operationId: operations.createTicketCategory
       summary: Create ticket category
       description: |-
-        **Release 0.1.** Creates a ticket category.
+        Creates a ticket category.
 
         Permission: `tickets.manage`.
 
@@ -13814,7 +13874,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -14144,7 +14203,7 @@ paths:
       operationId: operations.getTicket
       summary: Get a ticket
       description: |-
-        **Release 0.1.** Get a ticket.
+        Get a ticket.
 
         Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
 
@@ -14175,7 +14234,6 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       responses:
         '200':
           description: OK
@@ -14195,7 +14253,7 @@ paths:
       operationId: operations.updateTicket
       summary: Edit, reassign or change visibility of a ticket
       description: |-
-        **Release 0.1.** The assignee is a staff person or a vendor label (O2).
+        The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
 
         Permission: `tickets.manage`.
 
@@ -14213,7 +14271,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -14537,9 +14594,9 @@ paths:
       operationId: operations.createTicketComment
       summary: Comment on a ticket
       description: |-
-        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
 
-        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+        Permission (any one of): `tickets.open`, `tickets.work`.
 
         Problems: `conflict` (409).
       tags:
@@ -14549,18 +14606,12 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         org_admin:
-          - tickets.read
           - tickets.open
         site_manager:
-          - tickets.read
           - tickets.open
         board_member:
-          - tickets.read
           - tickets.open
-        auditor:
-          - tickets.read
         staff:
-          - tickets.read_assigned
           - tickets.open
           - tickets.work
         owner:
@@ -15059,11 +15110,9 @@ paths:
       operationId: operations.previewAnnouncement
       summary: Preview recipient and SMS counts
       description: |-
-        **Release 0.1.** Preview recipient and SMS counts.
+        Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
 
         Permission: `announcements.publish`.
-
-        Problems: `conflict` (409).
       tags:
         - operations
       security:
@@ -15076,10 +15125,7 @@ paths:
           - announcements.publish
         board_member:
           - announcements.publish
-      x-idempotent: optional
-      x-stability: stable
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      x-idempotent: none
       requestBody:
         required: true
         content:
@@ -15231,7 +15277,7 @@ paths:
       operationId: operations.listAnnouncementReads
       summary: Who has read an announcement
       description: |-
-        **Release 0.1.** Who has read an announcement.
+        Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
 
         Permission: `announcements.publish`.
       tags:
@@ -15246,7 +15292,6 @@ paths:
           - announcements.publish
         board_member:
           - announcements.publish
-      x-stability: stable
       parameters:
         - name: read
           in: query
@@ -15910,7 +15955,7 @@ paths:
       operationId: operations.getUnreadCount
       summary: Unread notification count
       description: |-
-        **Release 0.1.** Cheap enough to poll.
+        Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
 
         Permission: `notifications.read`.
       tags:
@@ -15921,7 +15966,6 @@ paths:
       x-openbekci-roles:
         member:
           - notifications.read
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteId'
       responses:
@@ -16124,7 +16168,7 @@ paths:
       operationId: operations.getNotificationMutes
       summary: My muted notification types
       description: |-
-        **Release 0.1.** My muted notification types.
+        My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
 
         Permission: `notifications.read`.
       tags:
@@ -16135,7 +16179,6 @@ paths:
       x-openbekci-roles:
         member:
           - notifications.read
-      x-stability: stable
       responses:
         '200':
           description: OK
@@ -16153,7 +16196,7 @@ paths:
       operationId: operations.setNotificationMutes
       summary: Set my muted notification types
       description: |-
-        **Release 0.1.** Set my muted notification types.
+        Set my muted notification types.
 
         Permission: `notifications.read`.
 
@@ -16167,7 +16210,6 @@ paths:
         member:
           - notifications.read
       x-idempotent: optional
-      x-stability: stable
       requestBody:
         required: true
         content:
@@ -16198,7 +16240,7 @@ paths:
       operationId: operations.getSmsUsage
       summary: Monthly SMS counter of a site
       description: |-
-        **Release 0.1.** Monthly SMS counter of a site.
+        **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
 
         Permission: `notifications.manage`.
       tags:
@@ -23301,7 +23343,7 @@ paths:
       operationId: codes.listCodes
       summary: Labels for enums, error codes and site statuses
       description: |-
-        **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+        Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
 
         Permission: `codes.read`.
       tags:
@@ -23312,7 +23354,6 @@ paths:
       x-openbekci-roles:
         member:
           - codes.read
-      x-stability: stable
       parameters:
         - name: locale
           in: query
@@ -33894,6 +33935,7 @@ components:
         - payment.declared
         - payment.confirmed
         - payment.rejected
+        - statement.sent
         - ticket.updated
         - ticket.commented
         - claim.requested
@@ -33909,6 +33951,184 @@ components:
         - access.agent_silent
         - access.agent_clock_skew
         - access.agent_stopped
+    FileVariant:
+      type: object
+      description: A rendition of an image, generated on upload.
+      required:
+        - width
+        - height
+        - size
+        - mime
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
+        mime:
+          type: string
+    FileLinks:
+      type: object
+      description: |
+        Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+        Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+        fetch the file's metadata again for fresh ones.
+      required:
+        - original
+        - variants
+        - expires_at
+      properties:
+        original:
+          type: string
+          nullable: true
+          description: URL of the original; null while the file is not ready.
+        variants:
+          type: object
+          description: URLs of the image variants (`thumb`, `medium`) by name; empty for other files.
+          additionalProperties:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+    File:
+      type: object
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - size
+        - mime
+        - sha256
+        - status
+        - source
+        - uploaded_by
+        - scope
+        - has_variants
+        - retention_until
+        - variants
+        - links
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          description: The file name. A re-encoded image gets the extension of its stored type.
+        size:
+          type: integer
+          format: int64
+          description: Bytes of the stored original (for images, after metadata stripping and downscaling).
+        mime:
+          type: string
+          description: The stored type, from sniffing the content.
+        sha256:
+          type: string
+          description: Hex SHA-256 of the stored original.
+        status:
+          type: string
+          x-open-enum: true
+          description: |
+            Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+            administrators see it). `pending` and `deleted` files are never returned.
+          enum:
+            - ready
+            - quarantined
+        source:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).'
+          enum:
+            - uploaded
+            - generated
+        uploaded_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+        scope:
+          type: string
+          nullable: true
+          description: The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft.
+        has_variants:
+          type: boolean
+          description: 'Images: `thumb` and `medium` exist.'
+        retention_until:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+        variants:
+          type: object
+          description: Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side).
+          additionalProperties:
+            $ref: '#/components/schemas/FileVariant'
+        links:
+          $ref: '#/components/schemas/FileLinks'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    FileList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+    FileUpload:
+      type: object
+      description: |
+        The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+        it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+        `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+        (the body is not buffered); the server checks the fields itself.
+      required:
+        - file
+      properties:
+        scope:
+          type: string
+          description: |
+            Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+            (`ticket`) and the id a UUID. Without it the file is a draft.
+        site_id:
+          type: string
+          format: uuid
+          description: The site the file belongs to; limits who can read it to site-scoped grants.
+        name:
+          type: string
+          description: File name when the `file` part carries none.
+        file:
+          type: string
+          format: binary
+    TicketSemantic:
+      type: string
+      description: Whether a status counts as open work or as finished. Open enum.
+      enum:
+        - open_like
+        - closed_like
+      x-open-enum: true
     TicketStatus:
       type: object
       required:
@@ -33991,7 +34211,7 @@ components:
           additionalProperties:
             type: string
             format: uuid
-          description: 'For a removed status: the status its tickets move to. Required when a removed status is in use.'
+          description: 'Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`.'
     TicketCategory:
       type: object
       description: 'Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.'
@@ -34289,12 +34509,7 @@ components:
         status_name:
           type: string
         status_semantic:
-          type: string
-          description: Open enum.
-          enum:
-            - open_like
-            - closed_like
-          x-open-enum: true
+          $ref: '#/components/schemas/TicketSemantic'
         visibility:
           type: string
           description: 'Private: that unit and management. Common: the whole site or block. Open enum.'
@@ -34435,10 +34650,12 @@ components:
           type: string
           format: uuid
           nullable: true
+          description: 'A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.'
         assignee_vendor_id:
           type: string
           format: uuid
           nullable: true
+          description: A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
     TicketList:
       type: object
       required:
@@ -34658,7 +34875,9 @@ components:
         - org_id
         - ticket_id
         - from_status_id
+        - from_status_name
         - to_status_id
+        - to_status_name
         - changed_by
         - comment
         - at
@@ -34678,16 +34897,33 @@ components:
           type: string
           format: uuid
           nullable: true
+        from_status_name:
+          type: string
+          nullable: true
+          description: Name of the status at the time of reading; statuses removed from the workflow keep their name.
         to_status_id:
           type: string
           format: uuid
-        changed_by:
+        to_status_name:
           type: string
-          format: uuid
+        changed_by:
+          type: object
           nullable: true
+          description: Who made the change, with the name they had then. Null for changes made by the system.
+          required:
+            - id
+            - display_name
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The user id.
+            display_name:
+              type: string
         comment:
           type: string
           nullable: true
+          description: The comment given with a transition; an internal one is null for people who may not read internal notes.
         at:
           type: string
           format: date-time
@@ -34702,8 +34938,12 @@ components:
         org_id: 0192a3f0-1000-7000-8000-000000000003
         ticket_id: 0192a3f0-1000-7000-8000-000000000004
         from_status_id: null
+        from_status_name: null
         to_status_id: 0192a3f0-1000-7000-8000-000000000005
-        changed_by: null
+        to_status_name: Open
+        changed_by:
+          id: 0192a3f0-1000-7000-8000-000000000006
+          display_name: Ayse Yilmaz
         comment: null
         at: '2026-03-01T09:00:00Z'
         created_at: '2026-03-01T09:00:00Z'
@@ -34728,8 +34968,12 @@ components:
             org_id: 0192a3f0-1000-7000-8000-000000000003
             ticket_id: 0192a3f0-1000-7000-8000-000000000004
             from_status_id: null
+            from_status_name: null
             to_status_id: 0192a3f0-1000-7000-8000-000000000005
-            changed_by: null
+            to_status_name: Open
+            changed_by:
+              id: 0192a3f0-1000-7000-8000-000000000006
+              display_name: Ayse Yilmaz
             comment: null
             at: '2026-03-01T09:00:00Z'
             created_at: '2026-03-01T09:00:00Z'
@@ -34775,7 +35019,7 @@ components:
         - sms_count
         - read_count
         - read_at
-        - file_ids
+        - attachments
         - published_at
         - created_by
         - created_at
@@ -34837,6 +35081,11 @@ components:
           type: integer
           format: int64
           nullable: true
+        sms_segments:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.'
         read_count:
           type: integer
           format: int64
@@ -34846,11 +35095,11 @@ components:
           format: date-time
           nullable: true
           description: When the caller read it.
-        file_ids:
+        attachments:
           type: array
+          description: The attached files with what a client needs to show them; download through `files.download` with the `id`.
           items:
-            type: string
-            format: uuid
+            $ref: '#/components/schemas/AnnouncementAttachment'
         published_at:
           type: string
           format: date-time
@@ -34888,8 +35137,11 @@ components:
         sms_count: 80
         read_count: 1
         read_at: null
-        file_ids:
-          - 0192a3f0-1000-7000-8000-000000000003
+        attachments:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            name: schedule.pdf
+            mime: application/pdf
+            size: 48211
         published_at: null
         created_by: null
         created_at: '2026-03-01T09:00:00Z'
@@ -35008,8 +35260,11 @@ components:
             sms_count: 80
             read_count: 1
             read_at: null
-            file_ids:
-              - 0192a3f0-1000-7000-8000-000000000003
+            attachments:
+              - id: 0192a3f0-1000-7000-8000-000000000003
+                name: schedule.pdf
+                mime: application/pdf
+                size: 48211
             published_at: null
             created_by: null
             created_at: '2026-03-01T09:00:00Z'
@@ -35037,21 +35292,32 @@ components:
               - email
               - sms
               - push
+        title:
+          type: string
+          maxLength: 200
+          description: 'The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed.'
     AnnouncementPreview:
       type: object
       description: What publishing would cost, before the sender presses publish (O5).
       required:
         - recipient_count
         - sms_count
+        - sms_segments
         - email_count
         - in_app_count
       properties:
         recipient_count:
           type: integer
           format: int64
+          description: People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
         sms_count:
           type: integer
           format: int64
+          description: Text messages (recipients with a phone who did not mute).
+        sms_segments:
+          type: integer
+          format: int64
+          description: Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
         email_count:
           type: integer
           format: int64
@@ -35644,6 +35910,7 @@ components:
       required:
         - muted_types
         - unmutable_types
+        - available_types
       properties:
         muted_types:
           type: array
@@ -35654,6 +35921,11 @@ components:
           items:
             type: string
           description: Sign-in codes and invitations.
+        available_types:
+          type: array
+          items:
+            type: string
+          description: The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own.
     NotificationMutesSet:
       type: object
       required:
@@ -35693,177 +35965,6 @@ components:
           type: integer
           format: int64
           nullable: true
-    FileVariant:
-      type: object
-      description: A rendition of an image, generated on upload.
-      required:
-        - width
-        - height
-        - size
-        - mime
-      properties:
-        width:
-          type: integer
-        height:
-          type: integer
-        size:
-          type: integer
-          format: int64
-          description: Bytes.
-        mime:
-          type: string
-    FileLinks:
-      type: object
-      description: |
-        Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
-        Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
-        fetch the file's metadata again for fresh ones.
-      required:
-        - original
-        - variants
-        - expires_at
-      properties:
-        original:
-          type: string
-          nullable: true
-          description: URL of the original; null while the file is not ready.
-        variants:
-          type: object
-          description: URLs of the image variants (`thumb`, `medium`) by name; empty for other files.
-          additionalProperties:
-            type: string
-        expires_at:
-          type: string
-          format: date-time
-    File:
-      type: object
-      required:
-        - id
-        - org_id
-        - site_id
-        - name
-        - size
-        - mime
-        - sha256
-        - status
-        - source
-        - uploaded_by
-        - scope
-        - has_variants
-        - retention_until
-        - variants
-        - links
-        - created_at
-        - updated_at
-      properties:
-        id:
-          type: string
-          format: uuid
-        org_id:
-          type: string
-          format: uuid
-        site_id:
-          type: string
-          format: uuid
-          nullable: true
-        name:
-          type: string
-          description: The file name. A re-encoded image gets the extension of its stored type.
-        size:
-          type: integer
-          format: int64
-          description: Bytes of the stored original (for images, after metadata stripping and downscaling).
-        mime:
-          type: string
-          description: The stored type, from sniffing the content.
-        sha256:
-          type: string
-          description: Hex SHA-256 of the stored original.
-        status:
-          type: string
-          x-open-enum: true
-          description: |
-            Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
-            administrators see it). `pending` and `deleted` files are never returned.
-          enum:
-            - ready
-            - quarantined
-        source:
-          type: string
-          x-open-enum: true
-          description: 'Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).'
-          enum:
-            - uploaded
-            - generated
-        uploaded_by:
-          type: string
-          format: uuid
-          nullable: true
-          description: The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
-        scope:
-          type: string
-          nullable: true
-          description: The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft.
-        has_variants:
-          type: boolean
-          description: 'Images: `thumb` and `medium` exist.'
-        retention_until:
-          type: string
-          format: date-time
-          nullable: true
-          description: When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
-        variants:
-          type: object
-          description: Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side).
-          additionalProperties:
-            $ref: '#/components/schemas/FileVariant'
-        links:
-          $ref: '#/components/schemas/FileLinks'
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-    FileList:
-      type: object
-      required:
-        - items
-        - next_cursor
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/File'
-        next_cursor:
-          type: string
-          nullable: true
-          description: Pass as `cursor` for the next page; null on the last page.
-    FileUpload:
-      type: object
-      description: |
-        The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
-        it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
-        `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
-        (the body is not buffered); the server checks the fields itself.
-      required:
-        - file
-      properties:
-        scope:
-          type: string
-          description: |
-            Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
-            (`ticket`) and the id a UUID. Without it the file is a draft.
-        site_id:
-          type: string
-          format: uuid
-          description: The site the file belongs to; limits who can read it to site-scoped grants.
-        name:
-          type: string
-          description: File name when the `file` part carries none.
-        file:
-          type: string
-          format: binary
     ExportRequest:
       type: object
       required:
@@ -41619,11 +41720,20 @@ components:
       x-open-enum: true
       description: 'Open enum: every permission a role can hold (backend plan section 7).'
       enum:
+        - announcements.publish
+        - announcements.read
         - audit.read
         - audit.report
         - claims.decide
         - codes.read
+        - dashboard.portfolio
+        - dashboard.site
+        - dashboard.staff
         - directory.read
+        - documents.manage
+        - documents.read
+        - documents.read_addressed
+        - documents.upload_own
         - exports.create
         - files.manage
         - files.read
@@ -41631,10 +41741,13 @@ components:
         - invitations.household
         - invitations.manage
         - jobs.read
+        - me.dashboard
         - me.manage
         - me.read
         - memberships.manage
         - memberships.read
+        - notifications.manage
+        - notifications.read
         - occupancies.grant_money
         - occupancies.household
         - occupancies.manage
@@ -41654,6 +41767,11 @@ components:
         - sites.manage
         - sites.offboard
         - sites.read
+        - tickets.manage
+        - tickets.open
+        - tickets.read
+        - tickets.read_assigned
+        - tickets.work
         - units.import
         - units.manage
         - units.read
@@ -41661,6 +41779,37 @@ components:
         - vehicles.read
         - vendors.manage
         - vendors.read
+    TicketWorkflowRestore:
+      type: object
+      description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+      properties:
+        replacements:
+          type: object
+          additionalProperties:
+            type: string
+            format: uuid
+          description: 'For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`.'
+    AnnouncementAttachment:
+      type: object
+      description: A file attached to an announcement.
+      required:
+        - id
+        - name
+        - mime
+        - size
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The file id; download it with `files.download`.
+        name:
+          type: string
+        mime:
+          type: string
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
     AuditChange:
       type: object
       description: |

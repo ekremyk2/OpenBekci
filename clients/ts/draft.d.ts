@@ -264,7 +264,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The signed-in user, organizations, roles and permissions */
+        /**
+         * The signed-in user, organizations, roles and permissions
+         * @description Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+         *     `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+         *     administrator needs a membership of that organization like anybody else.
+         */
         get: operations["me.get"];
         put?: never;
         post?: never;
@@ -5321,14 +5326,14 @@ export interface paths {
         };
         /**
          * Get the ticket workflow of a site
-         * @description **Release 0.1.** Get the ticket workflow of a site.
+         * @description Get the ticket workflow of a site.
          *
          *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.getTicketWorkflow"];
         /**
          * Replace the ticket workflow of a site
-         * @description **Release 0.1.** Reopen is just a transition back to an open-like status. A removed status in use needs a replacement.
+         * @description Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5336,6 +5341,33 @@ export interface paths {
          */
         put: operations["operations.updateTicketWorkflow"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow:restore-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore the default ticket workflow of a site
+         * @description Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        post: operations["operations.restoreTicketWorkflow"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5354,7 +5386,7 @@ export interface paths {
         };
         /**
          * List ticket categories
-         * @description **Release 0.1.** Cursor-paginated list of ticket categorys.
+         * @description Cursor-paginated list of ticket categorys.
          *
          *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
@@ -5362,7 +5394,7 @@ export interface paths {
         put?: never;
         /**
          * Create ticket category
-         * @description **Release 0.1.** Creates a ticket category.
+         * @description Creates a ticket category.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5459,7 +5491,7 @@ export interface paths {
         };
         /**
          * Get a ticket
-         * @description **Release 0.1.** Get a ticket.
+         * @description Get a ticket.
          *
          *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
          *
@@ -5473,7 +5505,7 @@ export interface paths {
         head?: never;
         /**
          * Edit, reassign or change visibility of a ticket
-         * @description **Release 0.1.** The assignee is a staff person or a vendor label (O2).
+         * @description The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5601,9 +5633,9 @@ export interface paths {
         put?: never;
         /**
          * Comment on a ticket
-         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+         *     Permission (any one of): `tickets.open`, `tickets.work`.
          *
          *     Problems: `conflict` (409).
          */
@@ -5793,11 +5825,9 @@ export interface paths {
         put?: never;
         /**
          * Preview recipient and SMS counts
-         * @description **Release 0.1.** Preview recipient and SMS counts.
+         * @description Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
          *
          *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409).
          */
         post: operations["operations.previewAnnouncement"];
         delete?: never;
@@ -5878,7 +5908,7 @@ export interface paths {
         };
         /**
          * Who has read an announcement
-         * @description **Release 0.1.** Who has read an announcement.
+         * @description Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
          *
          *     Permission: `announcements.publish`.
          */
@@ -6113,7 +6143,7 @@ export interface paths {
         };
         /**
          * Unread notification count
-         * @description **Release 0.1.** Cheap enough to poll.
+         * @description Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
          *
          *     Permission: `notifications.read`.
          */
@@ -6229,14 +6259,14 @@ export interface paths {
         };
         /**
          * My muted notification types
-         * @description **Release 0.1.** My muted notification types.
+         * @description My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
          *
          *     Permission: `notifications.read`.
          */
         get: operations["operations.getNotificationMutes"];
         /**
          * Set my muted notification types
-         * @description **Release 0.1.** Set my muted notification types.
+         * @description Set my muted notification types.
          *
          *     Permission: `notifications.read`.
          *
@@ -6262,7 +6292,7 @@ export interface paths {
         };
         /**
          * Monthly SMS counter of a site
-         * @description **Release 0.1.** Monthly SMS counter of a site.
+         * @description **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
          *
          *     Permission: `notifications.manage`.
          */
@@ -9262,7 +9292,7 @@ export interface paths {
         };
         /**
          * Labels for enums, error codes and site statuses
-         * @description **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+         * @description Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
          *
          *     Permission: `codes.read`.
          */
@@ -15799,6 +15829,117 @@ export interface components {
         };
         /** @description Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values. */
         NotificationType: string;
+        /** @description A rendition of an image, generated on upload. */
+        FileVariant: {
+            width: number;
+            height: number;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+            mime: string;
+        };
+        /**
+         * @description Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+         *     Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+         *     fetch the file's metadata again for fresh ones.
+         */
+        FileLinks: {
+            /** @description URL of the original; null while the file is not ready. */
+            original: string | null;
+            /** @description URLs of the image variants (`thumb`, `medium`) by name; empty for other files. */
+            variants: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expires_at: string;
+        };
+        File: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            /** @description The file name. A re-encoded image gets the extension of its stored type. */
+            name: string;
+            /**
+             * Format: int64
+             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
+             */
+            size: number;
+            /** @description The stored type, from sniffing the content. */
+            mime: string;
+            /** @description Hex SHA-256 of the stored original. */
+            sha256: string;
+            /**
+             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+             *     administrators see it). `pending` and `deleted` files are never returned.
+             * @enum {string}
+             */
+            status: "ready" | "quarantined";
+            /**
+             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            /**
+             * Format: uuid
+             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+             */
+            uploaded_by: string | null;
+            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
+            scope: string | null;
+            /** @description Images: `thumb` and `medium` exist. */
+            has_variants: boolean;
+            /**
+             * Format: date-time
+             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+             */
+            retention_until: string | null;
+            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
+            variants: {
+                [key: string]: components["schemas"]["FileVariant"];
+            };
+            links: components["schemas"]["FileLinks"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        FileList: {
+            items: components["schemas"]["File"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+         *     it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+         *     `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+         *     (the body is not buffered); the server checks the fields itself.
+         */
+        FileUpload: {
+            /**
+             * @description Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+             *     (`ticket`) and the id a UUID. Without it the file is a draft.
+             */
+            scope?: string;
+            /**
+             * Format: uuid
+             * @description The site the file belongs to; limits who can read it to site-scoped grants.
+             */
+            site_id?: string;
+            /** @description File name when the `file` part carries none. */
+            name?: string;
+            /** Format: binary */
+            file: string;
+        };
+        /**
+         * @description Whether a status counts as open work or as finished. Open enum.
+         * @enum {string}
+         */
+        TicketSemantic: "open_like" | "closed_like";
         TicketStatus: {
             /** Format: uuid */
             id: string;
@@ -15836,7 +15977,7 @@ export interface components {
         TicketWorkflowUpdate: {
             /** @description The complete ordered list. */
             statuses: components["schemas"]["TicketStatusInput"][];
-            /** @description For a removed status: the status its tickets move to. Required when a removed status is in use. */
+            /** @description Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`. */
             replacements?: {
                 [key: string]: string;
             };
@@ -16047,11 +16188,7 @@ export interface components {
             /** Format: uuid */
             status_id: string;
             status_name: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            status_semantic: "open_like" | "closed_like";
+            status_semantic: components["schemas"]["TicketSemantic"];
             /**
              * @description Private: that unit and management. Common: the whole site or block. Open enum.
              * @enum {string}
@@ -16112,9 +16249,15 @@ export interface components {
              * @enum {string}
              */
             visibility?: "private" | "common";
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+             */
             assignee_person_id?: string | null;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+             */
             assignee_vendor_id?: string | null;
         };
         /**
@@ -16286,8 +16429,13 @@ export interface components {
          *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
          *       "from_status_id": null,
+         *       "from_status_name": null,
          *       "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "changed_by": null,
+         *       "to_status_name": "Open",
+         *       "changed_by": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000006",
+         *         "display_name": "Ayse Yilmaz"
+         *       },
          *       "comment": null,
          *       "at": "2026-03-01T09:00:00Z",
          *       "created_at": "2026-03-01T09:00:00Z",
@@ -16303,10 +16451,21 @@ export interface components {
             ticket_id: string;
             /** Format: uuid */
             from_status_id: string | null;
+            /** @description Name of the status at the time of reading; statuses removed from the workflow keep their name. */
+            from_status_name: string | null;
             /** Format: uuid */
             to_status_id: string;
-            /** Format: uuid */
-            changed_by: string | null;
+            to_status_name: string;
+            /** @description Who made the change, with the name they had then. Null for changes made by the system. */
+            changed_by: {
+                /**
+                 * Format: uuid
+                 * @description The user id.
+                 */
+                id: string;
+                display_name: string;
+            } | null;
+            /** @description The comment given with a transition; an internal one is null for people who may not read internal notes. */
             comment: string | null;
             /** Format: date-time */
             at: string;
@@ -16323,8 +16482,13 @@ export interface components {
          *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
          *           "from_status_id": null,
+         *           "from_status_name": null,
          *           "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "changed_by": null,
+         *           "to_status_name": "Open",
+         *           "changed_by": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000006",
+         *             "display_name": "Ayse Yilmaz"
+         *           },
          *           "comment": null,
          *           "at": "2026-03-01T09:00:00Z",
          *           "created_at": "2026-03-01T09:00:00Z",
@@ -16369,8 +16533,13 @@ export interface components {
          *       "sms_count": 80,
          *       "read_count": 1,
          *       "read_at": null,
-         *       "file_ids": [
-         *         "0192a3f0-1000-7000-8000-000000000003"
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "schedule.pdf",
+         *           "mime": "application/pdf",
+         *           "size": 48211
+         *         }
          *       ],
          *       "published_at": null,
          *       "created_by": null,
@@ -16410,6 +16579,11 @@ export interface components {
             sms_count: number | null;
             /**
              * Format: int64
+             * @description Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.
+             */
+            sms_segments?: number | null;
+            /**
+             * Format: int64
              * @description Opened in web or app; a delivered SMS or email is not a read.
              */
             read_count: number;
@@ -16418,7 +16592,8 @@ export interface components {
              * @description When the caller read it.
              */
             read_at: string | null;
-            file_ids: string[];
+            /** @description The attached files with what a client needs to show them; download through `files.download` with the `id`. */
+            attachments: components["schemas"]["AnnouncementAttachment"][];
             /** Format: date-time */
             published_at: string | null;
             /** Format: uuid */
@@ -16484,8 +16659,13 @@ export interface components {
          *           "sms_count": 80,
          *           "read_count": 1,
          *           "read_at": null,
-         *           "file_ids": [
-         *             "0192a3f0-1000-7000-8000-000000000003"
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "name": "schedule.pdf",
+         *               "mime": "application/pdf",
+         *               "size": 48211
+         *             }
          *           ],
          *           "published_at": null,
          *           "created_by": null,
@@ -16507,13 +16687,26 @@ export interface components {
             site_id: string;
             audience: components["schemas"]["AnnouncementAudience"];
             channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
+            title?: string;
         };
         /** @description What publishing would cost, before the sender presses publish (O5). */
         AnnouncementPreview: {
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
+             */
             recipient_count: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Text messages (recipients with a phone who did not mute).
+             */
             sms_count: number;
+            /**
+             * Format: int64
+             * @description Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
+             */
+            sms_segments: number;
             /** Format: int64 */
             email_count: number;
             /** Format: int64 */
@@ -16899,6 +17092,8 @@ export interface components {
             muted_types: string[];
             /** @description Sign-in codes and invitations. */
             unmutable_types: string[];
+            /** @description The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own. */
+            available_types: string[];
         };
         NotificationMutesSet: {
             muted_types: string[];
@@ -16916,112 +17111,6 @@ export interface components {
             failed: number;
             /** Format: int64 */
             monthly_limit: number | null;
-        };
-        /** @description A rendition of an image, generated on upload. */
-        FileVariant: {
-            width: number;
-            height: number;
-            /**
-             * Format: int64
-             * @description Bytes.
-             */
-            size: number;
-            mime: string;
-        };
-        /**
-         * @description Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
-         *     Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
-         *     fetch the file's metadata again for fresh ones.
-         */
-        FileLinks: {
-            /** @description URL of the original; null while the file is not ready. */
-            original: string | null;
-            /** @description URLs of the image variants (`thumb`, `medium`) by name; empty for other files. */
-            variants: {
-                [key: string]: string;
-            };
-            /** Format: date-time */
-            expires_at: string;
-        };
-        File: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            org_id: string;
-            /** Format: uuid */
-            site_id: string | null;
-            /** @description The file name. A re-encoded image gets the extension of its stored type. */
-            name: string;
-            /**
-             * Format: int64
-             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
-             */
-            size: number;
-            /** @description The stored type, from sniffing the content. */
-            mime: string;
-            /** @description Hex SHA-256 of the stored original. */
-            sha256: string;
-            /**
-             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
-             *     administrators see it). `pending` and `deleted` files are never returned.
-             * @enum {string}
-             */
-            status: "ready" | "quarantined";
-            /**
-             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
-             * @enum {string}
-             */
-            source: "uploaded" | "generated";
-            /**
-             * Format: uuid
-             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
-             */
-            uploaded_by: string | null;
-            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
-            scope: string | null;
-            /** @description Images: `thumb` and `medium` exist. */
-            has_variants: boolean;
-            /**
-             * Format: date-time
-             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
-             */
-            retention_until: string | null;
-            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
-            variants: {
-                [key: string]: components["schemas"]["FileVariant"];
-            };
-            links: components["schemas"]["FileLinks"];
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
-        FileList: {
-            items: components["schemas"]["File"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        /**
-         * @description The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
-         *     it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
-         *     `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
-         *     (the body is not buffered); the server checks the fields itself.
-         */
-        FileUpload: {
-            /**
-             * @description Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
-             *     (`ticket`) and the id a UUID. Without it the file is a draft.
-             */
-            scope?: string;
-            /**
-             * Format: uuid
-             * @description The site the file belongs to; limits who can read it to site-scoped grants.
-             */
-            site_id?: string;
-            /** @description File name when the `file` part carries none. */
-            name?: string;
-            /** Format: binary */
-            file: string;
         };
         ExportRequest: {
             /** Format: uuid */
@@ -20599,7 +20688,29 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "directory.read" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        Permission: "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
+        TicketWorkflowRestore: {
+            /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
+            replacements?: {
+                [key: string]: string;
+            };
+        };
+        /** @description A file attached to an announcement. */
+        AnnouncementAttachment: {
+            /**
+             * Format: uuid
+             * @description The file id; download it with `files.download`.
+             */
+            id: string;
+            name: string;
+            mime: string;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+        };
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -29646,13 +29757,52 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.restoreTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TicketWorkflowRestore"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "operations.listTicketCategories": {
         parameters: {
             query: {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by `archived`. */
-                archived?: boolean;
+                /** @description `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`. */
+                archived?: "active" | "archived" | "all";
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
                 /** @description Opaque cursor from a previous page `next_cursor`. */
@@ -30433,10 +30583,7 @@ export interface operations {
     "operations.previewAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
+            header?: never;
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];

@@ -1213,29 +1213,6 @@ func (s *apiServer) PeopleListRoles(ctx context.Context, req gen.PeopleListRoles
 	return gen.PeopleListRoles200JSONResponse(out), err
 }
 
-func (s *apiServer) CodesListCodes(ctx context.Context, req gen.CodesListCodesRequestObject) (gen.CodesListCodesResponseObject, error) {
-	if err := authz.RequireInOrg(ctx, people.PermCodesRead, req.OrgId); err != nil {
-		return nil, err
-	}
-	locale, sections := codes.Labels(strParam(req.Params.Locale))
-	enums := map[string][]map[string]any{}
-	errs := []map[string]any{}
-	for name, m := range sections {
-		list := make([]map[string]any, 0, len(m))
-		for code, label := range m {
-			list = append(list, map[string]any{"code": code, "label": label})
-		}
-		sort.Slice(list, func(i, j int) bool { return list[i]["code"].(string) < list[j]["code"].(string) })
-		if name == "errors" || name == "problem_codes" {
-			errs = list
-			continue
-		}
-		enums[name] = list
-	}
-	out, err := conv[gen.Codes](map[string]any{"locale": locale, "enums": enums, "errors": errs, "ticket_statuses": []any{}})
-	return gen.CodesListCodes200JSONResponse(out), err
-}
-
 // ---- me ----
 
 func (s *apiServer) PeopleGetMyPerson(ctx context.Context, req gen.PeopleGetMyPersonRequestObject) (gen.PeopleGetMyPersonResponseObject, error) {

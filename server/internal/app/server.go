@@ -44,6 +44,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 	go pruneIdentity(ctx, log, deps.Identity)
 	deps.Jobs = rt.jobs
+	deps.Ops = rt.ops.deps()
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
@@ -113,6 +114,7 @@ type runtime struct {
 	jobs    *jobs.Client
 	idem    *idempotency.PG
 	files   *files.Service
+	ops     *opsServices
 	working bool
 }
 
@@ -165,18 +167,25 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs})
+	ops, err := newOps(cfg, log, d, fs)
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
+		Notifications: ops.notifications, Tasks: ops.tasks()})
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	ops.late.c.Store(client)
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, files: fs, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {
