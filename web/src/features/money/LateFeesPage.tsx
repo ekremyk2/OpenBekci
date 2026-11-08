@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { AppError } from '@/api/errors'
-import { ReauthDialog, useReauthGuard } from '@/components/ReauthDialog'
+import { isReauthCancelled, ReauthDialog, useReauthGuard } from '@/components/ReauthDialog'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
@@ -46,14 +46,14 @@ import {
   Textarea,
   applyServerErrors,
 } from './ui'
-import { useUnits } from './pickers'
+import { useAllUnits } from './pickers'
 
 type Accrual = S['LateFeeAccrual']
 
 export function LateFeesPage() {
   const ctx = useMoneyCtx()!
   const { t } = useLingui()
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
   const door = (id: string) => units.data?.find((u) => u.id === id)?.door_number ?? id
   const accruals = useMoneyQuery(['late-fee-accruals', ctx.siteId], () =>
     unwrap(
@@ -351,7 +351,7 @@ export function WaiveDialog({
   const [error, setError] = useState<string>()
   const m = useMoneyMutation(async (reason: string) => {
     // The same key goes out again after a re-authentication challenge.
-    const done = await guard.run(() =>
+    await guard.run(() =>
       moneyApi.POST('/v1/orgs/{org_id}/late-fee-waivers', {
         params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
         body: {
@@ -362,7 +362,6 @@ export function WaiveDialog({
         },
       }),
     )
-    if (!done) throw new Error('reauth_cancelled')
   })
   const invalid = amount === null || amount <= 0n || amount > BigInt(accrual.accrued.amount)
   return (
@@ -384,9 +383,11 @@ export function WaiveDialog({
             },
             (e) =>
               setError(
-                e instanceof AppError && e.isValidation
-                  ? t`The amount is more than the accrued fee.`
-                  : t`Could not waive the fee.`,
+                isReauthCancelled(e)
+                  ? undefined
+                  : e instanceof AppError && e.isValidation
+                    ? t`The amount is more than the accrued fee.`
+                    : t`Could not waive the fee.`,
               ),
           )
         }

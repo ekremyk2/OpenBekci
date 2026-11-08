@@ -4,6 +4,7 @@ import { useRouter } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { toast } from '@/lib/toast'
 import { onApiEvent } from '@/api/events'
+import { hasReauthGuard } from '@/components/ReauthDialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -51,8 +52,8 @@ export function ErrorEffects() {
             break
           }
           case 'reauth-required':
-            // The re-authentication modal arrives with the first sensitive action (web plan §7).
-            toast.info(t`Please confirm it is you before continuing.`)
+            // Screens with a re-authentication guard open their own dialog; the toast is for the rest.
+            if (!hasReauthGuard()) toast.info(t`Please confirm it is you before continuing.`)
             break
           default:
             break

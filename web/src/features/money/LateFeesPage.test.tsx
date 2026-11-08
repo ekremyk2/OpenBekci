@@ -72,12 +72,19 @@ describe('late fees', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Freeze late fees' })
     await userEvent.click(within(dialog).getByRole('button', { name: 'Freeze' }))
     expect(await within(dialog).findByText('A reason is required.')).toBeInTheDocument()
+    // the form defaults to the real today; the model's clock is fixed, so state the date
+    const from = within(dialog).getByLabelText('From')
+    await userEvent.clear(from)
+    await userEvent.type(from, '2026-11-01')
     await userEvent.type(within(dialog).getByLabelText('Reason'), 'Legal collection')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Freeze' }))
     await waitFor(() => expect(db.freezes).toHaveLength(1))
-    const frozen = await row(/A3.*Owner/)
-    expect(within(frozen).getByText('Frozen')).toBeInTheDocument()
-    expect(within(frozen).getByRole('button', { name: 'Unfreeze' })).toBeInTheDocument()
+    // the list refetches after the write: look the row up again until it shows the freeze
+    await waitFor(async () => {
+      const frozen = await row(/A3.*Owner/)
+      expect(within(frozen).getByText('Frozen')).toBeInTheDocument()
+      expect(within(frozen).getByRole('button', { name: 'Unfreeze' })).toBeInTheDocument()
+    })
   })
 
   it('rejects a rate above the statutory cap in the policy form', async () => {
