@@ -35,7 +35,8 @@ func TestIntegrationWebhookSecretRotation(t *testing.T) {
 	}
 	tags := regexp.MustCompile(`v1=[0-9a-f]{64}`)
 
-	sig, body := ping()
+	var body []byte
+	sig, _ := ping()
 	if n := len(tags.FindAllString(sig, -1)); n != 1 {
 		t.Fatalf("before a rotation the header = %q", sig)
 	}
