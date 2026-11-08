@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -19,6 +20,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/permissions"
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -92,6 +94,7 @@ func peopleHooks(comm *community.Service) people.Hooks {
 func newCommunity(cfg Config, log *slog.Logger, d *db.DB, notify jobs.Notifier) (*community.Service, error) {
 	return community.NewService(d, community.Config{
 		Notifier:      notify,
+		Hooks:         communityHooks(),
 		EncryptionKey: cfg.EncryptionKey,
 		BaseURL:       cfg.BaseURL,
 		Platform:      d,
@@ -150,6 +153,27 @@ func newGovernance(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) *g
 	g := governance.NewService(d, d, governance.Config{BaseURL: cfg.BaseURL, InstanceName: cfg.InstanceName, Log: log})
 	g.SetFileChecker(fs) // proof files of notices are files of the file store
 	return g
+}
+
+// newAccess builds the access-control service: agents authenticate with their
+// own tokens, the rotated token is sealed with ENCRYPTION_KEY, and visitor
+// credentials come from the community module once it supplies a source (until
+// then the projector handles vehicles only).
+func newAccess(cfg Config, log *slog.Logger, d *db.DB, comm *community.Service) (*access.Service, error) {
+	acfg := access.Config{
+		Source:  communityCredentials{c: comm},
+		Guards:  comm,
+		BaseURL: cfg.BaseURL, InsecureDev: cfg.InsecureDev, Log: log, MaxSnapshotEntries: cfg.AccessMaxSnapshotEntries,
+		SnapshotPartEntries: cfg.AccessSnapshotPartEntries, SnapshotPartBytes: cfg.AccessSnapshotPartBytes,
+	}
+	if len(cfg.EncryptionKey) > 0 {
+		sealer, err := crypto.NewFieldCipher(cfg.EncryptionKey, "access.agent_token")
+		if err != nil {
+			return nil, err
+		}
+		acfg.Sealer = sealer
+	}
+	return access.NewService(d, acfg), nil
 }
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity

@@ -42,6 +42,7 @@ var Registered = []Field{
 	{"user", "password_hash"},
 	{"file", "name"},
 	{"vehicle", "plate"},
+	{"credential", "value"},
 	{"visitor", "name"},
 	{"visitor", "phone"},
 	{"visitor", "plate"},
@@ -79,7 +80,8 @@ var Registered = []Field{
 // values (fail closed; see audit.Diff). Add an entity here in the same change
 // that adds its audited view.
 var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent",
-	"governance_settings", "meeting", "agenda_item", "poll", "attendance", "vote_count", "term_reminder", "facility", "facility_block", "booking"}
+	"governance_settings", "meeting", "agenda_item", "poll", "attendance", "vote_count", "term_reminder", "facility", "facility_block", "booking",
+	"agent", "access_point", "agent_command"}
 
 // KnownEntity reports whether entity may store non-PII values in clear: it
 // has entries of its own in Registered, or is in PlainEntities.
@@ -202,4 +204,6 @@ func matchesLast(registered string, words []string) bool {
 // package is the directory name); the value says why. Registering a field as
 // PII is always preferable when it is persisted.
 var Allowlist = map[string]string{
+	"access.siteAccessSettings.PlateMatch": "the site's plate matching mode (exact or tolerant), a setting, not a plate",
+	"protocol.Settings.PlateMatch":         "the site's plate matching mode (exact or tolerant) sent to the agent, not a plate",
 }

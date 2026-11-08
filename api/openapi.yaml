@@ -29,6 +29,10 @@ tags:
     description: Everyday operation of the building; files, tickets, announcements, documents, notifications.
   - name: dashboards
     description: Site, portfolio and resident dashboards.
+  - name: access
+    description: Agents, access points, credentials, access events and manual open (release 0.3).
+  - name: agent
+    description: 'Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1).'
   - name: platform
     description: Instance operation (platform administrators).
 paths:
@@ -13250,8 +13254,1262 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access-points:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listAccessPoints
+      summary: List access points
+      description: |-
+        **Release 0.3.** Cursor-paginated list of access points.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: agent_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `agent_id`.
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `enabled`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPointList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: access.createAccessPoint
+      summary: Create access point
+      description: |-
+        **Release 0.3.** Creates a access point.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessPointCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPoint'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access-points/{point_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: point_id
+        in: path
+        required: true
+        description: Id of the point.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getAccessPoint
+      summary: Get access point
+      description: |-
+        **Release 0.3.** Get access point.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPoint'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: access.updateAccessPoint
+      summary: Update access point
+      description: |-
+        **Release 0.3.** Update access point.
+
+        Permission: `access.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessPointUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPoint'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: access.deleteAccessPoint
+      summary: Delete access point
+      description: |-
+        **Release 0.3.** Re-projects the allow-list.
+
+        Permission: `access.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access-points/{point_id}:open:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: point_id
+        in: path
+        required: true
+        description: Id of the point.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: access.openAccessPoint
+      summary: Open an access point manually
+      description: |-
+        **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds (`expires_at - issued_at` is at most 60 seconds for every `open_point`; the agent refuses a longer lifetime with `ack: refused`, reason `ttl`, and a failed or interrupted result is never retried); there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
+
+        Permission: `access.open`.
+
+        Problems: `agent_offline` (409), `conflict` (409), `rate_limited` (429), `idempotency_mismatch` (422).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.open
+        site_manager:
+          - access.open
+        guard:
+          - access.open
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenPointRequest'
+      responses:
+        '202':
+          description: Accepted; the work continues as a job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentCommand'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agents:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listAgents
+      summary: List agents
+      description: |-
+        **Release 0.3.** List agents.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - pending
+              - active
+              - revoked
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: access.createAgent
+      summary: Create an agent and its enrolment token
+      description: |-
+        **Release 0.3.** The agent starts `pending`; the token is shown once.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: none
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentEnrolment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agents/{agent_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: agent_id
+        in: path
+        required: true
+        description: Id of the agent.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getAgent
+      summary: Get an agent
+      description: |-
+        **Release 0.3.** Get an agent.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: access.updateAgent
+      summary: Rename an agent
+      description: |-
+        **Release 0.3.** Rename an agent.
+
+        Permission: `access.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agents/{agent_id}:reenrol:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: agent_id
+        in: path
+        required: true
+        description: Id of the agent.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: access.reenrolAgent
+      summary: Issue a new enrolment token
+      description: |-
+        **Release 0.3.** Also invalidates the current agent token.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: none
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentEnrolment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agents/{agent_id}:revoke:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: agent_id
+        in: path
+        required: true
+        description: Id of the agent.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: access.revokeAgent
+      summary: Revoke an agent
+      description: |-
+        **Release 0.3.** A connected agent receives `command revoked` and the socket closes with 4401; any later call is 401.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agents/{agent_id}:rotate-token:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: agent_id
+        in: path
+        required: true
+        description: Id of the agent.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: access.rotateAgentToken
+      summary: Force token rotation
+      description: |-
+        **Release 0.3.** Sets `rotate_now` in the agent's next hello; the agent rotates through `agent.rotateToken`.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listCredentials
+      summary: List credentials (derived, read-only)
+      description: |-
+        **Release 0.3.** List credentials (derived, read-only).
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - plate
+              - visitor_qr
+              - tag
+              - pin
+          description: Filter by `kind`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - active
+              - suspended
+              - revoked
+              - expired
+          description: Filter by `status`.
+        - name: source_type
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - vehicle
+              - visitor_entry
+              - manual
+          description: Filter by `source_type`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: point_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `point_id`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: access.createCredential
+      summary: Create a tag or PIN credential
+      description: |-
+        **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: credential_id
+        in: path
+        required: true
+        description: Id of the credential.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getCredential
+      summary: Get a credential
+      description: |-
+        **Release 0.3.** Get a credential.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: access.revokeCredential
+      summary: Revoke a manual credential
+      description: |-
+        **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/allowlist:rebuild:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: access.rebuildAllowlist
+      summary: Rebuild the allow-list of a site
+      description: |-
+        **Release 0.3.** Re-projects every vehicle and visitor entry into credentials and repairs drift (`access.reconcile`).
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllowlistRebuild'
+      responses:
+        '202':
+          description: Accepted; the work continues as a job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/events:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listAccessEvents
+      summary: List access events
+      description: |-
+        **Release 0.3.** Newest first. `after` (a `sync_seq`, exclusive) switches to feed order (oldest first) for pollers; `next_cursor` then continues the feed.
+
+        Permission: `access.view_events`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.view_events
+        site_manager:
+          - access.view_events
+        board_member:
+          - access.view_events
+        auditor:
+          - access.view_events
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: point_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `point_id`.
+        - name: decision
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - allow
+              - deny
+              - manual_open
+          description: Filter by `decision`.
+        - name: reason
+          in: query
+          schema:
+            type: string
+          description: Filter by `reason`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+        - name: plate
+          in: query
+          schema:
+            type: string
+          description: Filter by `plate`.
+        - name: after
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Filter by `after`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessEventList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/events:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listGuardEvents
+      summary: Live "who just arrived" feed for the guard console
+      description: |-
+        **Release 0.3.** The guard sees the last 24 hours only. The console polls every 2 seconds with the last `sync_seq` as `after`.
+
+        Permission: `gate.operate`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: after
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Filter by `after`.
+        - name: point_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `point_id`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardAccessEventList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/commands/{command_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: command_id
+        in: path
+        required: true
+        description: Id of the command.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getAgentCommand
+      summary: Status of an open command
+      description: |-
+        **Release 0.3.** The console polls every 500 ms for up to 10 seconds.
+
+        Permission (any one of): `access.open`, `access.manage`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.open
+        site_manager:
+          - access.open
+        guard:
+          - access.open
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentCommand'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/agent/enrol:
+    post:
+      operationId: agent.enrol
+      summary: Enrol an agent with a one-time token
+      description: |-
+        **Release 0.3.** The one-time token is the credential (10 per minute per IP). An unknown, expired or already used token answers one identical 404 body, so the three cases cannot be told apart. Re-enrolling needs a new token (`access.reenrolAgent`).
+
+        Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429).
+      tags:
+        - agent
+      security: []
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentEnrolRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentEnrolResponse'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/agent/poll:
+    post:
+      operationId: agent.poll
+      summary: Long-poll transport (WebSocket fallback)
+      description: |-
+        **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with a `hello` call (no `session`); the server hello carries the `session` handle that every later call sends. Each response has a per-session `seq` (ordered delivery, see `AgentPollResponse`). An empty poll is 200 with an empty `messages` array, never 204.
+
+        A session ends after 60 seconds without a request: the next call fails with 410 `agent_session_expired` and the agent starts a new session with `hello`. A bare 401 means an unknown token only (the agent quarantines itself and does not wipe); a revoked agent receives the `revoked` command (the WebSocket closes with 4401) and wipes. Idempotency is built into the protocol (events by id, commands by id, deltas by version); `Idempotency-Key` is ignored.
+
+        Problems: `agent_session_expired` (410), `rate_limited` (429), `conflict` (409).
+      tags:
+        - agent
+      security:
+        - agentAuth: []
+      x-idempotent: optional
+      x-stability: preview
+      x-agent-message-schemas:
+        envelope: api/agent-protocol/v1/envelope.schema.json
+        hello_agent: api/agent-protocol/v1/hello-agent.schema.json
+        hello_server: api/agent-protocol/v1/hello-server.schema.json
+        snapshot: api/agent-protocol/v1/snapshot.schema.json
+        delta: api/agent-protocol/v1/delta.schema.json
+        event: api/agent-protocol/v1/event.schema.json
+        ack: api/agent-protocol/v1/ack.schema.json
+        command: api/agent-protocol/v1/command.schema.json
+        heartbeat: api/agent-protocol/v1/heartbeat.schema.json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentPollRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentPollResponse'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '410':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/agent/token:rotate:
+    post:
+      operationId: agent.rotateToken
+      summary: Rotate the agent token
+      description: |-
+        **Release 0.3.** Returns a new token. The retired token stays valid for 10 minutes (`previous_valid_until`) so a crash between steps recovers, and calling again with the retired token inside that window is idempotent: it returns the same new token. After the window the retired token is 401. `rotate_by` is also in the server hello (default 180 days); the hello may set `rotate_now`.
+
+        Problems: `rate_limited` (429), `conflict` (409).
+      tags:
+        - agent
+      security:
+        - agentAuth: []
+      x-idempotent: optional
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentTokenRotated'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/agent/ws:
+    get:
+      operationId: agent.connect
+      summary: WebSocket transport
+      description: |-
+        **Release 0.3.** Upgrade with subprotocol `openbekci.agent.v1` and `Authorization: Bearer <agent token>`. One JSON envelope per text frame, at most 1 MiB. Close codes: 4401 revoked or unauthorized, 4409 replaced by a newer session, 4426 no common protocol version, 4429 rate limited. Server ping every 30 s, 60 s pong deadline; the server answers the agent's pings with a pong and acks heartbeats, so the agent's contact clock advances. Revocation is the `revoked` command followed by close 4401; a bare 401 on upgrade means an unknown token only.
+
+        Problems: `rate_limited` (429).
+      tags:
+        - agent
+      security:
+        - agentAuth: []
+      x-stability: preview
+      x-agent-message-schemas:
+        envelope: api/agent-protocol/v1/envelope.schema.json
+        hello_agent: api/agent-protocol/v1/hello-agent.schema.json
+        hello_server: api/agent-protocol/v1/hello-server.schema.json
+        snapshot: api/agent-protocol/v1/snapshot.schema.json
+        delta: api/agent-protocol/v1/delta.schema.json
+        event: api/agent-protocol/v1/event.schema.json
+        ack: api/agent-protocol/v1/ack.schema.json
+        command: api/agent-protocol/v1/command.schema.json
+        heartbeat: api/agent-protocol/v1/heartbeat.schema.json
+      responses:
+        '101':
+          description: WebSocket upgrade accepted (subprotocol `openbekci.agent.v1`).
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
+    agentAuth:
+      type: http
+      scheme: bearer
+      description: On-site access agent token (`obk_agt_<agent_id>.<secret>`), scoped to one site. Used by `/v1/agent/*`.
     cookieAuth:
       type: apiKey
       in: cookie
@@ -13426,6 +14684,8 @@ components:
             - unsupported_media_type
             - timeout
             - scan_unavailable
+            - agent_offline
+            - agent_session_expired
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.
@@ -14115,6 +15375,10 @@ components:
       x-open-enum: true
       description: 'Open enum: every permission a role can hold (backend plan section 7).'
       enum:
+        - access.manage
+        - access.open
+        - access.read
+        - access.view_events
         - announcements.publish
         - announcements.read
         - attendance.manage
@@ -23322,6 +24586,1240 @@ components:
             display_name: Ali Veli
             has_pin: true
         next_cursor: null
+    DriverRef:
+      type: object
+      required:
+        - instance
+      properties:
+        instance:
+          type: string
+          description: Names a driver instance in the agent's local config file; hardware details and secrets never live on the server.
+        channel:
+          type: string
+          description: Relay or lane within the instance.
+    DriverState:
+      type: object
+      required:
+        - instance
+        - state
+        - mock
+      properties:
+        instance:
+          type: string
+        state:
+          type: string
+          description: Open enum.
+          enum:
+            - ok
+            - degraded
+            - down
+            - missing
+          x-open-enum: true
+        detail:
+          type: string
+        mock:
+          type: boolean
+          description: A mock driver is configured; the UI shows it.
+    AccessPoint:
+      type: object
+      description: A gate or door driven by an agent.
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - kind
+        - direction
+        - agent_id
+        - driver_ref
+        - enabled
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - vehicle_gate
+            - pedestrian_door
+          x-open-enum: true
+        direction:
+          type: string
+          description: Informational and for filtering the guard feed; no anti-passback. Open enum.
+          enum:
+            - in
+            - out
+            - both
+          x-open-enum: true
+        agent_id:
+          type: string
+          format: uuid
+          nullable: true
+        driver_ref:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DriverRef'
+          nullable: true
+        enabled:
+          type: boolean
+          description: Disabled points are omitted from snapshots and refuse open.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        name: Ali Veli
+        kind: vehicle_gate
+        direction: in
+        agent_id: null
+        driver_ref:
+          instance: instance
+          channel: channel
+        enabled: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    AccessPointCreate:
+      type: object
+      required:
+        - site_id
+        - name
+        - kind
+        - direction
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - vehicle_gate
+            - pedestrian_door
+          x-open-enum: true
+        direction:
+          type: string
+          description: Open enum.
+          enum:
+            - in
+            - out
+            - both
+          x-open-enum: true
+        agent_id:
+          type: string
+          format: uuid
+          nullable: true
+        driver_ref:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DriverRef'
+          nullable: true
+        enabled:
+          type: boolean
+    AccessPointUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - vehicle_gate
+            - pedestrian_door
+          x-open-enum: true
+        direction:
+          type: string
+          description: Open enum.
+          enum:
+            - in
+            - out
+            - both
+          x-open-enum: true
+        agent_id:
+          type: string
+          format: uuid
+          nullable: true
+        driver_ref:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DriverRef'
+          nullable: true
+        enabled:
+          type: boolean
+    AccessPointList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessPoint'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            name: Ali Veli
+            kind: vehicle_gate
+            direction: in
+            agent_id: null
+            driver_ref:
+              instance: instance
+              channel: channel
+            enabled: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    Agent:
+      type: object
+      description: An on-site agent. The agent token is scoped to this one site; the server stores only its hash.
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - status
+        - connected
+        - version
+        - platform
+        - protocol_version
+        - last_seen
+        - snapshot_version
+        - queue_depth
+        - drivers
+        - clock_offset_ms
+        - clock_suspect
+        - rotate_by
+        - enrol_expires_at
+        - revoked_at
+        - created_by
+        - created_at
+        - updated_at
+        - lost_events
+        - store_error
+        - dead_letters
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - pending
+            - active
+            - revoked
+          x-open-enum: true
+        connected:
+          type: boolean
+          description: A live session exists or a frame arrived within 90 seconds.
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+        platform:
+          type: string
+          nullable: true
+        protocol_version:
+          type: integer
+          format: int64
+          nullable: true
+        last_seen:
+          type: string
+          format: date-time
+          nullable: true
+        snapshot_version:
+          type: integer
+          format: int64
+          nullable: true
+        queue_depth:
+          type: integer
+          format: int64
+          nullable: true
+        drivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverState'
+        clock_offset_ms:
+          type: integer
+          format: int64
+          nullable: true
+        clock_suspect:
+          type: boolean
+          description: True when the offset exceeds 120 seconds or the agent reports a clock jump; a manual open is refused beyond 24 hours.
+        rotate_by:
+          type: string
+          format: date-time
+          nullable: true
+        enrol_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        lost_events:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'From the last heartbeat: events the agent had to discard.'
+        store_error:
+          type: string
+          nullable: true
+          description: 'From the last heartbeat: the agent''s local store error, null when healthy.'
+        dead_letters:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'From the last heartbeat: events set aside after final rejection.'
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        name: Main gate Pi
+        status: active
+        connected: true
+        version: 1
+        platform: null
+        protocol_version: null
+        last_seen: null
+        snapshot_version: null
+        queue_depth: null
+        drivers:
+          - instance: instance
+            state: ok
+            mock: false
+        clock_offset_ms: null
+        clock_suspect: false
+        rotate_by: null
+        enrol_expires_at: null
+        revoked_at: null
+        created_by: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        lost_events: null
+        store_error: null
+        dead_letters: null
+    AgentCreate:
+      type: object
+      required:
+        - site_id
+        - name
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    AgentUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+    AgentList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Agent'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            name: Main gate Pi
+            status: active
+            connected: true
+            version: 1
+            platform: null
+            protocol_version: null
+            last_seen: null
+            snapshot_version: null
+            queue_depth: null
+            drivers:
+              - instance: instance
+                state: ok
+                mock: false
+            clock_offset_ms: null
+            clock_suspect: false
+            rotate_by: null
+            enrol_expires_at: null
+            revoked_at: null
+            created_by: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            lost_events: null
+            store_error: null
+            dead_letters: null
+        next_cursor: null
+    AgentEnrolment:
+      type: object
+      required:
+        - agent
+        - enrolment_token
+        - enrolment_expires_at
+      properties:
+        agent:
+          $ref: '#/components/schemas/Agent'
+        enrolment_token:
+          type: string
+          description: '`obk_enr_...`, shown once; valid 15 minutes, single use.'
+        enrolment_expires_at:
+          type: string
+          format: date-time
+    AllowlistRebuild:
+      type: object
+      required:
+        - site_id
+      properties:
+        site_id:
+          type: string
+          format: uuid
+    RecurringWindow:
+      type: object
+      required:
+        - days
+        - start
+        - end
+      properties:
+        days:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: ISO weekdays, 1 = Monday.
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+          description: '`start > end` crosses midnight and belongs to the start day.'
+    Credential:
+      type: object
+      description: 'A credential the agent can match. Plates and visitor QR codes are derived from vehicles and visitor entries and never edited by hand; `tag` and `pin` credentials are created manually (`access.createCredential`, `source_type: manual`).'
+      required:
+        - id
+        - org_id
+        - site_id
+        - kind
+        - value
+        - source_type
+        - source_id
+        - unit_id
+        - unit_door_number
+        - person_id
+        - point_scope
+        - point_ids
+        - valid_from
+        - valid_to
+        - recurring
+        - max_uses
+        - uses
+        - status
+        - status_reason
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - plate
+            - visitor_qr
+            - tag
+            - pin
+          x-open-enum: true
+        value:
+          type: string
+          description: Normalized plate; for `visitor_qr` the sha-256 of the token, for tag and pin a salted hash. Never the secret itself.
+        source_type:
+          type: string
+          description: Open enum.
+          enum:
+            - vehicle
+            - visitor_entry
+            - manual
+          x-open-enum: true
+        source_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_door_number:
+          type: string
+          nullable: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        point_scope:
+          type: string
+          description: Open enum.
+          enum:
+            - all_vehicle
+            - all_pedestrian
+            - all
+            - ids
+          x-open-enum: true
+        point_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        valid_from:
+          type: string
+          format: date-time
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        recurring:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/RecurringWindow'
+          nullable: true
+        max_uses:
+          type: integer
+          format: int64
+          nullable: true
+        uses:
+          type: integer
+          format: int64
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - active
+            - suspended
+            - revoked
+            - expired
+          x-open-enum: true
+        status_reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        kind: plate
+        value: value
+        source_type: vehicle
+        source_id: null
+        unit_id: null
+        unit_door_number: null
+        person_id: null
+        point_scope: all_vehicle
+        point_ids:
+          - 0192a3f0-1000-7000-8000-000000000005
+        valid_from: '2026-03-01T09:00:00Z'
+        valid_to: null
+        recurring:
+          days:
+            - 1
+          start: '09:00'
+          end: '09:00'
+        max_uses: null
+        uses: 1
+        status: active
+        status_reason: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    CredentialList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Credential'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            kind: plate
+            value: value
+            source_type: vehicle
+            source_id: null
+            unit_id: null
+            unit_door_number: null
+            person_id: null
+            point_scope: all_vehicle
+            point_ids:
+              - 0192a3f0-1000-7000-8000-000000000005
+            valid_from: '2026-03-01T09:00:00Z'
+            valid_to: null
+            recurring:
+              days:
+                - 1
+              start: '09:00'
+              end: '09:00'
+            max_uses: null
+            uses: 1
+            status: active
+            status_reason: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    AccessEvent:
+      type: object
+      description: Append-only. Retention follows the site visitor-log setting (default 90 days).
+      required:
+        - id
+        - org_id
+        - site_id
+        - point_id
+        - point_name
+        - agent_id
+        - credential_id
+        - decision
+        - reason
+        - presented_kind
+        - observed_plate
+        - unit_door_number
+        - actor_user_id
+        - actor_display_name
+        - command_id
+        - visitor_entry_id
+        - occurred_at
+        - synced_at
+        - sync_seq
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        point_id:
+          type: string
+          format: uuid
+        point_name:
+          type: string
+          nullable: true
+        agent_id:
+          type: string
+          format: uuid
+          nullable: true
+        credential_id:
+          type: string
+          format: uuid
+          nullable: true
+        decision:
+          type: string
+          description: Open enum.
+          enum:
+            - allow
+            - deny
+            - manual_open
+          x-open-enum: true
+        reason:
+          type: string
+          description: Open enum.
+          enum:
+            - match
+            - unknown
+            - outside_window
+            - wrong_point
+            - revoked
+            - used_up
+            - agent_stopped
+            - guard
+            - manager
+            - remote
+            - driver_error
+          x-open-enum: true
+        presented_kind:
+          type: string
+          nullable: true
+        observed_plate:
+          type: string
+          nullable: true
+          description: Normalized; QR and tag values are never stored.
+        unit_door_number:
+          type: string
+          nullable: true
+        actor_user_id:
+          type: string
+          format: uuid
+          nullable: true
+        actor_display_name:
+          type: string
+          nullable: true
+        command_id:
+          type: string
+          format: uuid
+          nullable: true
+        visitor_entry_id:
+          type: string
+          format: uuid
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+          description: Agent clock, corrected for the reported offset.
+        synced_at:
+          type: string
+          format: date-time
+        sync_seq:
+          type: integer
+          format: int64
+          description: Feed cursor.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        point_id: 0192a3f0-1000-7000-8000-000000000003
+        point_name: null
+        agent_id: null
+        credential_id: null
+        decision: allow
+        reason: match
+        presented_kind: null
+        observed_plate: 34ABC123
+        unit_door_number: null
+        actor_user_id: null
+        actor_display_name: null
+        command_id: null
+        visitor_entry_id: null
+        occurred_at: '2026-03-01T09:00:00Z'
+        synced_at: '2026-03-01T09:00:00Z'
+        sync_seq: 1
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    AccessEventList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessEvent'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            point_id: 0192a3f0-1000-7000-8000-000000000003
+            point_name: null
+            agent_id: null
+            credential_id: null
+            decision: allow
+            reason: match
+            presented_kind: null
+            observed_plate: 34ABC123
+            unit_door_number: null
+            actor_user_id: null
+            actor_display_name: null
+            command_id: null
+            visitor_entry_id: null
+            occurred_at: '2026-03-01T09:00:00Z'
+            synced_at: '2026-03-01T09:00:00Z'
+            sync_seq: 1
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    GuardEventPoint:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    GuardEventWho:
+      type: object
+      required:
+        - kind
+        - unit_label
+        - visitor_name
+      properties:
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - resident
+            - visitor
+            - unknown
+          x-open-enum: true
+        unit_label:
+          type: string
+          nullable: true
+        visitor_name:
+          type: string
+          nullable: true
+    GuardAccessEvent:
+      type: object
+      description: 'Data-minimized for the guard console: door number and visitor name only, never contacts or balances.'
+      required:
+        - sync_seq
+        - occurred_at
+        - point
+        - decision
+        - reason
+        - plate
+        - who
+      properties:
+        sync_seq:
+          type: integer
+          format: int64
+        occurred_at:
+          type: string
+          format: date-time
+        point:
+          $ref: '#/components/schemas/GuardEventPoint'
+        decision:
+          type: string
+          description: Open enum.
+          enum:
+            - allow
+            - deny
+            - manual_open
+          x-open-enum: true
+        reason:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        who:
+          $ref: '#/components/schemas/GuardEventWho'
+      example:
+        sync_seq: 1
+        occurred_at: '2026-03-01T09:00:00Z'
+        point:
+          id: 0192a3f0-1000-7000-8000-000000000002
+          name: Ali Veli
+        decision: allow
+        reason: reason
+        plate: null
+        who:
+          kind: resident
+          unit_label: null
+          visitor_name: null
+    GuardAccessEventList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardAccessEvent'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - sync_seq: 1
+            occurred_at: '2026-03-01T09:00:00Z'
+            point:
+              id: 0192a3f0-1000-7000-8000-000000000002
+              name: Ali Veli
+            decision: allow
+            reason: reason
+            plate: null
+            who:
+              kind: resident
+              unit_label: null
+              visitor_name: null
+        next_cursor: null
+    OpenPointRequest:
+      type: object
+      properties:
+        visitor_entry_id:
+          type: string
+          format: uuid
+          description: Links the opening to an expected visitor.
+        credential_id:
+          type: string
+          format: uuid
+    AgentCommand:
+      type: object
+      required:
+        - id
+        - point_id
+        - command
+        - status
+        - reason
+        - issued_at
+        - expires_at
+        - completed_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        point_id:
+          type: string
+          format: uuid
+          nullable: true
+        command:
+          type: string
+          description: Open enum.
+          enum:
+            - open_point
+            - revoke_credential
+            - request_snapshot
+            - update_config
+            - revoked
+          x-open-enum: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - pending
+            - delivered
+            - done
+            - failed
+            - expired
+          x-open-enum: true
+        reason:
+          type: string
+          nullable: true
+          description: For example driver_error.
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+    AgentEnvelope:
+      type: object
+      description: 'One JSON message of the agent protocol. Payload schemas per type: api/agent-protocol/v1/*.schema.json.'
+      required:
+        - v
+        - type
+        - id
+        - ts
+        - payload
+      properties:
+        v:
+          type: integer
+          format: int64
+          description: Protocol version, 1.
+        type:
+          type: string
+          description: hello, snapshot, delta, event, ack, command or heartbeat; unknown types are answered with an ack `unsupported`.
+        id:
+          type: string
+          format: uuid
+          description: UUIDv7, referenced by `ack.ref`.
+        ts:
+          type: string
+          format: date-time
+          description: Sender clock.
+        payload:
+          type: object
+          additionalProperties: true
+    AgentEnrolRequest:
+      type: object
+      required:
+        - enrolment_token
+        - hostname
+        - platform
+        - agent_version
+      properties:
+        enrolment_token:
+          type: string
+        hostname:
+          type: string
+        platform:
+          type: string
+        agent_version:
+          type: string
+    AgentEnrolResponse:
+      type: object
+      required:
+        - agent_id
+        - agent_token
+        - org_id
+        - site_id
+        - server_time
+        - ws_url
+        - poll_url
+        - protocol_versions
+      properties:
+        agent_id:
+          type: string
+          format: uuid
+        agent_token:
+          type: string
+          description: '`obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success.'
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        server_time:
+          type: string
+          format: date-time
+        ws_url:
+          type: string
+          description: wss only.
+        poll_url:
+          type: string
+          description: https only.
+        protocol_versions:
+          type: array
+          items:
+            type: integer
+            format: int64
+    AgentPollRequest:
+      type: object
+      required:
+        - messages
+        - wait_seconds
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentEnvelope'
+        wait_seconds:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 30
+          description: 0 to 30 seconds to hold the request open when the server has nothing to send.
+        session:
+          type: string
+          description: Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`.
+      example:
+        session: sess_0192a3f0100070008000000000000001
+        messages: []
+        wait_seconds: 25
+    AgentPollResponse:
+      type: object
+      description: 'Messages for the agent. An empty poll is still 200 with `messages: []` (it also refreshes the agent''s contact clock).'
+      required:
+        - session
+        - seq
+        - messages
+      properties:
+        session:
+          type: string
+          description: The session handle (also in the server hello).
+        seq:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 'Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentEnvelope'
+      example:
+        session: sess_0192a3f0100070008000000000000001
+        seq: 1
+        messages: []
+    AgentTokenRotated:
+      type: object
+      required:
+        - agent_token
+        - rotate_by
+        - previous_valid_until
+      description: 'Rotation is idempotent for the retired token: calling again with the previous token inside the 10 minute window returns the same new token.'
+      properties:
+        agent_token:
+          type: string
+          description: The new token, `obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success.
+        rotate_by:
+          type: string
+          format: date-time
+          description: Rotate again before this time (default 180 days from now).
+        previous_valid_until:
+          type: string
+          format: date-time
+          description: The retired token keeps working until then (10 minutes after the first rotation) so a crash between steps recovers.
+      example:
+        agent_token: obk_agt_0192a3f0-1000-7000-8000-000000000001.secret
+        rotate_by: '2026-09-01T00:00:00Z'
+        previous_valid_until: '2026-03-05T10:10:00Z'
+    CredentialCreate:
+      type: object
+      description: 'A manual credential: an RFID/BLE tag or a keypad PIN. Plates and QR codes are not created here.'
+      required:
+        - site_id
+        - kind
+        - value
+        - point_scope
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - tag
+            - pin
+        value:
+          type: string
+          minLength: 3
+          maxLength: 128
+          description: 'The tag id as the reader reports it, or the PIN digits. Write-only: stored as a salted hash and never returned; the agent compares the lowercased, trimmed raw value from its snapshot.'
+          x-secret: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Whose credential it is, for display and the audit.
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        label:
+          type: string
+          nullable: true
+          description: For example "Kapici tag".
+        point_scope:
+          type: string
+          enum:
+            - all_vehicle
+            - all_pedestrian
+            - all
+            - ids
+          description: Open on input; see `Credential.point_scope`.
+        point_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: 'Required with `point_scope: ids`.'
+        valid_from:
+          type: string
+          format: date-time
+          description: Default now.
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        recurring:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/RecurringWindow'
+          nullable: true
+        max_uses:
+          type: integer
+          format: int64
+          nullable: true
+      example:
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        kind: tag
+        value: 04a224b1c2
+        label: Kapici tag
+        point_scope: all_pedestrian
     ReauthEmailCode:
       type: object
       required:
@@ -23500,8 +25998,110 @@ components:
           description: Door numbers of units without an owner of record; nobody votes for them.
           items:
             type: string
+    Job:
+      type: object
+      description: A background job (River).
+      required:
+        - id
+        - org_id
+        - kind
+        - status
+        - progress
+        - result_file_id
+        - result
+        - error
+        - started_at
+        - finished_at
+        - created_by
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - import
+            - export
+            - report
+            - statement
+            - generate_document
+            - site_export
+            - site_import
+            - other
+          x-open-enum: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - queued
+            - running
+            - succeeded
+            - failed
+            - cancelled
+          x-open-enum: true
+        progress:
+          type: number
+          nullable: true
+          description: 0..1
+        result_file_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: A generated file ready for download (GET /v1/orgs/{org_id}/files/{id}).
+        result:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Kind-specific result summary.
+        error:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Problem-like object when failed.
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        kind: import
+        status: queued
+        progress: null
+        result_file_id: null
+        result: null
+        error: null
+        started_at: null
+        finished_at: null
+        created_by: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
 x-openbekci-roles:
   org_admin:
+    - access.manage
+    - access.open
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -23568,6 +26168,10 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   site_manager:
+    - access.manage
+    - access.open
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -23629,6 +26233,8 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   board_member:
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -23677,6 +26283,8 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   auditor:
+    - access.read
+    - access.view_events
     - announcements.read
     - audit.read
     - audit.report
@@ -23747,6 +26355,7 @@ x-openbekci-roles:
     - units.read
     - vendors.read
   guard:
+    - access.open
     - announcements.read
     - codes.read
     - files.read

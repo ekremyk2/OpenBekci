@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -53,6 +54,7 @@ type idEnv struct {
 	notes  *recNotifier
 	charge *recCharger
 	hooks  *recHooks
+	acc    *access.Service
 	cookie *http.Cookie
 	files  *files.Service
 	ops    *opsTest
@@ -100,13 +102,14 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	if perr != nil {
 		t.Fatal(perr)
 	}
+	e.acc = newTestAccess(t, d, cfg.Log)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc,
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	e.h = NewRouter(e.deps, Options{})

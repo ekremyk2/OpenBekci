@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
@@ -46,9 +47,11 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return err
 	}
 	go pruneIdentity(ctx, log, deps.Identity)
+	go rt.access.Run(ctx) // idle long-poll sessions
 	deps.Jobs = rt.jobs
 	deps.Ops = rt.ops.deps()
 	deps.Governance = rt.gov
+	deps.Access = rt.access
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
@@ -121,6 +124,7 @@ type runtime struct {
 	idem    *idempotency.PG
 	files   *files.Service
 	ops     *opsServices
+	access  *access.Service
 	working bool
 }
 
@@ -185,9 +189,14 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	acc, err := newAccess(cfg, log, d, comm)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
-		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w) },
-		Periodic: append(periodicGov, community.PeriodicJobs()...)})
+		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w); acc.Workers(w) },
+		Periodic: append(append(periodicGov, community.PeriodicJobs()...), access.PeriodicJobs()...)})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -200,7 +209,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, gov: gov, comm: comm, idem: idem, files: fs, ops: ops, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

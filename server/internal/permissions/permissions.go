@@ -3,6 +3,7 @@
 package permissions
 
 import (
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/announcements"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
@@ -42,6 +43,7 @@ func NewRegistry() (*authz.Registry, error) {
 		{"dashboards", dashboards.Permissions()},
 		{"governance", governance.Permissions()},
 		{"community", community.Permissions()},
+		{"access", access.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err

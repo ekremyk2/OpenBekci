@@ -29,6 +29,10 @@ tags:
     description: Everyday operation of the building; files, tickets, announcements, documents, notifications.
   - name: dashboards
     description: Site, portfolio and resident dashboards.
+  - name: access
+    description: Agents, access points, credentials, access events and manual open (release 0.3).
+  - name: agent
+    description: "Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1)."
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
@@ -401,8 +405,48 @@ paths:
     $ref: './paths/community/gate-guards.yaml'
   /v1/orgs/{org_id}/persons/{person_id}/gate-pin:
     $ref: './paths/community/persons-person_id-gate-pin.yaml'
+  /v1/orgs/{org_id}/access-points:
+    $ref: ./paths/access/access-points.yaml
+  /v1/orgs/{org_id}/access-points/{point_id}:
+    $ref: ./paths/access/access-points-point_id.yaml
+  /v1/orgs/{org_id}/access-points/{point_id}:open:
+    $ref: ./paths/access/access-points-point_id_open.yaml
+  /v1/orgs/{org_id}/agents:
+    $ref: ./paths/access/agents.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:
+    $ref: ./paths/access/agents-agent_id.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:reenrol:
+    $ref: ./paths/access/agents-agent_id_reenrol.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:revoke:
+    $ref: ./paths/access/agents-agent_id_revoke.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:rotate-token:
+    $ref: ./paths/access/agents-agent_id_rotate-token.yaml
+  /v1/orgs/{org_id}/access/credentials:
+    $ref: ./paths/access/credentials.yaml
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    $ref: ./paths/access/credentials-credential_id.yaml
+  /v1/orgs/{org_id}/access/allowlist:rebuild:
+    $ref: ./paths/access/access-allowlist_rebuild.yaml
+  /v1/orgs/{org_id}/access/events:
+    $ref: ./paths/access/access-events.yaml
+  /v1/orgs/{org_id}/gate/events:
+    $ref: ./paths/access/gate-events.yaml
+  /v1/orgs/{org_id}/access/commands/{command_id}:
+    $ref: ./paths/access/access-commands-command_id.yaml
+  /v1/agent/enrol:
+    $ref: ./paths/agent/agent-enrol.yaml
+  /v1/agent/poll:
+    $ref: ./paths/agent/agent-poll.yaml
+  /v1/agent/token:rotate:
+    $ref: ./paths/agent/agent-token_rotate.yaml
+  /v1/agent/ws:
+    $ref: ./paths/agent/agent-ws.yaml
 components:
   securitySchemes:
+    agentAuth:
+      type: http
+      scheme: bearer
+      description: On-site access agent token (`obk_agt_<agent_id>.<secret>`), scoped to one site. Used by `/v1/agent/*`.
     cookieAuth:
       type: apiKey
       in: cookie
@@ -1064,3 +1108,64 @@ components:
       $ref: './components/community.yaml#/schemas/GuardRef'
     GuardList:
       $ref: './components/community.yaml#/schemas/GuardList'
+
+    DriverRef:
+      $ref: ./components/access.yaml#/schemas/DriverRef
+    DriverState:
+      $ref: ./components/access.yaml#/schemas/DriverState
+    AccessPoint:
+      $ref: ./components/access.yaml#/schemas/AccessPoint
+    AccessPointCreate:
+      $ref: ./components/access.yaml#/schemas/AccessPointCreate
+    AccessPointUpdate:
+      $ref: ./components/access.yaml#/schemas/AccessPointUpdate
+    AccessPointList:
+      $ref: ./components/access.yaml#/schemas/AccessPointList
+    Agent:
+      $ref: ./components/access.yaml#/schemas/Agent
+    AgentCreate:
+      $ref: ./components/access.yaml#/schemas/AgentCreate
+    AgentUpdate:
+      $ref: ./components/access.yaml#/schemas/AgentUpdate
+    AgentList:
+      $ref: ./components/access.yaml#/schemas/AgentList
+    AgentEnrolment:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolment
+    AllowlistRebuild:
+      $ref: ./components/access.yaml#/schemas/AllowlistRebuild
+    RecurringWindow:
+      $ref: ./components/access.yaml#/schemas/RecurringWindow
+    Credential:
+      $ref: ./components/access.yaml#/schemas/Credential
+    CredentialList:
+      $ref: ./components/access.yaml#/schemas/CredentialList
+    AccessEvent:
+      $ref: ./components/access.yaml#/schemas/AccessEvent
+    AccessEventList:
+      $ref: ./components/access.yaml#/schemas/AccessEventList
+    GuardEventPoint:
+      $ref: ./components/access.yaml#/schemas/GuardEventPoint
+    GuardEventWho:
+      $ref: ./components/access.yaml#/schemas/GuardEventWho
+    GuardAccessEvent:
+      $ref: ./components/access.yaml#/schemas/GuardAccessEvent
+    GuardAccessEventList:
+      $ref: ./components/access.yaml#/schemas/GuardAccessEventList
+    OpenPointRequest:
+      $ref: ./components/access.yaml#/schemas/OpenPointRequest
+    AgentCommand:
+      $ref: ./components/access.yaml#/schemas/AgentCommand
+    AgentEnvelope:
+      $ref: ./components/access.yaml#/schemas/AgentEnvelope
+    AgentEnrolRequest:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolRequest
+    AgentEnrolResponse:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolResponse
+    AgentPollRequest:
+      $ref: ./components/access.yaml#/schemas/AgentPollRequest
+    AgentPollResponse:
+      $ref: ./components/access.yaml#/schemas/AgentPollResponse
+    AgentTokenRotated:
+      $ref: ./components/access.yaml#/schemas/AgentTokenRotated
+    CredentialCreate:
+      $ref: ./components/access.yaml#/schemas/CredentialCreate

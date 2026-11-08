@@ -22,10 +22,8 @@ get:
   x-openbekci-roles:
     org_admin:
       - access.open
-      - access.manage
     site_manager:
       - access.open
-      - access.manage
     guard:
       - access.open
   x-stability: preview

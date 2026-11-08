@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -53,6 +54,9 @@ type Deps struct {
 	// Community serves the community operations (bookings, visitors, guard console, parcels).
 	Community *community.Service
 	Audit     *audit.Service
+	// Access serves /v1/orgs/{org_id}/access-points, agents, credentials and events,
+	// and the agent transport under /v1/agent. Nil leaves them unwired (unit tests).
+	Access *access.Service
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service

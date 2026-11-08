@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -58,7 +59,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -73,6 +74,10 @@ func MountAPI(r chi.Router, deps Deps) {
 	})
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
+	if deps.Access != nil {
+		// the agent transport: documented in the spec, served outside the user pipeline
+		deps.Access.Mount(r)
+	}
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
 		BaseRouter:  r,
 		Middlewares: genMiddlewares(p.Middlewares()),
@@ -102,6 +107,7 @@ type apiServer struct {
 	people     *people.Service
 	governance *governance.Service
 	community  *community.Service
+	access     *access.Service
 	audit      *audit.Service
 	files      *files.Service
 	OpsDeps

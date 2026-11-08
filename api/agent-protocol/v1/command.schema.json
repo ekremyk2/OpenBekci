@@ -95,6 +95,10 @@
           "type": "integer",
           "minimum": 0
         },
+        "rotate_now": {
+          "type": "boolean",
+          "description": "Present and true when an administrator forced a token rotation while the agent is connected; the agent rotates at once (token:rotate). The same flag is in the server hello."
+        },
         "site": {
           "type": "object",
           "required": [

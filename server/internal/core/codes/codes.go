@@ -193,6 +193,8 @@ var sections = map[string]map[string]pair{
 		"sms_unavailable":         {"SMS is not available on this server", "Bu sunucuda SMS kullanılamıyor"},
 		"mail_unavailable":        {"Email is not available on this server", "Bu sunucuda e-posta kullanılamıyor"},
 		"payload_too_large":       {"The upload is too large", "Yükleme çok büyük"},
+		"agent_offline":           {"The gate agent is offline", "Kapı ajanı çevrimdışı"},
+		"agent_session_expired":   {"The agent session has expired", "Ajan oturumu sona erdi"},
 	},
 	"field_error_codes": {
 		"required":       {"Required", "Zorunlu"},

@@ -22036,7 +22036,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -22187,7 +22187,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -22354,225 +22354,6 @@ paths:
         '409':
           $ref: '#/components/responses/Problem'
         '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/credentials:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-    get:
-      operationId: access.listCredentials
-      summary: List credentials (derived, read-only)
-      description: |-
-        **Release 0.3.** List credentials (derived, read-only).
-
-        Permission: `access.read`.
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.read
-        site_manager:
-          - access.read
-        board_member:
-          - access.read
-        auditor:
-          - access.read
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/SiteIdRequired'
-        - name: kind
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - plate
-              - visitor_qr
-              - tag
-              - pin
-          description: Filter by `kind`.
-        - name: status
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - active
-              - suspended
-              - revoked
-              - expired
-          description: Filter by `status`.
-        - name: source_type
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - vehicle
-              - visitor_entry
-              - manual
-          description: Filter by `source_type`.
-        - name: unit_id
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter by unit.
-        - name: point_id
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter by `point_id`.
-        - name: q
-          in: query
-          schema:
-            type: string
-          description: Free-text search.
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Cursor'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CredentialList'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    post:
-      operationId: access.createCredential
-      summary: Create a tag or PIN credential
-      description: |-
-        **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
-
-        Permission: `access.manage`.
-
-        Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.manage
-        site_manager:
-          - access.manage
-      x-idempotent: required
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKeyRequired'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CredentialCreate'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Credential'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '409':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/credentials/{credential_id}:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-      - name: credential_id
-        in: path
-        required: true
-        description: Id of the credential.
-        schema:
-          type: string
-          format: uuid
-    get:
-      operationId: access.getCredential
-      summary: Get a credential
-      description: |-
-        **Release 0.3.** Get a credential.
-
-        Permission: `access.read`.
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.read
-        site_manager:
-          - access.read
-        board_member:
-          - access.read
-        auditor:
-          - access.read
-      x-stability: preview
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Credential'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    delete:
-      operationId: access.revokeCredential
-      summary: Revoke a manual credential
-      description: |-
-        **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
-
-        Permission: `access.manage`.
-
-        Problems: `conflict` (409).
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.manage
-        site_manager:
-          - access.manage
-      x-idempotent: optional
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
-      responses:
-        '204':
-          description: No content
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '409':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -22806,10 +22587,8 @@ paths:
       x-openbekci-roles:
         org_admin:
           - access.open
-          - access.manage
         site_manager:
           - access.open
-          - access.manage
         guard:
           - access.open
       x-stability: preview
@@ -23913,6 +23692,225 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listCredentials
+      summary: List credentials (derived, read-only)
+      description: |-
+        **Release 0.3.** List credentials (derived, read-only).
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - plate
+              - visitor_qr
+              - tag
+              - pin
+          description: Filter by `kind`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - active
+              - suspended
+              - revoked
+              - expired
+          description: Filter by `status`.
+        - name: source_type
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - vehicle
+              - visitor_entry
+              - manual
+          description: Filter by `source_type`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: point_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `point_id`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: access.createCredential
+      summary: Create a tag or PIN credential
+      description: |-
+        **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: credential_id
+        in: path
+        required: true
+        description: Id of the credential.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getCredential
+      summary: Get a credential
+      description: |-
+        **Release 0.3.** Get a credential.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: access.revokeCredential
+      summary: Revoke a manual credential
+      description: |-
+        **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -24119,6 +24117,8 @@ components:
             - unsupported_media_type
             - timeout
             - scan_unavailable
+            - agent_offline
+            - agent_session_expired
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.
@@ -40736,7 +40736,7 @@ components:
           description: 0 to 30 seconds to hold the request open when the server has nothing to send.
         session:
           type: string
-          description: The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`.
+          description: Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`.
       example:
         session: sess_0192a3f0100070008000000000000001
         messages: []
@@ -40756,7 +40756,7 @@ components:
           type: integer
           format: int64
           minimum: 1
-          description: Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+          description: 'Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.'
         messages:
           type: array
           items:
@@ -41829,6 +41829,10 @@ components:
       x-open-enum: true
       description: 'Open enum: every permission a role can hold (backend plan section 7).'
       enum:
+        - access.manage
+        - access.open
+        - access.read
+        - access.view_events
         - announcements.publish
         - announcements.read
         - attendance.manage

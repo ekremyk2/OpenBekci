@@ -10,6 +10,67 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AccessDirty struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	SourceType string
+	SourceID   pgtype.UUID
+	QueuedAt   pgtype.Timestamptz
+}
+
+type AccessEvent struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	PointID        pgtype.UUID
+	AgentID        pgtype.UUID
+	CredentialID   pgtype.UUID
+	Decision       string
+	Reason         string
+	PresentedKind  pgtype.Text
+	ObservedPlate  pgtype.Text
+	ActorUserID    pgtype.UUID
+	ActorDisplay   pgtype.Text
+	CommandID      pgtype.UUID
+	VisitorEntryID pgtype.UUID
+	OccurredAt     pgtype.Timestamptz
+	SyncedAt       pgtype.Timestamptz
+	SyncSeq        pgtype.Int8
+	RawRef         pgtype.Text
+	RawPayload     []byte
+}
+
+type AccessEventCounter struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Seq    int64
+}
+
+type AccessPoint struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Kind      string
+	Direction string
+	AgentID   pgtype.UUID
+	DriverRef []byte
+	Enabled   bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AccessSiteState struct {
+	OrgID         pgtype.UUID
+	SiteID        pgtype.UUID
+	Version       int64
+	ConfigVersion int64
+	ConfigHash    pgtype.Text
+	VisitorSince  pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
 type AgendaItem struct {
 	ID          pgtype.UUID
 	OrgID       pgtype.UUID
@@ -24,6 +85,64 @@ type AgendaItem struct {
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
 	Version     int32
+}
+
+type Agent struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	Name               string
+	Status             string
+	EnrolTokenHash     []byte
+	EnrolExpiresAt     pgtype.Timestamptz
+	EnrolUsedAt        pgtype.Timestamptz
+	TokenHash          []byte
+	PreviousTokenHash  []byte
+	PreviousValidUntil pgtype.Timestamptz
+	RotationSealed     []byte
+	RotateBy           pgtype.Timestamptz
+	RotateNow          bool
+	Hostname           pgtype.Text
+	Platform           pgtype.Text
+	AgentVersion       pgtype.Text
+	ProtocolVersion    pgtype.Int4
+	LastSeen           pgtype.Timestamptz
+	SnapshotVersion    pgtype.Int8
+	ConfigVersion      pgtype.Int8
+	QueueDepth         pgtype.Int8
+	DriversStatus      []byte
+	ClockOffsetMs      pgtype.Int8
+	ClockSuspect       bool
+	LostEvents         pgtype.Int8
+	StoreError         pgtype.Text
+	DeadLetters        pgtype.Int8
+	EnrolledAt         pgtype.Timestamptz
+	RevokedAt          pgtype.Timestamptz
+	RevokedBy          pgtype.UUID
+	CreatedBy          pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+	Version            int32
+}
+
+type AgentCommand struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgentID      pgtype.UUID
+	PointID      pgtype.UUID
+	Command      string
+	Payload      []byte
+	ActorUserID  pgtype.UUID
+	ActorDisplay pgtype.Text
+	Status       string
+	Result       []byte
+	IssuedAt     pgtype.Timestamptz
+	ExpiresAt    pgtype.Timestamptz
+	DeliveredAt  pgtype.Timestamptz
+	CompletedAt  pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
 }
 
 type AllocationKey struct {
@@ -50,6 +169,16 @@ type AllocationKeyValue struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
+}
+
+type AllowlistChange struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Version      int64
+	Op           string
+	CredentialID pgtype.UUID
+	Entry        []byte
+	At           pgtype.Timestamptz
 }
 
 type Announcement struct {
@@ -177,6 +306,31 @@ type Booking struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type Credential struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Kind         string
+	Value        string
+	SourceType   string
+	SourceID     pgtype.UUID
+	UnitID       pgtype.UUID
+	PersonID     pgtype.UUID
+	Label        pgtype.Text
+	PointScope   string
+	PointIds     []pgtype.UUID
+	ValidFrom    pgtype.Timestamptz
+	ValidTo      pgtype.Timestamptz
+	Recurring    []byte
+	MaxUses      pgtype.Int4
+	Uses         int32
+	Status       string
+	StatusReason pgtype.Text
+	Published    []byte
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
 }
 
 type Decision struct {

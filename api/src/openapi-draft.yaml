@@ -630,10 +630,6 @@ paths:
     $ref: ./paths/access/agents-agent_id_rotate-token.yaml
   /v1/orgs/{org_id}/access/allowlist:rebuild:
     $ref: ./paths/access/access-allowlist_rebuild.yaml
-  /v1/orgs/{org_id}/credentials:
-    $ref: ./paths/access/credentials.yaml
-  /v1/orgs/{org_id}/credentials/{credential_id}:
-    $ref: ./paths/access/credentials-credential_id.yaml
   /v1/orgs/{org_id}/access/events:
     $ref: ./paths/access/access-events.yaml
   /v1/orgs/{org_id}/gate/events:
@@ -688,6 +684,10 @@ paths:
     $ref: './paths/community/recurring-visitors-recurring_visitor_id_rotate-qr.yaml'
   /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
     $ref: './paths/community/visitor-entries-entry_id_rotate-qr.yaml'
+  /v1/orgs/{org_id}/access/credentials:
+    $ref: ./paths/access/credentials.yaml
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    $ref: ./paths/access/credentials-credential_id.yaml
 
 components:
   securitySchemes:

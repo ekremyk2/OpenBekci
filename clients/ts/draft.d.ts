@@ -8970,74 +8970,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/credentials": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List credentials (derived, read-only)
-         * @description **Release 0.3.** List credentials (derived, read-only).
-         *
-         *     Permission: `access.read`.
-         */
-        get: operations["access.listCredentials"];
-        put?: never;
-        /**
-         * Create a tag or PIN credential
-         * @description **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
-         *
-         *     Permission: `access.manage`.
-         *
-         *     Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
-         */
-        post: operations["access.createCredential"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/credentials/{credential_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get a credential
-         * @description **Release 0.3.** Get a credential.
-         *
-         *     Permission: `access.read`.
-         */
-        get: operations["access.getCredential"];
-        put?: never;
-        post?: never;
-        /**
-         * Revoke a manual credential
-         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
-         *
-         *     Permission: `access.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        delete: operations["access.revokeCredential"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/access/events": {
         parameters: {
             query?: never;
@@ -9724,6 +9656,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/access/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List credentials (derived, read-only)
+         * @description **Release 0.3.** List credentials (derived, read-only).
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.listCredentials"];
+        put?: never;
+        /**
+         * Create a tag or PIN credential
+         * @description **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+         */
+        post: operations["access.createCredential"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/credentials/{credential_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a credential
+         * @description **Release 0.3.** Get a credential.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.getCredential"];
+        put?: never;
+        post?: never;
+        /**
+         * Revoke a manual credential
+         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["access.revokeCredential"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -9745,7 +9745,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -20229,7 +20229,7 @@ export interface components {
              * @description 0 to 30 seconds to hold the request open when the server has nothing to send.
              */
             wait_seconds: number;
-            /** @description The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`. */
+            /** @description Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`. */
             session?: string;
         };
         /**
@@ -20245,7 +20245,7 @@ export interface components {
             session: string;
             /**
              * Format: int64
-             * @description Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+             * @description Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
              */
             seq: number;
             messages: components["schemas"]["AgentEnvelope"][];
@@ -20904,7 +20904,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
         /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
         TicketWorkflowRestore: {
             /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
@@ -35786,147 +35786,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "access.listCredentials": {
-        parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by `kind`. */
-                kind?: string;
-                /** @description Filter by `status`. */
-                status?: string;
-                /** @description Filter by `source_type`. */
-                source_type?: string;
-                /** @description Filter by unit. */
-                unit_id?: string;
-                /** @description Filter by `point_id`. */
-                point_id?: string;
-                /** @description Free-text search. */
-                q?: string;
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CredentialList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.createCredential": {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CredentialCreate"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Credential"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.getCredential": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Credential"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.revokeCredential": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "access.listAccessEvents": {
         parameters: {
             query: {
@@ -36860,6 +36719,147 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VisitorEntry"];
                 };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listCredentials": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `source_type`. */
+                source_type?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `point_id`. */
+                point_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CredentialList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.createCredential": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CredentialCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getCredential": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.revokeCredential": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];

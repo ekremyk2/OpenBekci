@@ -134,6 +134,16 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"gate_pin":                 "guard PINs are credentials of the organization's people and are set again after the hand-over",
 	"gate_pin_attempt":         "operational record of PIN attempts",
 	"guard_session":            "console sessions end with the hand-over",
+	// access control: bound to the hardware on the site and re-derived in the new organization
+	"agent":                "agents are enrolled against one organization; enrol again after the hand-over",
+	"access_point":         "access points name the agent that drives them; configure them again after the hand-over",
+	"access_site_state":    "allow-list bookkeeping of the old organization",
+	"credential":           "derived from vehicles and visitor entries; the projector rebuilds them",
+	"allowlist_change":     "change log of the old organization's allow-list",
+	"agent_command":        "commands for agents of the old organization",
+	"access_event":         "the opening log stays with the organization that recorded it",
+	"access_dirty":         "outbox of the projector",
+	"access_event_counter": "sequence counter of the opening log, which stays with the old organization",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

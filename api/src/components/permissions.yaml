@@ -6,6 +6,10 @@ schemas:
     x-open-enum: true
     description: 'Open enum: every permission a role can hold (backend plan section 7).'
     enum:
+      - access.manage
+      - access.open
+      - access.read
+      - access.view_events
       - announcements.publish
       - announcements.read
       - attendance.manage
@@ -82,6 +86,10 @@ schemas:
       - visitors.read
 x-openbekci-roles:
   org_admin:
+    - access.manage
+    - access.open
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -148,6 +156,10 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   site_manager:
+    - access.manage
+    - access.open
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -209,6 +221,8 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   board_member:
+    - access.read
+    - access.view_events
     - announcements.publish
     - announcements.read
     - attendance.manage
@@ -257,6 +271,8 @@ x-openbekci-roles:
     - visitors.manage
     - visitors.read
   auditor:
+    - access.read
+    - access.view_events
     - announcements.read
     - audit.read
     - audit.report
@@ -327,6 +343,7 @@ x-openbekci-roles:
     - units.read
     - vendors.read
   guard:
+    - access.open
     - announcements.read
     - codes.read
     - files.read
