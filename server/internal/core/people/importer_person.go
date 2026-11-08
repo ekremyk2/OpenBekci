@@ -66,7 +66,7 @@ func (st *importState) person(ctx context.Context, tx pgx.Tx, unit tenancy.Unit,
 			return false, nil // already there: re-importing the file changes nothing
 		}
 	}
-	if len(current) > 0 && !(kind == KindOwner && (st.replaceOwner || r.coOwnerRow)) {
+	if len(current) > 0 && (kind != KindOwner || (!st.replaceOwner && !r.coOwnerRow)) {
 		r.warn(column, "unit_has_different_"+kind)
 		return false, nil
 	}

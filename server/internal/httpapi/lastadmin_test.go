@@ -2,7 +2,6 @@ package httpapi
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"testing"
 
@@ -45,6 +44,6 @@ func TestIntegrationLastOrgAdminSurvivesConcurrentRemoval(t *testing.T) {
 	}
 	wg.Wait()
 	if n := p.qInt(`SELECT count(*) FROM membership WHERE org_id = $1 AND role = 'org_admin' AND scope_type = 'org' AND valid_from <= now() AND (valid_to IS NULL OR valid_to > now())`, p.org.ID); n < 1 {
-		t.Fatal(fmt.Sprintf("the organization was left without an administrator (%d)", n))
+		t.Fatalf("the organization was left without an administrator (%d)", n)
 	}
 }
