@@ -364,12 +364,20 @@ func (s *Service) offboard(ctx context.Context, orgID, siteID uuid.UUID, needExp
 			return err
 		}
 		if needExport {
-			var n int
-			if err := tx.QueryRow(ctx, `SELECT count(*) FROM site_export WHERE org_id = $1 AND site_id = $2 AND direction = 'export' AND status = 'done'`, orgID, siteID).Scan(&n); err != nil {
+			var last *time.Time
+			if err := tx.QueryRow(ctx, `SELECT max(at) FROM site_export WHERE org_id = $1 AND site_id = $2 AND direction = 'export' AND status = 'done'`, orgID, siteID).Scan(&last); err != nil {
 				return err
 			}
-			if n == 0 {
+			if last == nil {
 				return problem.Conflict("export the site before offboarding it")
+			}
+			// the export must be newer than the site's last change, or the hand-over would miss it
+			changed, err := siteHighWater(ctx, tx, orgID, siteID)
+			if err != nil {
+				return err
+			}
+			if changed != nil && changed.After(*last) {
+				return problem.Conflict("stale_export: the site changed after the last export; export it again before offboarding")
 			}
 		}
 		var ended int64

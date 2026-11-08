@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
@@ -148,7 +149,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}})
 	if err != nil {
 		d.Close()
 		return nil, err
