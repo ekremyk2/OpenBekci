@@ -148,7 +148,7 @@ func (s *Service) planRateChange(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	if e.PlanID == uuid.Nil {
 		return ch, bad("plan_id", "required")
 	}
-	from, err := ledger.ParseDate(e.From)
+	_, err := ledger.ParseDate(e.From)
 	if err != nil {
 		return ch, bad("from", "invalid_format")
 	}
@@ -207,7 +207,7 @@ func (s *Service) planRateChange(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	}
 	// the date is a civil date of the site: compare and subtract in its zone, as the schedule is loaded
 	tz := ledger.Location(site.Timezone)
-	from, err = time.ParseInLocation(ledger.DateLayout, e.From, tz)
+	from, err := time.ParseInLocation(ledger.DateLayout, e.From, tz)
 	if err != nil {
 		return ch, bad("from", "invalid_format")
 	}
