@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -66,12 +67,27 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			return
 		}
 
-		body, err := io.ReadAll(r.Body) // already capped by maxBody
-		if err != nil {
-			problem.Write(w, r, bodyReadError(err))
-			return
+		var body []byte
+		var digest *uploadDigest
+		if info.stream {
+			// A streamed body (file upload) is not buffered to be hashed, and
+			// its multipart boundary and length differ between retries, so the
+			// request hash covers method, path and query only. What was
+			// uploaded is compared by content: the handler records the SHA-256
+			// of the form while it streams it, the store keeps it with the key,
+			// and a retry is read through the same digest before it replays.
+			body = []byte("stream")
+			digest = &uploadDigest{}
+			r = r.WithContext(context.WithValue(r.Context(), uploadDigestKey{}, digest))
+		} else {
+			var err error
+			body, err = io.ReadAll(r.Body) // already capped by maxBody
+			if err != nil {
+				problem.Write(w, r, bodyReadError(err))
+				return
+			}
+			r.Body = io.NopCloser(bytes.NewReader(body))
 		}
-		r.Body = io.NopCloser(bytes.NewReader(body))
 		hash := requestHash(r, body)
 		scope := requestScope(r, principal)
 
@@ -91,6 +107,20 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 				"this Idempotency-Key was already used with a different request"))
 			return
 		case idempotency.Replay:
+			if info.stream && res.Response.Digest != "" {
+				// Same key, same route: it is a replay only if the same content
+				// comes in again. Nothing is stored on this path.
+				got, err := formDigest(r)
+				if err != nil {
+					problem.Write(w, r, err)
+					return
+				}
+				if got != res.Response.Digest {
+					problem.Write(w, r, problem.New(http.StatusUnprocessableEntity, problem.CodeIdempotencyMismatch,
+						"this Idempotency-Key was already used with a different file"))
+					return
+				}
+			}
 			replay(w, res.Response)
 			return
 		case idempotency.Acquired:
@@ -104,7 +134,11 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			defer scancel()
 			var serr error
 			if finished && rec.statusCode() < http.StatusInternalServerError {
-				serr = p.idem.Complete(sctx, scope, key, res.Owner, rec.stored())
+				stored := rec.stored()
+				if digest != nil {
+					stored.Digest = digest.get()
+				}
+				serr = p.idem.Complete(sctx, scope, key, res.Owner, stored)
 			} else {
 				serr = p.idem.Abort(sctx, scope, key, res.Owner)
 			}
@@ -279,7 +313,9 @@ func (p *pipeline) validateResponse(r *http.Request, buf *bufferedResponse) erro
 		RequestValidationInput: &openapi3filter.RequestValidationInput{Request: r, PathParams: params, Route: route},
 		Status:                 buf.statusCode(),
 		Header:                 buf.header,
-		Options:                &openapi3filter.Options{IncludeResponseStatus: true},
+		// A streamed binary response (a file download) is not decoded: the spec
+		// declares it as an opaque binary, and the headers are still checked.
+		Options: &openapi3filter.Options{IncludeResponseStatus: true, ExcludeResponseBody: p.op(r).stream && !strings.Contains(buf.header.Get("Content-Type"), "json")},
 	}
 	in.SetBodyBytes(buf.body.Bytes())
 	return openapi3filter.ValidateResponse(r.Context(), in)

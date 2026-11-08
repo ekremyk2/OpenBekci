@@ -53,6 +53,21 @@ func rolesOf(op *openapi3.Operation) map[string][]string {
 	return out
 }
 
+// listedPermsOf reads the other form of x-openbekci-roles: a served operation lists the
+// permissions it needs (the draft maps roles to them).
+func listedPermsOf(op *openapi3.Operation) []string {
+	raw, ok := op.Extensions["x-openbekci-roles"]
+	if !ok {
+		return nil
+	}
+	b, _ := json.Marshal(raw)
+	var list []string
+	if json.Unmarshal(b, &list) != nil {
+		return nil
+	}
+	return list
+}
+
 func paramNames(item *openapi3.PathItem, op *openapi3.Operation, in string) map[string]*openapi3.Parameter {
 	out := map[string]*openapi3.Parameter{}
 	for _, params := range []openapi3.Parameters{item.Parameters, op.Parameters} {
@@ -219,6 +234,9 @@ func TestDraftPermissionsDocumented(t *testing.T) {
 	permName := regexp.MustCompile(`^[a-z_]+\.[a-z_]+$`)
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
+			for _, p := range listedPermsOf(op) {
+				used[p] = true
+			}
 			for role, perms := range rolesOf(op) {
 				if role == "" {
 					t.Errorf("%s %s: empty role key", method, path)

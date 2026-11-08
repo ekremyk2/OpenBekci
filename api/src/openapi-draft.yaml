@@ -1404,8 +1404,16 @@ components:
       $ref: ./components/operations.yaml#/schemas/NotificationMutesSet
     SmsUsage:
       $ref: ./components/operations.yaml#/schemas/SmsUsage
+    FileVariant:
+      $ref: ./components/files.yaml#/schemas/FileVariant
+    FileLinks:
+      $ref: ./components/files.yaml#/schemas/FileLinks
     File:
-      $ref: ./components/operations.yaml#/schemas/File
+      $ref: ./components/files.yaml#/schemas/File
+    FileList:
+      $ref: ./components/files.yaml#/schemas/FileList
+    FileUpload:
+      $ref: ./components/files.yaml#/schemas/FileUpload
     ExportRequest:
       $ref: ./components/operations.yaml#/schemas/ExportRequest
     AuditEvent:

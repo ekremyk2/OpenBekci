@@ -61,6 +61,8 @@ var exportTables = []exportTable{
 	{"unit_claim", `SELECT to_jsonb(t) FROM unit_claim t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"membership", `SELECT to_jsonb(t) FROM membership t WHERE t.org_id = $1 AND t.site_owned AND ((t.scope_type = 'site' AND t.scope_id = $2)
 		OR (t.scope_type = 'block' AND t.scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2))) ORDER BY t.id`},
+	// operations (daily operation): files first, the tables that point at them after
+	{"file", `SELECT to_jsonb(t) FROM file t WHERE t.org_id = $1 AND t.site_id = $2 AND t.status <> 'deleted' ORDER BY t.id`},
 }
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
@@ -71,6 +73,8 @@ var excludedTables = map[string]string{
 	"import_batch": "operational record of spreadsheet imports",
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+
+	"org_storage_usage": "derived byte counter of the organization; recomputed from its files",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

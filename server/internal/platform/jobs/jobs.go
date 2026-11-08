@@ -30,6 +30,41 @@ type Options struct {
 	// ExpireArchives clears stored site archives past their retention (daily).
 	// Nil registers neither the worker nor the schedule.
 	ExpireArchives Pruner
+	// Files is run hourly by maintenance.prune_files (retention, the blobs of
+	// deleted files). Nil registers neither the worker nor the schedule.
+	Files FilePruner
+}
+
+// FilePruner removes expired and deleted files (*files.Service); the count is
+// how many files had their blobs purged.
+type FilePruner interface {
+	PruneFiles(ctx context.Context) (int, error)
+}
+
+// PruneFilesInterval is how often retention and deleted files are processed.
+const PruneFilesInterval = time.Hour
+
+// PruneFilesArgs is the arguments of maintenance.prune_files.
+type PruneFilesArgs struct{}
+
+// Kind implements river.JobArgs.
+func (PruneFilesArgs) Kind() string { return "maintenance.prune_files" }
+
+type pruneFilesWorker struct {
+	river.WorkerDefaults[PruneFilesArgs]
+	log    *slog.Logger
+	pruner FilePruner
+}
+
+func (w *pruneFilesWorker) Work(ctx context.Context, _ *river.Job[PruneFilesArgs]) error {
+	n, err := w.pruner.PruneFiles(ctx)
+	if n > 0 {
+		w.log.InfoContext(ctx, "pruned files", "purged", n)
+	}
+	if err != nil {
+		return fmt.Errorf("prune files: %w", err)
+	}
+	return nil
 }
 
 // Pruner deletes expired idempotency keys (*idempotency.PG).
@@ -116,6 +151,10 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 		river.AddWorker(workers, &expireArchivesWorker{log: log, pruner: o.ExpireArchives})
 	}
 
+	if o.Files != nil {
+		river.AddWorker(workers, &pruneFilesWorker{log: log, pruner: o.Files})
+	}
+
 	cfg := &river.Config{
 		Logger:   log,
 		Workers:  workers,
@@ -132,16 +171,21 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 				&river.PeriodicJobOpts{RunOnStart: true},
 			))
 		}
+		// Hourly, and once when the worker starts. River enqueues them from
+		// the elected leader only, so replicas do not prune in parallel.
 		if o.Idempotency != nil {
-			// Hourly, and once when the worker starts. River enqueues it from
-			// the elected leader only, so replicas do not prune in parallel.
-			cfg.PeriodicJobs = append(cfg.PeriodicJobs,
-				river.NewPeriodicJob(
-					river.PeriodicInterval(PruneIdempotencyInterval),
-					func() (river.JobArgs, *river.InsertOpts) { return PruneIdempotencyArgs{}, nil },
-					&river.PeriodicJobOpts{RunOnStart: true},
-				),
-			)
+			cfg.PeriodicJobs = append(cfg.PeriodicJobs, river.NewPeriodicJob(
+				river.PeriodicInterval(PruneIdempotencyInterval),
+				func() (river.JobArgs, *river.InsertOpts) { return PruneIdempotencyArgs{}, nil },
+				&river.PeriodicJobOpts{RunOnStart: true},
+			))
+		}
+		if o.Files != nil {
+			cfg.PeriodicJobs = append(cfg.PeriodicJobs, river.NewPeriodicJob(
+				river.PeriodicInterval(PruneFilesInterval),
+				func() (river.JobArgs, *river.InsertOpts) { return PruneFilesArgs{}, nil },
+				&river.PeriodicJobOpts{RunOnStart: true},
+			))
 		}
 	}
 	c, err := river.NewClient(riverpgxv5.New(pool), cfg)

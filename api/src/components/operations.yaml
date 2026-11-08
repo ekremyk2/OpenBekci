@@ -1809,68 +1809,6 @@ schemas:
         type: integer
         format: int64
         nullable: true
-  File:
-    type: object
-    description: An uploaded or generated file.
-    required:
-      - id
-      - org_id
-      - site_id
-      - size
-      - mime
-      - sha256
-      - uploaded_by
-      - scope
-      - status
-      - has_variants
-      - retention_until
-      - created_at
-      - updated_at
-    properties:
-      id:
-        type: string
-        format: uuid
-      org_id:
-        type: string
-        format: uuid
-      site_id:
-        type: string
-        format: uuid
-        nullable: true
-      size:
-        type: integer
-        format: int64
-      mime:
-        type: string
-      sha256:
-        type: string
-      uploaded_by:
-        type: string
-        format: uuid
-        nullable: true
-      scope:
-        type: string
-        nullable: true
-      status:
-        type: string
-        description: Open enum.
-        enum:
-          - ready
-          - quarantined
-        x-open-enum: true
-      has_variants:
-        type: boolean
-        description: "Images: `thumb` and `medium` exist."
-      retention_until:
-        type: string
-        format: date-time
-        nullable: true
-      created_at:
-        type: string
-        format: date-time
-      updated_at:
-        type: string
-        format: date-time
   ExportRequest:
     type: object
     required:

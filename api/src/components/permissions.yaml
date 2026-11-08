@@ -12,6 +12,9 @@ schemas:
       - codes.read
       - directory.read
       - exports.create
+      - files.manage
+      - files.read
+      - files.upload
       - invitations.household
       - invitations.manage
       - jobs.read
@@ -52,6 +55,9 @@ x-openbekci-roles:
     - codes.read
     - directory.read
     - exports.create
+    - files.manage
+    - files.read
+    - files.upload
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -89,6 +95,9 @@ x-openbekci-roles:
     - codes.read
     - directory.read
     - exports.create
+    - files.manage
+    - files.read
+    - files.upload
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -121,6 +130,8 @@ x-openbekci-roles:
     - codes.read
     - directory.read
     - exports.create
+    - files.read
+    - files.upload
     - invitations.manage
     - jobs.read
     - me.manage
@@ -148,6 +159,8 @@ x-openbekci-roles:
     - codes.read
     - directory.read
     - exports.create
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -165,6 +178,8 @@ x-openbekci-roles:
   accountant:
     - codes.read
     - exports.create
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -177,6 +192,8 @@ x-openbekci-roles:
     - vendors.read
   staff:
     - codes.read
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -187,6 +204,8 @@ x-openbekci-roles:
     - vendors.read
   guard:
     - codes.read
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read

@@ -81,6 +81,12 @@ type opInfo struct {
 	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
 	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
 	query      map[string]bool    // declared query parameter names
+	// stream is x-openbekci-stream: the operation streams a request body
+	// (multipart upload) or a binary response (download). Its request body is
+	// not buffered for validation or hashed for idempotency, and a binary
+	// response is not buffered by the response validator.
+	stream  bool
+	hasBody bool // the operation declares a request body
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -117,6 +123,8 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),
 				orgScoped:  isOrgPath(path),
+				stream:     extBool(op.Extensions, "x-openbekci-stream"),
+				hasBody:    op.RequestBody != nil,
 				perms:      extPermissions(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
@@ -226,6 +234,18 @@ func extString(ext map[string]any, name string) string {
 	return ""
 }
 
+// extBool reads a boolean extension.
+func extBool(ext map[string]any, name string) bool {
+	switch v := ext[name].(type) {
+	case bool:
+		return v
+	case json.RawMessage:
+		var b bool
+		return json.Unmarshal(v, &b) == nil && b
+	}
+	return false
+}
+
 // op finds the operation being served from the chi route pattern. It is only
 // meaningful inside a route-level middleware.
 func (p *pipeline) op(r *http.Request) opInfo {
@@ -249,7 +269,7 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 		p.authenticate,
 		p.authzContext,
 		p.rejectUnknownQuery,
-		requestValidator(p.spec),
+		p.validation,
 		p.idempotency,
 	)
 	return chain
@@ -295,6 +315,13 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mode := p.op(r).auth
 		if mode == authNone {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if mode == authOptional && r.URL.Query().Has("sig") && p.op(r).query["sig"] && p.op(r).query["exp"] {
+			// A signed URL (a download link) stands on its signature: a session
+			// that comes along, from a cookie, a token or another organization,
+			// must not change the outcome, so it is not even looked at.
 			next.ServeHTTP(w, r)
 			return
 		}
