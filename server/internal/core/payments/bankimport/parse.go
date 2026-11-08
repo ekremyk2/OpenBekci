@@ -231,7 +231,7 @@ func readCSV(data []byte, delim *string) ([][]string, error) {
 			return rows, nil
 		}
 		if err != nil {
-			return nil, fmt.Errorf("the CSV is malformed: %v", err)
+			return nil, fmt.Errorf("the CSV is malformed: %w", err)
 		}
 		rows = append(rows, rec)
 	}

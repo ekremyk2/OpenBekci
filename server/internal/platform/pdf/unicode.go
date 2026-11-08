@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"compress/zlib"
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
+	"unicode/utf16"
 
 	"golang.org/x/image/font/gofont/gobold"
 	"golang.org/x/image/font/gofont/goregular"
@@ -224,11 +225,11 @@ func (d *UDoc) Bytes() []byte {
 	_ = pagesObj
 	fontRefs := [2]int{}
 	for i, f := range d.fonts {
-		gids := make([]int, 0, len(f.used))
+		gids := make([]uint16, 0, len(f.used))
 		for g := range f.used {
-			gids = append(gids, int(g))
+			gids = append(gids, g)
 		}
-		sort.Ints(gids)
+		slices.Sort(gids)
 		var w, cm strings.Builder
 		w.WriteString("[")
 		cm.WriteString("/CIDInit /ProcSet findresource begin 12 dict begin begincmap /CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def /CMapName /Adobe-Identity-UCS def /CMapType 2 def 1 begincodespacerange <0000> <FFFF> endcodespacerange\n")
@@ -236,13 +237,13 @@ func (d *UDoc) Bytes() []byte {
 			end := min(k+100, len(gids))
 			fmt.Fprintf(&cm, "%d beginbfchar\n", end-k)
 			for _, g := range gids[k:end] {
-				fmt.Fprintf(&cm, "<%04X> <%04X>\n", g, f.used[uint16(g)])
+				fmt.Fprintf(&cm, "<%04X> <%04X>\n", g, f.used[g])
 			}
 			cm.WriteString("endbfchar\n")
 		}
 		cm.WriteString("endcmap CMapName currentdict /CMap defineresource pop end end")
 		for _, g := range gids {
-			fmt.Fprintf(&w, "%d [%d] ", g, f.wid[uint16(g)])
+			fmt.Fprintf(&w, "%d [%d] ", g, f.wid[g])
 		}
 		w.WriteString("]")
 		name := fmt.Sprintf("OpenBekciGo%d", i)
@@ -268,24 +269,11 @@ func (d *UDoc) Bytes() []byte {
 func pdfString(s string) string {
 	var sb strings.Builder
 	sb.WriteString("<FEFF")
-	for _, u := range encodeUTF16(s) {
+	for _, u := range utf16.Encode([]rune(s)) {
 		fmt.Fprintf(&sb, "%04X", u)
 	}
 	sb.WriteString(">")
 	return sb.String()
-}
-
-func encodeUTF16(s string) []uint16 {
-	var out []uint16
-	for _, r := range s {
-		if r >= 0x10000 {
-			r -= 0x10000
-			out = append(out, uint16(0xD800+(r>>10)), uint16(0xDC00+(r&0x3FF)))
-		} else {
-			out = append(out, uint16(r))
-		}
-	}
-	return out
 }
 
 // finalize replaces the placeholder of the page tree (object 2) and writes the cross-reference table.

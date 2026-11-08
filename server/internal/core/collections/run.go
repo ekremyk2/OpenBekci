@@ -36,7 +36,6 @@ type debtorState struct {
 	Days       int
 	Frozen     bool
 	Period     string
-	oldestTime time.Time
 }
 
 // debtorStates lists the debtors of a site that have overdue open charges on today, with
