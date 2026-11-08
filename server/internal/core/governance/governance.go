@@ -217,6 +217,11 @@ type LocalFiler struct{}
 // File implements DocumentFiler.
 func (LocalFiler) File(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, doc Document) (FiledDocument, error) {
 	id := newID()
+	// one document per meeting and kind: regenerating the minutes replaces the
+	// previous bytes (the old row is pruned) instead of piling them up
+	if _, err := tx.Exec(ctx, `DELETE FROM meeting_document WHERE org_id = $1 AND meeting_id = $2 AND kind = $3`, orgID, doc.MeetingID, doc.Kind); err != nil {
+		return FiledDocument{}, err
+	}
 	_, err := tx.Exec(ctx, `INSERT INTO meeting_document (id, org_id, site_id, meeting_id, kind, file_name, mime, content, created_by)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, id, orgID, doc.SiteID, doc.MeetingID, doc.Kind, doc.FileName, doc.MIME, doc.Content, principalID(ctx))
 	return FiledDocument{DocumentID: id, FileID: id}, err

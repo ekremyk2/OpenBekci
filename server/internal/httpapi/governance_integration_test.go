@@ -454,6 +454,14 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 
 	// minutes
 	mn := c.must(200, mgr, "POST", base(mpath+"/minutes:generate"), ``)
+	mn = c.must(200, mgr, "POST", base(mpath+"/minutes:generate"), ``) // regenerating replaces the stored bytes: one minutes document per meeting
+	var minutesRows int
+	_ = e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT count(*) FROM meeting_document WHERE org_id = $1 AND meeting_id = $2 AND kind = 'minutes'`, org.ID, uuid.MustParse(mid)).Scan(&minutesRows)
+	})
+	if minutesRows != 1 {
+		t.Fatalf("%d stored minutes documents, want 1", minutesRows)
+	}
 	got := c.must(200, mgr, "GET", base(mpath+"/minutes"), "")
 	if gstr(mn, "document_id") == "" || gstr(got, "document_id") != gstr(mn, "document_id") || gstr(got, "file_id") != gstr(mn, "file_id") {
 		t.Fatalf("minutes = %v / %v", mn, got)

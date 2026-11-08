@@ -8,8 +8,6 @@ import (
 
 	"github.com/go-pdf/fpdf"
 	"github.com/skip2/go-qrcode"
-	"golang.org/x/image/font/gofont/gobold"
-	"golang.org/x/image/font/gofont/goregular"
 )
 
 // DocBlock is one block of a generated document.
@@ -69,26 +67,26 @@ func (m DocModel) PDF() ([]byte, error) {
 	pdf := fpdf.New("P", "mm", "A4", "")
 	pdf.SetMargins(20, 20, 20)
 	pdf.SetAutoPageBreak(true, 20)
-	pdf.AddUTF8FontFromBytes("go", "", goregular.TTF)
-	pdf.AddUTF8FontFromBytes("go", "B", gobold.TTF)
+	pdf.AddUTF8FontFromBytes("noto", "", notoRegular)
+	pdf.AddUTF8FontFromBytes("noto", "B", notoBold)
 	pdf.SetTitle(m.Title, true)
 	pdf.SetCreator("OpenBekci", true)
 	pdf.AddPage()
 	const lh = 5.5
-	pdf.SetFont("go", "B", 14)
+	pdf.SetFont("noto", "B", 14)
 	pdf.MultiCell(0, 7, m.Title, "", "C", false)
-	pdf.SetFont("go", "", 10)
+	pdf.SetFont("noto", "", 10)
 	for _, l := range m.Lines {
 		pdf.MultiCell(0, lh, l, "", "C", false)
 	}
 	pdf.Ln(4)
 	imgN := 0
 	for _, blk := range m.Body {
-		pdf.SetFont("go", "", 10.5)
+		pdf.SetFont("noto", "", 10.5)
 		switch blk.Kind {
 		case "h":
 			pdf.Ln(2)
-			pdf.SetFont("go", "B", 11.5)
+			pdf.SetFont("noto", "B", 11.5)
 			pdf.MultiCell(0, 6.5, blk.Text, "", "L", false)
 		case "p":
 			pdf.MultiCell(0, lh, blk.Text, "", "L", false)
@@ -97,9 +95,9 @@ func (m DocModel) PDF() ([]byte, error) {
 			pdf.SetX(26)
 			pdf.MultiCell(0, lh, blk.Text, "", "L", false)
 		case "kv":
-			pdf.SetFont("go", "B", 10.5)
+			pdf.SetFont("noto", "B", 10.5)
 			pdf.CellFormat(55, lh, blk.Label, "", 0, "L", false, 0, "")
-			pdf.SetFont("go", "", 10.5)
+			pdf.SetFont("noto", "", 10.5)
 			pdf.MultiCell(0, lh, blk.Text, "", "L", false)
 		case "table":
 			drawTable(pdf, blk)
@@ -112,7 +110,7 @@ func (m DocModel) PDF() ([]byte, error) {
 			}
 			pdf.ImageOptions(name, pdf.GetX(), pdf.GetY(), 38, 38, false, fpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 			pdf.Ln(40)
-			pdf.SetFont("go", "", 9)
+			pdf.SetFont("noto", "", 9)
 			pdf.MultiCell(0, 4.5, blk.Text, "", "L", false)
 		case "sign":
 			pdf.Ln(12)
@@ -148,29 +146,64 @@ func drawTable(pdf *fpdf.Fpdf, blk DocBlock) {
 	for i, w := range weights {
 		widths[i] = avail * w / sum
 	}
-	pdf.SetFont("go", "B", 9)
-	for i, h := range blk.Header {
-		pdf.CellFormat(widths[i], 7, h, "1", 0, "L", false, 0, "")
-	}
-	pdf.Ln(-1)
-	pdf.SetFont("go", "", 9)
-	for _, row := range blk.Rows {
-		for i, c := range row {
-			if i < len(widths) {
-				pdf.CellFormat(widths[i], 7, truncate(c, int(widths[i]/1.9)), "1", 0, "L", false, 0, "")
-			}
+	header := func() {
+		pdf.SetFont("noto", "B", 9)
+		for i, h := range blk.Header {
+			pdf.CellFormat(widths[i], 7, h, "1", 0, "L", false, 0, "")
 		}
 		pdf.Ln(-1)
+		pdf.SetFont("noto", "", 9)
+	}
+	header()
+	// Cells wrap onto several lines; a row is as tall as its tallest cell and
+	// moves to the next page whole. Nothing is cut: owner names and unit labels
+	// of the hazirun cetveli must be readable in full.
+	const lineH = 4.6
+	_, pageH := pdf.GetPageSize()
+	_, _, _, bottom := pdf.GetMargins()
+	for _, row := range blk.Rows {
+		lines := 1
+		for i, c := range row {
+			if i < len(widths) {
+				if n := len(wrapLines(pdf, c, widths[i])); n > lines {
+					lines = n
+				}
+			}
+		}
+		h := float64(lines)*lineH + 1.6
+		if pdf.GetY()+h > pageH-bottom {
+			pdf.AddPage()
+			header()
+		}
+		x, y := l, pdf.GetY()
+		for i, c := range row {
+			if i >= len(widths) {
+				break
+			}
+			pdf.Rect(x, y, widths[i], h, "D")
+			pdf.SetXY(x+1, y+0.8)
+			for _, ln := range wrapLines(pdf, c, widths[i]) {
+				pdf.CellFormat(widths[i]-2, lineH, ln, "", 2, "L", false, 0, "")
+			}
+			x += widths[i]
+		}
+		pdf.SetXY(l, y+h)
 	}
 	pdf.Ln(2)
 }
 
-func truncate(s string, n int) string {
-	r := []rune(s)
-	if n < 4 || len(r) <= n {
-		return s
+// wrapLines splits a cell's text into the lines that fit a column width in the
+// current font; an unbreakable word is broken by the font metrics. It never
+// drops text.
+func wrapLines(pdf *fpdf.Fpdf, text string, width float64) []string {
+	if text == "" {
+		return []string{""}
 	}
-	return string(r[:n-1]) + "…"
+	out := pdf.SplitText(text, width-2)
+	if len(out) == 0 {
+		return []string{""}
+	}
+	return out
 }
 
 // QRPNG encodes payload as a QR code image.

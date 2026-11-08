@@ -486,6 +486,7 @@ schemas:
         x-open-enum: true
       title:
         type: string
+        maxLength: 200
         nullable: true
       scheduled_at:
         type: string
@@ -495,12 +496,14 @@ schemas:
         format: date-time
       location:
         type: string
+        maxLength: 300
   MeetingUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
     properties:
       title:
         type: string
+        maxLength: 200
         nullable: true
       scheduled_at:
         type: string
@@ -510,6 +513,7 @@ schemas:
         format: date-time
       location:
         type: string
+        maxLength: 300
   MeetingList:
     type: object
     required:
@@ -565,6 +569,7 @@ schemas:
     properties:
       reason:
         type: string
+        maxLength: 1000
   Quorum:
     type: object
     description: Live quorum under the site rules; polled.
@@ -835,11 +840,13 @@ schemas:
         format: date-time
       tracking_no:
         type: string
+        maxLength: 100
       proof_file_id:
         type: string
         format: uuid
       note:
         type: string
+        maxLength: 1000
   MeetingNoticeBulk:
     type: object
     required:
@@ -980,8 +987,10 @@ schemas:
     properties:
       title:
         type: string
+        maxLength: 300
       description:
         type: string
+        maxLength: 4000
         nullable: true
       will_be_voted:
         type: boolean
@@ -994,8 +1003,10 @@ schemas:
     properties:
       title:
         type: string
+        maxLength: 300
       description:
         type: string
+        maxLength: 4000
         nullable: true
       will_be_voted:
         type: boolean
@@ -1084,6 +1095,7 @@ schemas:
     properties:
       question:
         type: string
+        maxLength: 500
       opens_at:
         type: string
         format: date-time
@@ -1462,6 +1474,7 @@ schemas:
         format: uuid
       text:
         type: string
+        maxLength: 4000
   DecisionEffect:
     type: object
     required:
@@ -1623,6 +1636,7 @@ schemas:
         nullable: true
       text:
         type: string
+        maxLength: 10000
       outcome:
         type: string
         description: Open enum.
@@ -1653,6 +1667,7 @@ schemas:
     properties:
       text:
         type: string
+        maxLength: 10000
       outcome:
         type: string
         description: Open enum.
