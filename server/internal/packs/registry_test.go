@@ -244,3 +244,107 @@ func TestMigrationConventions(t *testing.T) {
 		}
 	}
 }
+
+// fakeProvider is a payment provider that only has an id.
+type fakeProvider struct{ id string }
+
+func (p fakeProvider) ID() string { return p.id }
+func (fakeProvider) CreateCheckout(context.Context, sdk.CheckoutRequest) (sdk.Checkout, error) {
+	return sdk.Checkout{}, nil
+}
+func (fakeProvider) Status(context.Context, sdk.ProviderRef) (sdk.PaymentStatus, error) {
+	return sdk.PaymentStatus{}, nil
+}
+func (fakeProvider) HandleWebhook(context.Context, sdk.WebhookRequest) (sdk.WebhookResult, error) {
+	return sdk.WebhookResult{}, nil
+}
+func (fakeProvider) Refund(context.Context, sdk.RefundRequest) (sdk.RefundResult, error) {
+	return sdk.RefundResult{}, nil
+}
+func (fakeProvider) Settlements(context.Context, sdk.SettlementRequest) ([]sdk.Settlement, error) {
+	return nil, nil
+}
+
+// The provider id becomes payment.method "card:<id>" and the clearing account
+// code "1190.<id>": an id the database check refuses must fail at startup.
+func TestPaymentProviderIDMustFitThePaymentMethod(t *testing.T) {
+	for id, ok := range map[string]bool{"acme": true, "acme.pay": true, "acme.pay_2": true, "acme.a.b": false, "acme.": false, "acme.Pay": false, "acme.pay-x": false} {
+		_, err := start(t, &fakePack{man: manifest("acme"), register: func(r sdk.Registry) error { r.RegisterPaymentProvider(fakeProvider{id}); return nil }})
+		if ok && err != nil {
+			t.Errorf("provider id %q refused: %v", id, err)
+		}
+		if !ok && !errors.Is(err, ErrInvalid) && !errors.Is(err, ErrNamespace) {
+			t.Errorf("provider id %q: %v, want a startup error", id, err)
+		}
+	}
+}
+
+// x-secret is honored on top-level properties only; anywhere else the value
+// would be stored and returned in clear text, so the schema is refused.
+func TestSettingsSchemaRefusesNestedSecrets(t *testing.T) {
+	for name, schema := range map[string]string{
+		"nested object": `{"type":"object","properties":{"acme_cfg":{"type":"object","properties":{"token":{"type":"string","x-secret":true}}}}}`,
+		"array items":   `{"type":"object","properties":{"acme_list":{"type":"array","items":{"type":"string","x-secret":true}}}}`,
+		"definitions":   `{"type":"object","$defs":{"s":{"type":"string","x-secret":true}},"properties":{"acme_k":{"$ref":"#/$defs/s"}}}`,
+		"schema level":  `{"type":"object","x-secret":true,"properties":{"acme_k":{"type":"string"}}}`,
+		"oneOf variant": `{"type":"object","properties":{"acme_k":{"oneOf":[{"type":"string","x-secret":true}]}}}`,
+	} {
+		_, err := start(t, &fakePack{man: manifest("acme"), register: func(r sdk.Registry) error {
+			r.RegisterSettingsSchema(fakeSchema{json.RawMessage(schema)})
+			return nil
+		}})
+		if !errors.Is(err, ErrInvalid) || !strings.Contains(err.Error(), "x-secret") {
+			t.Errorf("%s: %v, want an invalid schema error naming x-secret", name, err)
+		}
+	}
+	h, err := start(t, &fakePack{man: manifest("acme"), register: func(r sdk.Registry) error {
+		r.RegisterSettingsSchema(fakeSchema{json.RawMessage(`{"type":"object","properties":{"acme_k":{"type":"string","x-secret":true},"acme_n":{"type":"string"}}}`)})
+		return nil
+	}})
+	if err != nil {
+		t.Fatalf("a top-level secret was refused: %v", err)
+	}
+	pk, _ := h.Lookup("acme")
+	if got := pk.SecretKeys(sdk.ScopeOrg); len(got) != 1 || got[0] != "acme_k" {
+		t.Fatalf("secret keys = %v", got)
+	}
+}
+
+func TestRedactSecrets(t *testing.T) {
+	values := map[string]any{"acme_key": "s3cr3t-value", "acme_port": 8443, "acme_plain": "visible"}
+	secrets := map[string]bool{"acme_key": true, "acme_port": true}
+	got := redactSecrets("GET https://api.test/?key=s3cr3t-value&p=8443 failed for visible", values, secrets)
+	if strings.Contains(got, "s3cr3t-value") || strings.Contains(got, "8443") || !strings.Contains(got, "visible") {
+		t.Fatalf("redacted text = %q", got)
+	}
+}
+
+func TestGuardSQLKeepsPacksInsideTheirTenant(t *testing.T) {
+	for _, bad := range []string{
+		"SELECT set_config('app.org_id', 'x', true)", "select  SET_CONFIG ( 'app.org_id', $1, true)", "SET LOCAL app.org_id = 'x'", "  reset all", "RESET ROLE",
+		"COMMIT", "begin", "SELECT current_setting('app.org_id')", "set role openbekci_platform", "-- hi\nSELECT 1 /* app.org_id */",
+	} {
+		if guardSQL(bad) == nil {
+			t.Errorf("guardSQL allowed %q", bad)
+		}
+	}
+	for _, ok := range []string{"SELECT 1", "INSERT INTO pack_acme_t (org_id) VALUES ($1)", "WITH x AS (SELECT 1) SELECT * FROM x", "UPDATE pack_acme_t SET v = 1", "(SELECT 1)", "DELETE FROM pack_acme_t WHERE org_id = $1"} {
+		if err := guardSQL(ok); err != nil {
+			t.Errorf("guardSQL refused %q: %v", ok, err)
+		}
+	}
+}
+
+// A change to a core table that keeps its column count (a dropped policy, a
+// disabled RLS, a new constraint, a grant) is as bad as a new column.
+func TestMigrationConventionsSeeChangesThatKeepTheColumnCount(t *testing.T) {
+	before := map[string]tableShape{"person": {cols: 5, hasOrg: true, rls: true, sig: "a"}, "pack_acme_t": {cols: 2, hasOrg: true, rls: true, sig: "x"}}
+	same := map[string]tableShape{"person": {cols: 5, hasOrg: true, rls: true, sig: "a"}, "pack_acme_t": {cols: 2, hasOrg: true, rls: true, sig: "y"}}
+	if err := checkConventions("acme", before, same); err != nil {
+		t.Fatalf("a change to the pack's own table was refused: %v", err)
+	}
+	altered := map[string]tableShape{"person": {cols: 5, hasOrg: true, rls: true, sig: "b"}, "pack_acme_t": {cols: 2, hasOrg: true, rls: true, sig: "x"}}
+	if err := checkConventions("acme", before, altered); !errors.Is(err, ErrMigrations) || !strings.Contains(err.Error(), "person") {
+		t.Fatalf("an ALTER that keeps the column count slipped through: %v", err)
+	}
+}

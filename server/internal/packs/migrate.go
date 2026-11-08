@@ -35,19 +35,33 @@ func (h *Host) packProvider(pool *pgxpool.Pool, p *Pack, locked bool) (*goose.Pr
 	return prov, func() { _ = sqlDB.Close() }, nil
 }
 
-// tableShape is what the migration conventions look at: the column count and
-// whether row-level security is enforced, per table and whether it has org_id.
+// tableShape is what the migration conventions look at: the column count,
+// whether the table has org_id, whether row-level security is enforced and a
+// fingerprint of everything else about the table's definition (columns with
+// types, nullability and defaults, constraints, indexes, policies, triggers,
+// privileges), so any ALTER of a table that is not the pack's shows up even
+// when it does not change the column count.
 type tableShape struct {
 	cols   int
 	hasOrg bool
 	rls    bool
+	sig    string
 }
 
 func shapes(ctx context.Context, pool *pgxpool.Pool) (map[string]tableShape, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT c.relname, (SELECT count(*) FROM pg_attribute a WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped),
 		       EXISTS (SELECT 1 FROM pg_attribute a WHERE a.attrelid = c.oid AND a.attname = 'org_id' AND NOT a.attisdropped),
-		       c.relrowsecurity AND c.relforcerowsecurity
+		       c.relrowsecurity AND c.relforcerowsecurity,
+		       md5(concat_ws('#',
+		         c.relrowsecurity::text, c.relforcerowsecurity::text, c.relacl::text, c.relowner::text, c.relkind::text,
+		         (SELECT string_agg(a.attname || ':' || format_type(a.atttypid, a.atttypmod) || ':' || a.attnotnull::text || ':' || a.attgenerated::text || ':' || a.attidentity::text || ':' || COALESCE(pg_get_expr(d.adbin, d.adrelid), ''), ',' ORDER BY a.attnum)
+		            FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum
+		           WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped),
+		         (SELECT string_agg(k.conname || ':' || pg_get_constraintdef(k.oid), ',' ORDER BY k.conname) FROM pg_constraint k WHERE k.conrelid = c.oid),
+		         (SELECT string_agg(pg_get_indexdef(i.indexrelid), ',' ORDER BY i.indexrelid::regclass::text) FROM pg_index i WHERE i.indrelid = c.oid),
+		         (SELECT string_agg(p.polname || ':' || p.polcmd::text || ':' || p.polpermissive::text || ':' || p.polroles::text || ':' || COALESCE(pg_get_expr(p.polqual, p.polrelid), '') || ':' || COALESCE(pg_get_expr(p.polwithcheck, p.polrelid), ''), ',' ORDER BY p.polname) FROM pg_policy p WHERE p.polrelid = c.oid),
+		         (SELECT string_agg(pg_get_triggerdef(g.oid), ',' ORDER BY g.tgname) FROM pg_trigger g WHERE g.tgrelid = c.oid AND NOT g.tgisinternal)))
 		FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public' AND c.relkind = 'r'`)
 	if err != nil {
 		return nil, err
@@ -57,7 +71,7 @@ func shapes(ctx context.Context, pool *pgxpool.Pool) (map[string]tableShape, err
 	for rows.Next() {
 		var name string
 		var s tableShape
-		if err := rows.Scan(&name, &s.cols, &s.hasOrg, &s.rls); err != nil {
+		if err := rows.Scan(&name, &s.cols, &s.hasOrg, &s.rls, &s.sig); err != nil {
 			return nil, err
 		}
 		out[name] = s
@@ -81,7 +95,7 @@ func checkConventions(packID string, before, after map[string]tableShape) error 
 			}
 		case !existed:
 			bad = append(bad, fmt.Sprintf("created table %s outside the pack namespace %s*", name, prefix))
-		case b.cols != a.cols:
+		case b.cols != a.cols || b.sig != a.sig:
 			bad = append(bad, fmt.Sprintf("changed table %s, which is not the pack's", name))
 		}
 	}
