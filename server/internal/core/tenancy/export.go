@@ -310,6 +310,7 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte) 
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		summary := map[string]any{}
 		remap := map[string]string{} // archived person id -> id in this organization
+		var lockDate any             // the site's lock date, set again after the journal is in
 		// persons first: link by account
 		for _, t := range exportTables {
 			rows := a.Tables[t.Name]
@@ -336,6 +337,23 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte) 
 					}
 				case "unit_claim":
 					r["invitation_id"] = nil
+				case "site":
+					lockDate = r["lock_date"]
+					r["lock_date"] = nil
+				}
+				for _, c := range personColumns {
+					if pid, ok := r[c].(string); ok {
+						if to, ok := remap[pid]; ok {
+							r[c] = to
+						}
+					}
+				}
+				if isMoneyTable(t.Name) {
+					for _, c := range fileColumns {
+						if _, ok := r[c]; ok {
+							r[c] = nil
+						}
+					}
 				}
 				if pid, ok := r["person_id"].(string); ok {
 					if to, ok := remap[pid]; ok {
@@ -356,6 +374,11 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte) 
 			summary[t.Name] = len(insert)
 			if t.Name == "person" {
 				summary["person_linked"] = linked
+			}
+		}
+		if lockDate != nil {
+			if _, err := tx.Exec(ctx, `UPDATE site SET lock_date = $3::date WHERE org_id = $1 AND id = $2`, orgID, a.SiteID, fmt.Sprint(lockDate)); err != nil {
+				return err
 			}
 		}
 		eid := id.New()
