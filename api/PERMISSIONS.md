@@ -140,6 +140,15 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `access.open` | Open an access point manually. | `org_admin`, `site_manager`, `guard` |
 | `access.view_events` | Read the access event log. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 
+## integrations
+
+| Permission | Meaning | Roles |
+|---|---|---|
+| `apikeys.read` | List the organization's API keys (prefix and metadata, never a secret). | `org_admin` |
+| `apikeys.manage` | Create, rotate and revoke API keys (re-authentication required; a key can never manage keys). | `org_admin` |
+| `webhooks.read` | Read webhook endpoints and their delivery log. | `org_admin` |
+| `webhooks.manage` | Create, change, delete and test webhook endpoints. | `org_admin` |
+
 ## platform
 
 | Permission | Meaning | Roles |

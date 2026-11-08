@@ -35,6 +35,23 @@ type Principal struct {
 	ReauthUntil time.Time
 	// ViaCookie is true for browser cookie sessions (CSRF rules apply).
 	ViaCookie bool
+	// APIKey is set when an organization API key authenticated the request;
+	// UserID and ID are then the key creator's (their grants bound the key).
+	APIKey *APIKeyInfo
+}
+
+// APIKeyInfo marks a principal authenticated by an organization API key
+// (integrations module). The key never exceeds the administrator who created
+// it: the Resolver grants it only the permissions named in Scopes that the
+// creator (Principal.UserID) holds through role memberships at call time, in
+// OrgID only, narrowed to SiteID when set. It holds no account permissions
+// (me.read and the like), no occupancy rights, and never re-authenticates, so
+// operations that need re-authentication are closed to it.
+type APIKeyInfo struct {
+	KeyID  uuid.UUID
+	OrgID  uuid.UUID
+	Scopes []Permission
+	SiteID *uuid.UUID
 }
 
 // Reauthenticated reports whether the caller re-authenticated recently

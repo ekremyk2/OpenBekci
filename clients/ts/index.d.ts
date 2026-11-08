@@ -5827,6 +5827,242 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List API keys
+         * @description **Release 0.4.** Lists the organization's API keys: prefix and metadata only, never a secret.
+         *
+         *     Permission: `apikeys.read`.
+         */
+        get: operations["integrations.listApiKeys"];
+        put?: never;
+        /**
+         * Create an API key
+         * @description **Release 0.4.** Creates a key and returns its secret exactly once. The scopes must be
+         *     permissions the caller holds; the key never exceeds the creating administrator's grants.
+         *
+         *     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`). An API key cannot create keys.
+         *
+         *     Permission: `apikeys.manage`.
+         *
+         *     Problems: `reauth_required` (403), `validation_failed` (422).
+         */
+        post: operations["integrations.createApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/api-keys/{key_id}:rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the API key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate an API key
+         * @description **Release 0.4.** Replaces the key's prefix and secret and returns the new secret exactly
+         *     once. The old token stops working at once (401 `unauthenticated`). The key keeps its id,
+         *     scopes, site and expiry. A revoked key cannot be rotated.
+         *
+         *     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Permission: `apikeys.manage`.
+         *
+         *     Problems: `reauth_required` (403), `conflict` (409, the key is revoked).
+         */
+        post: operations["integrations.rotateApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/api-keys/{key_id}:revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the API key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke an API key
+         * @description **Release 0.4.** Revokes the key; its token answers 401 `api_key_revoked` from then on.
+         *     Revoking a revoked key returns it unchanged.
+         *
+         *     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Permission: `apikeys.manage`.
+         *
+         *     Problems: `reauth_required` (403).
+         */
+        post: operations["integrations.revokeApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/webhook-endpoints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List webhook endpoints
+         * @description **Release 0.4.** Lists the organization's outbound webhook endpoints.
+         *
+         *     Permission: `webhooks.read`.
+         */
+        get: operations["integrations.listWebhookEndpoints"];
+        put?: never;
+        /**
+         * Create a webhook endpoint
+         * @description **Release 0.4.** Creates an endpoint and returns its signing secret exactly once. The URL
+         *     must be `https` and its host must not resolve to a private, loopback or link-local address
+         *     (field `url`: `https_required`, `forbidden_target`, `unresolvable`, `invalid_url`).
+         *     At most 20 endpoints per organization.
+         *
+         *     Permission: `webhooks.manage`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409, too many endpoints).
+         */
+        post: operations["integrations.createWebhookEndpoint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a webhook endpoint
+         * @description **Release 0.4.** Get a webhook endpoint (never its secret).
+         *
+         *     Permission: `webhooks.read`.
+         */
+        get: operations["integrations.getWebhookEndpoint"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a webhook endpoint
+         * @description **Release 0.4.** Deletes the endpoint and its delivery log. Deliveries still queued for it are dropped.
+         *
+         *     Permission: `webhooks.manage`.
+         */
+        delete: operations["integrations.deleteWebhookEndpoint"];
+        options?: never;
+        head?: never;
+        /**
+         * Change a webhook endpoint
+         * @description **Release 0.4.** Change the URL, the subscribed events, the description or `active`.
+         *     Changing the URL or re-activating the endpoint clears its failing mark.
+         *
+         *     Permission: `webhooks.manage`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        patch: operations["integrations.updateWebhookEndpoint"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a ping event to a webhook endpoint
+         * @description **Release 0.4.** Queues a `ping` event to the endpoint (also when it is inactive) and returns
+         *     the pending delivery. Its outcome shows in the delivery log. A `ping` has the same envelope,
+         *     headers and signature as every other event.
+         *
+         *     Permission: `webhooks.manage`.
+         */
+        post: operations["integrations.testWebhookEndpoint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List the deliveries of a webhook endpoint
+         * @description **Release 0.4.** The delivery log, newest first: status, attempts, last response code and error,
+         *     and the next retry time while a delivery is pending.
+         *
+         *     Permission: `webhooks.read`.
+         */
+        get: operations["integrations.listWebhookDeliveries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/access/credentials": {
         parameters: {
             query?: never;
@@ -8651,7 +8887,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired" | "api_key_revoked" | "api_key_expired";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -9021,7 +9257,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -9045,10 +9281,15 @@ export interface components {
             /** Format: uuid */
             actor_user_id: string | null;
             /**
-             * @description Open enum: user, system, job.
+             * Format: uuid
+             * @description The API key that caused the event (`actor_kind` is `api_key`); null otherwise. `actor_user_id` is null then, so a key's actions are never attributed to its creator.
+             */
+            actor_key_id?: string | null;
+            /**
+             * @description Open enum: user, system, job, api_key.
              * @enum {string}
              */
-            actor_kind: "user" | "system" | "job";
+            actor_kind: "user" | "system" | "job" | "api_key";
             /** @description `<area>.<verb>`, for example `org.update`. */
             action: string;
             target_type: string;
@@ -15072,6 +15313,179 @@ export interface components {
             enrolment_token: string;
             /** Format: date-time */
             enrolment_expires_at: string;
+        };
+        /**
+         * @description An organization API key as listed: its public prefix and metadata, never the secret.
+         *     The bearer token is `obk_<prefix>_<secret>`. The key's effective permissions are the
+         *     intersection of `scopes` and the grants of the administrator who created it
+         *     (`created_by`), evaluated on every request, and never exceed them.
+         */
+        ApiKey: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** @description A label chosen by the administrator (1 to 120 characters). */
+            name: string;
+            /**
+             * @description The public part of the token (8 lower-case letters and digits); changes on rotation.
+             * @example k3x9q7ab
+             */
+            prefix: string;
+            /**
+             * @description Permission names the key may use, from the permission registry.
+             * @example [
+             *       "tickets.read",
+             *       "payments.read"
+             *     ]
+             */
+            scopes: string[];
+            /**
+             * Format: uuid
+             * @description When set, the key's permissions apply to this site only.
+             */
+            site_id: string | null;
+            /**
+             * @description Open enum: `active`, `revoked` (also after being replaced by a rotation: the old token is invalid) or `expired`.
+             * @enum {string}
+             */
+            status: "active" | "revoked" | "expired";
+            /**
+             * Format: uuid
+             * @description The user whose grants bound the key.
+             */
+            created_by: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            rotated_at: string | null;
+            /**
+             * Format: date-time
+             * @description Updated at most every five minutes.
+             */
+            last_used_at: string | null;
+            /** Format: date-time */
+            expires_at: string | null;
+            /** Format: date-time */
+            revoked_at: string | null;
+        };
+        ApiKeyList: {
+            items: components["schemas"]["ApiKey"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        ApiKeyCreate: {
+            /** @description A label, 1 to 120 characters. */
+            name: string;
+            /**
+             * @description Permission names the key may use. Each must be a permission the caller holds through a
+             *     role in this organization; `apikeys.*` permissions and permissions that exist only for
+             *     people (occupancy rights) cannot be given to a key. Field errors name the permission
+             *     (`unknown_permission`, `not_held`, `not_allowed`, `duplicate`).
+             */
+            scopes: string[];
+            /**
+             * Format: uuid
+             * @description Restrict the key to one site of the organization.
+             */
+            site_id?: string | null;
+            /**
+             * Format: date-time
+             * @description Must be in the future. Omitted or null: the key does not expire.
+             */
+            expires_at?: string | null;
+        };
+        ApiKeyCreated: {
+            key: components["schemas"]["ApiKey"];
+            /** @description The full bearer token `obk_<prefix>_<secret>`. Shown exactly once, never stored; keep it safe. */
+            secret: string;
+        };
+        /** @description An outbound webhook endpoint. Its signing secret is shown once when it is created and never again. */
+        WebhookEndpoint: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** @description `https` only; the host must not resolve to a private, loopback or link-local address (unless the operator allows the range). */
+            url: string;
+            /** @description Subscribed event types. Known values `payment.recorded`, `payment.confirmed`, `charge.created`, `ticket.created`, `ticket.status_changed`, `announcement.published`, `meeting.called`, `decision.applied`, `visitor.approved`, `delivery.received`. */
+            events: string[];
+            active: boolean;
+            description: string | null;
+            /** @description True while the last delivery that used up its attempts has not been followed by a success. */
+            failing: boolean;
+            /** Format: date-time */
+            failing_since: string | null;
+            consecutive_failures: number;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** @description Goes in `If-Match` on update. */
+            version: number;
+        };
+        WebhookEndpointList: {
+            items: components["schemas"]["WebhookEndpoint"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        WebhookEndpointCreate: {
+            /** @description `https://` URL, at most 2000 characters, without credentials or fragment. */
+            url: string;
+            /** @description At least one known event type. `ping` is sent by the test operation and cannot be subscribed to. */
+            events: string[];
+            /** @description Up to 500 characters. */
+            description?: string | null;
+            /** @description Default true. */
+            active?: boolean;
+        };
+        WebhookEndpointCreated: {
+            endpoint: components["schemas"]["WebhookEndpoint"];
+            /** @description The signing secret `whsec_...`. Shown exactly once; verify `OpenBekci-Signature` with it. */
+            secret: string;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. Changing the `url` or re-activating the endpoint clears its failing mark. */
+        WebhookEndpointUpdate: {
+            url?: string;
+            events?: string[];
+            description?: string | null;
+            active?: boolean;
+        };
+        /** @description One delivery of an event to an endpoint, as logged. */
+        WebhookDelivery: {
+            /**
+             * Format: uuid
+             * @description Sent as `OpenBekci-Delivery-Id`; the same on every retry.
+             */
+            id: string;
+            /** Format: uuid */
+            endpoint_id: string;
+            /** Format: uuid */
+            event_id: string;
+            event_type: string;
+            /**
+             * @description Open enum: `pending` (queued or waiting for a retry), `succeeded`, `failed` (attempts used up).
+             * @enum {string}
+             */
+            status: "pending" | "succeeded" | "failed";
+            attempts: number;
+            /** @description HTTP status of the last attempt, when the receiver answered. */
+            response_code: number | null;
+            /** @description Short machine-readable reason of the last failure, for example `http_status: 500` or `forbidden_target`. */
+            last_error: string | null;
+            /** Format: date-time */
+            next_retry_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            delivered_at: string | null;
+        };
+        WebhookDeliveryList: {
+            items: components["schemas"]["WebhookDelivery"][];
+            /** @description Pass as `cursor` for the next (older) page; null on the last page. */
+            next_cursor: string | null;
         };
         AllowlistRebuild: {
             /** Format: uuid */
@@ -28739,6 +29153,360 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.listApiKeys": {
+        parameters: {
+            query?: {
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.createApiKey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApiKeyCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyCreated"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.rotateApiKey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the API key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyCreated"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.revokeApiKey": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the API key. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.listWebhookEndpoints": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpointList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.createWebhookEndpoint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEndpointCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpointCreated"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.getWebhookEndpoint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpoint"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.deleteWebhookEndpoint": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.updateWebhookEndpoint": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEndpointUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpoint"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.testWebhookEndpoint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookDelivery"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.listWebhookDeliveries": {
+        parameters: {
+            query?: {
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookDeliveryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
