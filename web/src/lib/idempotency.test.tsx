@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
-import { useIdempotencyKey, withIdempotencyKey } from './idempotency'
+import { useBodyIdempotencyKey, useIdempotencyKey, withIdempotencyKey } from './idempotency'
 
 describe('useIdempotencyKey', () => {
   it('keeps one key for the lifetime of the form, across re-renders and retries', () => {
@@ -23,5 +23,23 @@ describe('useIdempotencyKey', () => {
 
   it('builds request options with the header', () => {
     expect(withIdempotencyKey('k')).toEqual({ headers: { 'Idempotency-Key': 'k' } })
+  })
+})
+
+describe('useBodyIdempotencyKey', () => {
+  it('keeps the key while the body is unchanged and renews it as soon as the body changes', () => {
+    const { result, rerender } = renderHook(({ body }) => useBodyIdempotencyKey(body), {
+      initialProps: { body: { a: 1 } as unknown },
+    })
+    const first = result.current.key
+    rerender({ body: { a: 1 } })
+    expect(result.current.key).toBe(first)
+    rerender({ body: { a: 2 } })
+    const second = result.current.key
+    expect(second).not.toBe(first)
+    rerender({ body: { a: 2 } })
+    expect(result.current.key).toBe(second)
+    act(() => result.current.renew())
+    expect(result.current.key).not.toBe(second)
   })
 })

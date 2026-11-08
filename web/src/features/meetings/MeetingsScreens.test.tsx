@@ -15,10 +15,16 @@ describe('call letter and delivery checklist', () => {
     expect(await screen.findByText('0 of 6 delivered')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Call letter \(PDF\)/ })).toBeInTheDocument()
 
-    await userEvent.click(within(await screen.findByRole('row', { name: /Ayşe Yılmaz/ })).getByRole('button', { name: 'Record' }))
+    await userEvent.click(
+      within(await screen.findByRole('row', { name: /Ayşe Yılmaz/ })).getByRole('button', {
+        name: 'Record',
+      }),
+    )
     const dialog = await screen.findByRole('dialog')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }))
-    expect(await within(dialog).findByText('Registered mail needs the tracking number.')).toBeInTheDocument()
+    expect(
+      await within(dialog).findByText('Registered mail needs the tracking number.'),
+    ).toBeInTheDocument()
 
     await userEvent.type(within(dialog).getByLabelText('Tracking number'), 'PTT123456')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }))
@@ -67,20 +73,23 @@ describe('apply a decision', () => {
     const seen = recordRequests()
     let calls = 0
     server.use(
-      http.post(
-        '*/v1/orgs/:orgId/decisions/:decisionAction',
-        async ({ request }) => {
-          const dry = new URL(request.url).searchParams.get('dry_run') === 'true'
-          if (!dry && calls++ === 0)
-            return HttpResponse.json({ status: 503, code: 'unavailable' }, { status: 503, headers: { 'content-type': 'application/problem+json' } })
-          return undefined
-        },
-      ),
+      http.post('*/v1/orgs/:orgId/decisions/:decisionAction', async ({ request }) => {
+        const dry = new URL(request.url).searchParams.get('dry_run') === 'true'
+        if (!dry && calls++ === 0)
+          return HttpResponse.json(
+            { status: 503, code: 'unavailable' },
+            { status: 503, headers: { 'content-type': 'application/problem+json' } },
+          )
+        return undefined
+      }),
     )
     mountGov('/orgs/org-1/meetings/decisions')
     await userEvent.click(await screen.findByRole('button', { name: 'Apply effect' }))
     const dialog = await screen.findByRole('dialog')
-    await userEvent.selectOptions(within(dialog).getByLabelText('What should be created'), 'Budget marked final')
+    await userEvent.selectOptions(
+      within(dialog).getByLabelText('What should be created'),
+      'Budget marked final',
+    )
     await userEvent.selectOptions(await within(dialog).findByLabelText('Budget'), 'fy-2027')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Review' }))
     // nothing is created until the confirmation
@@ -92,12 +101,95 @@ describe('apply a decision', () => {
     await userEvent.click(within(dialog).getByRole('button', { name: 'Confirm and apply' }))
     await waitFor(() => expect(governanceDb().decisions[0]?.effect?.kind).toBe('budget_final'))
 
-    const applies = seen.filter((r) => r.method === 'POST' && r.url.includes(':apply') && !r.url.includes('dry_run'))
+    const applies = seen.filter(
+      (r) => r.method === 'POST' && r.url.includes(':apply') && !r.url.includes('dry_run'),
+    )
     expect(applies).toHaveLength(2)
     expect(applies[0]!.headers.get('Idempotency-Key')).toBeTruthy()
-    expect(applies[1]!.headers.get('Idempotency-Key')).toBe(applies[0]!.headers.get('Idempotency-Key'))
+    expect(applies[1]!.headers.get('Idempotency-Key')).toBe(
+      applies[0]!.headers.get('Idempotency-Key'),
+    )
     const preview = seen.find((r) => r.url.includes('dry_run=true'))!
-    expect(preview.headers.get('Idempotency-Key')).not.toBe(applies[0]!.headers.get('Idempotency-Key'))
+    expect(preview.headers.get('Idempotency-Key')).not.toBe(
+      applies[0]!.headers.get('Idempotency-Key'),
+    )
+  })
+})
+
+describe('apply a decision, keys follow the body', () => {
+  const problemJson = (status: number, code: string) =>
+    HttpResponse.json(
+      { status, code },
+      { status, headers: { 'content-type': 'application/problem+json' } },
+    )
+
+  it('uses a new Idempotency-Key after a failed apply and an edit, and names a body conflict', async () => {
+    const seen = recordRequests()
+    let calls = 0
+    server.use(
+      http.post('*/v1/orgs/:orgId/decisions/:decisionAction', async ({ request }) => {
+        const dry = new URL(request.url).searchParams.get('dry_run') === 'true'
+        if (!dry && calls++ === 0) return problemJson(422, 'idempotency_mismatch')
+        return undefined
+      }),
+    )
+    mountGov('/orgs/org-1/meetings/decisions')
+    await userEvent.click(await screen.findByRole('button', { name: 'Apply effect' }))
+    const dialog = await screen.findByRole('dialog')
+    await userEvent.selectOptions(
+      within(dialog).getByLabelText('What should be created'),
+      'Budget marked final',
+    )
+    await userEvent.selectOptions(await within(dialog).findByLabelText('Budget'), 'fy-2027')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Review' }))
+    await userEvent.click(await within(dialog).findByRole('button', { name: 'Confirm and apply' }))
+    // a key clash is a different message from "already applied"
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(/values changed/)
+
+    // back, edit (another kind), review and confirm again
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Back' }))
+    await userEvent.selectOptions(
+      within(dialog).getByLabelText('What should be created'),
+      'Elected role with a term',
+    )
+    await userEvent.selectOptions(
+      await within(dialog).findByLabelText('Elected person'),
+      'Mehmet Demir',
+    )
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Review' }))
+    await userEvent.click(await within(dialog).findByRole('button', { name: 'Confirm and apply' }))
+    await waitFor(() => expect(governanceDb().decisions[0]?.effect?.kind).toBe('membership'))
+
+    const applies = seen.filter(
+      (r) => r.method === 'POST' && r.url.includes(':apply') && !r.url.includes('dry_run'),
+    )
+    expect(applies).toHaveLength(2)
+    expect(applies[1]!.headers.get('Idempotency-Key')).not.toBe(
+      applies[0]!.headers.get('Idempotency-Key'),
+    )
+  })
+
+  it('says "already applied" for a plain 409', async () => {
+    server.use(
+      http.post('*/v1/orgs/:orgId/decisions/:decisionAction', async ({ request }) =>
+        new URL(request.url).searchParams.get('dry_run') === 'true'
+          ? undefined
+          : problemJson(409, 'conflict'),
+      ),
+    )
+    mountGov('/orgs/org-1/meetings/decisions')
+    await userEvent.click(await screen.findByRole('button', { name: 'Apply effect' }))
+    const dialog = await screen.findByRole('dialog')
+    await userEvent.selectOptions(
+      within(dialog).getByLabelText('What should be created'),
+      'Budget marked final',
+    )
+    await userEvent.selectOptions(await within(dialog).findByLabelText('Budget'), 'fy-2027')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Review' }))
+    await userEvent.click(await within(dialog).findByRole('button', { name: 'Confirm and apply' }))
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
+      'already has an applied change',
+    )
   })
 })
 
