@@ -34,7 +34,7 @@ import {
   type S,
 } from './api'
 import { useLabels } from './labels'
-import { PersonPicker, UnitPicker, useUnits } from './pickers'
+import { PersonPicker, UnitPicker, useAllUnits } from './pickers'
 import {
   Checkbox,
   ExportButtons,
@@ -301,7 +301,7 @@ function TimelineCard({ ctx }: { ctx: MoneyCtx }) {
           </Field>
           {unit ? (
             <ExportButtons
-              path={`/v1/orgs/${ctx.orgId}/debt-breakdown`}
+              endpoint="/v1/orgs/{org_id}/debt-breakdown"
               query={{ site_id: ctx.siteId, unit_id: unit, debtor_kind: side }}
               basename="debt-breakdown"
               formats={['pdf', 'xlsx']}
@@ -334,7 +334,10 @@ function TimelineCard({ ctx }: { ctx: MoneyCtx }) {
                         variant="outline"
                         onClick={() =>
                           downloadFile(
-                            `/v1/orgs/${ctx.orgId}/files/${e.document_file_id}`,
+                            {
+                              endpoint: '/v1/orgs/{org_id}/files/{file_id}',
+                              path: { org_id: ctx.orgId, file_id: e.document_file_id! },
+                            },
                             `ihtarname-${e.id}.pdf`,
                           ).catch(() => toast.error(t`The download failed. Please try again.`))
                         }
@@ -355,7 +358,7 @@ function TimelineCard({ ctx }: { ctx: MoneyCtx }) {
 
 function CasesCard({ ctx }: { ctx: MoneyCtx }) {
   const { t } = useLingui()
-  const units = useUnits(ctx)
+  const units = useAllUnits(ctx)
   const door = (id: string) => units.data?.find((u) => u.id === id)?.door_number ?? id
   const [creating, setCreating] = useState(false)
   const [closing, setClosing] = useState<S['CollectionCase'] | null>(null)

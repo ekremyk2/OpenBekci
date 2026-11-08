@@ -22,7 +22,8 @@
     "e2e": "playwright test",
     "i18n:extract": "lingui extract --clean",
     "i18n:compile": "lingui compile --typescript",
-    "size": "size-limit"
+    "size": "size-limit",
+    "gen:idempotent": "node scripts/gen-idempotent.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.3",

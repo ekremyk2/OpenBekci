@@ -188,10 +188,6 @@ function ManagerStatements({ search }: { search: StatementSearch }) {
   const setSearch = (s: StatementSearch) => void navigate({ to: '.', search: s, replace: true })
   const ready = mode === 'unit' ? !!unit : !!person
 
-  const path =
-    mode === 'unit'
-      ? `/v1/orgs/${ctx.orgId}/units/${unit}/statements/${side}`
-      : `/v1/orgs/${ctx.orgId}/persons/${person}/statement`
   const q = useMoneyQuery(
     ['statement', mode, unit, side, person, from, to],
     () =>
@@ -283,7 +279,14 @@ function ManagerStatements({ search }: { search: StatementSearch }) {
         <>
           <div className="flex flex-wrap items-center gap-3">
             <ExportButtons
-              path={path}
+              endpoint={
+                mode === 'unit'
+                  ? '/v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}'
+                  : '/v1/orgs/{org_id}/persons/{person_id}/statement'
+              }
+              pathParams={
+                mode === 'unit' ? { unit_id: unit, debtor_kind: side } : { person_id: person }
+              }
               query={{ from, to }}
               basename="statement"
               formats={['pdf', 'xlsx', 'csv']}

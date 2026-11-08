@@ -110,8 +110,6 @@ export function ReportsPage({ report }: { report: ReportId }) {
   )
 }
 
-const path = (ctx: MoneyCtx, p: string) => `/v1/orgs/${ctx.orgId}/reports/${p}`
-
 function useRange(ctx: MoneyCtx) {
   const today = todayIn(ctx.timeZone)
   const [from, setFrom] = useState(startOfYear(today))
@@ -210,7 +208,7 @@ function IncomeExpense({ ctx }: { ctx: MoneyCtx }) {
       <div className="flex flex-wrap items-end gap-4">
         <RangeFields r={r} />
         <ExportButtons
-          path={path(ctx, 'income-expense')}
+          endpoint="/v1/orgs/{org_id}/reports/income-expense"
           query={{ site_id: ctx.siteId, from: r.from, to: r.to }}
           basename="income-expense"
         />
@@ -271,7 +269,7 @@ function Debtors({ ctx }: { ctx: MoneyCtx }) {
             />
           </Field>
           <ExportButtons
-            path={path(ctx, 'debtors')}
+            endpoint="/v1/orgs/{org_id}/reports/debtors"
             query={{ site_id: ctx.siteId, as_of: asOf, min_months: minMonths }}
             basename="debtors"
           />
@@ -399,7 +397,7 @@ function BudgetReport({ ctx }: { ctx: MoneyCtx }) {
           </Select>
         </Field>
         <ExportButtons
-          path={path(ctx, 'budget-vs-actual')}
+          endpoint="/v1/orgs/{org_id}/reports/budget-vs-actual"
           query={{ site_id: ctx.siteId, fiscal_year_id: year }}
           basename="budget-vs-actual"
         />
@@ -629,7 +627,7 @@ function TrialBalance({ ctx }: { ctx: MoneyCtx }) {
       <div className="flex flex-wrap items-end gap-4">
         <AsOf value={asOf} onChange={setAsOf} />
         <ExportButtons
-          path={path(ctx, 'trial-balance')}
+          endpoint="/v1/orgs/{org_id}/reports/trial-balance"
           query={{ site_id: ctx.siteId, as_of: asOf }}
           basename="trial-balance"
         />
@@ -700,7 +698,7 @@ function Aging({ ctx }: { ctx: MoneyCtx }) {
       <div className="flex flex-wrap items-end gap-4">
         <AsOf value={asOf} onChange={setAsOf} />
         <ExportButtons
-          path={path(ctx, 'receivables-aging')}
+          endpoint="/v1/orgs/{org_id}/reports/receivables-aging"
           query={{ site_id: ctx.siteId, as_of: asOf }}
           basename="receivables-aging"
         />
@@ -791,7 +789,7 @@ function Collectors({ ctx }: { ctx: MoneyCtx }) {
       <div className="flex flex-wrap items-end gap-4">
         <RangeFields r={r} />
         <ExportButtons
-          path={path(ctx, 'collector-reconciliation')}
+          endpoint="/v1/orgs/{org_id}/reports/collector-reconciliation"
           query={{ site_id: ctx.siteId, from: r.from, to: r.to }}
           basename="collector-reconciliation"
         />
@@ -865,7 +863,7 @@ function BankRecon({ ctx }: { ctx: MoneyCtx }) {
         </Field>
         <AsOf value={asOf} onChange={setAsOf} />
         <ExportButtons
-          path={path(ctx, 'bank-reconciliation')}
+          endpoint="/v1/orgs/{org_id}/reports/bank-reconciliation"
           query={{ site_id: ctx.siteId, account_id: acct, as_of: asOf }}
           basename="bank-reconciliation"
         />
@@ -909,7 +907,7 @@ function Funds({ ctx }: { ctx: MoneyCtx }) {
       <div className="flex flex-wrap items-end gap-4">
         <AsOf value={asOf} onChange={setAsOf} />
         <ExportButtons
-          path={path(ctx, 'fund-balances')}
+          endpoint="/v1/orgs/{org_id}/reports/fund-balances"
           query={{ site_id: ctx.siteId, as_of: asOf }}
           basename="fund-balances"
         />

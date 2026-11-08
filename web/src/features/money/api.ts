@@ -157,7 +157,8 @@ export function useMoneyMutation<TVars, TData>(
   })
 }
 
-export { downloadFile, exportUrl } from '@/api/download'
+export { downloadFile } from '@/api/download'
+export type { DownloadEndpoint } from '@/api/download'
 
 export type ExportFormat = 'csv' | 'xlsx' | 'pdf'
 
