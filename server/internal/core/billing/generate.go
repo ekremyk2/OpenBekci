@@ -97,7 +97,7 @@ func (s *Service) GenerateCharges(ctx context.Context, orgID, siteID uuid.UUID) 
 	}
 	total := 0
 	for _, pid := range planIDs {
-		n, err := s.generatePlan(ctx, orgID, siteID, pid)
+		n, err := s.generatePlan(ctx, orgID, siteID, pid, "")
 		if err != nil {
 			return total, fmt.Errorf("plan %s: %w", pid, err)
 		}
@@ -106,7 +106,8 @@ func (s *Service) GenerateCharges(ctx context.Context, orgID, siteID uuid.UUID) 
 	return total, nil
 }
 
-func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.UUID) (int, error) {
+// generatePlan bills the periods of a plan due up to asOf (default: today in the site).
+func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.UUID, asOf string) (int, error) {
 	created := 0
 	err := s.run(ctx, orgID, "plan", func(tx pgx.Tx) error {
 		p, err := scanPlan(tx.QueryRow(ctx, `SELECT `+planCols+` FROM charge_plan WHERE org_id=$1 AND id=$2 FOR UPDATE`, orgID, planID))
@@ -123,7 +124,11 @@ func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.U
 		}
 		tz := ledger.Location(site.Timezone)
 		today := ledger.Today(site.Timezone, s.Now())
-		pers, err := periodsOf(p, today, tz)
+		upTo := today
+		if asOf != "" {
+			upTo = asOf
+		}
+		pers, err := periodsOf(p, upTo, tz)
 		if err != nil {
 			return err
 		}

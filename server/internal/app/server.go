@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/openbekci/openbekci/server/internal/core/access"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
@@ -193,7 +194,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	mny := newMoney(d, ops.late, fs, ops.documents)
 	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
-	gov.SetEffects(govMoney{budgets: mny.Treasury})
+	gov.SetEffects(govMoney{GovernanceEffects: billing.GovernanceEffects{Billing: mny.Billing}, budgets: mny.Treasury})
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
