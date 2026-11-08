@@ -133,7 +133,16 @@ func (c caps) base(orgID uuid.UUID) []any {
 }
 
 const visiblePredicate = `(` + pAll + ` OR t.reporter_person_id = ` + pMe + ` OR (t.visibility = 'common' AND ` + pCommon + `)
-	OR (t.assignee_person_id = ` + pMe + ` AND ` + pAssigned + `) OR t.unit_id = ANY(` + pUnits + `))`
+	OR (t.assignee_person_id = ` + pMe + ` AND ` + pAssigned + `) OR (t.unit_id = ANY(` + pUnits + `) AND ` + inOwnPeriod + `))`
+
+// inOwnPeriod bounds the private tickets of a unit to the caller's own
+// occupancy: a ticket is theirs to see when it was opened within the period
+// [valid_from, valid_to) of one of their occupancies of that unit (dates in
+// the site's time zone). The next tenant never sees the previous tenant's.
+const inOwnPeriod = `EXISTS (SELECT 1 FROM occupancy oc JOIN site st ON st.org_id = oc.org_id AND st.id = oc.site_id
+		WHERE oc.org_id = t.org_id AND oc.unit_id = t.unit_id AND oc.person_id = ` + pMe + `
+		AND t.created_at >= (oc.valid_from::timestamp AT TIME ZONE st.timezone)
+		AND (oc.valid_to IS NULL OR t.created_at < (oc.valid_to::timestamp AT TIME ZONE st.timezone)))`
 
 const ticketSelect = `SELECT t.id, t.org_id, t.site_id, t.unit_id, u.door_number, t.reporter_person_id, rp.display_name, t.category_id, t.title, t.description,
 	t.status_id, st.name, st.semantic, t.visibility, t.assignee_person_id, t.assignee_vendor_id, coalesce(ap.display_name, av.name, ''),

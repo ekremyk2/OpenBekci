@@ -78,6 +78,9 @@ func (a access) canSee(t tree, d Document) bool {
 	if (!a.read && !a.manage) || !a.folderVisible(t, d.FolderID) {
 		return false
 	}
+	if u := t.unitFolderOf(d.FolderID); u != nil && !a.managerOf && !a.inOwnPeriod(*u, d.CreatedAt) {
+		return false // the previous occupant's papers (lease, deposit receipt, ID copies)
+	}
 	f := t[d.FolderID]
 	if f.Kind != "unit" && d.Visibility != nil {
 		return a.levelOK(*d.Visibility)

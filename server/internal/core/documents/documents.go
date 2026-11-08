@@ -138,6 +138,22 @@ type access struct {
 	units     []uuid.UUID
 	ownerUnit bool        // owns a unit of the site
 	ownUnits  []uuid.UUID // units the caller owns or rents
+	// ownWindows are the periods of the caller's own occupancies (owner or
+	// tenant) of the units in ownUnits: they see the documents of a unit's
+	// folder that were filed during their own period, not the ones of the
+	// previous occupant.
+	ownWindows []occWindow
+}
+
+// occWindow is one occupancy period [from, to) of a unit; to is nil while it lasts.
+type occWindow struct {
+	unit uuid.UUID
+	from time.Time
+	to   *time.Time
+}
+
+func (w occWindow) contains(t time.Time) bool {
+	return !t.Before(w.from) && (w.to == nil || t.Before(*w.to))
 }
 
 func (s *Service) accessOf(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (access, error) {
@@ -170,7 +186,55 @@ func (s *Service) accessOf(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 	} else if ok {
 		a.person = p
 	}
+	if a.person != uuid.Nil && len(a.ownUnits) > 0 {
+		rows, err := tx.Query(ctx, `SELECT oc.unit_id, oc.valid_from::timestamp AT TIME ZONE st.timezone, oc.valid_to::timestamp AT TIME ZONE st.timezone
+			FROM occupancy oc JOIN site st ON st.org_id = oc.org_id AND st.id = oc.site_id
+			WHERE oc.org_id = $1 AND oc.site_id = $2 AND oc.person_id = $3 AND oc.kind IN ('owner', 'tenant')`, orgID, siteID, a.person)
+		if err != nil {
+			return a, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var w occWindow
+			if err := rows.Scan(&w.unit, &w.from, &w.to); err != nil {
+				return a, err
+			}
+			a.ownWindows = append(a.ownWindows, w)
+		}
+		if err := rows.Err(); err != nil {
+			return a, err
+		}
+	}
 	return a, nil
+}
+
+// unitFolderOf returns the unit whose private folder holds folder id (the
+// folder itself or an ancestor), if any.
+func (t tree) unitFolderOf(id uuid.UUID) *uuid.UUID {
+	seen := map[uuid.UUID]bool{}
+	for cur := &id; cur != nil && !seen[*cur]; {
+		f, ok := t[*cur]
+		if !ok {
+			return nil
+		}
+		seen[*cur] = true
+		if f.Kind == "unit" && f.UnitID != nil {
+			return f.UnitID
+		}
+		cur = f.ParentID
+	}
+	return nil
+}
+
+// inOwnPeriod: a document in a unit's private folder is open to its current
+// occupants only if it was filed during their own occupancy of that unit.
+func (a access) inOwnPeriod(unit uuid.UUID, filedAt time.Time) bool {
+	for _, w := range a.ownWindows {
+		if w.unit == unit && w.contains(filedAt) {
+			return true
+		}
+	}
+	return false
 }
 
 func (a access) levelOK(v Visibility) bool {
