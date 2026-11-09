@@ -42,7 +42,7 @@ func (s *apiServer) MoneyCreateCheckout(ctx context.Context, req gen.MoneyCreate
 	if err != nil {
 		return nil, err
 	}
-	v, err := c.Create(ctx, req.OrgId, checkout.CreateInput{UnitID: b.UnitID, DebtorKind: b.DebtorKind, ChargeIDs: b.ChargeIDs, Amount: b.Amount, Client: b.Client, IdempotencyKey: string(req.Params.IdempotencyKey)})
+	v, err := c.Create(ctx, req.OrgId, checkout.CreateInput{UnitID: b.UnitID, DebtorKind: b.DebtorKind, ChargeIDs: b.ChargeIDs, Amount: b.Amount, Client: b.Client, IdempotencyKey: req.Params.IdempotencyKey})
 	if err != nil {
 		return nil, err
 	}
