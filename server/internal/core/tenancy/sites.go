@@ -430,9 +430,9 @@ func (s *Service) CreateSite(ctx context.Context, orgID uuid.UUID, d Doc) (Site,
 		if err != nil {
 			return err
 		}
-		// the default late fee (5 % a month, no grace; a legal preset may change it) applies from the day the site exists
+		// the default late fee (5 % a month, no grace; a legal preset may change it) applies to every due date, also dues from before the site was set up
 		if _, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days, is_default)
-			VALUES ($1, $2, $3, (now() AT TIME ZONE $4)::date, 500, 0, true)`, id.New(), orgID, out.ID, out.Timezone); err != nil {
+			VALUES ($1, $2, $3, DATE '1970-01-01', 500, 0, true)`, id.New(), orgID, out.ID); err != nil {
 			return err
 		}
 		if len(blocks) == 0 {

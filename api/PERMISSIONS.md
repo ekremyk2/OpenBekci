@@ -92,6 +92,7 @@ Account permissions are instance grants held by every signed-in caller (`me.read
 | Operation | Permission | Meaning |
 |---|---|---|
 | `me.registerDevice`, `me.deleteDevice` | `sessions.manage_own` | Register, update and remove the caller's push devices (the token is stored encrypted and never returned; signing out the registering session removes the device). |
+| `me.updateProfile` | `sessions.manage_own` | Change the caller's own display name and locale (`If-Match` on `user.version`). |
 | `me.createWebLoginLink` | `sessions.manage_own` | Issue a one-time, session-bound link that signs the caller's browser in (`/login/link/{token}`). |
 | `auth.exchangeWebLoginLink` | public / self | Exchange that token for a cookie session; the token itself is the credential. |
 

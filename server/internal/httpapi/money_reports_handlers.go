@@ -22,6 +22,12 @@ func statementMap(st reports.Statement, debtor map[string]any, kind any) map[str
 	zero := money.Zero(cur)
 	lines := []map[string]any{}
 	for _, row := range st.Rows {
+		if row.Kind == reports.KindDeclaredPayment {
+			// a declared, unconfirmed payment: shown with its amount, it moves no balance
+			lines = append(lines, map[string]any{"date": row.Date, "kind": row.Kind, "description": row.Ref, "debit": zero, "credit": zero, "principal": zero, "late_fee": zero, "balance": row.Balance.Total,
+				"declared_amount": row.Amount, "debtor_kind": kind, "debtor_display_name": nil, "ref_type": "payment", "ref_id": row.RefID})
+			continue
+		}
 		debit, credit := zero, zero
 		if row.Amount.Amount >= 0 {
 			debit = row.Amount
@@ -35,7 +41,7 @@ func statementMap(st reports.Statement, debtor map[string]any, kind any) map[str
 			principal = row.Amount
 		}
 		lines = append(lines, map[string]any{"date": row.Date, "kind": row.Kind, "description": row.Ref, "debit": debit, "credit": credit, "principal": principal, "late_fee": fee, "balance": row.Balance.Total,
-			"debtor_kind": kind, "debtor_display_name": nil, "ref_type": nil, "ref_id": nil})
+			"debtor_kind": kind, "debtor_display_name": nil, "ref_type": nil, "ref_id": nil, "accrued": row.Kind == "fee" && row.Ref == "accrued"})
 	}
 	from, to := st.AsOf, st.AsOf
 	if st.From != nil {

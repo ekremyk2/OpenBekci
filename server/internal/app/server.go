@@ -14,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/dashboardmoney"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -208,7 +209,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		return nil, err
 	}
 	mny := newMoney(d, ops.late, fs, ops.documents)
-	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
+	ops.dashboards.SetMoney(dashboardmoney.New(mny.Reports))
 	gov.SetEffects(newDecisionEffects(mny))
 	host, err := packs.New(packs.Config{DB: d, Log: log, EncryptionKey: cfg.EncryptionKey, Payments: mny.Payments, Files: fs, Notifier: ops.late}, cfg.Packs)
 	if err != nil {

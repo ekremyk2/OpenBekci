@@ -69,7 +69,16 @@ type Row struct {
 	Ref     string      `json:"ref"`
 	Amount  money.Money `json:"amount"`
 	Balance Balance     `json:"balance"`
+	// RefID is the payment of a KindDeclaredPayment row; nil for the others.
+	RefID *uuid.UUID `json:"ref_id,omitempty"`
 }
+
+// KindDeclaredPayment is the statement line kind of a payment a resident declared
+// and a manager has not confirmed yet (status pending_declared). It is a memo
+// line: it carries the declared amount (positive, as a credit to come), an empty
+// Part, the running balance of the line before it, and moves no balance. The
+// statement calculator never sees it.
+const KindDeclaredPayment = "declared_payment"
 
 // Statement is a debtor's statement for a range.
 type Statement struct {
@@ -178,6 +187,11 @@ func (s *Service) DebtorStatement(ctx context.Context, orgID, siteID uuid.UUID, 
 		for _, row := range st.Rows {
 			out.Rows = append(out.Rows, Row{Date: row.Line.Date.In(tz).Format(ledger.DateLayout), Kind: string(row.Line.Kind), Part: string(row.Line.Part), Ref: row.Line.Ref, Amount: row.Line.Amount, Balance: bal(row.Balance)})
 		}
+		if !d.IsPerson() {
+			if out.Rows, err = withDeclared(ctx, tx, orgID, siteID, d, cur, from, to, out.Opening, out.Rows); err != nil {
+				return err
+			}
+		}
 		if cr, err := billing.CreditOf(ctx, tx, orgID, siteID, ch, d); err == nil {
 			out.Credit = money.New(cr, cur)
 		}
@@ -192,6 +206,49 @@ func (s *Service) DebtorStatement(ctx context.Context, orgID, siteID uuid.UUID, 
 		return nil
 	})
 	return out, err
+}
+
+// withDeclared merges the unit side's declared and still unconfirmed payments
+// into rows as KindDeclaredPayment memo lines, dated by their paid-on date and
+// inside the statement range. A memo line carries the running balance of the line
+// before it (the opening balance before the first), so it moves nothing; the
+// accrued-fee line stays last.
+func withDeclared(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, d billing.Debtor, cur money.Code, from, to string, opening Balance, rows []Row) ([]Row, error) {
+	prows, err := tx.Query(ctx, `SELECT id, received_on::text, net, COALESCE(reference, '') FROM payment
+		WHERE org_id=$1 AND site_id=$2 AND unit_id=$3 AND debtor_kind=$4 AND status='pending_declared'
+		AND ($5 = '' OR received_on >= $5::date) AND ($6 = '' OR received_on <= $6::date)
+		ORDER BY received_on, created_at, id`, orgID, siteID, *d.UnitID, d.Kind, from, to)
+	if err != nil {
+		return nil, err
+	}
+	defer prows.Close()
+	for prows.Next() {
+		var pid uuid.UUID
+		var on, ref string
+		var net int64
+		if err := prows.Scan(&pid, &on, &net, &ref); err != nil {
+			return nil, err
+		}
+		at := len(rows)
+		for i, r := range rows {
+			if r.Date > on {
+				at = i
+				break
+			}
+		}
+		if at == len(rows) && at > 0 && rows[at-1].Kind == string(statement.KindFee) && rows[at-1].Ref == "accrued" {
+			at-- // the accrued fee stays the last line
+		}
+		bl := opening
+		if at > 0 {
+			bl = rows[at-1].Balance
+		}
+		row := Row{Date: on, Kind: KindDeclaredPayment, Ref: ref, Amount: money.New(net, cur), Balance: bl, RefID: &pid}
+		rows = append(rows, Row{})
+		copy(rows[at+1:], rows[at:])
+		rows[at] = row
+	}
+	return rows, prows.Err()
 }
 
 func strPtr(s string) *string {
@@ -353,6 +410,12 @@ func (st Statement) PDF() []byte {
 	d.Line(fmt.Sprintf("Closing balance: %s  (principal %s, fee %s)", fmtMoney(st.Closing.Total), fmtMoney(st.Closing.Principal), fmtMoney(st.Closing.Fee)), 10, true)
 	if st.AccruedFee.Amount > 0 {
 		d.Line("The last line is the late fee accrued to "+st.AsOf+" and not yet booked.", 8, false)
+	}
+	for _, r := range st.Rows {
+		if r.Kind == KindDeclaredPayment {
+			d.Line("declared_payment lines are declared payments awaiting confirmation; they are not part of the balance.", 8, false)
+			break
+		}
 	}
 	if st.Credit.Amount > 0 {
 		d.Line("Prepaid credit on account: "+fmtMoney(st.Credit), 9, false)
