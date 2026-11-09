@@ -2,6 +2,7 @@
 package httpapi
 
 import (
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"log/slog"
 	"net/http"
 	"net/netip"
@@ -97,6 +98,8 @@ type Options struct {
 	MaxUploadBytes int64
 	// Ready are the probes behind /readyz.
 	Ready []Check
+	// MetricsToken is the bearer token of /metrics; empty leaves /metrics unmounted.
+	MetricsToken string
 }
 
 // NewRouter builds the root handler.
@@ -113,6 +116,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
 		middleware.RequestID,
+		obs.HTTP,
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
@@ -124,6 +128,9 @@ func NewRouter(deps Deps, o Options) http.Handler {
 
 	r.Get("/healthz", healthz)
 	r.Get("/readyz", readyz(deps.Log, o.Ready))
+	if o.MetricsToken != "" {
+		r.Method(http.MethodGet, "/metrics", obs.Handler(o.MetricsToken))
+	}
 
 	r.MethodNotAllowed(methodNotAllowed(r))
 	MountAPI(r, deps)

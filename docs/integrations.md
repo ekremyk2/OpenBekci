@@ -202,7 +202,7 @@ function verify(secret, header, rawBody, nowSeconds = Date.now() / 1000) {
 - **What we send to**: only `https` URLs whose host resolves to public addresses. Loopback, private (RFC 1918, unique-local), link-local (including cloud metadata addresses), carrier-grade NAT, multicast and documentation ranges are refused when you create the endpoint **and** again when each request connects (the IPv6 forms that carry an IPv4 address, such as 6to4, Teredo, NAT64 and IPv4-mapped, are covered). Self-hosted instances with a receiver on their own network list the ranges in `OPENBEKCI_WEBHOOK_ALLOWED_CIDRS` (operator setting; for example `192.168.1.0/24`). At most 1 MiB of your response is read, and it is discarded.
 - The delivery log keeps the last status and error only (`http_status: 500`, `request_failed: ...`, `forbidden_target`, `redirect_not_followed`), never response bodies.
 
-Why the signature is built this way: [ADR-0002](adr/0002-webhook-signing.md).
+Why the signature is built this way: ADR-0002 (`docs/adr/0002-webhook-signing.md` in the repository).
 
 ## Configuration
 
