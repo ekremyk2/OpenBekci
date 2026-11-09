@@ -303,7 +303,7 @@ func (s *Service) ListSettlements(ctx context.Context, orgID, siteID uuid.UUID, 
 		if err != nil {
 			return err
 		}
-		cur := money.Code(ledger.Currency(site))
+		cur := ledger.Currency(site)
 		curOn, curProv, curRef := "", "", ""
 		if after != nil {
 			curOn, curProv, curRef = after.SettledOn, after.Provider, after.Ref
@@ -367,7 +367,7 @@ func (s *Service) ClearingBalancesOf(ctx context.Context, orgID, siteID uuid.UUI
 		if err != nil {
 			return err
 		}
-		cur := money.Code(ledger.Currency(site))
+		cur := ledger.Currency(site)
 		out = ClearingBalances{SiteID: siteID, Providers: []ProviderClearing{}, ClientMoneyOwed: money.Zero(cur)}
 		if out.MerchantOfRecord, err = merchantOf(ctx, tx, orgID, site); err != nil {
 			return err

@@ -270,7 +270,7 @@ func (s *Service) Create(ctx context.Context, org uuid.UUID, in CreateInput) (Ch
 			return err
 		}
 		p.site = site
-		cur := money.Code(ledger.Currency(site))
+		cur := ledger.Currency(site)
 		d := billing.Debtor{UnitID: &in.UnitID, Kind: in.DebtorKind}
 		charges, err := billing.LoadCharges(ctx, tx, org, siteID, d)
 		if err != nil {
