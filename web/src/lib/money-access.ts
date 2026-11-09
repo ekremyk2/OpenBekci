@@ -27,7 +27,7 @@ export function moneyAccess(me: Me | undefined, orgId: string | undefined): Mone
   const mine = me.occupancies.filter((o) => o.organization_id === orgId)
   const resident =
     !manager &&
-    (mine.some((o) => o.may_see_money) ||
+    (mine.some((o) => o.kind !== 'household' || o.may_see_money) ||
       (mine.length === 0 && can(me, orgId, 'statements.read_own')))
   const transparency = can(me, orgId, 'reports.aggregate')
   return {

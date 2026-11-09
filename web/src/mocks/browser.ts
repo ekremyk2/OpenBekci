@@ -32,7 +32,7 @@ export async function startMocks() {
   const role = new URLSearchParams(globalThis.location.search).get('mockRole')
   if (opsRole) opsDb.role = opsRole
   const worker = setupWorker(
-    ...(role === 'resident' || role === 'guard'
+    ...(role === 'resident' || role === 'household' || role === 'guard'
       ? [http.get('*/v1/me', () => HttpResponse.json(roleMe(role)))]
       : [http.get('*/v1/me', () => (opsRole ? HttpResponse.json(meForRole(opsRole)) : undefined))]),
     ...adminHandlers(),

@@ -61,6 +61,8 @@ export interface components {
       pending_consents?: string[] // required consent texts not yet accepted
       roles: components['schemas']['RoleGrant'][]
       permissions: components['schemas']['EffectivePermission'][]
+      /** Rights held through a current unit occupancy (resident portal); never part of `permissions`. */
+      occupant_permissions?: components['schemas']['EffectivePermission'][]
       sites: components['schemas']['Site'][]
     }
     Occupancy: {
