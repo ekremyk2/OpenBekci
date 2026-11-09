@@ -1,16 +1,21 @@
 package identity
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNormalizePhone(t *testing.T) {
 	for in, want := range map[string]string{
-		"+905321234567":      "+905321234567",
-		"+90 532 123 45 67":  "+905321234567",
-		"05321234567":        "+905321234567",
-		"5321234567":         "+905321234567",
-		"0090 532-123-45-67": "+905321234567",
-		"(0532) 123 45 67":   "+905321234567",
-		"+44 20 7946 0958":   "+442079460958",
+		"+905321234567":         "+905321234567",
+		"+90 532 123 45 67":     "+905321234567",
+		"05321234567":           "+905321234567",
+		"5321234567":            "+905321234567",
+		"0090 532-123-45-67":    "+905321234567",
+		"(0532) 123 45 67":      "+905321234567",
+		"+44 20 7946 0958":      "+442079460958",
+		"+90 (0) 532 123 45 67": "+905321234567",
+		"0090 0532 123 45 67":   "+905321234567",
+		"+90.532.123.45.67":     "+905321234567",
 	} {
 		got, ok := NormalizePhone(in, "90")
 		if !ok || got != want {
@@ -28,7 +33,13 @@ func TestNormalizeEmail(t *testing.T) {
 	if got, ok := NormalizeEmail("  Ayse@Example.ORG "); !ok || got != "ayse@example.org" {
 		t.Errorf("got %q, %v", got, ok)
 	}
-	for _, bad := range []string{"", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
+	// look-alike spellings fold onto the plain address: one contact, one set of buckets
+	for _, in := range []string{"Ａyse＠Example.org", "AYSE@EXAMPLE.ORG", "ayse＠EXAMPLE.org"} {
+		if got, ok := NormalizeEmail(in); !ok || got != "ayse@example.org" {
+			t.Errorf("NormalizeEmail(%q) = %q, %v", in, got, ok)
+		}
+	}
+	for _, bad := range []string{"a" + string(rune(0x200b)) + "@x.org", "a\u0085@x.org", "a" + string(rune(0xa0)) + "b@x.org", "", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
 		if _, ok := NormalizeEmail(bad); ok {
 			t.Errorf("NormalizeEmail(%q) accepted", bad)
 		}
@@ -43,11 +54,13 @@ func TestLinkURL(t *testing.T) {
 		want   string
 	}{
 		{ClientWeb, LinkMagic, "https://bekci.example.org/login/magic?token=T"},
-		{ClientMobile, LinkMagic, "openbekci://login/magic?token=T"},
+		{ClientMobile, LinkMagic, "openbekci://bekci.example.org/login/magic?token=T"},
 		{ClientWeb, LinkInvite, "https://bekci.example.org/invite/T"},
-		{ClientMobile, LinkInvite, "openbekci://invite/T"},
+		{ClientMobile, LinkInvite, "openbekci://bekci.example.org/invite/T"},
 		{ClientWeb, LinkReset, "https://bekci.example.org/reset/T"},
-		{ClientMobile, LinkReset, "openbekci://reset/T"},
+		{ClientMobile, LinkReset, "openbekci://bekci.example.org/reset/T"},
+		{ClientWeb, LinkJoin, "https://bekci.example.org/join/T"},
+		{ClientMobile, LinkJoin, "openbekci://bekci.example.org/join/T"},
 	} {
 		if got := LinkURL(base, c.client, c.kind, "T"); got != c.want {
 			t.Errorf("LinkURL(%s, %s) = %q, want %q", c.client, c.kind, got, c.want)

@@ -1,12 +1,18 @@
 get:
   operationId: people.listMyUnitClaims
   summary: List my unit claims across organizations
-  description: '**Release 0.1.** Lets a freshly signed-up resident see "waiting for approval".'
+  description: |-
+    **Release 0.1.** Lets a freshly signed-up resident see "waiting for approval": every claim of the caller, in any
+    organization, newest last, with the organization, site, block and unit labels. Served by the platform pool; only
+    the caller's own claims are returned.
+
+    Problems: `unauthenticated` (401), `validation_failed` (422).
   tags:
     - people
   security:
     - cookieAuth: []
     - bearerAuth: []
+  x-openbekci-roles: [me.read]
   x-stability: stable
   parameters:
     - name: status

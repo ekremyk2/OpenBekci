@@ -57,7 +57,7 @@ export interface paths {
          *     `code` this verifies the credentials and sets the session cookie `obk_session`
          *     (httpOnly, SameSite=Lax, Secure except in development). `sms_otp` without
          *     `code` sends a code by SMS and `magic_link` emails a link (`client`
-         *     selects the web or `openbekci://` link); both answer 202 whether or not
+         *     selects the web or `openbekci://<host>/…` link); both answer 202 whether or not
          *     the account exists. Wrong credentials
          *     of any kind answer 401 `invalid_grant`; repeated failures lock the
          *     identifier out (429 `rate_limited` with `Retry-After`).
@@ -153,7 +153,7 @@ export interface paths {
          * Email a single-use sign-in link
          * @description Emails a link valid for 15 minutes when an account has this address. The
          *     answer is the same whether or not it does. The link is
-         *     `{BASE_URL}/login/magic?token=...`, or `openbekci://login/magic?token=...`
+         *     `{BASE_URL}/login/magic?token=...`, or `openbekci://<host>/login/magic?token=...` (`<host>` is the instance's BASE_URL host)
          *     for `client=mobile`. 503 `mail_unavailable` when the instance has no email
          *     configuration. Limited per address and per client address.
          */
@@ -2082,6 +2082,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/join/{code}:sign-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign up through a site's join code
+         * @description **Release 0.1.** Public. A resident who scanned the site's QR code creates an account here (setup-people S4,
+         *     path 2): give a phone number or an email address (and optionally a name). The server sends a six-digit SMS code
+         *     (phone) or a sign-in link (email, `client=mobile` makes it an `openbekci://<host>/…` link). Completing it through
+         *     `auth.createToken` (`sms_otp` with the code, or `magic_link`) or `auth.createSession` opens a session with no
+         *     organization yet; the unit claim (`people.createUnitClaim`) then uses the same join code, and the manager approves.
+         *
+         *     The answer is 202 whether the contact is new or already has an account: an existing account simply gets the
+         *     ordinary sign-in code or link, and no second account is created. A new contact gets a pending account that becomes
+         *     active only when the code or link is used. An unknown, expired, disabled, rotated or used-up join code answers the
+         *     same 404 as `people.getJoinInfo`. Limited per join code, per contact and per client address.
+         *
+         *     Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429), `sms_unavailable` or
+         *     `mail_unavailable` (503).
+         */
+        post: operations["people.joinSignUp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/join/{code}/claims": {
         parameters: {
             query?: never;
@@ -2226,7 +2261,11 @@ export interface paths {
         };
         /**
          * List my unit claims across organizations
-         * @description **Release 0.1.** Lets a freshly signed-up resident see "waiting for approval".
+         * @description **Release 0.1.** Lets a freshly signed-up resident see "waiting for approval": every claim of the caller, in any
+         *     organization, newest last, with the organization, site, block and unit labels. Served by the platform pool; only
+         *     the caller's own claims are returned.
+         *
+         *     Problems: `unauthenticated` (401), `validation_failed` (422).
          */
         get: operations["people.listMyUnitClaims"];
         put?: never;
@@ -10424,7 +10463,7 @@ export interface components {
             /** @description The code sent by SMS. */
             code?: string;
             /**
-             * @description `mobile` makes an emailed link use the `openbekci://` scheme.
+             * @description `mobile` makes an emailed link use the `openbekci://<host>/…` form (the instance host first).
              * @default web
              * @enum {string}
              */
@@ -10498,7 +10537,7 @@ export interface components {
         MagicLinkRequest: {
             email: string;
             /**
-             * @description `mobile` makes the link use the `openbekci://` scheme instead of the web URL.
+             * @description `mobile` makes the link use the `openbekci://<host>/…` form (the instance host first) instead of the web URL.
              * @default web
              * @enum {string}
              */
@@ -12065,7 +12104,10 @@ export interface components {
             may_see_money: boolean;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
+             */
             valid_to: string | null;
             /** Format: date-time */
             created_at: string;
@@ -12097,7 +12139,10 @@ export interface components {
             may_see_money?: boolean;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
+             */
             valid_to?: string | null;
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
@@ -12121,7 +12166,10 @@ export interface components {
             may_see_money?: boolean;
             /** Format: date */
             valid_from?: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
+             */
             valid_to?: string | null;
         };
         /**
@@ -12735,6 +12783,17 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description Organization label; filled by `people.listMyUnitClaims`. */
+            org_name?: string;
+            /**
+             * Format: uuid
+             * @description Filled by `people.listMyUnitClaims`.
+             */
+            site_id?: string;
+            /** @description Filled by `people.listMyUnitClaims`. */
+            site_name?: string;
+            /** @description Filled by `people.listMyUnitClaims`. */
+            block_name?: string;
         };
         /**
          * @example {
@@ -12979,7 +13038,7 @@ export interface components {
         PasswordResetRequest: {
             identifier: string;
             /**
-             * @description `mobile` makes the emailed link use the `openbekci://` scheme.
+             * @description `mobile` makes the emailed link use the `openbekci://<host>/…` form (the instance host first).
              * @enum {string}
              */
             client?: "web" | "mobile";
@@ -16523,9 +16582,11 @@ export interface components {
              *     a memo line that moves no balance (`debit`, `credit`, `principal` and `late_fee` are zero, `balance` is the running
              *     balance of the line before it), carrying the amount in `declared_amount` and the payment in `ref_type` `payment` / `ref_id`.
              *     Once confirmed it is replaced by an ordinary `payment` line.
+             *     `fee` is a booked late fee line (`late_fee` is kept for older clients) and `waiver` a waived fee; the late fee accrued up to today and not booked yet
+             *     is one `fee` line with `accrued: true` (its amount is already in `balance` and `closing_balance`; never add it again).
              * @enum {string}
              */
-            kind: "opening" | "charge" | "payment" | "late_fee" | "credit" | "refund" | "adjustment" | "reversal" | "declared_payment";
+            kind: "opening" | "charge" | "payment" | "late_fee" | "credit" | "refund" | "adjustment" | "reversal" | "fee" | "waiver" | "declared_payment";
             description: string;
             ref_type: string | null;
             /** Format: uuid */
@@ -16542,6 +16603,8 @@ export interface components {
             credit: components["schemas"]["Money"];
             /** @description Running balance. */
             balance: components["schemas"]["Money"];
+            /** @description True on the single `fee` line that is the late fee accrued to the end of the statement and not booked yet (M4). */
+            accrued?: boolean;
             /** @description Only on `declared_payment` lines: the amount the resident declared. */
             declared_amount?: components["schemas"]["Money"];
         };
@@ -17165,7 +17228,7 @@ export interface components {
             title: string;
             description: string;
             /**
-             * @description Open enum.
+             * @description Open enum. The creator chooses (O3): `private` is about one unit (a resident needs `unit_id` of a unit they occupy, or exactly one), `common` about the shared parts of the site or block. Left out, the category's default applies. Managers may set it for any ticket they open.
              * @enum {string}
              */
             visibility?: "private" | "common";
@@ -21819,7 +21882,7 @@ export interface components {
             valid_from: string;
             /**
              * Format: date
-             * @description Null while the occupancy is current.
+             * @description Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while the occupancy is current. A former occupant's money window ends the day before.
              */
             valid_to: string | null;
         };
@@ -21853,6 +21916,26 @@ export interface components {
          * @enum {string}
          */
         Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        /** @description Exactly one of `phone` and `email`. */
+        JoinSignUpRequest: {
+            /** @description E.164 or national format. A six-digit code is sent by SMS. */
+            phone?: string;
+            /** @description A sign-in link is sent by email. */
+            email?: string;
+            /** @description What the resident goes by; used for their person when they claim a unit. */
+            name?: string;
+            /**
+             * @default tr
+             * @enum {string}
+             */
+            locale: "tr" | "en";
+            /**
+             * @description `mobile` makes an emailed link use the `openbekci://<host>/…` form.
+             * @default web
+             * @enum {string}
+             */
+            client: "web" | "mobile";
+        };
         /**
          * @example {
          *       "mode": "unit_side",
@@ -25653,6 +25736,36 @@ export interface operations {
             404: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.joinSignUp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinSignUpRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted; a code or link was sent to the contact. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

@@ -1216,6 +1216,35 @@ schemas:
           door_number: door number
           block_name: Ali Veli
       next_cursor: null
+  JoinSignUpRequest:
+    type: object
+    description: Exactly one of `phone` and `email`.
+    properties:
+      phone:
+        type: string
+        maxLength: 32
+        description: E.164 or national format. A six-digit code is sent by SMS.
+      email:
+        type: string
+        maxLength: 254
+        description: A sign-in link is sent by email.
+      name:
+        type: string
+        maxLength: 200
+        description: What the resident goes by; used for their person when they claim a unit.
+      locale:
+        type: string
+        enum:
+          - tr
+          - en
+        default: tr
+      client:
+        type: string
+        enum:
+          - web
+          - mobile
+        default: web
+        description: "`mobile` makes an emailed link use the `openbekci://<host>/…` form."
   UnitClaimCreate:
     type: object
     required:
@@ -1304,6 +1333,19 @@ schemas:
       updated_at:
         type: string
         format: date-time
+      org_name:
+        type: string
+        description: Organization label; filled by `people.listMyUnitClaims`.
+      site_id:
+        type: string
+        format: uuid
+        description: Filled by `people.listMyUnitClaims`.
+      site_name:
+        type: string
+        description: Filled by `people.listMyUnitClaims`.
+      block_name:
+        type: string
+        description: Filled by `people.listMyUnitClaims`.
     example:
       id: 0192a3f0-1000-7000-8000-000000000002
       org_id: 0192a3f0-1000-7000-8000-000000000003
@@ -1686,7 +1728,7 @@ schemas:
         enum:
           - web
           - mobile
-        description: "`mobile` makes the emailed link use the `openbekci://` scheme."
+        description: "`mobile` makes the emailed link use the `openbekci://<host>/…` form (the instance host first)."
   PasswordResetConsume:
     type: object
     required:

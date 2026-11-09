@@ -9,12 +9,15 @@ package identity
 import (
 	"context"
 	"log/slog"
+	"net/url"
 	"strings"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
@@ -109,6 +112,11 @@ type Limits struct {
 	// AuthIP limits credential checks (password, code verification, link
 	// consumption, refresh) per client address.
 	AuthIP *ratelimit.Limiter
+	// SignUpCode limits sign-ups through one join code, whoever asks: a
+	// published code must not become a way to mass-create accounts or to
+	// spend the SMS budget. Per-contact and per-address limits apply on top
+	// (they are the OTPSend* and LinkSend* buckets, shared with sign-in).
+	SignUpCode *ratelimit.Limiter
 	// WebLinkUser limits web-login link issuance per signed-in user.
 	WebLinkUser *ratelimit.Limiter
 	// SendDaily is the daily send budget per identifier (a phone number or
@@ -156,6 +164,7 @@ func newLimits(cfg Config, now func() time.Time) *Limits {
 		LinkSendIP:     ratelimit.NewWithClock(10, time.Minute, now),
 		LinkSendTarget: ratelimit.NewWithClock(3, 2*time.Minute, now),
 		AuthIP:         ratelimit.NewWithClock(30, 2*time.Second, now),
+		SignUpCode:     ratelimit.NewWithClock(20, 30*time.Second, now),
 		WebLinkUser:    ratelimit.NewWithClock(5, 30*time.Second, now),
 		SendDaily:      per(daily, 24*time.Hour),
 		SMSHourly:      per(sms, time.Hour),
@@ -297,35 +306,77 @@ const (
 	LinkMagic  LinkKind = "magic"  // {BASE_URL}/login/magic?token=...
 	LinkInvite LinkKind = "invite" // {BASE_URL}/invite/{token}
 	LinkReset  LinkKind = "reset"  // {BASE_URL}/reset/{token}
+	LinkJoin   LinkKind = "join"   // {BASE_URL}/join/{code}
 	// LinkWebLogin is {BASE_URL}/login/link/{token}; it is always a web URL
 	// (its purpose is to open the browser).
 	LinkWebLogin LinkKind = "weblogin"
 )
 
-// LinkURL builds a link for token. The web form is under baseURL; the mobile
-// form is the same path under the openbekci:// scheme.
+// LinkURL builds a link for token. The web form is under baseURL. The mobile
+// form carries the instance: the same path under openbekci://<host>, where
+// host is the host (and port) of baseURL, so the app knows which server the
+// link belongs to without any other state. A plain-http base (development)
+// adds scheme=http as a query parameter; https is the default and is left out.
+// Tokens and join codes may contain dots; the host is always the first
+// segment, so a dot in the token cannot be mistaken for it.
 func LinkURL(baseURL string, client Client, kind LinkKind, token string) string {
-	var path string
+	var path, query string
 	switch kind {
 	case LinkInvite:
 		path = "invite/" + token
 	case LinkReset:
 		path = "reset/" + token
+	case LinkJoin:
+		path = "join/" + token
 	case LinkWebLogin:
 		return strings.TrimRight(baseURL, "/") + "/login/link/" + token
 	default:
-		path = "login/magic?token=" + token
+		path, query = "login/magic", "token="+token
 	}
-	if client == ClientMobile {
-		return "openbekci://" + path
+	if client != ClientMobile {
+		u := strings.TrimRight(baseURL, "/") + "/" + path
+		if query != "" {
+			u += "?" + query
+		}
+		return u
 	}
-	return strings.TrimRight(baseURL, "/") + "/" + path
+	host, plain := instanceHost(baseURL)
+	if plain {
+		if query != "" {
+			query += "&"
+		}
+		query += "scheme=http"
+	}
+	u := "openbekci://" + host + "/" + path
+	if query != "" {
+		u += "?" + query
+	}
+	return u
+}
+
+// instanceHost returns the host (with port) of the public base URL, and
+// whether the instance is served over plain http.
+func instanceHost(baseURL string) (host string, plainHTTP bool) {
+	u, err := url.Parse(strings.TrimSpace(baseURL))
+	if err != nil || u.Host == "" {
+		// a bare "host:port" or "host"
+		return strings.Trim(strings.TrimSpace(baseURL), "/"), false
+	}
+	return u.Host, u.Scheme == "http"
 }
 
 // NormalizeEmail trims and lower-cases an address and rejects anything that
 // is not plausibly one address.
 func NormalizeEmail(s string) (string, bool) {
-	s = strings.ToLower(strings.TrimSpace(s))
+	// NFKC folds the compatibility forms (full-width letters and "@", ligatures)
+	// onto the plain ones, so a look-alike spelling cannot be a second contact
+	// with its own rate-limit buckets and its own pending account.
+	s = strings.ToLower(norm.NFKC.String(strings.TrimSpace(s)))
+	for _, r := range s {
+		if unicode.IsControl(r) || unicode.IsSpace(r) || unicode.Is(unicode.Cf, r) {
+			return "", false
+		}
+	}
 	at := strings.IndexByte(s, '@')
 	if at <= 0 || at == len(s)-1 || at != strings.LastIndexByte(s, '@') || len(s) > 254 || strings.ContainsAny(s, " \t\r\n,;<>") {
 		return "", false
@@ -360,6 +411,13 @@ func NormalizePhone(s, defaultCC string) (string, bool) {
 		d = d[2:]
 	default:
 		d = defaultCC + strings.TrimPrefix(d, "0")
+	}
+	// "+90 (0) 532 ..." and "0090 0532 ...": a national trunk 0 typed after the
+	// Turkish country code is the same number as without it, not another one
+	// (no Turkish number starts with 0 after the 90), so it must not get its
+	// own account and its own rate-limit buckets.
+	if strings.HasPrefix(d, "900") {
+		d = "90" + d[3:]
 	}
 	if len(d) < 7 || len(d) > 15 || d[0] == '0' {
 		return "", false

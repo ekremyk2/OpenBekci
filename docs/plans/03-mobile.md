@@ -145,9 +145,9 @@ Token flow from backend §6: `POST /v1/auth/token` → **opaque** access token (
 - **Sign-in methods** are rendered from `auth_methods` in the discovery document, in this order of prominence:
   - **SMS one-time code** (`sms_otp`) — primary for phone-first residents (D5): phone number → 6-digit code; the app offers SMS autofill (Android SMS Retriever / iOS one-time-code keyboard).
   - **Password** (`password`) with email or phone.
-  - **Magic link** (`magic_link`): the app requests it with `client=mobile`; the server emits `openbekci://…` (or the hosted universal link) and the app exchanges the token for a session.
+  - **Magic link** (`magic_link`): the app requests it with `client=mobile`; the server emits `openbekci://<host>/…` (the instance host first; or the hosted universal link) and the app exchanges the token for a session.
   - **Invitation links** (S4: manager, site-code, household): one format, defined in backend §6 (`{BASE_URL}/invite/{token}`, or the mobile scheme when requested with `client=mobile`). Opening one in the app prefills server and invitation, creates or links the account and lands on the unit.
-  - **Site QR sign-up with unit claim** (S4): scan the site's QR → sign up (SMS code) → choose block/unit and claimed role → "waiting for the manager's approval" state until the `unit_claim` is approved.
+  - **Site QR sign-up with unit claim** (S4): scan the site's QR → sign up (`POST /v1/join/{code}:sign-up`, SMS code) → choose block/unit and claimed role → "waiting for the manager's approval" state (read from `GET /v1/me/unit-claims`, not tracked locally) until the `unit_claim` is approved.
   - **Passkeys, TOTP, OIDC**: later, after the backend schedules them; the app shows unknown `auth_methods` ids as unavailable rather than failing.
 - **App lock**: optional biometric/PIN lock with a grace period, a user setting (no org policy in the first release).
 - Sessions list and remote revocation in the profile tab (`GET /v1/me/sessions`, `DELETE /v1/me/sessions/{id}`).

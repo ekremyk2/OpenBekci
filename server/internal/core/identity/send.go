@@ -207,12 +207,14 @@ func (s *Service) RequestOTP(ctx context.Context, phoneRaw string, m Meta) error
 	if err := s.checkDailyBudget(phone); err != nil {
 		return err
 	}
-	s.dispatch(ctx, func(ctx context.Context) { s.sendOTP(ctx, phone) })
+	s.dispatch(ctx, func(ctx context.Context) { s.sendOTP(ctx, phone, nil) })
 	return nil
 }
 
-// sendOTP is the background half of RequestOTP.
-func (s *Service) sendOTP(ctx context.Context, phone string) {
+// sendOTP is the background half of RequestOTP. With su set (sign-up through a
+// join code) an unknown number gets a pending account first; a known one gets
+// the ordinary sign-in code, so the two cases send the same message.
+func (s *Service) sendOTP(ctx context.Context, phone string, su *signUp) {
 	now := s.now()
 	var u User
 	var found bool
@@ -222,7 +224,17 @@ func (s *Service) sendOTP(ctx context.Context, phone string) {
 		if u, found, err = findByContact(ctx, tx, byPhone, phone); err != nil {
 			return err
 		}
-		if !found || u.Status != "active" {
+		if !found && su != nil {
+			if u, err = su.insert(ctx, tx, byPhone, phone); err != nil {
+				return err
+			}
+			found = true
+		} else if found && su != nil && u.Status == "pending" {
+			if u, err = su.refresh(ctx, tx, u.ID); err != nil {
+				return err
+			}
+		}
+		if !found || (u.Status != "active" && u.Status != "pending") {
 			found = false
 			return nil
 		}
@@ -269,12 +281,12 @@ func (s *Service) RequestMagicLink(ctx context.Context, emailRaw string, client 
 	if err := s.checkDailyBudget(email); err != nil {
 		return err
 	}
-	s.dispatch(ctx, func(ctx context.Context) { s.sendMagicLink(ctx, email, client) })
+	s.dispatch(ctx, func(ctx context.Context) { s.sendMagicLink(ctx, email, client, nil) })
 	return nil
 }
 
-// sendMagicLink is the background half of RequestMagicLink.
-func (s *Service) sendMagicLink(ctx context.Context, email string, client Client) {
+// sendMagicLink is the background half of RequestMagicLink (see sendOTP for su).
+func (s *Service) sendMagicLink(ctx context.Context, email string, client Client, su *signUp) {
 	var u User
 	var found bool
 	var token string
@@ -283,7 +295,17 @@ func (s *Service) sendMagicLink(ctx context.Context, email string, client Client
 		if u, found, err = findByContact(ctx, tx, byEmail, email); err != nil {
 			return err
 		}
-		if !found || u.Status != "active" {
+		if !found && su != nil {
+			if u, err = su.insert(ctx, tx, byEmail, email); err != nil {
+				return err
+			}
+			found = true
+		} else if found && su != nil && u.Status == "pending" {
+			if u, err = su.refresh(ctx, tx, u.ID); err != nil {
+				return err
+			}
+		}
+		if !found || (u.Status != "active" && u.Status != "pending") {
 			found = false
 			return nil
 		}

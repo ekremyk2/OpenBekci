@@ -59,7 +59,7 @@ schemas:
           - web
           - mobile
         default: web
-        description: "`mobile` makes an emailed link use the `openbekci://` scheme."
+        description: "`mobile` makes an emailed link use the `openbekci://<host>/…` form (the instance host first)."
       device_name:
         type: string
         maxLength: 128
@@ -183,7 +183,7 @@ schemas:
           - web
           - mobile
         default: web
-        description: "`mobile` makes the link use the `openbekci://` scheme instead of the web URL."
+        description: "`mobile` makes the link use the `openbekci://<host>/…` form (the instance host first) instead of the web URL."
   MagicLinkConsumeRequest:
     type: object
     required:
