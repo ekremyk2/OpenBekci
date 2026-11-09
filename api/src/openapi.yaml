@@ -73,6 +73,14 @@ paths:
     $ref: ./paths/me-sessions.yaml
   /v1/me/sessions/{id}:
     $ref: ./paths/me-sessions-id.yaml
+  /v1/me/devices:
+    $ref: ./paths/me/me-devices.yaml
+  /v1/me/devices/{id}:
+    $ref: ./paths/me/me-devices-id.yaml
+  /v1/me/web-login-link:
+    $ref: ./paths/me/me-web-login-link.yaml
+  /v1/auth/web-login-link:exchange:
+    $ref: ./paths/auth/auth-web-login-link_exchange.yaml
   /v1/orgs/{org_id}/audit:
     $ref: ./paths/orgs-org-id-audit.yaml
   /v1/orgs/{org_id}/packs:
@@ -263,6 +271,8 @@ paths:
     $ref: ./paths/operations/me-notifications.yaml
   /v1/orgs/{org_id}/me/notifications/unread-count:
     $ref: ./paths/operations/me-notifications-unread-count.yaml
+  /v1/orgs/{org_id}/me/notifications/{notification_id}:
+    $ref: ./paths/operations/me-notifications-notification_id.yaml
   /v1/orgs/{org_id}/me/notifications/{notification_id}:read:
     $ref: ./paths/operations/me-notifications-notification_id_read.yaml
   /v1/orgs/{org_id}/me/notifications:read-all:
@@ -747,6 +757,16 @@ components:
       $ref: ./components/auth.yaml#/schemas/Me
     Session:
       $ref: ./components/auth.yaml#/schemas/Session
+    DeviceRegister:
+      $ref: ./components/auth.yaml#/schemas/DeviceRegister
+    Device:
+      $ref: ./components/auth.yaml#/schemas/Device
+    WebLoginLinkCreate:
+      $ref: ./components/auth.yaml#/schemas/WebLoginLinkCreate
+    WebLoginLink:
+      $ref: ./components/auth.yaml#/schemas/WebLoginLink
+    WebLoginLinkExchange:
+      $ref: ./components/auth.yaml#/schemas/WebLoginLinkExchange
     SessionList:
       $ref: ./components/auth.yaml#/schemas/SessionList
     MeUser:

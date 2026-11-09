@@ -2579,6 +2579,9 @@ msgstr ""
 msgid "Go home"
 msgstr ""
 
+msgid "Go to sign in"
+msgstr ""
+
 msgid "Governance sections"
 msgstr ""
 
@@ -5620,6 +5623,9 @@ msgstr ""
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr ""
 
+msgid "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
+msgstr ""
+
 msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
 msgstr ""
 
@@ -5826,6 +5832,9 @@ msgid "This gate cannot be reached through the agent."
 msgstr ""
 
 msgid "This gate is switched off."
+msgstr ""
+
+msgid "This link no longer works"
 msgstr ""
 
 msgid "This number is not valid. Check the digits."

@@ -1,0 +1,41 @@
+post:
+  operationId: me.createWebLoginLink
+  summary: Get a one-time link that signs the browser in
+  description: |-
+    **Release 0.4.** The mobile app asks for a one-time token and opens `{BASE_URL}/login/link/{token}?next=/orgs/{org_id}/...` in the browser for anything deeper than the app offers (mobile section 7.2). The token is single use, valid for a few minutes, bound to the calling session (it stops working when that session is signed out) and stored hashed. A new link voids the session's earlier open ones.
+
+    Permission: any signed-in caller (`sessions.manage_own`).
+
+    Problems: `validation_failed` (422, `next` is not an in-app `/orgs/{org_id}/...` path), `rate_limited` (429).
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - sessions.manage_own
+  x-idempotent: none
+  x-stability: preview
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/auth.yaml#/schemas/WebLoginLinkCreate
+  responses:
+    "201":
+      description: The link; shown once.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/auth.yaml#/schemas/WebLoginLink
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

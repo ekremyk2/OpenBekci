@@ -216,6 +216,10 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 	}
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(ident) // password always, sms_otp and magic_link when configured
+	devs, err := newDevices(cfg, d)
+	if err != nil {
+		return httpapi.Deps{}, err
+	}
 	inst := instance.NewService(instance.Config{
 		Name:                 cfg.InstanceName,
 		BaseURL:              cfg.BaseURL,
@@ -224,13 +228,16 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		MinAppVersionIOS:     cfg.MinAppVersionIOS,
 		LogoURL:              cfg.BrandingLogoURL,
 		PrimaryColor:         cfg.BrandingPrimaryColor,
-	}, instance.PGIDSource{DB: d}, methods).WithPacks(host)
+		PushRelayIDs:         pushRelayIDs(cfg),
+		UnifiedPush:          true,
+	}, instance.PGIDSource{DB: d}, methods).WithPacks(host).WithChallenges(instance.PGChallenges{DB: d})
 	host.OnChange(inst.Invalidate) // enabling or disabling a pack changes the discovery document
 	return httpapi.Deps{
 		Log:          log,
 		DB:           d,
 		Idempotency:  idem,
 		Identity:     ident,
+		Devices:      devs,
 		Authz:        authz.NewResolver(d, reg, nil),
 		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host).WithValidators(host),
 		Packs:        host,
