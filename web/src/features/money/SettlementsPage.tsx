@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useWatch } from 'react-hook-form'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -318,6 +319,7 @@ function PayoutDialog({
   onClose: () => void
 }) {
   const { t } = useLingui()
+  const qc = useQueryClient()
   const msg = useZodMessages()
   const today = todayIn(ctx.timeZone)
   const schema = useMemo(
@@ -372,6 +374,8 @@ function PayoutDialog({
                 toast.info(t`The payout was recorded.`)
                 onClose()
               } catch (er) {
+                // the balances may have moved (409): show the current owed amount
+                void qc.invalidateQueries({ queryKey: ['money', ctx.orgId] })
                 applyServerErrors(form, er, t`Could not record the payout.`, {
                   locked_period: t`This period is locked.`,
                 })

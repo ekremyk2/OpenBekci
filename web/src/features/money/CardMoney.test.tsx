@@ -112,7 +112,7 @@ describe('card checkouts of a site', () => {
     )
   })
 
-  it('explains a refund that the payment version no longer allows', async () => {
+  it('closes the refund dialog when the payment version is stale', async () => {
     mountMoney('/orgs/org-1/money/checkouts')
     const table = await screen.findByRole('table', { name: 'Card checkouts' })
     const paid = within(table).getByRole('row', { name: /Paid/ })
@@ -122,7 +122,8 @@ describe('card checkouts of a site', () => {
     const p = getMoneyDb().payments.find((x) => x.method.startsWith('card:'))!
     ;(p as { version?: number }).version = 7
     await userEvent.click(within(dialog).getByRole('button', { name: 'Refund the payment' }))
-    expect(await within(dialog).findByText(/Someone else changed this record/)).toBeInTheDocument()
+    // the stale dialog closes, so reopening it loads the current version
+    await waitFor(() => expect(dialog).not.toBeInTheDocument())
   })
 
   it('offers no refund without money.post', async () => {
@@ -201,6 +202,19 @@ describe('settlements, clearing and client money', () => {
       expect(screen.getByTestId('client-money-owed')).toHaveTextContent(/250[.,]00/),
     )
     expect(screen.getByTestId('client-money-paid-out')).toHaveTextContent(/150[.,]00/)
+  })
+
+  it('refreshes the owed balance when a payout is refused', async () => {
+    mountMoney('/orgs/org-1/money/settlements')
+    await userEvent.click(await screen.findByRole('button', { name: 'Record payout to site' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Record payout to site' })
+    // the balance drops behind the dialog's back, so the proposed amount is now too much
+    checkoutMock().owed = 100
+    await userEvent.type(within(dialog).getByLabelText('Bank transfer reference'), 'HAVALE-1')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Record payout' }))
+    await waitFor(() =>
+      expect(screen.getByTestId('client-money-owed')).toHaveTextContent(/1[.,]00/),
+    )
   })
 
   it('requires the reference', async () => {

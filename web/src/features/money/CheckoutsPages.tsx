@@ -397,6 +397,12 @@ export function CardRefundDialog({
               onError: (er) => {
                 // a stale version or a half-done refund: show the current state before a retry
                 void qc.invalidateQueries({ queryKey: ['money', ctx.orgId] })
+                if (er instanceof AppError && er.isVersionConflict) {
+                  // the dialog holds the old version: close it so "Refund" reloads the payment
+                  toast.error(t`The payment changed. Open Refund again to see its current state.`)
+                  onClose()
+                  return
+                }
                 setError(
                   (er instanceof AppError
                     ? problemMessage(er.code, { _: (d) => t(d) })
