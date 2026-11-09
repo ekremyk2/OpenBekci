@@ -127,6 +127,49 @@ func TestFailedOnEnableWithdrawsPresetsAndChartNames(t *testing.T) {
 	}
 }
 
+func defaultLateFee(h *sdktest.Harness) (rate, grace, rows int) {
+	h.Env.Query([]any{&rows}, `SELECT count(*) FROM late_fee_policy WHERE org_id = $1 AND site_id = $2`, h.Env.OrgID, h.Env.SiteID)
+	h.Env.Query([]any{&rate, &grace}, `SELECT rate_bps_per_month, grace_days FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default`, h.Env.OrgID, h.Env.SiteID)
+	return rate, grace, rows
+}
+
+// The late fee preset changes the site's automatic default row (the example
+// pack: 2 % and five grace days instead of 5 % and none). A failed OnEnable takes
+// that back with the other presets, and leaves a site that set its own policy
+// meanwhile alone.
+func TestFailedOnEnableWithdrawsTheDefaultLateFeeRow(t *testing.T) {
+	fail := false
+	h := sdktest.New(t, failingEnable{example.New(), &fail}, sdktest.WithoutEnable())
+	ensureChart(h)
+	if rate, grace, rows := defaultLateFee(h); rate != 500 || grace != 0 || rows != 1 {
+		t.Fatalf("the default row before: %d bps, %d days, %d rows", rate, grace, rows)
+	}
+
+	fail = true
+	if _, err := h.TryEnable(settings); err == nil {
+		t.Fatal("enable succeeded although OnEnable failed")
+	}
+	if rate, grace, rows := defaultLateFee(h); rate != 500 || grace != 0 || rows != 1 {
+		t.Fatalf("a failed enablement left the default late fee row at %d bps, %d days (%d rows)", rate, grace, rows)
+	}
+
+	// control: a successful enablement does change the row
+	fail = false
+	h.Enable(settings)
+	if rate, grace, rows := defaultLateFee(h); rate != 200 || grace != 5 || rows != 1 {
+		t.Fatalf("the control is broken: the enablement left %d bps, %d days (%d rows)", rate, grace, rows)
+	}
+	h.Disable()
+	// the row stays as the site's own after a disable (like every preset value); a failed re-enablement does not touch it
+	fail = true
+	if _, err := h.TryEnable(settings); err == nil {
+		t.Fatal("re-enable succeeded although OnEnable failed")
+	}
+	if rate, grace, _ := defaultLateFee(h); rate != 200 || grace != 5 {
+		t.Fatalf("a failed re-enablement changed the row to %d bps, %d days", rate, grace)
+	}
+}
+
 // ValidateSettings may quote what it was given; no secret reaches the admin.
 func TestValidateSettingsErrorsDoNotLeakSecrets(t *testing.T) {
 	for name, sentinel := range map[string]error{"plain": nil, "credentials": sdk.ErrCredentials, "rejected": sdk.ErrRejected} {
