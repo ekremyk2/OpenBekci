@@ -76,3 +76,28 @@ func TestDefaultChannelsFollowTheO5Table(t *testing.T) {
 		t.Errorf("NormalizeChannels = %v", got)
 	}
 }
+
+// Every type has the same non-empty parts in both locales; a part missing in
+// one language must fail here, not render blank for a resident.
+func TestLocaleCatalogsMatch(t *testing.T) {
+	for typ := range catalogs["en"]["en"] {
+		if _, ok := catalogs["tr"]["tr"][typ]; !ok {
+			t.Errorf("tr is missing %s", typ)
+		}
+	}
+	for typ := range catalogs["tr"]["tr"] {
+		if _, ok := catalogs["en"]["en"][typ]; !ok {
+			t.Errorf("en is missing %s", typ)
+		}
+	}
+	for _, loc := range []string{"en", "tr"} {
+		for key, tpl := range catalogs[loc][loc] {
+			if strings.HasSuffix(key, "/body") || strings.HasSuffix(key, "/title") {
+				var b strings.Builder
+				if err := tpl.Execute(&b, map[string]any{}); err != nil || strings.TrimSpace(b.String()) == "" {
+					t.Errorf("%s %s renders empty", loc, key)
+				}
+			}
+		}
+	}
+}

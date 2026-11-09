@@ -6382,6 +6382,9 @@ msgstr ""
 msgid "The pass was cancelled."
 msgstr ""
 
+msgid "The payment changed. Open Refund again to see its current state."
+msgstr ""
+
 msgid "The payment did not go through"
 msgstr ""
 
