@@ -103,9 +103,9 @@ func (m Figures) MySides(ctx context.Context, tx pgx.Tx, orgID, personID uuid.UU
 	for _, r := range refs {
 		var principal, fee, credit int64
 		var next *time.Time
-		if err := tx.QueryRow(ctx, `SELECT COALESCE(SUM(r) FILTER (WHERE kind = 'principal'), 0), COALESCE(SUM(r) FILTER (WHERE kind = 'fee'), 0), MIN(due_date) FILTER (WHERE r > 0)
+		if err := tx.QueryRow(ctx, `SELECT COALESCE(SUM(r) FILTER (WHERE kind = 'principal' AND r > 0), 0), COALESCE(SUM(r) FILTER (WHERE kind = 'fee'), 0), MIN(due_date) FILTER (WHERE r > 0)
 			FROM (SELECT c.kind, c.due_date, `+remainingSQL+` AS r FROM charge c
-			WHERE c.org_id = $1 AND c.unit_id = $2 AND c.debtor_kind = $3 AND c.cancel_entry_id IS NULL) x WHERE r > 0`,
+			WHERE c.org_id = $1 AND c.unit_id = $2 AND c.debtor_kind = $3 AND c.cancel_entry_id IS NULL) x`,
 			orgID, r.unit, r.side).Scan(&principal, &fee, &next); err != nil {
 			return nil, err
 		}
@@ -125,7 +125,7 @@ func (m Figures) MySides(ctx context.Context, tx pgx.Tx, orgID, personID uuid.UU
 		if err != nil {
 			return nil, err
 		}
-		fee += acc.Unbooked.Amount
+		fee = max(fee+acc.Unbooked.Amount, 0) // booked waivers are negative fee charges: they count, as on the statement
 		side := dashboards.MySide{
 			UnitID: r.unit, UnitDoorNumber: r.door, DebtorKind: r.side,
 			Principal:      dashboards.Money{Amount: principal, Currency: r.cur},
