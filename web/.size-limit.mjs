@@ -2,7 +2,10 @@
 // (the login page) must stay <= 250 kB gzipped. Counted:
 //   - the entry script and every modulepreload listed in dist/index.html,
 //   - the /login route chunk and everything it statically imports (not dynamic imports),
-//   - the largest locale catalog chunk (one catalog is loaded per visitor; worst case counted).
+//   - the largest locale catalog chunk a person can pick in the UI (en or tr; one catalog is loaded
+//     per visitor, worst case counted). The pseudo-locale catalog is developer-only (`?locale=`,
+//     see src/lib/i18n.ts) and its accented, longer strings would dominate the budget, so it is
+//     not counted.
 // A second budget covers the heaviest lazy route: the largest non-initial chunk (route screens,
 // qrcode, the XLSX reader) plus the non-initial chunks it imports statically, gzipped, <= 40 kB.
 // The camera QR scanner (html5-qrcode, loaded only when someone starts scanning at the desk or the
@@ -38,8 +41,10 @@ function closure(name, seen = new Set()) {
 const login = [...files].find((f) => /^login\.index-.*\.js$/.test(f))
 if (!login) throw new Error('size: login route chunk not found in dist/assets')
 
+// the pseudo catalog is the only one with these letters (Turkish uses none of them)
+const isPseudo = (f) => /[ƀŷŕĺ]/.test(readFileSync(new URL(`./assets/${f}`, dist), 'utf8'))
 const catalogs = [...files]
-  .filter((f) => /^messages-.*\.js$/.test(f))
+  .filter((f) => /^messages-.*\.js$/.test(f) && !isPseudo(f))
   .sort(
     (a, b) =>
       readFileSync(new URL(`./assets/${b}`, dist)).length -
