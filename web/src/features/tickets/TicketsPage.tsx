@@ -252,7 +252,7 @@ export function TicketsPage({
                   <Link
                     to="/orgs/$orgId/tickets/$ticketId"
                     params={{ orgId, ticketId: ticket.id }}
-                    className="flex flex-col gap-1 p-3 outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+                    className="flex flex-col gap-1 p-3 outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium">{ticket.title}</span>

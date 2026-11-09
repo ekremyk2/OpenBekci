@@ -22,13 +22,13 @@ function ToastViewport({
 }
 
 const toastVariants = cva(
-  'pointer-events-auto relative flex w-full max-w-sm items-start gap-3 rounded-md border border-s-4 bg-popover p-4 pe-10 text-sm text-popover-foreground shadow-lg data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-2',
+  'pointer-events-auto relative flex w-full max-w-sm items-start gap-3 rounded-lg border bg-popover p-4 pe-10 text-sm text-popover-foreground shadow-lg data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom-2',
   {
     variants: {
       variant: {
-        info: 'border-s-primary',
-        warning: 'border-s-warning',
-        error: 'border-s-destructive',
+        info: 'border-info',
+        warning: 'border-warning',
+        error: 'border-destructive',
       },
     },
     defaultVariants: { variant: 'info' },
@@ -59,7 +59,7 @@ function ToastClose({
     <ToastPrimitive.Close
       aria-label={label}
       className={cn(
-        'absolute end-2 top-2 rounded-xs p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none [&_svg]:size-4',
+        'absolute end-2 top-2 rounded-xs p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none [&_svg]:size-4',
         className,
       )}
       {...props}

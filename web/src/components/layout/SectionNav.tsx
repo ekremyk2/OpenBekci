@@ -27,7 +27,7 @@ export function SectionNav({ links, label }: { links: SectionLink[]; label: stri
           params={{ orgId: org.id }}
           search={l.search as never}
           className={cn(
-            'rounded-md px-3 py-1.5 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+            'rounded-md px-3 py-1.5 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
             '[&.active]:bg-accent [&.active]:text-accent-foreground',
           )}
         >

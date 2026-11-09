@@ -25,7 +25,7 @@ export function Breadcrumbs({ items, orgId }: { items: Crumb[]; orgId: string })
                   to={c.to as '/orgs/$orgId'}
                   params={{ orgId, ...c.params } as { orgId: string }}
                   search={c.search as never}
-                  className="rounded-sm underline-offset-4 hover:underline focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none"
+                  className="rounded-sm underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
                 >
                   {c.label}
                 </Link>

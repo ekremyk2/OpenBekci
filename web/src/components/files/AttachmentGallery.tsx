@@ -34,7 +34,7 @@ export function AttachmentGallery({
           key={img.id}
           type="button"
           onClick={() => setOpen(i)}
-          className="overflow-hidden rounded-md border outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="overflow-hidden rounded-md border outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label={t`Open photo ${i + 1} of ${images.length}`}
         >
           <img

@@ -7,8 +7,6 @@
       ((pref === null || pref === 'system') &&
         window.matchMedia('(prefers-color-scheme: dark)').matches)
     document.documentElement.classList.toggle('dark', dark)
-    var accent = localStorage.getItem('ob.accent')
-    if (accent) document.documentElement.setAttribute('data-accent', accent)
   } catch (e) {
     /* storage unavailable: CSS falls back to the light theme */
   }

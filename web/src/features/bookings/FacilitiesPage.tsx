@@ -276,7 +276,7 @@ function FacilityDialog({
                               )
                             }
                             className={cn(
-                              'rounded-md border px-2 py-1 text-xs font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                              'rounded-md border px-2 py-1 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                               on ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
                             )}
                           >

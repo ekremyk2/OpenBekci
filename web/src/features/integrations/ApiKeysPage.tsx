@@ -522,7 +522,7 @@ function CreateKeyDialog({
                 groups.map(([group, perms]) => (
                   <div key={group} className="mb-3 last:mb-0">
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-muted-foreground uppercase">
+                      <span className="text-xs font-semibold text-muted-foreground">
                         {group}
                       </span>
                       <button

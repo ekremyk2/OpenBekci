@@ -320,7 +320,7 @@ export function SiteBankTab({
               <Trans>IBAN</Trans>
             </dt>
             <dd className="flex items-center gap-2 font-mono" dir="ltr">
-              <span data-testid="iban">{reveal ? groupIban(bank.iban) : maskIban(bank.iban)}</span>
+              <span data-testid="iban" className="iban">{reveal ? groupIban(bank.iban) : maskIban(bank.iban)}</span>
               <Button
                 type="button"
                 variant="ghost"

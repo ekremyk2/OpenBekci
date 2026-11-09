@@ -38,8 +38,8 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           activeOptions={{ exact: item.to === '/orgs/$orgId' }}
           onClick={onNavigate}
           className={cn(
-            'flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
-            '[&.active]:bg-accent [&.active]:text-accent-foreground',
+            'flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            '[&.active]:bg-tile-tint [&.active]:text-foreground',
           )}
         >
           <item.icon className="size-4 shrink-0" aria-hidden="true" />
@@ -107,7 +107,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Trans>Skip to content</Trans>
       </a>
       <aside className="hidden w-60 shrink-0 border-e bg-sidebar text-sidebar-foreground md:block">
-        <div className="flex h-14 items-center px-6 text-lg font-semibold">{instanceName}</div>
+        <div className="flex h-14 items-center gap-3 px-6">
+          <img src="/brand/logos/openbekci-wordmark.svg" alt="OpenBekci" className="h-7 dark:hidden" />
+          <img
+            src="/brand/logos/openbekci-wordmark-on-dark.svg"
+            alt="OpenBekci"
+            className="hidden h-7 dark:block"
+          />
+        </div>
         <Sidebar />
       </aside>
       <Sheet open={open} onOpenChange={setOpen}>

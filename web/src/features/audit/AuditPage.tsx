@@ -69,7 +69,7 @@ function EventRow({ event, timeZone }: { event: AuditEvent; timeZone: string }) 
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full flex-wrap items-center gap-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        className="flex w-full flex-wrap items-center gap-2 text-start outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {open ? (
           <ChevronDownIcon className="size-4" aria-hidden="true" />

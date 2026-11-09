@@ -37,7 +37,7 @@ export const Route = createFileRoute('/select-org')({
                 <Link
                   to="/orgs/$orgId"
                   params={{ orgId: org.id }}
-                  className="block rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+                  className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <Card className="transition-colors hover:bg-accent">
                     <CardHeader>

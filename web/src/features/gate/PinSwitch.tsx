@@ -143,7 +143,7 @@ export function PinSwitch({
         maxLength={8}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
         aria-invalid={error ? true : undefined}
-        className="h-16 w-full rounded-md border bg-background text-center text-3xl tracking-[0.5em] outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        className="h-16 w-full rounded-md border bg-background text-center text-3xl tracking-[0.5em] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       />
       {error ? (
         <p role="alert" className="text-center text-lg text-destructive">

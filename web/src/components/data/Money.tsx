@@ -18,10 +18,10 @@ export function Money({
   const negative = typeof minor === 'string' ? minor.startsWith('-') : minor < 0
   return (
     <span
-      className={cn('tabular-nums', negative && 'text-destructive', className)}
+      className={cn('money', negative && 'text-destructive', className)}
       dir="ltr" // digits and symbols keep their order inside RTL text
     >
-      {formatMoney(minor, currency, intl, signDisplay ? { signDisplay } : {})}
+      {formatMoney(minor, currency, intl, signDisplay ? { signDisplay } : {}).replace('-', '\u2212')}
     </span>
   )
 }

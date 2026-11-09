@@ -3,102 +3,142 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* OpenBekci brand (brand/README.md, brand/tokens.json). Fonts are static files, not in the JS bundle. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/brand/fonts/bricolage-grotesque-all-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/brand/fonts/bricolage-grotesque-all-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/brand/fonts/bricolage-grotesque-all-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/brand/fonts/IBMPlexSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/brand/fonts/IBMPlexSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/brand/fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/brand/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/brand/fonts/IBMPlexMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
 /*
- * Design tokens (web plan §10). --brand-seed / --brand-seed-foreground are overwritten at runtime
- * from the discovery document's branding.primary_color (src/app/theme.ts). Everything else is a
- * semantic token; components never use raw colors.
+ * Brand tokens: values copied from brand/tokens.json. The semantic names below them are what
+ * components use. The organization's branding.primary_color (src/app/theme.ts) overrides --tile only.
  */
 :root {
-  --brand-seed: #2563eb;
-  --brand-seed-foreground: #ffffff;
-
-  --radius: 0.625rem;
+  --surface: #fcfaf6;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f5f1ec;
+  --line: #dfdad4;
+  --line-strong: #8f847a;
+  --ink: #15202d;
+  --ink-muted: #525c69;
+  --ink-faint: #7e8792;
+  --night: #17273c;
+  --night-deep: #0b1726;
+  --on-night: #faf6f1;
+  --tile: #b75131;
+  --tile-deep: #953920;
+  --tile-tint: #ffe9de;
+  --tile-wash: #fed3c0;
+  --on-tile: #fcfaf6;
+  --success: #1f744f;
+  --success-tint: #d9f7e5;
+  --warning: #935f00;
+  --warning-tint: #fff0cc;
+  --danger: #b61537;
+  --danger-tint: #ffe7e6;
+  --info: #1f689d;
+  --info-tint: #e1f1ff;
+  --focus: #164781;
+  --shadow-popover: 0 4px 16px rgba(21, 32, 45, 0.10), 0 1px 2px rgba(21, 32, 45, 0.08);
+  --shadow-dialog: 0 16px 48px rgba(21, 32, 45, 0.16);
   --density: 1; /* 1 = comfortable, 0.75 = compact (tables) */
 
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.2 0.01 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.01 260);
-  --primary: var(--brand-seed);
-  --primary-foreground: var(--brand-seed-foreground);
-  --secondary: oklch(0.96 0.005 260);
-  --secondary-foreground: oklch(0.25 0.01 260);
-  --muted: oklch(0.96 0.005 260);
-  --muted-foreground: oklch(0.45 0.015 260);
-  --accent: oklch(0.95 0.01 260);
-  --accent-foreground: oklch(0.25 0.01 260);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.5 0.14 150);
-  --warning: oklch(0.55 0.14 75);
-  --info: oklch(0.5 0.14 245);
-  --border: oklch(0.91 0.005 260);
-  --input: oklch(0.88 0.008 260);
-  --ring: color-mix(in oklch, var(--primary) 70%, transparent);
-  --sidebar: oklch(0.975 0.004 260);
-  --sidebar-foreground: oklch(0.25 0.01 260);
+  --primary: var(--brand-seed, var(--tile));
+  --primary-foreground: var(--brand-seed-foreground, var(--on-tile));
+  --primary-hover: var(--brand-seed-hover, var(--tile-deep));
+  --background: var(--surface);
+  --foreground: var(--ink);
+  --card: var(--surface-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--ink);
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-sunken);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--surface-sunken);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--on-tile);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--focus);
+  --sidebar: var(--surface-raised);
+  --sidebar-foreground: var(--ink);
 }
 
 .dark {
-  --background: oklch(0.17 0.01 260);
-  --foreground: oklch(0.96 0.005 260);
-  --card: oklch(0.21 0.012 260);
-  --card-foreground: oklch(0.96 0.005 260);
-  --popover: oklch(0.23 0.012 260);
-  --popover-foreground: oklch(0.96 0.005 260);
-  --secondary: oklch(0.27 0.012 260);
-  --secondary-foreground: oklch(0.96 0.005 260);
-  --muted: oklch(0.27 0.012 260);
-  --muted-foreground: oklch(0.72 0.015 260);
-  --accent: oklch(0.3 0.015 260);
-  --accent-foreground: oklch(0.96 0.005 260);
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.14 0.01 260);
-  --success: oklch(0.72 0.16 150);
-  --warning: oklch(0.8 0.15 80);
-  --info: oklch(0.74 0.12 245);
-  --border: oklch(0.3 0.012 260);
-  --input: oklch(0.34 0.014 260);
-  --sidebar: oklch(0.19 0.012 260);
-  --sidebar-foreground: oklch(0.96 0.005 260);
-}
-
-/*
- * Accent palettes (user menu, `data-accent` on <html>; none = the organization's brand color).
- * No violet. Each sets only the two primary tokens per mode; contrast is checked in theme.test.ts.
- */
-[data-accent='slate'] {
-  --primary: oklch(0.42 0.03 255);
-  --primary-foreground: oklch(0.99 0 0);
-}
-[data-accent='forest'] {
-  --primary: oklch(0.45 0.09 155);
-  --primary-foreground: oklch(0.99 0 0);
-}
-[data-accent='terracotta'] {
-  --primary: oklch(0.5 0.12 40);
-  --primary-foreground: oklch(0.99 0 0);
-}
-[data-accent='navy'] {
-  --primary: oklch(0.38 0.1 255);
-  --primary-foreground: oklch(0.99 0 0);
-}
-.dark[data-accent='slate'] {
-  --primary: oklch(0.75 0.03 255);
-}
-.dark[data-accent='forest'] {
-  --primary: oklch(0.75 0.12 155);
-}
-.dark[data-accent='terracotta'] {
-  --primary: oklch(0.74 0.11 45);
-}
-.dark[data-accent='navy'] {
-  --primary: oklch(0.75 0.1 255);
-}
-.dark[data-accent] {
-  --primary-foreground: oklch(0.17 0.01 260);
+  --surface: #101419;
+  --surface-raised: #181d23;
+  --surface-sunken: #0a0f13;
+  --line: #2e3339;
+  --line-strong: #6e757e;
+  --ink: #f2f0ec;
+  --ink-muted: #a4acb4;
+  --ink-faint: #747b83;
+  --night: #c3d3e4;
+  --night-deep: #dee9f5;
+  --on-night: #0b1726;
+  --tile: #e78d6a;
+  --tile-deep: #f4a988;
+  --tile-tint: #3a221a;
+  --tile-wash: #522c1f;
+  --on-tile: #0b1726;
+  --success: #76cf8a;
+  --success-tint: #0f2d1f;
+  --warning: #eebc4a;
+  --warning-tint: #3b2b0d;
+  --danger: #ff7c80;
+  --danger-tint: #451e1f;
+  --info: #86beee;
+  --info-tint: #172b3b;
+  --focus: #8cc3fc;
+  --shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-dialog: 0 16px 48px rgba(0, 0, 0, 0.6);
 }
 
 @theme inline {
@@ -109,6 +149,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -119,25 +160,41 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
   --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger-tint: var(--danger-tint);
   --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    'Noto Sans', sans-serif;
+  --color-ink-faint: var(--ink-faint);
+  --color-tile-tint: var(--tile-tint);
+  --color-tile-wash: var(--tile-wash);
+  --color-night: var(--night);
+  --color-on-night: var(--on-night);
+  --color-surface-sunken: var(--surface-sunken);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --shadow-md: var(--shadow-popover);
+  --shadow-lg: var(--shadow-dialog);
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
   html {
     color-scheme: light;
@@ -147,6 +204,17 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-size: 15px;
+    line-height: 22px;
+  }
+  /* page titles: display face, 24px and up */
+  h1,
+  h2.text-2xl {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+  h1 {
+    line-height: 30px;
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -171,4 +239,18 @@
   body[data-print-poster] [data-no-print] {
     display: none !important;
   }
+}
+
+/* Money and IBANs: Plex Mono, tabular, right-aligned in table cells. */
+.money,
+.iban {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.money {
+  font-weight: 500;
+}
+td:has(> .money),
+td:has(> .iban) {
+  text-align: end;
 }
