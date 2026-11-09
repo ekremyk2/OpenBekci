@@ -498,8 +498,6 @@ paths:
     $ref: ./paths/operations/jobs.yaml
   /v1/orgs/{org_id}/jobs/{job_id}:
     $ref: ./paths/operations/jobs-job_id.yaml
-  /v1/orgs/{org_id}/exports:
-    $ref: ./paths/operations/exports.yaml
   /v1/orgs/{org_id}/audit:
     $ref: ./paths/orgs-org-id-audit.yaml
   /v1/orgs/{org_id}/packs:
@@ -528,8 +526,6 @@ paths:
     $ref: ./paths/governance/meetings-meeting_id.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:call:
     $ref: ./paths/governance/meetings-meeting_id_call.yaml
-  /v1/orgs/{org_id}/meetings/{meeting_id}:start:
-    $ref: ./paths/governance/meetings-meeting_id_start.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
     $ref: ./paths/governance/meetings-meeting_id_open-first-call.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
@@ -614,16 +610,12 @@ paths:
     $ref: ./paths/community/visitor-entries-entry_id.yaml
   /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel:
     $ref: ./paths/community/visitor-entries-entry_id_cancel.yaml
-  /v1/orgs/{org_id}/visitor-entries/{entry_id}/qr:
-    $ref: ./paths/community/visitor-entries-entry_id-qr.yaml
   /v1/orgs/{org_id}/recurring-visitors:
     $ref: ./paths/community/recurring-visitors.yaml
   /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:
     $ref: ./paths/community/recurring-visitors-recurring_visitor_id.yaml
   /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke:
     $ref: ./paths/community/recurring-visitors-recurring_visitor_id_revoke.yaml
-  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}/qr:
-    $ref: ./paths/community/recurring-visitors-recurring_visitor_id-qr.yaml
   /v1/orgs/{org_id}/visitor-approval-requests:
     $ref: ./paths/community/visitor-approval-requests.yaml
   /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:
@@ -736,14 +728,6 @@ paths:
     $ref: ./paths/platform/platform-jobs.yaml
   /v1/me/profile:
     $ref: ./paths/me/me-profile.yaml
-  /v1/me/contact-changes:
-    $ref: ./paths/me/me-contact-changes.yaml
-  /v1/me/contact-changes/{change_id}:confirm:
-    $ref: ./paths/me/me-contact-changes-change_id_confirm.yaml
-  /v1/auth/password-reset:
-    $ref: ./paths/auth/auth-password-reset.yaml
-  /v1/auth/password-reset/consume:
-    $ref: ./paths/auth/auth-password-reset-consume.yaml
   /v1/orgs/{org_id}/gate/units:
     $ref: './paths/community/gate-units.yaml'
   /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
@@ -1089,16 +1073,6 @@ components:
       $ref: ./components/people.yaml#/schemas/MyPersonUpdate
     ProfileUpdate:
       $ref: ./components/people.yaml#/schemas/ProfileUpdate
-    ContactChangeCreate:
-      $ref: ./components/people.yaml#/schemas/ContactChangeCreate
-    ContactChange:
-      $ref: ./components/people.yaml#/schemas/ContactChange
-    ContactChangeConfirm:
-      $ref: ./components/people.yaml#/schemas/ContactChangeConfirm
-    PasswordResetRequest:
-      $ref: ./components/people.yaml#/schemas/PasswordResetRequest
-    PasswordResetConsume:
-      $ref: ./components/people.yaml#/schemas/PasswordResetConsume
     ChargeScope:
       $ref: ./components/money.yaml#/schemas/ChargeScope
     AllocationInput:

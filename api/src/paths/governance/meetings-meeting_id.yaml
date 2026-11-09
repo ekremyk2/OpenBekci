@@ -20,7 +20,7 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles: [meetings.read]
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -52,7 +52,7 @@ patch:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
@@ -96,7 +96,7 @@ delete:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:

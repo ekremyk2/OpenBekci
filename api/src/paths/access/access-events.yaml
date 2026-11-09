@@ -21,7 +21,7 @@ get:
       - access.view_events
     auditor:
       - access.view_events
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: point_id

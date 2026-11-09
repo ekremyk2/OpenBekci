@@ -20,7 +20,7 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles: [polls.answer]
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK

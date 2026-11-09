@@ -235,6 +235,20 @@ paths:
             application/json:
               schema: {type: object}
         default: {$ref: "#/components/responses/Problem"}
+  /v1/old:
+    get:
+      operationId: test.getOld
+      security: []
+      deprecated: true
+      x-deprecated-since: "2027-01-01"
+      x-sunset: "2028-01-01"
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: {type: object}
+        default: {$ref: "#/components/responses/Problem"}
   /v1/broken:
     get:
       operationId: test.getBroken
@@ -379,6 +393,10 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 		_, _ = w.Write([]byte(`{}`))
 	})
 	g.Get("/v1/preview", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{}`))
+	})
+	g.Get("/v1/old", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{}`))
 	})
@@ -538,6 +556,17 @@ func TestStabilityHeader(t *testing.T) {
 	}
 	if got := ta.do("GET", "/v1/things", "").Header().Get("X-OpenBekci-Stability"); got != "" {
 		t.Errorf("stable op has header %q", got)
+	}
+}
+
+func TestDeprecationHeaders(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	h := ta.do("GET", "/v1/old", "").Header()
+	if h.Get("Deprecation") != "@1798761600" || h.Get("Sunset") != "Sat, 01 Jan 2028 00:00:00 GMT" {
+		t.Errorf("Deprecation %q, Sunset %q", h.Get("Deprecation"), h.Get("Sunset"))
+	}
+	if got := ta.do("GET", "/v1/things", "").Header().Get("Deprecation"); got != "" {
+		t.Errorf("current op has Deprecation %q", got)
 	}
 }
 

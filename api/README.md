@@ -89,6 +89,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
+| `x-deprecated-since`, `x-sunset` | operation | `YYYY-MM-DD` | with `deprecated: true`: `Deprecation` and `Sunset` response headers (`docs/api/versioning.md`) |
 | `x-open-enum` | schema | `true` | marks an open enum (see above) |
 | `x-known-values` | schema | list | documents the known values of an open string without an `enum` |
 | `x-requires-setting` | operation | a site setting name | the operation exists only while that site setting is on (for example `bills_enabled`); otherwise 404 `not_found` |
@@ -103,6 +104,11 @@ idempotency, then the generated strict handler. Authentication runs first, so an
 `security` is not `[]`: required ones answer 401 on failure, optional ones (`security: [{}, ...]`) continue
 anonymously when no valid credential is present. Unknown paths under `/v1` and `/.well-known/` are 404 problems,
 a known path with the wrong method is a 405 problem with `Allow`; everything else falls through to the web app.
+
+## Freeze
+
+From 1.0 `/v1` is frozen: additive changes only on `stable` operations, checked against `api/snapshots/v1.0.yaml` by
+`TestV1FreezeAgainstSnapshots`. Rules, deprecation and the start of `/v2`: `docs/api/versioning.md`; decision: `docs/adr/0003-v1-freeze.md`.
 
 ## The draft contract (releases 0.1 to 0.3)
 
@@ -138,4 +144,4 @@ Draft-only conventions on top of the list above:
   `reauth_required` 403, `idempotency_mismatch` 422.
 - **Agent transport** (`/v1/agent/*`, tag `agent`) authenticates with the `agentAuth` bearer scheme (an agent token, not a user
   session); the message schemas are JSON Schema 2020-12 in `api/agent-protocol/v1/*.schema.json`, referenced by the
-  `x-agent-message-schemas` extension. `x-stability: preview` until 0.3.0 ships.
+  `x-agent-message-schemas` extension. Its operations stay `x-stability: preview` at the 1.0 freeze.

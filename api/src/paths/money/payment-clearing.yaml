@@ -25,7 +25,7 @@ get:
       - money.read
     accountant:
       - money.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
   responses:
