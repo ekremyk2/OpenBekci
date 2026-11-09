@@ -1,0 +1,45 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: kind
+    in: path
+    required: true
+    description: The kind of reference data (open; for example `province`, `district`, `holiday`, `bank`). The kinds an organization has are those of its enabled packs.
+    schema:
+      type: string
+get:
+  operationId: codes.listReference
+  summary: List reference data of a kind
+  description: |-
+    **Release 0.4.** Reference data served by the packs enabled for the organization: administrative areas for cascading address selects (`province`, then `district` with `parent` = the province code), public holidays (`holiday`, `parent` = a year) and similar. `address_format` returns the address fields of the organization's country as data. 404 when no enabled pack serves the kind.
+
+    Permission: `codes.read`.
+  tags:
+    - codes
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - codes.read
+  x-stability: preview
+  parameters:
+    - name: parent
+      in: query
+      description: Only the items below this parent code (a province code for districts, a year for holidays).
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/codes.yaml#/schemas/ReferenceList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

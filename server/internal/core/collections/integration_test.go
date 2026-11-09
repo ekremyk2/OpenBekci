@@ -213,6 +213,18 @@ func TestIntegrationStagesDedupeEscalateAndFreeze(t *testing.T) {
 		t.Errorf("debtor letter %d %v", len(b), err)
 	}
 
+	// an organization whose locale is not Turkish is served the English letter and table, no Turkish text
+	e.Exec(`UPDATE organization SET default_locale = 'en' WHERE id = $1`, e.OrgID)
+	enLetter, err := w.col.Letter(ctx, e.OrgID, collections.LetterInput{SiteID: e.SiteID, Debtor: &a1, AsOf: "2026-03-10"})
+	if err != nil || !bytes.HasPrefix(enLetter, []byte("%PDF")) {
+		t.Fatalf("english letter %v", err)
+	}
+	// the debtor's name has ş and ı; İ and ğ appear only in the Turkish wording (İHTARNAME, bağımsız)
+	if es := inflate(t, enLetter); strings.Contains(es, "<011F>") || strings.Contains(es, "<0130>") {
+		t.Error("the letter of an English-locale organization contains Turkish wording")
+	}
+	e.Exec(`UPDATE organization SET default_locale = 'tr' WHERE id = $1`, e.OrgID)
+
 	// manual run skips the frozen debtor and counts it
 	in := collections.RunInput{SiteID: e.SiteID, StageID: s2.ID, Debtors: []billing.Debtor{a1, a2}, Channels: []string{"email", "sms"}}
 	pv, err := w.col.PreviewRun(ctx, e.OrgID, in)

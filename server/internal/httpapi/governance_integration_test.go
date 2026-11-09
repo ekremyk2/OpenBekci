@@ -14,6 +14,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/authztest"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/governance/govtest"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
@@ -108,12 +109,15 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	w.Exec(t, `INSERT INTO occupancy (id, org_id, site_id, unit_id, person_id, kind, side, share_pct, valid_from) VALUES ($1, $2, $3, $4, $5, 'owner', 'owner', 50, '2020-01-01')`,
 		id.New(), org.ID, f.Site, u[3], p4)
 	w.NewOccupancy(t, f, u[4], p5, "owner")
+	// a Turkish site: the Law 634 presets as the Turkish pack writes them into the site settings
+	presetJSON, _ := json.Marshal(govtest.SiteSettings())
+	w.Exec(t, `UPDATE site SET settings = settings || $3::jsonb WHERE org_id = $1 AND id = $2`, org.ID, f.Site, string(presetJSON))
 	site := "/sites/" + f.Site.String()
 	base := func(s string) string { return orgPath(org, s) }
 
 	// settings: Law 634 preset, editable, versioned
 	st := c.must(200, mgr, "GET", base(site+"/governance-settings"), "")
-	if gstr(st, "preset") != "tr-634" || gnum(st, "version") != 1 {
+	if gstr(st, "preset") != "tr" || gnum(st, "version") != 1 {
 		t.Fatalf("default settings = %v", st)
 	}
 	set := gmap(st, "settings")
@@ -632,7 +636,7 @@ func TestIntegrationGovernanceTermReminders(t *testing.T) {
 		t.Fatalf("%d notifications for 3 terms (the second run must add none), want 3", n)
 	}
 	// the yearly reminder that the ordinary assembly is due: in the month before ordinary_assembly_month, once
-	preset := governance.TurkishPreset()
+	preset := govtest.Law634()
 	preset.OrdinaryAssemblyMonth = int64(time.Now().UTC().Month())%12 + 1
 	sb, _ := json.Marshal(preset)
 	w.Exec(t, `INSERT INTO governance_settings (org_id, site_id, preset, settings, version) VALUES ($1, $2, NULL, $3::jsonb, 2)`, w.OrgA.ID, f.Site, string(sb))

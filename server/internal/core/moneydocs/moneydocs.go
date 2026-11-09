@@ -27,9 +27,11 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/packdocs"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/pdf"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -51,8 +53,10 @@ type Service struct {
 	Notifier ledger.Notifier
 	// Docs files the generated documents into the unit's folder (nil: files of their own scope).
 	Docs documents.Filer
-	Now  func() time.Time
-	Log  *slog.Logger
+	// Templates renders documents with a template of an enabled pack when there is one (nil: generic documents).
+	PackDocs doctpl.Resolver
+	Now      func() time.Time
+	Log      *slog.Logger
 }
 
 // NewService returns a Service. notifier may be nil (nothing is announced).
@@ -96,9 +100,15 @@ func (s *Service) run(ctx context.Context, orgID uuid.UUID, what string, fn func
 	return ledger.DBProblem(err, what)
 }
 
-// amount renders money for a document: Turkish number format with the currency sign.
-func amount(m money.Money) string {
-	s, err := m.Format("tr-TR")
+// amount renders money for a document in the number format of the organization's
+// locale (Turkish: ₺1.234,50, anything else: the English format, $1,234.50) with the
+// sign of the currency.
+func amount(locale string, m money.Money) string {
+	tag := "en-US"
+	if l := strings.ToLower(locale); l == "tr" || strings.HasPrefix(l, "tr-") || strings.HasPrefix(l, "tr_") {
+		tag = "tr-TR"
+	}
+	s, err := m.Format(tag)
 	if err != nil {
 		return m.String()
 	}
@@ -115,14 +125,18 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 		return nil, "", problem.Conflict("only a confirmed payment has a receipt")
 	}
 	var site tenancy.Site
-	var door, who, balanceLine string
-	type line struct{ desc, amt string }
+	var door, who, balanceLine, locale string
+	type line struct {
+		desc, amt string
+		advance   bool
+	}
 	var lines []line
 	err = s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
 		var err error
 		if site, err = tenancy.LoadSite(ctx, tx, orgID, p.SiteID, false, true); err != nil {
 			return err
 		}
+		locale = packdocs.OrgLocale(ctx, tx, orgID)
 		d := billing.Debtor{PersonID: p.PersonID}
 		if p.UnitID != nil && p.DebtorKind != nil && *p.DebtorKind != "person" {
 			_ = tx.QueryRow(ctx, `SELECT door_number FROM unit WHERE org_id=$1 AND id=$2`, orgID, *p.UnitID).Scan(&door)
@@ -138,21 +152,35 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 			if a.ChargeID != nil {
 				_ = tx.QueryRow(ctx, `SELECT COALESCE(NULLIF(description, ''), charge_type) || CASE WHEN period <> '' THEN ' ' || period ELSE '' END FROM charge WHERE org_id=$1 AND id=$2`, orgID, *a.ChargeID).Scan(&desc)
 			}
-			lines = append(lines, line{desc, amount(a.Amount)})
+			lines = append(lines, line{desc, amount(locale, a.Amount), a.ChargeID == nil})
 		}
 		if p.Unallocated.Amount > 0 {
-			lines = append(lines, line{"Advance payment (credit)", amount(p.Unallocated)})
+			lines = append(lines, line{"Advance payment (credit)", amount(locale, p.Unallocated), true})
 		}
 		charges, err := billing.LoadCharges(ctx, tx, orgID, p.SiteID, d)
 		if err != nil {
 			return err
 		}
 		pr, fee := billing.OpenTotal(charges)
-		balanceLine = amount(money.New(pr+fee, p.Net.Currency))
+		balanceLine = amount(locale, money.New(pr+fee, p.Net.Currency))
 		return nil
 	})
 	if err != nil {
 		return nil, "", err
+	}
+	// a pack's template (the Turkish aidat makbuzu) replaces the generic receipt
+	packLines := make([]any, 0, len(lines))
+	for _, l := range lines {
+		desc := l.desc
+		if l.advance {
+			desc = ""
+		}
+		packLines = append(packLines, map[string]any{"desc": desc, "amount": l.amt, "advance": l.advance})
+	}
+	if b, ok := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindReceipt, locale, map[string]any{
+		"site_name": site.Name, "receipt_no": *p.ReceiptNo, "date": p.ReceivedOn, "payer": who, "unit": door, "method": p.Method, "kind": deref(p.DebtorKind),
+		"reference": deref(p.Reference), "lines": packLines, "total": amount(locale, p.Net), "balance": balanceLine}); ok {
+		return b, *p.ReceiptNo, nil
 	}
 	doc := pdf.New("Receipt " + *p.ReceiptNo)
 	doc.Line(site.Name, 14, true)
@@ -187,7 +215,7 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 	doc.Rule()
 	doc.Skip(6)
 	doc.Text(pdf.MarginX, "Total received / Toplam tahsilat", 11, true)
-	doc.Right(pdf.PageW-pdf.MarginX, amount(p.Net), 11, true)
+	doc.Right(pdf.PageW-pdf.MarginX, amount(locale, p.Net), 11, true)
 	doc.Skip(16)
 	doc.Text(pdf.MarginX, "Balance still due / Kalan borc", 10, false)
 	doc.Right(pdf.PageW-pdf.MarginX, balanceLine, 10, false)
@@ -322,9 +350,9 @@ func (s *Service) SendStatement(ctx context.Context, orgID uuid.UUID, d billing.
 	doc := id.New()
 	var f files.File
 	if s.Docs != nil {
-		f, err = s.fileDocument(ctx, orgID, siteID, d.UnitID, d.PersonID, "Statement "+st.AsOf, "statement-"+st.AsOf+".pdf", "statement", doc, st.PDF())
+		f, err = s.fileDocument(ctx, orgID, siteID, d.UnitID, d.PersonID, "Statement "+st.AsOf, "statement-"+st.AsOf+".pdf", "statement", doc, s.Reports.StatementPDF(ctx, orgID, st, "statement"))
 	} else {
-		f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &siteID, Name: "statement-" + st.AsOf + ".pdf", Content: bytes.NewReader(st.PDF()),
+		f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &siteID, Name: "statement-" + st.AsOf + ".pdf", Content: bytes.NewReader(s.Reports.StatementPDF(ctx, orgID, st, "statement")),
 			Scope: &files.ScopeRef{Type: ScopeStatement, ID: doc}})
 	}
 	if err != nil {
@@ -434,13 +462,13 @@ func (s *Service) FillMoveOutDocuments(ctx context.Context, orgID uuid.UUID) (in
 
 func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) error {
 	d := billing.Debtor{UnitID: &j.unit, Kind: j.side}
-	var siteName, door, who string
+	var siteName, door, who, locale, siteTZ string
 	err := s.run(ctx, orgID, "move-out", func(tx pgx.Tx) error {
 		site, err := tenancy.LoadSite(ctx, tx, orgID, j.site, false, false)
 		if err != nil {
 			return err
 		}
-		siteName = site.Name
+		siteName, siteTZ, locale = site.Name, site.Timezone, packdocs.OrgLocale(ctx, tx, orgID)
 		_ = tx.QueryRow(ctx, `SELECT door_number FROM unit WHERE org_id=$1 AND id=$2`, orgID, j.unit).Scan(&door)
 		_ = tx.QueryRow(ctx, `SELECT display_name FROM person WHERE org_id=$1 AND id=$2`, orgID, j.person).Scan(&who)
 		return nil
@@ -457,9 +485,9 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 		}
 		var f files.File
 		if s.Docs != nil {
-			f, err = s.fileDocument(ctx, orgID, site, &j.unit, &j.person, "Closing statement "+j.asOf, "closing-statement-"+j.asOf+".pdf", "move_out_statement", j.id, st.PDF())
+			f, err = s.fileDocument(ctx, orgID, site, &j.unit, &j.person, "Closing statement "+j.asOf, "closing-statement-"+j.asOf+".pdf", "move_out_statement", j.id, s.Reports.StatementPDF(ctx, orgID, st, "closing_statement"))
 		} else {
-			f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &site, Name: "closing-statement-" + j.asOf + ".pdf", Content: bytes.NewReader(st.PDF()),
+			f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &site, Name: "closing-statement-" + j.asOf + ".pdf", Content: bytes.NewReader(s.Reports.StatementPDF(ctx, orgID, st, "closing_statement")),
 				Scope: &files.ScopeRef{Type: ScopeMoveOut, ID: j.id}})
 		}
 		if err != nil {
@@ -469,6 +497,9 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 	}
 	if j.needCert {
 		cur := money.Code(j.currency)
+		certPDF, packed := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindDebtCertificate, locale, map[string]any{
+			"site_name": siteName, "person": who, "unit": door + " (" + j.side + ")", "as_of": j.asOf, "move_out_date": j.asOf,
+			"has_debt": j.carried != 0, "balance": amount(locale, money.New(j.carried, cur)), "open_charges": j.openCharges})
 		doc := pdf.New("Debt status certificate")
 		doc.Line(siteName, 14, true)
 		doc.Line("Borc durum belgesi / Debt status certificate", 12, true)
@@ -485,20 +516,24 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 		case j.carried == 0:
 			doc.Line("No unpaid dues or late fees were open on this date. / Bu tarihte odenmemis aidat veya gecikme zammi yoktur.", 10, false)
 		case j.openCharges == "write_off":
-			doc.Line("Open amount written off by the management: "+amount(money.New(j.carried, cur)), 10, false)
+			doc.Line("Open amount written off by the management: "+amount(locale, money.New(j.carried, cur)), 10, false)
 		case j.openCharges == "keep_on_unit":
 			doc.Line("Open amounts stay on the unit.", 10, false)
 		default:
-			doc.Line("Open amount carried to the person: "+amount(money.New(j.carried, cur)), 10, false)
+			doc.Line("Open amount carried to the person: "+amount(locale, money.New(j.carried, cur)), 10, false)
 		}
 		doc.Skip(10)
-		doc.Line("Issued on "+ledger.Today(site0(), s.Now())+" by the management system.", 8, false)
+		doc.Line("Issued on "+ledger.Today(siteTZ, s.Now())+" by the management system.", 8, false)
+		certBody := doc.Bytes()
+		if packed {
+			certBody = certPDF
+		}
 		var f files.File
 		var err error
 		if s.Docs != nil {
-			f, err = s.fileDocument(ctx, orgID, site, &j.unit, &j.person, "Debt status certificate "+j.asOf, "debt-certificate-"+j.asOf+".pdf", "move_out_certificate", j.id, doc.Bytes())
+			f, err = s.fileDocument(ctx, orgID, site, &j.unit, &j.person, "Debt status certificate "+j.asOf, "debt-certificate-"+j.asOf+".pdf", "move_out_certificate", j.id, certBody)
 		} else {
-			f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &site, Name: "debt-certificate-" + j.asOf + ".pdf", Content: bytes.NewReader(doc.Bytes()),
+			f, err = s.Files.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, SiteID: &site, Name: "debt-certificate-" + j.asOf + ".pdf", Content: bytes.NewReader(certBody),
 				Scope: &files.ScopeRef{Type: ScopeMoveOut, ID: j.id}})
 		}
 		if err != nil {
@@ -514,8 +549,6 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 		return err
 	})
 }
-
-func site0() string { return "Europe/Istanbul" }
 
 // MoveOutFileResolver decides who may read the closing documents of a move-out: holders of statements.read at its site.
 func MoveOutFileResolver() files.VisibilityResolver {

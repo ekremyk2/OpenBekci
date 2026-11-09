@@ -21,6 +21,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
 
@@ -66,6 +67,7 @@ type catchUpWorker struct {
 	d   *db.DB
 	log *slog.Logger
 	fs  *files.Service
+	tpl doctpl.Resolver
 }
 
 type siteRef struct{ org, site uuid.UUID }
@@ -111,7 +113,10 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 	}
 	// the closing statement and debt certificate of move-outs that wait for them
 	if w.fs != nil {
-		docs := moneydocs.NewService(w.d, w.fs, payments.NewService(w.d, nil, nil), reports.NewService(w.d, nil), nil, w.log)
+		rep := reports.NewService(w.d, nil)
+		rep.SetTemplates(w.tpl)
+		docs := moneydocs.NewService(w.d, w.fs, payments.NewService(w.d, nil, nil), rep, nil, w.log)
+		docs.PackDocs = w.tpl
 		seen := map[uuid.UUID]bool{}
 		for _, s := range sites {
 			if seen[s.org] {
@@ -134,9 +139,9 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 
 // moneyJobs returns the money modules' workers (jobs.Options.Register) and
 // schedules (jobs.Options.Periodic).
-func moneyJobs(d *db.DB, log *slog.Logger, notify jobs.Notifier, fs *files.Service) (func(*river.Workers), []*river.PeriodicJob) {
+func moneyJobs(d *db.DB, log *slog.Logger, notify jobs.Notifier, fs *files.Service, tpl doctpl.Resolver) (func(*river.Workers), []*river.PeriodicJob) {
 	register := func(ws *river.Workers) {
-		river.AddWorker(ws, &catchUpWorker{d: d, log: log, fs: fs})
+		river.AddWorker(ws, &catchUpWorker{d: d, log: log, fs: fs, tpl: tpl})
 		river.AddWorker(ws, &recurringExpenseWorker{d: d, log: log})
 		collectJobs(ws, d, log, notify)
 	}

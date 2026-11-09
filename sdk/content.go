@@ -27,7 +27,12 @@ type RenderRequest struct {
 	Data   map[string]any
 }
 
-// Document is a rendered document.
+// Document is a rendered document. A template that returns MIME
+// "text/markdown" hands the core a small Markdown subset it typesets itself
+// (the pack needs no PDF or font code): "# " title, "> " subtitle lines,
+// "## " headings, "- " list items, "**Label:** value" lines, pipe tables,
+// "[sign: Label]" signature lines, "[qr: caption]" for the check-in QR the core
+// has, "---" spacing. Any other MIME ("application/pdf") is stored as is.
 type Document struct {
 	Filename string
 	MIME     string

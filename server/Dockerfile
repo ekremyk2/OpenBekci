@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# Build context: the repository root (go.work, sdk/, packs/example/ and server/ are needed):
+# Build context: the repository root (go.work, sdk/, packs/example/, packs/tr/ and server/ are needed):
 #   docker build -f server/Dockerfile -t openbekci .
 
 FROM golang:1.27.3 AS build
@@ -7,10 +7,12 @@ WORKDIR /src
 COPY go.work go.work.sum ./
 COPY sdk/go.mod sdk/go.sum* sdk/
 COPY packs/example/go.mod packs/example/go.sum* packs/example/
+COPY packs/tr/go.mod packs/tr/go.sum* packs/tr/
 COPY server/go.mod server/go.sum server/
 RUN cd server && go mod download
 COPY sdk/ sdk/
 COPY packs/example/ packs/example/
+COPY packs/tr/ packs/tr/
 COPY server/ server/
 ARG VERSION=dev
 ARG COMMIT=none

@@ -14,15 +14,18 @@ import (
 )
 
 const (
-	// MaxRateBPS is the statutory ceiling: 5 % per month = 500 basis points.
-	// A site may set a lower rate, never a higher one. (verify: Law 634 art. 20)
-	MaxRateBPS = 500
+	// DefaultRateBPS is the rate a new site starts with: 5 % per month = 500
+	// basis points. A legal preset (a country pack) may set a ceiling the site
+	// cannot exceed (Policy.CeilingBPS); without one the only limit is HardMaxBPS.
+	DefaultRateBPS = 500
+	// HardMaxBPS is the highest rate the schema accepts (100 % a month).
+	HardMaxBPS = 10000
 	bpsDenom   = 10000
 )
 
 // Errors returned by the calculators.
 var (
-	ErrRateTooHigh    = errors.New("latefee: rate above the statutory maximum")
+	ErrRateTooHigh    = errors.New("latefee: rate above the ceiling of the site")
 	ErrBadPolicy      = errors.New("latefee: invalid policy")
 	ErrNegativeAmount = errors.New("latefee: negative amount")
 	ErrCurrency       = errors.New("latefee: currency does not match the policy")
@@ -37,10 +40,14 @@ type Policy struct {
 	// Currency is the site currency; all amounts must use it.
 	Currency money.Code
 	// RateBPSPerMonth is the fee in basis points of principal per calendar
-	// month (500 = 5 %, the statutory maximum). A day accrues
-	// RateBPSPerMonth / daysInMonth(that day), so a fully late month costs
-	// exactly this rate.
+	// month (500 = 5 %). A day accrues RateBPSPerMonth / daysInMonth(that
+	// day), so a fully late month costs exactly this rate.
 	RateBPSPerMonth int64
+	// CeilingBPS is the highest monthly rate the site may use, set by a legal
+	// preset (a pack); zero means no ceiling. Each calendar month's accrual is
+	// clamped at principal x the rate in force, so a ceiling on the rate holds
+	// on the amount too.
+	CeilingBPS int64
 	// GraceDays: the fee starts accruing GraceDays days after the due date.
 	// Paying on due date + GraceDays or earlier costs nothing; paying one day
 	// later costs one day of fee.
@@ -50,7 +57,7 @@ type Policy struct {
 	Simple bool
 }
 
-// Validate checks the policy against the statutory cap.
+// Validate checks the policy against the ceiling of the site, if it has one.
 func (p Policy) Validate() error {
 	if !p.Currency.Valid() {
 		return fmt.Errorf("%w: currency %q", ErrBadPolicy, string(p.Currency))
@@ -58,7 +65,7 @@ func (p Policy) Validate() error {
 	if p.RateBPSPerMonth < 0 || p.GraceDays < 0 {
 		return fmt.Errorf("%w: negative rate or grace", ErrBadPolicy)
 	}
-	if p.RateBPSPerMonth > MaxRateBPS {
+	if p.RateBPSPerMonth > HardMaxBPS || (p.CeilingBPS > 0 && p.RateBPSPerMonth > p.CeilingBPS) {
 		return ErrRateTooHigh
 	}
 	if !p.Simple {
@@ -237,10 +244,10 @@ type span struct{ from, to int }
 //
 // Each calendar month's accrual on one charge is clamped at
 // principal * maxRateBPS(month) / 10000, where maxRateBPS is the highest rate
-// in force that month (never above MaxRateBPS), and the rounded total is
+// in force that month (never above the ceiling of the site), and the rounded total is
 // clamped at the sum of those monthly ceilings (rounded down). So the fee a
 // charge accrues inside any calendar month never exceeds its principal times
-// the statutory 5 %.
+// its rate.
 //
 // Rounding is half-up to the minor unit, once per charge on the exact sum, so
 // the fee is monotone in asOf and a backdated payment can never increase it.

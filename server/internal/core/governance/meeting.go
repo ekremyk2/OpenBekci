@@ -19,6 +19,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -509,7 +510,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		if m.Title != nil {
 			title = *m.Title
 		}
-		letter := CallLetter(CallLetterData{SiteName: si.Name, Kind: m.Kind, Title: title, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt,
+		letter := s.callLetterModel(ctx, orgID, CallLetterData{SiteName: si.Name, Kind: m.Kind, Title: title, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt,
 			SecondCall: m.SecondCallAt, Location: m.Location, Agenda: agenda, Instance: s.cfg.InstanceName, IssuedAt: now})
 		pdf, err := letter.PDF()
 		if err != nil {
@@ -530,6 +531,10 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 			}
 		}
 		if out, err = loadMeeting(ctx, tx, orgID, id, false); err != nil {
+			return err
+		}
+		// the documents only a pack provides go to the meeting's documents with the call letter
+		if err := s.filePackDocuments(ctx, tx, orgID, out, doctpl.KindDeliveryChecklist, doctpl.KindProxyForm); err != nil {
 			return err
 		}
 		diff, err := audit.Diff("meeting", m.auditView(), out.auditView())

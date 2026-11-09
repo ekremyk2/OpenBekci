@@ -7,10 +7,10 @@
 //
 //   - Fees accrue on the unpaid principal only; fees never compound. Only
 //     OpenCharge values of principal kind are accepted.
-//   - The rate is basis points per calendar month (500 = 5 %, the statutory
-//     maximum; Policy.Validate rejects more). A day accrues bps/daysInMonth, so
+//   - The rate is basis points per calendar month (500 = 5 %, the default;
+//     a legal preset may set a ceiling, Policy.CeilingBPS). A day accrues bps/daysInMonth, so
 //     a full month costs exactly bps, and each calendar month's accrual is
-//     additionally clamped at principal x bps, so the statutory ceiling holds on
+//     additionally clamped at principal x bps, so a ceiling on the rate holds on
 //     the amount, not only on the parameter.
 //   - The policy is effective-dated (PolicySchedule): each accrual day uses the
 //     policy in force that day, so changing a rate for the future never changes

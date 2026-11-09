@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -267,6 +268,19 @@ func (s *Service) GetVendor(ctx context.Context, orgID, vendorID uuid.UUID) (Ven
 	return out, nil
 }
 
+// checkTaxID validates a vendor's tax id with the validators of the packs
+// enabled for the organization (the vergi numarası checksum of the Turkish
+// pack); without such a pack any tax id is accepted.
+func (s *Service) checkTaxID(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, taxID *string) error {
+	if taxID == nil {
+		return nil
+	}
+	if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindTaxID, "tax_id", strings.TrimSpace(*taxID)); f != nil {
+		return problem.Validation(*f)
+	}
+	return nil
+}
+
 func applyVendor(base Vendor, d Doc, create bool) (Vendor, error) {
 	fields := d.Unknown("name", "tax_id", "contact", "default_expense_category_id", "site_id")
 	v := base
@@ -351,6 +365,9 @@ func (s *Service) CreateVendor(ctx context.Context, orgID uuid.UUID, d Doc) (Ven
 		if err := authz.Require(ctx, PermVendorManage, sc); err != nil {
 			return err
 		}
+		if err := s.checkTaxID(ctx, tx, orgID, v.TaxID); err != nil {
+			return err
+		}
 		contact, _ := json.Marshal(v.Contact)
 		if out, err = scanVendor(tx.QueryRow(ctx, `INSERT INTO vendor (id, org_id, site_id, name, tax_id, contact, default_expense_category_id)
 			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING `+vendorColumns, v.ID, orgID, v.SiteID, v.Name, v.TaxID, contact, v.DefaultExpenseCategoryID)); err != nil {
@@ -395,6 +412,11 @@ func (s *Service) UpdateVendor(ctx context.Context, orgID, vendorID uuid.UUID, e
 		next, err := applyVendor(before, d, false)
 		if err != nil {
 			return err
+		}
+		if d.Has("tax_id") {
+			if err := s.checkTaxID(ctx, tx, orgID, next.TaxID); err != nil {
+				return err
+			}
 		}
 		diff, err := audit.Diff("vendor", before.audit(), next.audit())
 		if err != nil {

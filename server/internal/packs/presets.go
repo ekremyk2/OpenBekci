@@ -13,6 +13,7 @@ import (
 
 	"github.com/openbekci/openbekci/sdk"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
 )
 
 // settingLegalPreset is the site setting that names the pack whose presets fill the site.
@@ -158,8 +159,85 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, raw); err != nil {
 		return nil, err
 	}
+	if lf, ok := changed[sdk.SettingLateFee].(map[string]any); ok {
+		lu, err := lateFeeDefault(ctx, tx, org, site, lf)
+		if err != nil {
+			return nil, err
+		}
+		// the withdrawal of a failed enablement puts the default row back
+		if i := slices.IndexFunc(undo, func(u presetUndo) bool { return u.key == sdk.SettingLateFee }); i >= 0 {
+			undo[i].lateFee = lu
+		}
+	}
 	diff, _ := audit.Diff("site_settings", nil, changed)
 	return undo, audit.Record(ctx, tx, audit.Event{OrgID: org, SiteID: &site, Action: "pack.presets_applied", TargetType: "site", TargetID: site, Diff: diff})
+}
+
+// lateFeeDefault makes the site's automatic default late fee row (the one a
+// site has until it sets its own) follow the preset's default rate and grace
+// days. The schedule is append-only, but the default row may be replaced: it is
+// deleted and inserted again with the same start date. A site that already set
+// its own policy has no default row and is left alone.
+//
+// It returns what it changed (nil when it changed nothing) so that a withdrawn
+// enablement can restore the row.
+func lateFeeDefault(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, lf map[string]any) (*lateFeeUndo, error) {
+	rate, ok := lf["default_monthly_rate_bps"].(float64)
+	if !ok {
+		return nil, nil
+	}
+	grace, _ := lf["grace_days"].(float64)
+	u := lateFeeUndo{rate: int(rate), grace: int(grace)}
+	err := tx.QueryRow(ctx, `SELECT from_on::text, rate_bps_per_month, grace_days FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default`, org, site).Scan(&u.from, &u.prevRate, &u.prevGrace)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if u.prevRate == u.rate && u.prevGrace == u.grace {
+		return nil, nil
+	}
+	if err := replaceDefaultLateFee(ctx, tx, org, site, u.from, u.rate, u.grace); err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+// lateFeeUndo is the default late fee row before and after a preset changed it.
+type lateFeeUndo struct {
+	from                string
+	prevRate, prevGrace int
+	rate, grace         int
+}
+
+// replaceDefaultLateFee deletes the site's automatic default row and inserts it
+// again, starting on the same date, with the given rate and grace days.
+func replaceDefaultLateFee(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, from string, rate, grace int) error {
+	if _, err := tx.Exec(ctx, `DELETE FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default`, org, site); err != nil {
+		return err
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days, is_default) VALUES ($1, $2, $3, $4::date, $5, $6, true)`,
+		uuid.New(), org, site, from, rate, grace)
+	return err
+}
+
+// undoLateFee puts the automatic default row back as it was before the
+// enablement, but only while it is still the row the enablement wrote: a site
+// that set its own policy meanwhile has no default row and keeps its schedule.
+func undoLateFee(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, u *lateFeeUndo) error {
+	var rate, grace int
+	err := tx.QueryRow(ctx, `SELECT rate_bps_per_month, grace_days FROM late_fee_policy WHERE org_id = $1 AND site_id = $2 AND is_default AND from_on = $3::date FOR UPDATE`, org, site, u.from).Scan(&rate, &grace)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if rate != u.rate || grace != u.grace {
+		return nil
+	}
+	return replaceDefaultLateFee(ctx, tx, org, site, u.from, u.prevRate, u.prevGrace)
 }
 
 // presetUndo records what applyPresets changed for one key of one site, so a
@@ -173,6 +251,8 @@ type presetUndo struct {
 	hadMark    bool
 	markPack   string
 	markValue  any
+	// lateFee is set for the late fee key when the site's default row changed with it.
+	lateFee *lateFeeUndo
 }
 
 // undoPresets reverts applyPresets changes in a new transaction's tx: a key goes
@@ -198,6 +278,11 @@ func (h *Host) undoPresets(ctx context.Context, tx pgx.Tx, org uuid.UUID, undo [
 		}
 		changed := false
 		for _, u := range bySite[site] {
+			if u.lateFee != nil {
+				if err := undoLateFee(ctx, tx, org, site, u.lateFee); err != nil {
+					return err
+				}
+			}
 			if cur, ok := settings[u.key]; ok && jsonEqual(cur, u.wrote) {
 				if u.hadSetting {
 					settings[u.key] = u.prev
@@ -239,6 +324,10 @@ type chartUndo struct {
 func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) ([]chartUndo, error) {
 	if len(p.C.Charts) == 0 {
 		return nil, nil
+	}
+	// the chart is created on first money use otherwise, after this hook ran: create it now so the names apply
+	if _, err := ledger.EnsureChart(ctx, tx, org, site); err != nil {
+		return nil, err
 	}
 	var locale string
 	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, org).Scan(&locale); err != nil {

@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/crypto"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -81,7 +82,13 @@ type Service struct {
 	cfg    Config
 	log    *slog.Logger
 	now    func() time.Time
+	// validators run the validators of the packs enabled for the organization (nil: the generic checks only).
+	validators extval.Validators
 }
+
+// SetValidators gives the service the validators of the packs enabled for an
+// organization (a vendor's tax id is checked with them, after the generic checks).
+func (s *Service) SetValidators(v extval.Validators) { s.validators = v }
 
 // NewService returns a Service. ident creates and finds sign-in accounts for invitations.
 func NewService(db TxRunner, ident *identity.Service, cfg Config) (*Service, error) {

@@ -6,13 +6,17 @@ import (
 	"errors"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/packdocs"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/pdf"
 	"github.com/openbekci/openbekci/server/internal/problem"
 	"github.com/openbekci/openbekci/server/locales"
@@ -45,11 +49,14 @@ func (s *Service) letterTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site
 	if err != nil {
 		return nil, err
 	}
-	data := letterData{SiteName: site.Name, Date: s.Now().In(ledger.Location(site.Timezone)).Format("02.01.2006"), AsOf: asOfTR(asOf), Days: LetterDays,
-		Total: FormatTL(b.TotalPrincipal.Amount + b.TotalLateFee.Amount), Principal: FormatTL(b.TotalPrincipal.Amount), LateFee: FormatTL(b.TotalLateFee.Amount)}
+	lang := DocLang(packdocs.OrgLocale(ctx, tx, orgID))
+	cur := money.Code(site.Currency)
+	fa := func(minor int64) string { return FormatAmount(minor, cur, lang) }
+	data := letterData{SiteName: site.Name, Date: letterDate(s.Now().In(ledger.Location(site.Timezone)), lang), AsOf: asOfDisplay(asOf, lang), Days: LetterDays,
+		Total: fa(b.TotalPrincipal.Amount + b.TotalLateFee.Amount), Principal: fa(b.TotalPrincipal.Amount), LateFee: fa(b.TotalLateFee.Amount)}
 	switch {
 	case d.IsPerson():
-		data.SideLabel = "devralınan borç sahibi"
+		data.SideLabel = pick(lang, "devralınan borç sahibi", "the holder of a transferred debt")
 		data.Door = "-"
 		if err := tx.QueryRow(ctx, `SELECT display_name FROM person WHERE org_id=$1 AND id=$2`, orgID, *d.PersonID).Scan(&data.DebtorName); err != nil {
 			return nil, err
@@ -62,33 +69,40 @@ func (s *Service) letterTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site
 		if err := tx.QueryRow(ctx, `SELECT door_number FROM unit WHERE org_id=$1 AND id=$2`, orgID, *d.UnitID).Scan(&data.Door); err != nil {
 			return nil, err
 		}
-		data.SideLabel = map[string]string{"owner": "kat maliki", "tenant": "kiracı"}[d.Kind]
+		data.SideLabel = map[string]string{"owner": pick(lang, "kat maliki", "the owner"), "tenant": pick(lang, "kiracı", "the tenant")}[d.Kind]
 		_, name, err := occupantName(ctx, tx, orgID, *d.UnitID, d.Kind, asOf)
 		if err != nil {
 			return nil, err
 		}
 		data.DebtorName = name
 		if name == "" {
-			data.DebtorName = map[string]string{"owner": "Kat Maliki", "tenant": "Kiracı"}[d.Kind]
+			data.DebtorName = map[string]string{"owner": pick(lang, "Kat Maliki", "Owner"), "tenant": pick(lang, "Kiracı", "Tenant")}[d.Kind]
 		}
 	}
-	text, err := locales.Template("tr", "ihtarname")
+	// a pack's template (the Turkish ihtarname citing Law 634) replaces the generic letter
+	breakdown := make([]any, 0, len(b.Lines))
+	for _, l := range b.Lines {
+		p := ""
+		if l.Period != nil {
+			p = *l.Period
+		}
+		breakdown = append(breakdown, map[string]any{"period": p, "due": l.DueDate, "principal": fa(l.Principal.Amount), "late_fee": fa(l.LateFee.Amount)})
+	}
+	if out, ok := packdocs.Render(ctx, s.PackDocs, nil, orgID, doctpl.KindDemandLetter, lang, map[string]any{
+		"site_name": data.SiteName, "date": data.Date, "debtor_name": data.DebtorName, "door": data.Door, "side_label": data.SideLabel, "as_of": data.AsOf,
+		"total": data.Total, "principal": data.Principal, "late_fee": data.LateFee, "days": data.Days, "breakdown": breakdown}); ok {
+		return out, nil
+	}
+	// the generic letter, in the language of the organization (Turkish, else English)
+	letter, err := letterText(lang, data)
 	if err != nil {
 		return nil, problem.Internal(err)
 	}
-	t, err := template.New("ihtarname").Parse(text)
+	doc, err := pdf.NewUnicode(pick(lang, "İhtarname", "Payment notice"))
 	if err != nil {
 		return nil, problem.Internal(err)
 	}
-	var buf bytes.Buffer
-	if err := t.Execute(&buf, data); err != nil {
-		return nil, problem.Internal(err)
-	}
-	doc, err := pdf.NewUnicode("İhtarname")
-	if err != nil {
-		return nil, problem.Internal(err)
-	}
-	paras := strings.Split(strings.TrimSpace(buf.String()), "\n\n")
+	paras := strings.Split(strings.TrimSpace(letter), "\n\n")
 	for i, p := range paras {
 		switch i {
 		case 0:
@@ -101,18 +115,51 @@ func (s *Service) letterTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site
 		}
 		doc.Advance(8)
 		if i == 3 {
-			b.drawTable(doc, "Borç dökümü")
+			b.drawTable(doc, labelsFor(lang).title, lang)
 			doc.Advance(10)
 		}
 	}
 	return doc.Bytes(), nil
 }
 
-func asOfTR(day string) string {
-	if len(day) == 10 {
-		return day[8:10] + "." + day[5:7] + "." + day[:4]
+// letterText fills the generic ihtarname template of a language ("tr" or "en").
+func letterText(lang string, data letterData) (string, error) {
+	text, err := locales.Template(lang, "ihtarname")
+	if err != nil {
+		return "", err
 	}
-	return day
+	t, err := template.New("ihtarname").Parse(text)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, data); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}
+
+// pick returns the Turkish or the English wording.
+func pick(lang, tr, en string) string {
+	if lang == "tr" {
+		return tr
+	}
+	return en
+}
+
+// letterDate is the date of the letter: 02.01.2006 in Turkish, 2 Jan 2006 otherwise.
+func letterDate(t time.Time, lang string) string {
+	return t.Format(pick(lang, "02.01.2006", "2 Jan 2006"))
+}
+
+// asOfDisplay writes a civil date (2006-01-02) as letterDate does; text that is
+// not a date stays as it is.
+func asOfDisplay(day, lang string) string {
+	t, err := time.Parse("2006-01-02", day)
+	if err != nil {
+		return day
+	}
+	return letterDate(t, lang)
 }
 
 // LetterInput selects what to generate: the letter of an event, or one for a debtor.

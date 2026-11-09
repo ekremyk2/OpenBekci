@@ -24,6 +24,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -70,7 +71,7 @@ type DecisionEffects interface {
 
 // Document is a generated document ready to be filed.
 type Document struct {
-	Kind      string // call_letter, attendance_sheet, minutes
+	Kind      string // call_letter, attendance_sheet, minutes, and the pack-only delivery_checklist, proxy_form, decision_book_draft
 	FileName  string
 	MIME      string
 	Content   []byte
@@ -131,15 +132,16 @@ type Config struct {
 
 // Service is the governance module.
 type Service struct {
-	db       TxRunner
-	platform PlatformTx
-	cfg      Config
-	effects  DecisionEffects
-	filer    DocumentFiler
-	files    FileChecker
-	notifier Notifier
-	log      *slog.Logger
-	now      func() time.Time
+	db          TxRunner
+	platform    PlatformTx
+	cfg         Config
+	effects     DecisionEffects
+	filer       DocumentFiler
+	files       FileChecker
+	notifier    Notifier
+	docResolver doctpl.Resolver
+	log         *slog.Logger
+	now         func() time.Time
 }
 
 // NewService returns a Service. platform may be nil (the jobs then do nothing).
