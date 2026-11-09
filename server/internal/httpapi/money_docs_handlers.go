@@ -32,6 +32,18 @@ func (s *apiServer) fileReceipt(ctx context.Context, orgID, paymentID uuid.UUID)
 	}
 }
 
+// fileCreditNote files the credit note of a payment that was just voided or refunded; like the receipt it is
+// logged when it fails (the reversal stands) and idempotent, so a repeated void files nothing new.
+func (s *apiServer) fileCreditNote(ctx context.Context, orgID, paymentID uuid.UUID) {
+	d := s.mny.Docs
+	if d == nil || d.Files == nil || d.Docs == nil {
+		return
+	}
+	if _, err := d.FileCreditNote(ctx, orgID, paymentID); err != nil {
+		slog.WarnContext(ctx, "filing the credit note of a payment", "payment_id", paymentID, "error", err)
+	}
+}
+
 func (s *apiServer) MoneyGetPaymentReceipt(ctx context.Context, req gen.MoneyGetPaymentReceiptRequestObject) (gen.MoneyGetPaymentReceiptResponseObject, error) {
 	d, err := s.mdc()
 	if err != nil {

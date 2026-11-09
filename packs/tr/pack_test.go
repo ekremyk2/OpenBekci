@@ -441,3 +441,17 @@ func TestTableCellsCannotBreakTheMarkup(t *testing.T) {
 		t.Errorf("%s", out)
 	}
 }
+
+func TestReceiptCreditNoteVariant(t *testing.T) {
+	data := fullData()
+	data["credit_note"], data["credit_note_no"] = true, "CN-2027-000001"
+	for _, tp := range Templates() {
+		if tp.Kind() != KindReceipt {
+			continue
+		}
+		doc, err := tp.Render(context.Background(), sdk.RenderRequest{Locale: "tr", Data: data})
+		if err != nil || !strings.Contains(string(doc.Body), "İADE MAKBUZU") || !strings.Contains(string(doc.Body), "CN-2027-000001") || strings.Contains(string(doc.Body), "Toplam tahsilat") {
+			t.Errorf("credit note: %v %s", err, doc.Body)
+		}
+	}
+}
