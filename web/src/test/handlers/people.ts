@@ -95,6 +95,10 @@ export const peopleHandlers = [
     db.persons.push(p as never)
     return HttpResponse.json(p, { status: 201 })
   }),
+  http.post(o('persons/:personId/data-export'), () =>
+    HttpResponse.json({ request_id: crypto.randomUUID(), status: 'queued' }, { status: 202 }),
+  ),
+  http.post(o('persons/:personId\\:erase'), () => new HttpResponse(null, { status: 204 })),
   http.get(o('persons/:personId'), ({ params }) => {
     const p = db.persons.find((x) => x.id === params.personId)
     return p ? HttpResponse.json(p) : notFound()

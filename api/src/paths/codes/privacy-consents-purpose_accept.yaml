@@ -1,0 +1,50 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: purpose
+    in: path
+    required: true
+    description: Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it.
+    schema:
+      type: string
+post:
+  operationId: codes.acceptConsent
+  summary: Accept a privacy or consent text
+  description: |-
+    **Release 1.0.** Records that the caller accepts the version of the text; the decision is kept per user and organization and audited. Accepting again, or after declining, replaces the decision.
+
+    Permission: `me.manage`.
+
+    Problems: `not_found` (404, no such text), `conflict` (409, the version is not the current one).
+  tags:
+    - codes
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - me.manage
+  x-idempotent: optional
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/codes.yaml#/schemas/ConsentDecision
+  responses:
+    "200":
+      description: The text with the caller's decision.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/codes.yaml#/schemas/Consent
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

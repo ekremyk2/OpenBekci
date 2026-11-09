@@ -34,6 +34,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/privacy"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/core/treasury"
@@ -45,6 +46,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
 	"github.com/openbekci/openbekci/server/internal/platform/storage"
+	"github.com/riverqueue/river"
 )
 
 const testBase = "https://bekci.example.org"
@@ -70,6 +72,8 @@ type idEnv struct {
 	acc     *access.Service
 	integ   *integrations.Service
 	jobRec  *jobRecorder
+	priv    *privacy.Service
+	privJob []privacy.ExportArgs
 	relay   *fakeRelay
 	devices *devices.Service
 	cookie  *http.Cookie
@@ -123,6 +127,12 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	}
 	e.acc = newTestAccess(t, d, cfg.Log)
 	e.jobRec = &jobRecorder{}
+	e.priv = privacy.NewService(d, privacy.Config{Files: e.files, Notifier: e.notes, Log: cfg.Log})
+	e.files.RegisterResolver(privacy.Scope, privacy.FileResolver())
+	e.priv.SetInsert(func(_ context.Context, _ pgx.Tx, args river.JobArgs) error {
+		e.privJob = append(e.privJob, args.(privacy.ExportArgs))
+		return nil
+	})
 	e.integ = newTestIntegrations(t, d, reg, cfg.Log, e.jobRec, e.notes)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
@@ -130,7 +140,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc, Devices: e.devices,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc, Integrations: e.integ,
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc, Integrations: e.integ, Privacy: e.priv,
 		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Keys: e.integ, Origins: []string{testBase}}, ValidateResponses: true,
 	}

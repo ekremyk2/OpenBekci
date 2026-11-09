@@ -290,7 +290,7 @@ Organized by the releases in overview §8. Each item maps to a decision (S/M/O/G
 
 ### 9.5 Release 1.0 (web share ≈ 3 of the overview's ≈ 12 engineer-weeks)
 
-- **Privacy UI:** per-person export and erasure requests, retention settings, consent records.
+- **Privacy UI:** per-person export and erasure requests, retention settings, consent records. (1.0, as built: consents with accept/decline and "export my data" under My account → privacy; export and erase with re-authentication on the manager person page; retention settings are documented in the server README, not editable.)
 - **Platform admin complete:** organizations, instance settings, health, jobs, backup status.
 - **Command palette** (`⌘K`) for navigation and quick actions; keyboard shortcuts for the matching screen, attendance desk and guard console.
 - **Performance and accessibility audit** closure (manual WCAG 2.2 AA pass, Lighthouse run), full tr/en catalogs, documentation screenshots.

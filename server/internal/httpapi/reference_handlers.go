@@ -107,41 +107,6 @@ var genericPrivacyNotice = map[string]string{
 	"tr": "# Gizlilik bildirimi\n\nSite yönetimi; adınızı, iletişim bilgilerinizi, bağımsız bölümünüzü ve ödeme kayıtlarınızı binanın yönetimi için işler: malik ve kiracı kayıtlarını tutmak, bildirim ve makbuz göndermek, aidat toplamak ve toplantıları kaydetmek. Veriler yalnızca site için ileti ve ödeme hizmeti veren sağlayıcılarla ve yasaların gerektirdiği hallerde paylaşılır. Borçlu listeleri diğer sakinlere gösterilmez. Verilerinize erişim, düzeltme veya silme için site yönetimine başvurabilirsiniz.\n",
 }
 
-// CodesListConsents serves the privacy notice and consent texts: the enabled
-// packs' when they have any in the locale, else the generic notice.
-func (s *apiServer) CodesListConsents(ctx context.Context, req gen.CodesListConsentsRequestObject) (gen.CodesListConsentsResponseObject, error) {
-	if err := authz.RequireInOrg(ctx, codes.PermRead, req.OrgId); err != nil {
-		return nil, err
-	}
-	locale := strings.ToLower(deref(req.Params.Locale))
-	if locale == "" && s.tenancy != nil {
-		if org, err := s.tenancy.Get(ctx, req.OrgId); err == nil {
-			locale = org.DefaultLocale
-		}
-	}
-	if i := strings.IndexAny(locale, "-_"); i > 0 {
-		locale = locale[:i]
-	}
-	if locale != "tr" {
-		locale = "en"
-	}
-	out := gen.ConsentList{Locale: locale, Items: []gen.Consent{}}
-	if s.packs != nil {
-		items, err := s.packs.Consents(ctx, req.OrgId, locale)
-		if err != nil {
-			return nil, err
-		}
-		for _, it := range items {
-			pack := it.Pack
-			out.Items = append(out.Items, gen.Consent{Id: it.ID, Pack: &pack, Version: it.Version, Locale: it.Locale, Markdown: it.Markdown})
-		}
-	}
-	if len(out.Items) == 0 {
-		out.Items = append(out.Items, gen.Consent{Id: "core.privacy_notice", Version: "1", Locale: locale, Markdown: genericPrivacyNotice[locale]})
-	}
-	return gen.CodesListConsents200JSONResponse(out), nil
-}
-
 // GovernanceGetMeetingDocument renders a document only a pack provides.
 func (s *apiServer) GovernanceGetMeetingDocument(ctx context.Context, req gen.GovernanceGetMeetingDocumentRequestObject) (gen.GovernanceGetMeetingDocumentResponseObject, error) {
 	g, err := s.gv()

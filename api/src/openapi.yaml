@@ -145,6 +145,10 @@ paths:
     $ref: ./paths/people/persons.yaml
   /v1/orgs/{org_id}/persons/{person_id}:
     $ref: ./paths/people/persons-person_id.yaml
+  /v1/orgs/{org_id}/persons/{person_id}:erase:
+    $ref: ./paths/people/persons-person_id_erase.yaml
+  /v1/orgs/{org_id}/persons/{person_id}/data-export:
+    $ref: ./paths/people/persons-person_id-data-export.yaml
   /v1/orgs/{org_id}/persons/{person_id}/national-id:
     $ref: ./paths/people/persons-person_id-national-id.yaml
   /v1/orgs/{org_id}/occupancies:
@@ -223,6 +227,10 @@ paths:
     $ref: ./paths/codes/reference-kind.yaml
   /v1/orgs/{org_id}/privacy/consents:
     $ref: ./paths/codes/privacy-consents.yaml
+  /v1/orgs/{org_id}/privacy/consents/{purpose}:accept:
+    $ref: ./paths/codes/privacy-consents-purpose_accept.yaml
+  /v1/orgs/{org_id}/privacy/consents/{purpose}:decline:
+    $ref: ./paths/codes/privacy-consents-purpose_decline.yaml
   /v1/orgs/{org_id}/codes:
     $ref: ./paths/codes/codes.yaml
   /v1/orgs/{org_id}/ticket-workflow:

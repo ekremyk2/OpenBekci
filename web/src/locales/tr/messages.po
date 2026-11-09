@@ -275,6 +275,9 @@ msgstr "Yok"
 msgid "Abstain"
 msgstr "Çekimser"
 
+msgid "Accept"
+msgstr "Kabul et"
+
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
@@ -598,6 +601,9 @@ msgstr "Duyuru zamanlandı."
 msgid "Announcements"
 msgstr "Duyurular"
 
+msgid "Answer a data-subject request: export everything held about this person, or erase them. Erasing cannot be undone; ledger entries and votes stay, under a neutral name."
+msgstr "Bir veri sahibi talebini yanıtlayın: bu kişi hakkında tutulan her şeyi dışa aktarın veya kişiyi silin. Silme geri alınamaz; defter kayıtları ve oylar tarafsız bir adla kalır."
+
 msgid "Answered"
 msgstr "Yanıtlandı"
 
@@ -710,6 +716,9 @@ msgstr "<0/> itibarıyla"
 
 msgid "Ask a manager to add the account residents should pay into."
 msgstr "Sakinlerin ödeme yapacağı hesabı eklemesi için bir yöneticiye danışın."
+
+msgid "Ask for a copy of the data this organization holds about you. A JSON file and a PDF are added to your documents and you get a notification when they are ready."
+msgstr "Bu kuruluşun sizin hakkınızda tuttuğu verilerin bir kopyasını isteyin. Bir JSON dosyası ve bir PDF belgelerinize eklenir; hazır olduğunda bildirim alırsınız."
 
 msgid "Ask the resident"
 msgstr "Sakine sor"
@@ -2029,6 +2038,12 @@ msgstr "Bildirilen havale"
 msgid "Declared transfers"
 msgstr "Bildirilen havaleler"
 
+msgid "Decline"
+msgstr "Reddet"
+
+msgid "Declined"
+msgstr "Reddedildi"
+
 msgid "default"
 msgstr "varsayılan"
 
@@ -2605,6 +2620,19 @@ msgstr "Eşit"
 msgid "Equal per unit"
 msgstr "Birim başına eşit"
 
+msgid "Erase"
+msgstr "Sil"
+
+#. placeholder {0}: person.display_name
+msgid "Erase {0}?"
+msgstr "{0} silinsin mi?"
+
+msgid "Erase although they still have open charges"
+msgstr "Açık borcu olsa da sil"
+
+msgid "Erase person"
+msgstr "Kişiyi sil"
+
 msgid "Error"
 msgstr "Hata"
 
@@ -2685,6 +2713,12 @@ msgstr "Bitiş tarihi (isteğe bağlı)"
 
 msgid "Export and offboard"
 msgstr "Dışa aktarma ve devir"
+
+msgid "Export data"
+msgstr "Verileri dışa aktar"
+
+msgid "Export my data"
+msgstr "Verilerimi dışa aktar"
 
 msgid "Export plates (CSV)"
 msgstr "Plakaları dışa aktar (CSV)"
@@ -3630,6 +3664,9 @@ msgstr "Kartlı ödemelerim"
 msgid "My check-in code"
 msgstr "Giriş kodum"
 
+msgid "My data"
+msgstr "Verilerim"
+
 msgid "My statement"
 msgstr "Ekstrem"
 
@@ -3673,6 +3710,9 @@ msgstr "Gerekli"
 
 msgid "Needs attention"
 msgstr "İlgi gerektirenler"
+
+msgid "Needs your answer"
+msgstr "Yanıtınız gerekiyor"
 
 msgid "Net to this site"
 msgstr "Bu siteye net"
@@ -3833,6 +3873,9 @@ msgstr "Duyuru yok"
 
 msgid "No answer in time. Call the resident."
 msgstr "Zamanında yanıt gelmedi. Sakini arayın."
+
+msgid "No answer yet"
+msgstr "Henüz yanıt yok"
 
 msgid "No API keys yet"
 msgstr "Henüz API anahtarı yok"
@@ -6260,6 +6303,9 @@ msgstr "Kayıt iptal edildi olarak görünür kalır. Parolanızı onaylamanız 
 msgid "The expiry must be after the publish time"
 msgstr "Bitiş zamanı yayın zamanından sonra olmalı"
 
+msgid "The export is being prepared. The person and you are notified when it is ready."
+msgstr "Dışa aktarım hazırlanıyor. Hazır olduğunda kişi ve siz bilgilendirilirsiniz."
+
 msgid "The facility is closed at that time."
 msgstr "Tesis o saatte kapalıdır."
 
@@ -6412,6 +6458,9 @@ msgstr "Ödeme kaydedildi."
 msgid "The permission was revoked."
 msgstr "İzin iptal edildi."
 
+msgid "The person is erased."
+msgstr "Kişi silindi."
+
 msgid "The person loses the access this role gave them."
 msgstr "Kişi, bu rolün verdiği erişimi kaybeder."
 
@@ -6521,8 +6570,8 @@ msgstr "Sağdaki tablo, tutarı veya bölüştürme kuralını değiştirdikçe 
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı). Toplantıyı zamanında planlayın."
 
-msgid "The texts your organization uses to tell you how your data is handled, in the language you pick."
-msgstr "Kuruluşunuzun verilerinizin nasıl işlendiğini anlatmak için kullandığı metinler, seçtiğiniz dilde."
+msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
+msgstr "Kuruluşunuzun verilerinizin nasıl işlendiğini anlatmak için kullandığı metinler, seçtiğiniz dilde. Her birini kabul edin veya reddedin."
 
 msgid "The transfer could not be started. Please try again."
 msgstr "Devir başlatılamadı. Lütfen yeniden deneyin."
@@ -6538,6 +6587,9 @@ msgstr "Ziyaret, başladıktan sonra bitmelidir."
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
 msgstr "Tutarın tamamı, <0/>, sağlayıcı aracılığıyla sakinin kartına iade edilir. Ödediği tahakkuklar yeniden açılır. Kısmi iade mümkün değildir."
+
+msgid "Their name, contact details, notes and national id are removed and their sign-in is closed. This cannot be undone."
+msgstr "Adı, iletişim bilgileri, notları ve kimlik numarası kaldırılır ve girişi kapatılır. Bu işlem geri alınamaz."
 
 msgid "Theme"
 msgstr "Tema"
@@ -6557,9 +6609,6 @@ msgstr "Bu sütunlarda tam sayı olmayan değerler var: {0}. Tutarları en küç
 
 msgid "These neighbours chose to be listed."
 msgstr "Bu komşular listede yer almayı seçti."
-
-msgid "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
-msgstr "Bu metinler okumak için gösterilir. Rızayı kabul etmek veya reddetmek web uygulamasında henüz mümkün değil: şimdilik yöneticiniz kaydeder."
 
 msgid "They appear here once a resident pays by card."
 msgstr "Bir sakin kartla ödeme yapınca burada görünürler."
@@ -7584,8 +7633,14 @@ msgstr "Yanıtınız kaydedildi."
 msgid "Your card was declined. Nothing was charged."
 msgstr "Kartınız reddedildi. Hiçbir tutar çekilmedi."
 
+msgid "Your choice is saved."
+msgstr "Seçiminiz kaydedildi."
+
 msgid "Your dashboard is on its way"
 msgstr "Panonuz hazırlanıyor"
+
+msgid "Your export is being prepared. You will be notified when it is ready."
+msgstr "Dışa aktarımınız hazırlanıyor. Hazır olduğunda bilgilendirileceksiniz."
 
 msgid "Your new API key"
 msgstr "Yeni API anahtarınız"

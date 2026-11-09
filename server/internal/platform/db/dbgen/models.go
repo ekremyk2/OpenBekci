@@ -562,6 +562,15 @@ type CollectionCase struct {
 	Version        int32
 }
 
+type Consent struct {
+	OrgID     pgtype.UUID
+	UserID    pgtype.UUID
+	Purpose   string
+	Version   string
+	Decision  string
+	DecidedAt pgtype.Timestamptz
+}
+
 type Credential struct {
 	ID           pgtype.UUID
 	OrgID        pgtype.UUID
@@ -585,6 +594,14 @@ type Credential struct {
 	Published    []byte
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
+}
+
+type DataExport struct {
+	OrgID       pgtype.UUID
+	ID          pgtype.UUID
+	PersonID    pgtype.UUID
+	RequestedBy pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
 }
 
 type Decision struct {
@@ -1364,6 +1381,7 @@ type Person struct {
 	GateContactPhone  pgtype.Text
 	Notes             pgtype.Text
 	SiteID            pgtype.UUID
+	ErasedAt          pgtype.Timestamptz
 }
 
 type PlatformAuditEvent struct {

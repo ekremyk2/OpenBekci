@@ -405,6 +405,9 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			PersonId:            nullUUID(o.PersonID),
 		})
 	}
+	if err := s.pendingConsents(ctx, p.UserID, orgs); err != nil {
+		return nil, err
+	}
 	return gen.MeGet200JSONResponse(gen.Me{
 		User: gen.MeUser{
 			Id: me.User.ID, DisplayName: me.DisplayName, Email: nullStr(me.User.Email), Phone: nullStr(me.User.Phone),

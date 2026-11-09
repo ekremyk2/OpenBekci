@@ -57,6 +57,8 @@ export interface components {
       slug: string
       name: string
       default_locale?: string // organization default for locale resolution
+      person_id?: string | null // the caller's person in the organization
+      pending_consents?: string[] // required consent texts not yet accepted
       roles: components['schemas']['RoleGrant'][]
       permissions: components['schemas']['EffectivePermission'][]
       sites: components['schemas']['Site'][]

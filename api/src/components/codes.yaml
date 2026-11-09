@@ -97,7 +97,24 @@ schemas:
       - version
       - locale
       - markdown
+      - required
+      - state
     properties:
+      required:
+        type: boolean
+        description: The text must be accepted to use the organization (the privacy notice); the per-purpose texts of a pack are choices.
+      state:
+        type: string
+        enum:
+          - pending
+          - accepted
+          - declined
+        description: The caller's decision on the current version of the text; `pending` when they have none (a decision on an older version counts as none).
+      decided_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: When the caller decided on the current version; null while `pending`.
       id:
         type: string
         description: "`core.privacy_notice`, or the id of a pack's text (`tr.privacy_notice`, `tr.consent_identity`, ...); labelled by the codes endpoint."
@@ -123,3 +140,14 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/Consent"
+  ConsentDecision:
+    type: object
+    description: A decision on one consent text.
+    required:
+      - version
+    properties:
+      version:
+        type: string
+        description: The version of the text decided on, as `GET .../privacy/consents` returned it; any other version answers 409 `conflict`.
+    example:
+      version: "2026-11.1"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { mountApp } from '@/test/render'
@@ -24,11 +24,20 @@ describe('privacy notice and consents', () => {
     expect(await screen.findByRole('heading', { name: 'Aydınlatma metni' })).toBeInTheDocument()
   })
 
-  it('says it is display only: there is no accept or decline', async () => {
+  it('records an accept for the version shown and then shows it as accepted', async () => {
+    const seen: { url: string; body: Promise<unknown> }[] = []
+    server.events.on('request:start', ({ request }) => {
+      if (request.method === 'POST' && request.url.includes('/privacy/consents/'))
+        seen.push({ url: request.url, body: request.clone().json() })
+    })
     await mountApp('/orgs/org-1/me/consents')
-    const note = await screen.findByRole('note')
-    expect(note).toHaveTextContent(/not possible in the web app yet/)
-    expect(screen.queryByRole('button', { name: /accept|decline/i })).not.toBeInTheDocument()
+    const [accept] = await screen.findAllByRole('button', { name: 'Accept' })
+    await userEvent.click(accept!)
+    await waitFor(() => expect(seen).toHaveLength(1))
+    expect(decodeURIComponent(seen[0]!.url)).toMatch(/tr\.privacy_notice:accept$/)
+    expect(await seen[0]!.body).toEqual({ version: '2026-03' })
+    expect(await screen.findByText('Accepted')).toBeInTheDocument()
+    server.events.removeAllListeners()
   })
 
   it('asks for the chosen locale', async () => {
@@ -71,7 +80,6 @@ describe('privacy notice and consents', () => {
     expect(
       await screen.findByRole('heading', { name: 'Privacy notice and consents' }),
     ).toBeInTheDocument()
-    expect(within(document.body).getByRole('note')).toBeInTheDocument()
   })
 })
 

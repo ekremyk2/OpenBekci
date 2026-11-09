@@ -3398,6 +3398,110 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons/{person_id}:erase:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: person_id
+        in: path
+        required: true
+        description: Id of the person.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.erasePerson
+      summary: Erase a person (privacy)
+      description: |-
+        **Release 1.0.** Pseudonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates; ledger lines, ballots and attendance keep pointing at the person, who is now "Former person xxxxxxxx". The sign-in account is unlinked and its sessions and devices deleted. Also available to the operator as `openbekci admin privacy erase`.
+
+        Permission: `people.erase`.
+
+        Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+        Problems: `reauth_required` (403), `not_found` (404), `conflict` (409, open charges without override, or already erased), `idempotency_mismatch` (422).
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - people.erase
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonErase'
+      responses:
+        '204':
+          description: Erased.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons/{person_id}/data-export:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: person_id
+        in: path
+        required: true
+        description: Id of the person.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.requestDataExport
+      summary: Export a person's data
+      description: |-
+        **Release 1.0.** Queues the export of everything the organization holds about the person: the person, occupancies, charges and payments, tickets and comments, consents and the audit trail of the person (personal values appear in it only as keyed hashes). A job stores a JSON (as `.json.txt`) and a PDF as private files (file scope `privacy_export`, kept 7 days) that only the person and the user who asked can read through the file endpoints (a read by the requester is audited as `privacy.export_read`; administrators with `files.manage` keep their file-module access), and notifies the person and the manager who asked (`privacy.export_ready`). The national id is not included (it is only ever shown masked).
+
+        Permission: `people.export` (a manager for the person) or `me.manage` (the person asking for their own data). Anyone else answers 403.
+
+        Problems: `forbidden` (403), `conflict` (409, the person is erased or has no site to file in).
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - people.export
+        site_manager:
+          - people.export
+        member:
+          - me.manage
+      x-idempotent: optional
+      x-stability: preview
+      responses:
+        '202':
+          description: Accepted; the export continues as a job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportRequested'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/persons/{person_id}/national-id:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -5997,7 +6101,7 @@ paths:
       operationId: codes.listConsents
       summary: Privacy notice and consent texts
       description: |-
-        **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown.
+        **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown. **Release 1.0:** each text carries whether it is `required` (the privacy notice) and the caller's `state` on its current version (`pending`, `accepted`, `declined`); decide with `POST .../privacy/consents/{purpose}:accept` or `:decline`.
 
         Permission: `codes.read`.
       tags:
@@ -6025,6 +6129,108 @@ paths:
         '401':
           $ref: '#/components/responses/Problem'
         '403':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/privacy/consents/{purpose}:accept:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: purpose
+        in: path
+        required: true
+        description: Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it.
+        schema:
+          type: string
+    post:
+      operationId: codes.acceptConsent
+      summary: Accept a privacy or consent text
+      description: |-
+        **Release 1.0.** Records that the caller accepts the version of the text; the decision is kept per user and organization and audited. Accepting again, or after declining, replaces the decision.
+
+        Permission: `me.manage`.
+
+        Problems: `not_found` (404, no such text), `conflict` (409, the version is not the current one).
+      tags:
+        - codes
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - me.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentDecision'
+      responses:
+        '200':
+          description: The text with the caller's decision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/privacy/consents/{purpose}:decline:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: purpose
+        in: path
+        required: true
+        description: Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it.
+        schema:
+          type: string
+    post:
+      operationId: codes.declineConsent
+      summary: Decline a privacy or consent text
+      description: |-
+        **Release 1.0.** Records that the caller declines the version of the text; the decision is kept per user and organization and audited. A declined required text stays in `pending_consents` of `GET /v1/me`.
+
+        Permission: `me.manage`.
+
+        Problems: `not_found` (404, no such text), `conflict` (409, the version is not the current one).
+      tags:
+        - codes
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - me.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentDecision'
+      responses:
+        '200':
+          description: The text with the caller's decision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -23848,6 +24054,11 @@ components:
           format: uuid
           nullable: true
           description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
+        pending_consents:
+          type: array
+          description: Ids of the required consent texts (the privacy notice) of this organization the caller has not accepted at their current version; empty or absent when none. A client sends the person to the privacy screen (`GET /v1/orgs/{org_id}/privacy/consents`) to accept them.
+          items:
+            type: string
     Me:
       type: object
       required:
@@ -24213,6 +24424,7 @@ components:
         - payments.declare
         - payments.record
         - people.erase
+        - people.export
         - people.manage
         - people.move_out
         - people.national_id
@@ -24848,7 +25060,24 @@ components:
         - version
         - locale
         - markdown
+        - required
+        - state
       properties:
+        required:
+          type: boolean
+          description: The text must be accepted to use the organization (the privacy notice); the per-purpose texts of a pack are choices.
+        state:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - declined
+          description: The caller's decision on the current version of the text; `pending` when they have none (a decision on an older version counts as none).
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the caller decided on the current version; null while `pending`.
         id:
           type: string
           description: '`core.privacy_notice`, or the id of a pack''s text (`tr.privacy_notice`, `tr.consent_identity`, ...); labelled by the codes endpoint.'
@@ -27772,6 +28001,7 @@ components:
         - access.agent_clock_skew
         - access.agent_stopped
         - webhook.endpoint_failing
+        - privacy.export_ready
     FileVariant:
       type: object
       description: A rendition of an image, generated on upload.
@@ -38731,6 +38961,39 @@ components:
           type: string
           pattern: ^[0-9]{6}$
           description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
+    PersonErase:
+      type: object
+      description: 'Erasure: the person row is pseudonymized ("Former person xxxxxxxx", no contact, notes or national id) and unlinked from the sign-in account, whose sessions and devices are deleted; ledger lines, ballots and attendance keep their rows pointing at the pseudonymized person. Blocked (409 `conflict`) while the person has open charges unless `override_open_balance` is set (audited as forced).'
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          description: Why (a data-subject request, a court order, ...); audited (as a keyed hash, like every free text).
+        override_open_balance:
+          type: boolean
+          default: false
+          description: Erase although the person still has open charges.
+      example:
+        reason: Data subject request 2026/17
+        override_open_balance: false
+    DataExportRequested:
+      type: object
+      description: A data export that was queued. When the job is done the person's JSON and PDF bundle is stored as private files (readable by the person and the requester only, kept 7 days) and the person, and the manager who asked, get a `privacy.export_ready` notification.
+      required:
+        - request_id
+        - status
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - queued
+      example:
+        request_id: 0192a3f0-1000-7000-8000-000000000009
+        status: queued
     JoinSignUpRequest:
       type: object
       description: Exactly one of `phone` and `email`.
@@ -38760,6 +39023,17 @@ components:
             - mobile
           default: web
           description: '`mobile` makes an emailed link use the `openbekci://<host>/…` form.'
+    ConsentDecision:
+      type: object
+      description: A decision on one consent text.
+      required:
+        - version
+      properties:
+        version:
+          type: string
+          description: The version of the text decided on, as `GET .../privacy/consents` returned it; any other version answers 409 `conflict`.
+      example:
+        version: 2026-11.1
     TicketWorkflowRestore:
       type: object
       description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
@@ -41673,6 +41947,7 @@ x-openbekci-roles:
     - payments.declare
     - payments.record
     - people.erase
+    - people.export
     - people.manage
     - people.move_out
     - people.national_id
@@ -41755,6 +42030,7 @@ x-openbekci-roles:
     - payments.checkout
     - payments.declare
     - payments.record
+    - people.export
     - people.manage
     - people.move_out
     - people.national_id

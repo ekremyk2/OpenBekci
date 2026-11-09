@@ -28,6 +28,7 @@ var Registered = []Field{
 	{"person", "national_id_country"},
 	{"person", "gate_contact_phone"},
 	{"person", "notes"},
+	{"privacy_erase", "reason"},
 	{"site", "address.*"},
 	{"site", "bank_details.*"},
 	{"vendor", "name"},
@@ -79,7 +80,7 @@ var Registered = []Field{
 // audit diff of an unknown entity records the changed key names only, never
 // values (fail closed; see audit.Diff). Add an entity here in the same change
 // that adds its audited view.
-var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent",
+var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent", "consent",
 	"governance_settings", "meeting", "agenda_item", "poll", "attendance", "vote_count", "term_reminder", "facility", "facility_block", "booking",
 	"agent", "access_point", "agent_command", "api_key", "webhook_endpoint",
 	"fund", "account", "cash_box", "fiscal_year", "site_lock", "journal_entry", "opening_balance", "charge_plan", "charge_plan_rate", "charge", "budget", "late_fee_policy", "late_fee_waiver", "late_fee_freeze", "payment", "transfer", "refund", "bank_import", "bank_transaction", "expense", "bill", "collection_case", "dunning_stage"}

@@ -4,9 +4,9 @@ The builders' checklist, maintained by hand next to the path files. The skeleton
 Every operation of the contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`) with its release, permission and
 idempotency. **Status** says whether the served root `api/src/openapi.yaml` has the operation; **Stability** is its `x-stability`.
 
-**The /v1 freeze (1.0).** The 439 served operations are the frozen surface: 415 `stable` (additive changes only,
-`docs/api/versioning.md`, ADR-0003) and 24 `preview` (still free to change; they are answered with
-`X-OpenBekci-Stability: preview`). 42 operations of the draft are not served (39 `stable`, 3 `preview`);
+**The /v1 freeze (1.0).** The 443 served operations are the frozen surface: 415 `stable` (additive changes only,
+`docs/api/versioning.md`, ADR-0003) and 28 `preview` (still free to change; they are answered with
+`X-OpenBekci-Stability: preview`). 41 operations of the draft are not served (38 `stable`, 3 `preview`);
 they are planned for a later 1.x minor release and added to `/v1` additively. Operations dropped from the draft at the freeze are
 listed in `docs/api/deferred.md`.
 
@@ -15,7 +15,7 @@ Where several permissions are listed, any one suffices.
 | Module | Operations |
 |---|---|
 | tenancy | 50 |
-| people | 54 |
+| people | 55 |
 | me | 8 |
 | money | 140 |
 | operations | 55 |
@@ -25,7 +25,7 @@ Where several permissions are listed, any one suffices.
 | access | 21 |
 | agent | 4 |
 | dashboards | 4 |
-| codes | 3 |
+| codes | 5 |
 | integrations | 12 |
 | platform | 9 |
 | auth | 1 |
@@ -85,7 +85,8 @@ Where several permissions are listed, any one suffices.
 | people | `people.createPerson` | `POST /v1/orgs/{org_id}/persons` | 0.1 | `people.manage` | optional | stable | served |
 | people | `people.getPerson` | `GET /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.read` | - | stable | served |
 | people | `people.updatePerson` | `PATCH /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.manage` | optional | stable | served |
-| people | `people.erasePerson` | `POST /v1/orgs/{org_id}/persons/{person_id}:erase` | 0.1 | `people.erase` | required | stable | not yet served |
+| people | `people.erasePerson` | `POST /v1/orgs/{org_id}/persons/{person_id}:erase` | 1.0 | `people.erase` | required | preview | served |
+| people | `people.requestDataExport` | `POST /v1/orgs/{org_id}/persons/{person_id}/data-export` | 1.0 | `people.export`, `me.manage` | optional | preview | served |
 | people | `people.getNationalId` | `GET /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | - | stable | served |
 | people | `people.setNationalId` | `PUT /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional | stable | served |
 | people | `people.clearNationalId` | `DELETE /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional | stable | served |
@@ -454,6 +455,8 @@ Where several permissions are listed, any one suffices.
 | codes | `codes.listCodes` | `GET /v1/orgs/{org_id}/codes` | 0.1 | `codes.read` | - | stable | served |
 | codes | `codes.listReference` | `GET /v1/orgs/{org_id}/reference/{kind}` | 0.4 | `codes.read` | - | preview | served (not in the original draft) |
 | codes | `codes.listConsents` | `GET /v1/orgs/{org_id}/privacy/consents` | 0.4 | `codes.read` | - | stable | served (not in the original draft) |
+| codes | `codes.acceptConsent` | `POST /v1/orgs/{org_id}/privacy/consents/{purpose}:accept` | 1.0 | `me.manage` | optional | preview | served |
+| codes | `codes.declineConsent` | `POST /v1/orgs/{org_id}/privacy/consents/{purpose}:decline` | 1.0 | `me.manage` | optional | preview | served |
 | integrations | `integrations.listApiKeys` | `GET /v1/orgs/{org_id}/api-keys` | 0.4 | `apikeys.read` | - | stable | served |
 | integrations | `integrations.createApiKey` | `POST /v1/orgs/{org_id}/api-keys` | 0.4 | `apikeys.manage` | none | stable | served |
 | integrations | `integrations.rotateApiKey` | `POST /v1/orgs/{org_id}/api-keys/{key_id}:rotate` | 0.4 | `apikeys.manage` | none | stable | served |

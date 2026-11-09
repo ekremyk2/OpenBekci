@@ -1433,15 +1433,44 @@ export interface paths {
         put?: never;
         /**
          * Erase a person (privacy)
-         * @description **Release 0.1.** Anonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates.
+         * @description **Release 1.0.** Pseudonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates; ledger lines, ballots and attendance keep pointing at the person, who is now "Former person xxxxxxxx". The sign-in account is unlinked and its sessions and devices deleted. Also available to the operator as `openbekci admin privacy erase`.
          *
          *     Permission: `people.erase`.
          *
          *     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
          *
-         *     Problems: `reauth_required` (403), `conflict` (409, open balance without override), `idempotency_mismatch` (422).
+         *     Problems: `reauth_required` (403), `not_found` (404), `conflict` (409, open charges without override, or already erased), `idempotency_mismatch` (422).
          */
         post: operations["people.erasePerson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons/{person_id}/data-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export a person's data
+         * @description **Release 1.0.** Queues the export of everything the organization holds about the person: the person, occupancies, charges and payments, tickets and comments, consents and the audit trail of the person (personal values appear in it only as keyed hashes). A job stores a JSON (as `.json.txt`) and a PDF as private files (file scope `privacy_export`, kept 7 days) that only the person and the user who asked can read through the file endpoints (a read by the requester is audited as `privacy.export_read`; administrators with `files.manage` keep their file-module access), and notifies the person and the manager who asked (`privacy.export_ready`). The national id is not included (it is only ever shown masked).
+         *
+         *     Permission: `people.export` (a manager for the person) or `me.manage` (the person asking for their own data). Anyone else answers 403.
+         *
+         *     Problems: `forbidden` (403), `conflict` (409, the person is erased or has no site to file in).
+         */
+        post: operations["people.requestDataExport"];
         delete?: never;
         options?: never;
         head?: never;
@@ -10093,13 +10122,71 @@ export interface paths {
         };
         /**
          * Privacy notice and consent texts
-         * @description **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown.
+         * @description **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown. **Release 1.0:** each text carries whether it is `required` (the privacy notice) and the caller's `state` on its current version (`pending`, `accepted`, `declined`); decide with `POST .../privacy/consents/{purpose}:accept` or `:decline`.
          *
          *     Permission: `codes.read`.
          */
         get: operations["codes.listConsents"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/privacy/consents/{purpose}:accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it. */
+                purpose: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a privacy or consent text
+         * @description **Release 1.0.** Records that the caller accepts the version of the text; the decision is kept per user and organization and audited. Accepting again, or after declining, replaces the decision.
+         *
+         *     Permission: `me.manage`.
+         *
+         *     Problems: `not_found` (404, no such text), `conflict` (409, the version is not the current one).
+         */
+        post: operations["codes.acceptConsent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/privacy/consents/{purpose}:decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it. */
+                purpose: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decline a privacy or consent text
+         * @description **Release 1.0.** Records that the caller declines the version of the text; the decision is kept per user and organization and audited. A declined required text stays in `pending_consents` of `GET /v1/me`.
+         *
+         *     Permission: `me.manage`.
+         *
+         *     Problems: `not_found` (404, no such text), `conflict` (409, the version is not the current one).
+         */
+        post: operations["codes.declineConsent"];
         delete?: never;
         options?: never;
         head?: never;
@@ -10774,6 +10861,8 @@ export interface components {
              * @description The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
              */
             person_id: string | null;
+            /** @description Ids of the required consent texts (the privacy notice) of this organization the caller has not accepted at their current version; empty or absent when none. A client sends the person to the privacy screen (`GET /v1/orgs/{org_id}/privacy/consents`) to accept them. */
+            pending_consents?: string[];
         };
         Me: {
             user: components["schemas"]["MeUser"];
@@ -21780,6 +21869,18 @@ export interface components {
             reference?: string;
         };
         Consent: {
+            /** @description The text must be accepted to use the organization (the privacy notice); the per-purpose texts of a pack are choices. */
+            required: boolean;
+            /**
+             * @description The caller's decision on the current version of the text; `pending` when they have none (a decision on an older version counts as none).
+             * @enum {string}
+             */
+            state: "pending" | "accepted" | "declined";
+            /**
+             * Format: date-time
+             * @description When the caller decided on the current version; null while `pending`.
+             */
+            decided_at?: string | null;
             /** @description `core.privacy_notice`, or the id of a pack's text (`tr.privacy_notice`, `tr.consent_identity`, ...); labelled by the codes endpoint. */
             id: string;
             /** @description The pack that supplies the text; absent for the core's notice. */
@@ -22140,17 +22241,17 @@ export interface components {
             lines: components["schemas"]["BudgetLine"][];
         };
         /**
-         * @description Erasure = `privacy_erase(person_id)`: the person row is anonymized, the user unlinked; ledger lines, ballots and attendance keep their rows with the name replaced by "Former owner #n". Blocked (409 `conflict`) while the person has an open balance unless `override_open_balance` is set (audited).
+         * @description Erasure: the person row is pseudonymized ("Former person xxxxxxxx", no contact, notes or national id) and unlinked from the sign-in account, whose sessions and devices are deleted; ledger lines, ballots and attendance keep their rows pointing at the pseudonymized person. Blocked (409 `conflict`) while the person has open charges unless `override_open_balance` is set (audited as forced).
          * @example {
          *       "reason": "Data subject request 2026/17",
          *       "override_open_balance": false
          *     }
          */
         PersonErase: {
-            /** @description Why (a data-subject request, a court order, ...); audited. */
+            /** @description Why (a data-subject request, a court order, ...); audited (as a keyed hash, like every free text). */
             reason: string;
             /**
-             * @description Erase although the person still owes or is owed money.
+             * @description Erase although the person still has open charges.
              * @default false
              */
             override_open_balance: boolean;
@@ -22296,7 +22397,20 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.export" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        /**
+         * @description A data export that was queued. When the job is done the person's JSON and PDF bundle is stored as private files (readable by the person and the requester only, kept 7 days) and the person, and the manager who asked, get a `privacy.export_ready` notification.
+         * @example {
+         *       "request_id": "0192a3f0-1000-7000-8000-000000000009",
+         *       "status": "queued"
+         *     }
+         */
+        DataExportRequested: {
+            /** Format: uuid */
+            request_id: string;
+            /** @enum {string} */
+            status: "queued";
+        };
         /** @description Exactly one of `phone` and `email`. */
         JoinSignUpRequest: {
             /** @description E.164 or national format. A six-digit code is sent by SMS. */
@@ -22559,6 +22673,16 @@ export interface components {
             conflict: "facility_blocked" | "slot_taken" | null;
             /** @description True when create would succeed right now. */
             bookable: boolean;
+        };
+        /**
+         * @description A decision on one consent text.
+         * @example {
+         *       "version": "2026-11.1"
+         *     }
+         */
+        ConsentDecision: {
+            /** @description The version of the text decided on, as `GET .../privacy/consents` returned it; any other version answers 409 `conflict`. */
+            version: string;
         };
         /**
          * @description A unit as the booth's picker shows it; nothing about who lives there.
@@ -25135,6 +25259,36 @@ export interface operations {
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.requestDataExport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted; the export continues as a job. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportRequested"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -38749,6 +38903,74 @@ export interface operations {
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "codes.acceptConsent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it. */
+                purpose: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentDecision"];
+            };
+        };
+        responses: {
+            /** @description The text with the caller's decision. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "codes.declineConsent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the consent text (`core.privacy_notice`, `tr.consent_identity`, ...), as `GET .../privacy/consents` lists it. */
+                purpose: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentDecision"];
+            };
+        };
+        responses: {
+            /** @description The text with the caller's decision. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Consent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

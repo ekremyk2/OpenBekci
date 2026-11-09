@@ -27,6 +27,7 @@
   "access.agent_clock_skew": {"title": "Gate agent clock skew", "body": "The gate agent clock differs from the server.", "subject": "Gate agent clock skew", "sms": "{{.site}}: gate agent clock skew."},
   "access.agent_stopped": {"title": "Gate agent stopped", "body": "The gate agent at {{.site}} stopped.", "subject": "Gate agent stopped", "sms": "{{.site}}: the gate agent stopped."},
   "webhook.endpoint_failing": {"title": "Webhook endpoint failing", "body": "Deliveries to the webhook endpoint at {{.host}} keep failing. Check the endpoint and its delivery log.", "subject": "Webhook endpoint failing", "sms": "Webhook endpoint at {{.host}} keeps failing."},
+  "privacy.export_ready": {"title": "Your data export is ready", "body": "The export of your personal data is ready. Open it in Documents.", "subject": "Your data export is ready", "sms": "Your personal data export is ready in Documents."},
   "auth.sign_in_code": {"title": "Your sign-in code", "body": "Your sign-in code is {{.code}}. It expires in {{.minutes}} minutes. Do not share it.", "subject": "Your sign-in code", "sms": "{{.code}} is your sign-in code. Do not share it."},
   "invitation.sent": {"title": "You are invited", "body": "{{.inviter}} invited you to {{.site}}. Open the link to join.", "subject": "Invitation to {{.site}}", "sms": "{{.site}}: you are invited to join. {{.link}}"}
 }

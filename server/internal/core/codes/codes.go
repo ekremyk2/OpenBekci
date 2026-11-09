@@ -149,6 +149,7 @@ var sections = map[string]map[string]pair{
 		"access.agent_clock_skew":    {"Gate agent clock skew", "Geçiş ajanı saat farkı"},
 		"access.agent_stopped":       {"Gate agent stopped", "Geçiş ajanı durdu"},
 		"webhook.endpoint_failing":   {"Webhook endpoint failing", "Webhook uç noktası başarısız"},
+		"privacy.export_ready":       {"Data export ready", "Veri dışa aktarımı hazır"},
 		"auth.sign_in_code":          {"Sign-in code", "Giriş kodu"},
 		"invitation.sent":            {"Invitation", "Davetiye"},
 	},
