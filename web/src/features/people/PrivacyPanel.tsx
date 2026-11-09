@@ -7,7 +7,7 @@ import { ConfirmDialog } from '@/components/data/ConfirmDialog'
 import { Field } from '@/components/forms/FormBits'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
+import { useIdempotencyKey } from '@/lib/idempotency'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
 
@@ -49,9 +49,8 @@ export function PrivacyPanel({
     mutationFn: () =>
       runWithReauth(() =>
         draftApi.POST('/v1/orgs/{org_id}/persons/{person_id}:erase', {
-          params: { path },
+          params: { path, header: { 'Idempotency-Key': idem.key } },
           body: { reason: reason.trim(), override_open_balance: override },
-          ...withIdempotencyKey(idem.key),
         }),
       ),
     onSuccess: async () => {

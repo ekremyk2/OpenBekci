@@ -92,6 +92,23 @@ describe('person detail', () => {
     expect(screen.getByTestId('national-id')).toHaveTextContent('*******1234')
   })
 
+  it('asks for a data export, and erases only with a reason', async () => {
+    const seen: string[] = []
+    server.events.on('request:start', ({ request }) => {
+      if (request.method === 'POST') seen.push(decodeURIComponent(new URL(request.url).pathname))
+    })
+    await mountApp('/orgs/org-1/people/person-1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Export data' }))
+    await waitFor(() => expect(seen.some((p) => p.endsWith('/person-1/data-export'))).toBe(true))
+    await userEvent.click(screen.getByRole('button', { name: 'Erase person' }))
+    const dialog = await screen.findByRole('alertdialog')
+    expect(within(dialog).getByRole('button', { name: 'Erase' })).toBeDisabled()
+    await userEvent.type(within(dialog).getByLabelText('Reason'), 'Data subject request')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Erase' }))
+    await waitFor(() => expect(seen.some((p) => p.endsWith('/person-1:erase'))).toBe(true))
+    server.events.removeAllListeners()
+  })
+
   it('hides the national id panel without people.national_id', async () => {
     await mountApp('/orgs/org-1/people/person-1', { permissions: ['people.read'] })
     await screen.findByRole('heading', { name: /Ayşe Yılmaz/ })

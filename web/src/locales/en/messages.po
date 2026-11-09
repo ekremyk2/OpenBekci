@@ -275,6 +275,9 @@ msgstr "Absent"
 msgid "Abstain"
 msgstr "Abstain"
 
+msgid "Accept"
+msgstr "Accept"
+
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
 
@@ -598,6 +601,9 @@ msgstr "Announcement scheduled."
 msgid "Announcements"
 msgstr "Announcements"
 
+msgid "Answer a data-subject request: export everything held about this person, or erase them. Erasing cannot be undone; ledger entries and votes stay, under a neutral name."
+msgstr "Answer a data-subject request: export everything held about this person, or erase them. Erasing cannot be undone; ledger entries and votes stay, under a neutral name."
+
 msgid "Answered"
 msgstr "Answered"
 
@@ -710,6 +716,9 @@ msgstr "As of <0/>"
 
 msgid "Ask a manager to add the account residents should pay into."
 msgstr "Ask a manager to add the account residents should pay into."
+
+msgid "Ask for a copy of the data this organization holds about you. A JSON file and a PDF are added to your documents and you get a notification when they are ready."
+msgstr "Ask for a copy of the data this organization holds about you. A JSON file and a PDF are added to your documents and you get a notification when they are ready."
 
 msgid "Ask the resident"
 msgstr "Ask the resident"
@@ -2029,6 +2038,12 @@ msgstr "Declared transfer"
 msgid "Declared transfers"
 msgstr "Declared transfers"
 
+msgid "Decline"
+msgstr "Decline"
+
+msgid "Declined"
+msgstr "Declined"
+
 msgid "default"
 msgstr "default"
 
@@ -2605,6 +2620,19 @@ msgstr "Equal"
 msgid "Equal per unit"
 msgstr "Equal per unit"
 
+msgid "Erase"
+msgstr "Erase"
+
+#. placeholder {0}: person.display_name
+msgid "Erase {0}?"
+msgstr "Erase {0}?"
+
+msgid "Erase although they still have open charges"
+msgstr "Erase although they still have open charges"
+
+msgid "Erase person"
+msgstr "Erase person"
+
 msgid "Error"
 msgstr "Error"
 
@@ -2685,6 +2713,12 @@ msgstr "Expires on (optional)"
 
 msgid "Export and offboard"
 msgstr "Export and offboard"
+
+msgid "Export data"
+msgstr "Export data"
+
+msgid "Export my data"
+msgstr "Export my data"
 
 msgid "Export plates (CSV)"
 msgstr "Export plates (CSV)"
@@ -3630,6 +3664,9 @@ msgstr "My card payments"
 msgid "My check-in code"
 msgstr "My check-in code"
 
+msgid "My data"
+msgstr "My data"
+
 msgid "My statement"
 msgstr "My statement"
 
@@ -3673,6 +3710,9 @@ msgstr "Needs"
 
 msgid "Needs attention"
 msgstr "Needs attention"
+
+msgid "Needs your answer"
+msgstr "Needs your answer"
 
 msgid "Net to this site"
 msgstr "Net to this site"
@@ -3833,6 +3873,9 @@ msgstr "No announcements"
 
 msgid "No answer in time. Call the resident."
 msgstr "No answer in time. Call the resident."
+
+msgid "No answer yet"
+msgstr "No answer yet"
 
 msgid "No API keys yet"
 msgstr "No API keys yet"
@@ -6260,6 +6303,9 @@ msgstr "The entry stays visible as voided. You will be asked to confirm your pas
 msgid "The expiry must be after the publish time"
 msgstr "The expiry must be after the publish time"
 
+msgid "The export is being prepared. The person and you are notified when it is ready."
+msgstr "The export is being prepared. The person and you are notified when it is ready."
+
 msgid "The facility is closed at that time."
 msgstr "The facility is closed at that time."
 
@@ -6412,6 +6458,9 @@ msgstr "The payout was recorded."
 msgid "The permission was revoked."
 msgstr "The permission was revoked."
 
+msgid "The person is erased."
+msgstr "The person is erased."
+
 msgid "The person loses the access this role gave them."
 msgstr "The person loses the access this role gave them."
 
@@ -6521,8 +6570,8 @@ msgstr "The table on the right updates as you change the amount or split rule."
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 
-msgid "The texts your organization uses to tell you how your data is handled, in the language you pick."
-msgstr "The texts your organization uses to tell you how your data is handled, in the language you pick."
+msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
+msgstr "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
 
 msgid "The transfer could not be started. Please try again."
 msgstr "The transfer could not be started. Please try again."
@@ -6538,6 +6587,9 @@ msgstr "The visit must end after it starts."
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
 msgstr "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
+
+msgid "Their name, contact details, notes and national id are removed and their sign-in is closed. This cannot be undone."
+msgstr "Their name, contact details, notes and national id are removed and their sign-in is closed. This cannot be undone."
 
 msgid "Theme"
 msgstr "Theme"
@@ -6557,9 +6609,6 @@ msgstr "These columns have values that are not whole numbers: {0}. Write amounts
 
 msgid "These neighbours chose to be listed."
 msgstr "These neighbours chose to be listed."
-
-msgid "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
-msgstr "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
 
 msgid "They appear here once a resident pays by card."
 msgstr "They appear here once a resident pays by card."
@@ -7584,8 +7633,14 @@ msgstr "Your answer was saved."
 msgid "Your card was declined. Nothing was charged."
 msgstr "Your card was declined. Nothing was charged."
 
+msgid "Your choice is saved."
+msgstr "Your choice is saved."
+
 msgid "Your dashboard is on its way"
 msgstr "Your dashboard is on its way"
+
+msgid "Your export is being prepared. You will be notified when it is ready."
+msgstr "Your export is being prepared. You will be notified when it is ready."
 
 msgid "Your new API key"
 msgstr "Your new API key"

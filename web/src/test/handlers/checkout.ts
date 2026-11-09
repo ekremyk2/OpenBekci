@@ -287,6 +287,8 @@ export function addCheckout(extra: Partial<S['Checkout']> = {}): S['Checkout'] {
 }
 
 const O = '*/v1/orgs/:orgId'
+/** Decisions recorded through the consent endpoints in a test. */
+const consentState: Record<string, 'accepted' | 'declined'> = {}
 
 function clearingBody(siteId: string): S['PaymentClearing'] {
   return {
@@ -520,7 +522,12 @@ export const checkoutHandlers = [
     })
   }),
 
-  // privacy notice and consent texts per locale (codes.listConsents); read only, no accept operation
+  // privacy notice and consent texts per locale (codes.listConsents) with the caller's decisions
+  http.post(`${O}/privacy/consents/:purpose`, ({ params }) => {
+    const [purpose, verb] = String(params.purpose).split(':')
+    consentState[purpose!] = verb === 'accept' ? 'accepted' : 'declined'
+    return json({ ok: true })
+  }),
   http.get(`${O}/privacy/consents`, ({ request }) => {
     const locale = new URL(request.url).searchParams.get('locale') === 'tr' ? 'tr' : 'en'
     const tr = locale === 'tr'
@@ -528,6 +535,8 @@ export const checkoutHandlers = [
       locale,
       items: [
         {
+          required: true,
+          state: consentState['tr.privacy_notice'] ?? 'pending',
           id: 'tr.privacy_notice',
           pack: 'tr',
           version: '2026-03',
@@ -537,6 +546,8 @@ export const checkoutHandlers = [
             : '## Privacy notice\n\nYour personal data is processed to run the building management, under Law 6698 (**KVKK**).',
         },
         {
+          required: false,
+          state: consentState['tr.consent_directory'] ?? 'pending',
           id: 'tr.consent_directory',
           pack: 'tr',
           version: '2026-03',

@@ -21,6 +21,8 @@ export const ALL_PERMISSIONS = [
   'people.read',
   'people.manage',
   'people.national_id',
+  'people.export',
+  'people.erase',
   'people.move_out',
   'occupancies.read',
   'occupancies.manage',
