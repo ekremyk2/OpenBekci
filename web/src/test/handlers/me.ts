@@ -78,6 +78,13 @@ export const ALL_PERMISSIONS = [
   'access.manage',
   'access.open',
   'access.view_events',
+  // integrations (0.4)
+  'packs.read',
+  'packs.manage',
+  'apikeys.read',
+  'apikeys.manage',
+  'webhooks.read',
+  'webhooks.manage',
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */

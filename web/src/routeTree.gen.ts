@@ -57,11 +57,13 @@ import { Route as OrgsOrgIdPeoplePersonIdRouteImport } from './routes/orgs.$orgI
 import { Route as OrgsOrgIdPeopleInvitationsRouteImport } from './routes/orgs.$orgId.people.invitations'
 import { Route as OrgsOrgIdPeopleNewRouteImport } from './routes/orgs.$orgId.people.new'
 import { Route as OrgsOrgIdSettingsIndexRouteImport } from './routes/orgs.$orgId.settings.index'
+import { Route as OrgsOrgIdSettingsApiKeysRouteImport } from './routes/orgs.$orgId.settings.api-keys'
 import { Route as OrgsOrgIdSettingsAuditRouteImport } from './routes/orgs.$orgId.settings.audit'
 import { Route as OrgsOrgIdSettingsCodesRouteImport } from './routes/orgs.$orgId.settings.codes'
 import { Route as OrgsOrgIdSettingsNotificationsRouteImport } from './routes/orgs.$orgId.settings.notifications'
 import { Route as OrgsOrgIdSettingsSiteRouteImport } from './routes/orgs.$orgId.settings.site'
 import { Route as OrgsOrgIdSettingsTicketsRouteImport } from './routes/orgs.$orgId.settings.tickets'
+import { Route as OrgsOrgIdSettingsWebhooksRouteImport } from './routes/orgs.$orgId.settings.webhooks'
 import { Route as OrgsOrgIdSitesIndexRouteImport } from './routes/orgs.$orgId.sites.index'
 import { Route as OrgsOrgIdSitesNewRouteImport } from './routes/orgs.$orgId.sites.new'
 import { Route as OrgsOrgIdTicketsIndexRouteImport } from './routes/orgs.$orgId.tickets.index'
@@ -86,6 +88,8 @@ import { Route as OrgsOrgIdMoneyPaymentsNewRouteImport } from './routes/orgs.$or
 import { Route as OrgsOrgIdMoneyPlansIndexRouteImport } from './routes/orgs.$orgId.money.plans.index'
 import { Route as OrgsOrgIdMoneyPlansPlanIdRouteImport } from './routes/orgs.$orgId.money.plans.$planId'
 import { Route as OrgsOrgIdMoneyPlansNewRouteImport } from './routes/orgs.$orgId.money.plans.new'
+import { Route as OrgsOrgIdSettingsPacksIndexRouteImport } from './routes/orgs.$orgId.settings.packs.index'
+import { Route as OrgsOrgIdSettingsPacksPackIdRouteImport } from './routes/orgs.$orgId.settings.packs.$packId'
 import { Route as OrgsOrgIdSitesSiteIdIndexRouteImport } from './routes/orgs.$orgId.sites.$siteId.index'
 import { Route as OrgsOrgIdSitesSiteIdQrRouteImport } from './routes/orgs.$orgId.sites.$siteId.qr'
 
@@ -339,6 +343,12 @@ const OrgsOrgIdSettingsIndexRoute = OrgsOrgIdSettingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrgsOrgIdSettingsRoute,
 } as any)
+const OrgsOrgIdSettingsApiKeysRoute =
+  OrgsOrgIdSettingsApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
 const OrgsOrgIdSettingsAuditRoute = OrgsOrgIdSettingsAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -364,6 +374,12 @@ const OrgsOrgIdSettingsTicketsRoute =
   OrgsOrgIdSettingsTicketsRouteImport.update({
     id: '/tickets',
     path: '/tickets',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
+const OrgsOrgIdSettingsWebhooksRoute =
+  OrgsOrgIdSettingsWebhooksRouteImport.update({
+    id: '/webhooks',
+    path: '/webhooks',
     getParentRoute: () => OrgsOrgIdSettingsRoute,
   } as any)
 const OrgsOrgIdSitesIndexRoute = OrgsOrgIdSitesIndexRouteImport.update({
@@ -498,6 +514,18 @@ const OrgsOrgIdMoneyPlansNewRoute = OrgsOrgIdMoneyPlansNewRouteImport.update({
   path: '/plans/new',
   getParentRoute: () => OrgsOrgIdMoneyRoute,
 } as any)
+const OrgsOrgIdSettingsPacksIndexRoute =
+  OrgsOrgIdSettingsPacksIndexRouteImport.update({
+    id: '/packs/',
+    path: '/packs/',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
+const OrgsOrgIdSettingsPacksPackIdRoute =
+  OrgsOrgIdSettingsPacksPackIdRouteImport.update({
+    id: '/packs/$packId',
+    path: '/packs/$packId',
+    getParentRoute: () => OrgsOrgIdSettingsRoute,
+  } as any)
 const OrgsOrgIdSitesSiteIdIndexRoute =
   OrgsOrgIdSitesSiteIdIndexRouteImport.update({
     id: '/sites/$siteId/',
@@ -553,11 +581,13 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
   '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
+  '/orgs/$orgId/settings/webhooks': typeof OrgsOrgIdSettingsWebhooksRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
   '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
   '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
@@ -583,12 +613,14 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
   '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
+  '/orgs/$orgId/settings/packs/$packId': typeof OrgsOrgIdSettingsPacksPackIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
+  '/orgs/$orgId/settings/packs/': typeof OrgsOrgIdSettingsPacksIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -630,11 +662,13 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
   '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
+  '/orgs/$orgId/settings/webhooks': typeof OrgsOrgIdSettingsWebhooksRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
   '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
   '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
@@ -660,12 +694,14 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
   '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
+  '/orgs/$orgId/settings/packs/$packId': typeof OrgsOrgIdSettingsPacksPackIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/meetings/$meetingId': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans': typeof OrgsOrgIdMoneyPlansIndexRoute
+  '/orgs/$orgId/settings/packs': typeof OrgsOrgIdSettingsPacksIndexRoute
   '/orgs/$orgId/sites/$siteId': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRoutesById {
@@ -712,11 +748,13 @@ export interface FileRoutesById {
   '/orgs/$orgId/people/$personId': typeof OrgsOrgIdPeoplePersonIdRoute
   '/orgs/$orgId/people/invitations': typeof OrgsOrgIdPeopleInvitationsRoute
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
+  '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
   '/orgs/$orgId/settings/tickets': typeof OrgsOrgIdSettingsTicketsRoute
+  '/orgs/$orgId/settings/webhooks': typeof OrgsOrgIdSettingsWebhooksRoute
   '/orgs/$orgId/sites/new': typeof OrgsOrgIdSitesNewRoute
   '/orgs/$orgId/tickets/$ticketId': typeof OrgsOrgIdTicketsTicketIdRoute
   '/orgs/$orgId/tickets/new': typeof OrgsOrgIdTicketsNewRoute
@@ -742,12 +780,14 @@ export interface FileRoutesById {
   '/orgs/$orgId/money/payments/new': typeof OrgsOrgIdMoneyPaymentsNewRoute
   '/orgs/$orgId/money/plans/$planId': typeof OrgsOrgIdMoneyPlansPlanIdRoute
   '/orgs/$orgId/money/plans/new': typeof OrgsOrgIdMoneyPlansNewRoute
+  '/orgs/$orgId/settings/packs/$packId': typeof OrgsOrgIdSettingsPacksPackIdRoute
   '/orgs/$orgId/sites/$siteId/qr': typeof OrgsOrgIdSitesSiteIdQrRoute
   '/orgs/$orgId/announcements/$announcementId/': typeof OrgsOrgIdAnnouncementsAnnouncementIdIndexRoute
   '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
   '/orgs/$orgId/money/bank/': typeof OrgsOrgIdMoneyBankIndexRoute
   '/orgs/$orgId/money/payments/': typeof OrgsOrgIdMoneyPaymentsIndexRoute
   '/orgs/$orgId/money/plans/': typeof OrgsOrgIdMoneyPlansIndexRoute
+  '/orgs/$orgId/settings/packs/': typeof OrgsOrgIdSettingsPacksIndexRoute
   '/orgs/$orgId/sites/$siteId/': typeof OrgsOrgIdSitesSiteIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -795,11 +835,13 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
     | '/orgs/$orgId/settings/tickets'
+    | '/orgs/$orgId/settings/webhooks'
     | '/orgs/$orgId/sites/new'
     | '/orgs/$orgId/tickets/$ticketId'
     | '/orgs/$orgId/tickets/new'
@@ -825,12 +867,14 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/payments/new'
     | '/orgs/$orgId/money/plans/$planId'
     | '/orgs/$orgId/money/plans/new'
+    | '/orgs/$orgId/settings/packs/$packId'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
     | '/orgs/$orgId/meetings/$meetingId/'
     | '/orgs/$orgId/money/bank/'
     | '/orgs/$orgId/money/payments/'
     | '/orgs/$orgId/money/plans/'
+    | '/orgs/$orgId/settings/packs/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -872,11 +916,13 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
     | '/orgs/$orgId/settings/tickets'
+    | '/orgs/$orgId/settings/webhooks'
     | '/orgs/$orgId/sites/new'
     | '/orgs/$orgId/tickets/$ticketId'
     | '/orgs/$orgId/tickets/new'
@@ -902,12 +948,14 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/payments/new'
     | '/orgs/$orgId/money/plans/$planId'
     | '/orgs/$orgId/money/plans/new'
+    | '/orgs/$orgId/settings/packs/$packId'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId'
     | '/orgs/$orgId/meetings/$meetingId'
     | '/orgs/$orgId/money/bank'
     | '/orgs/$orgId/money/payments'
     | '/orgs/$orgId/money/plans'
+    | '/orgs/$orgId/settings/packs'
     | '/orgs/$orgId/sites/$siteId'
   id:
     | '__root__'
@@ -953,11 +1001,13 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/$personId'
     | '/orgs/$orgId/people/invitations'
     | '/orgs/$orgId/people/new'
+    | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
     | '/orgs/$orgId/settings/tickets'
+    | '/orgs/$orgId/settings/webhooks'
     | '/orgs/$orgId/sites/new'
     | '/orgs/$orgId/tickets/$ticketId'
     | '/orgs/$orgId/tickets/new'
@@ -983,12 +1033,14 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/money/payments/new'
     | '/orgs/$orgId/money/plans/$planId'
     | '/orgs/$orgId/money/plans/new'
+    | '/orgs/$orgId/settings/packs/$packId'
     | '/orgs/$orgId/sites/$siteId/qr'
     | '/orgs/$orgId/announcements/$announcementId/'
     | '/orgs/$orgId/meetings/$meetingId/'
     | '/orgs/$orgId/money/bank/'
     | '/orgs/$orgId/money/payments/'
     | '/orgs/$orgId/money/plans/'
+    | '/orgs/$orgId/settings/packs/'
     | '/orgs/$orgId/sites/$siteId/'
   fileRoutesById: FileRoutesById
 }
@@ -1343,6 +1395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdSettingsIndexRouteImport
       parentRoute: typeof OrgsOrgIdSettingsRoute
     }
+    '/orgs/$orgId/settings/api-keys': {
+      id: '/orgs/$orgId/settings/api-keys'
+      path: '/api-keys'
+      fullPath: '/orgs/$orgId/settings/api-keys'
+      preLoaderRoute: typeof OrgsOrgIdSettingsApiKeysRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
     '/orgs/$orgId/settings/audit': {
       id: '/orgs/$orgId/settings/audit'
       path: '/audit'
@@ -1376,6 +1435,13 @@ declare module '@tanstack/react-router' {
       path: '/tickets'
       fullPath: '/orgs/$orgId/settings/tickets'
       preLoaderRoute: typeof OrgsOrgIdSettingsTicketsRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/webhooks': {
+      id: '/orgs/$orgId/settings/webhooks'
+      path: '/webhooks'
+      fullPath: '/orgs/$orgId/settings/webhooks'
+      preLoaderRoute: typeof OrgsOrgIdSettingsWebhooksRouteImport
       parentRoute: typeof OrgsOrgIdSettingsRoute
     }
     '/orgs/$orgId/sites/': {
@@ -1546,6 +1612,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdMoneyPlansNewRouteImport
       parentRoute: typeof OrgsOrgIdMoneyRoute
     }
+    '/orgs/$orgId/settings/packs/': {
+      id: '/orgs/$orgId/settings/packs/'
+      path: '/packs'
+      fullPath: '/orgs/$orgId/settings/packs/'
+      preLoaderRoute: typeof OrgsOrgIdSettingsPacksIndexRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
+    '/orgs/$orgId/settings/packs/$packId': {
+      id: '/orgs/$orgId/settings/packs/$packId'
+      path: '/packs/$packId'
+      fullPath: '/orgs/$orgId/settings/packs/$packId'
+      preLoaderRoute: typeof OrgsOrgIdSettingsPacksPackIdRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
     '/orgs/$orgId/sites/$siteId/': {
       id: '/orgs/$orgId/sites/$siteId/'
       path: '/sites/$siteId'
@@ -1631,21 +1711,29 @@ const OrgsOrgIdMoneyRouteWithChildren = OrgsOrgIdMoneyRoute._addFileChildren(
 )
 
 interface OrgsOrgIdSettingsRouteChildren {
+  OrgsOrgIdSettingsApiKeysRoute: typeof OrgsOrgIdSettingsApiKeysRoute
   OrgsOrgIdSettingsAuditRoute: typeof OrgsOrgIdSettingsAuditRoute
   OrgsOrgIdSettingsCodesRoute: typeof OrgsOrgIdSettingsCodesRoute
   OrgsOrgIdSettingsNotificationsRoute: typeof OrgsOrgIdSettingsNotificationsRoute
   OrgsOrgIdSettingsSiteRoute: typeof OrgsOrgIdSettingsSiteRoute
   OrgsOrgIdSettingsTicketsRoute: typeof OrgsOrgIdSettingsTicketsRoute
+  OrgsOrgIdSettingsWebhooksRoute: typeof OrgsOrgIdSettingsWebhooksRoute
   OrgsOrgIdSettingsIndexRoute: typeof OrgsOrgIdSettingsIndexRoute
+  OrgsOrgIdSettingsPacksPackIdRoute: typeof OrgsOrgIdSettingsPacksPackIdRoute
+  OrgsOrgIdSettingsPacksIndexRoute: typeof OrgsOrgIdSettingsPacksIndexRoute
 }
 
 const OrgsOrgIdSettingsRouteChildren: OrgsOrgIdSettingsRouteChildren = {
+  OrgsOrgIdSettingsApiKeysRoute: OrgsOrgIdSettingsApiKeysRoute,
   OrgsOrgIdSettingsAuditRoute: OrgsOrgIdSettingsAuditRoute,
   OrgsOrgIdSettingsCodesRoute: OrgsOrgIdSettingsCodesRoute,
   OrgsOrgIdSettingsNotificationsRoute: OrgsOrgIdSettingsNotificationsRoute,
   OrgsOrgIdSettingsSiteRoute: OrgsOrgIdSettingsSiteRoute,
   OrgsOrgIdSettingsTicketsRoute: OrgsOrgIdSettingsTicketsRoute,
+  OrgsOrgIdSettingsWebhooksRoute: OrgsOrgIdSettingsWebhooksRoute,
   OrgsOrgIdSettingsIndexRoute: OrgsOrgIdSettingsIndexRoute,
+  OrgsOrgIdSettingsPacksPackIdRoute: OrgsOrgIdSettingsPacksPackIdRoute,
+  OrgsOrgIdSettingsPacksIndexRoute: OrgsOrgIdSettingsPacksIndexRoute,
 }
 
 const OrgsOrgIdSettingsRouteWithChildren =
