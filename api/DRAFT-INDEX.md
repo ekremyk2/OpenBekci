@@ -1,13 +1,13 @@
 # Draft API index
 
-The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut`, `people.updateMembership` and `people.listMyUnitClaims` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
+The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 452 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 453 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
 | tenancy | 48 |
-| people | 52 |
+| people | 53 |
 | me | 9 |
 | money | 138 |
 | operations | 56 |
@@ -109,12 +109,13 @@ Total: 452 new operations, plus the 15 already served (instance, auth, me) which
 | people | `people.rotateJoinCode` | `POST /v1/orgs/{org_id}/sites/{site_id}/join-code:rotate` | 0.1 | `claims.decide` | optional | served |
 | people | `people.getJoinInfo` | `GET /v1/join/{code}` | 0.1 | public / self | - | served |
 | people | `people.listJoinUnits` | `GET /v1/join/{code}/units` | 0.1 | public / self | - | served |
+| people | `people.joinSignUp` | `POST /v1/join/{code}:sign-up` | 0.1 | public / self | optional | served |
 | people | `people.createUnitClaim` | `POST /v1/join/{code}/claims` | 0.1 | public / self | optional | served |
 | people | `people.listUnitClaims` | `GET /v1/orgs/{org_id}/unit-claims` | 0.1 | `claims.decide` | - | served |
 | people | `people.getUnitClaim` | `GET /v1/orgs/{org_id}/unit-claims/{claim_id}` | 0.1 | `claims.decide` | - | served |
 | people | `people.approveUnitClaim` | `POST /v1/orgs/{org_id}/unit-claims/{claim_id}:approve` | 0.1 | `claims.decide` | optional | served |
 | people | `people.rejectUnitClaim` | `POST /v1/orgs/{org_id}/unit-claims/{claim_id}:reject` | 0.1 | `claims.decide` | optional | served |
-| people | `people.listMyUnitClaims` | `GET /v1/me/unit-claims` | 0.1 | public / self | - | not yet served |
+| people | `people.listMyUnitClaims` | `GET /v1/me/unit-claims` | 0.1 | `me.read` | - | served |
 | people | `people.listDirectory` | `GET /v1/orgs/{org_id}/directory` | 0.1 | `directory.read` | - | served |
 | people | `people.listVendors` | `GET /v1/orgs/{org_id}/vendors` | 0.1 | `vendors.read` | - | served |
 | people | `people.createVendor` | `POST /v1/orgs/{org_id}/vendors` | 0.1 | `vendors.manage` | optional | served |

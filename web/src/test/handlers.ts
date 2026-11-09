@@ -5,6 +5,7 @@ import { tenancyHandlers } from './handlers/tenancy'
 import { operationsHandlers } from './handlers/operations'
 import { moneyHandlers, moneyScopedHandlers } from './handlers/money'
 import { accessHandlers } from './handlers/access'
+import { integrationsHandlers } from './handlers/integrations'
 import { communityHandlers } from './handlers/community'
 import { directoryHandlers, governanceHandlers } from './handlers/governance'
 
@@ -76,6 +77,7 @@ export const handlers = [
   http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
   ...tenancyHandlers,
   ...peopleHandlers,
+  ...integrationsHandlers,
   ...operationsHandlers,
   ...moneyHandlers,
   ...governanceHandlers,

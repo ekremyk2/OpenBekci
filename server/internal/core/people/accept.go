@@ -430,14 +430,16 @@ func (s *Service) CreateClaim(ctx context.Context, code string, d Doc) (UnitClai
 		var personID uuid.UUID
 		err = tx.QueryRow(ctx, `SELECT id FROM person WHERE org_id = $1 AND user_id = $2`, orgID, p.UserID).Scan(&personID)
 		if errors.Is(err, pgx.ErrNoRows) {
-			var email, phone *string
-			if err := tx.QueryRow(ctx, `SELECT email::text, phone FROM "user" WHERE id = $1`, p.UserID).Scan(&email, &phone); err != nil {
+			var email, phone, signedUpAs *string
+			if err := tx.QueryRow(ctx, `SELECT email::text, phone, display_name FROM "user" WHERE id = $1`, p.UserID).Scan(&email, &phone, &signedUpAs); err != nil {
 				return err
 			}
 			dn := ""
 			switch {
 			case name != nil && strings.TrimSpace(*name) != "":
 				dn = strings.TrimSpace(*name)
+			case signedUpAs != nil:
+				dn = *signedUpAs
 			case email != nil:
 				dn = *email
 			case phone != nil:

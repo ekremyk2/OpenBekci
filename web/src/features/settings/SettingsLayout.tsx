@@ -20,6 +20,17 @@ export function SettingsLayout() {
       show: can('notifications.manage'),
     },
     { to: '/orgs/$orgId/settings/audit', label: t`Audit log`, show: can('audit.read') },
+    { to: '/orgs/$orgId/settings/packs', label: t`Packs`, show: can('packs.read') },
+    {
+      to: '/orgs/$orgId/settings/api-keys',
+      label: t`API keys`,
+      show: can('apikeys.read') || can('apikeys.manage'),
+    },
+    {
+      to: '/orgs/$orgId/settings/webhooks',
+      label: t`Webhooks`,
+      show: can('webhooks.read') || can('webhooks.manage'),
+    },
     { to: '/orgs/$orgId/settings/codes', label: t`Codes`, show: DEBUG && can('codes.read') },
   ] as const
   return (

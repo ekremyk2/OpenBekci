@@ -209,6 +209,9 @@ func (s *Service) OTPSignIn(ctx context.Context, phoneRaw, code string, m Meta) 
 	}); err != nil {
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
 	}
+	if u, err = s.activatePending(ctx, u); err != nil {
+		return User{}, err
+	}
 	if u.Status != "active" {
 		return User{}, errInvalidGrant()
 	}
@@ -295,6 +298,9 @@ func (s *Service) MagicLinkSignIn(ctx context.Context, token string, m Meta) (Us
 		return err
 	}); err != nil {
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
+	}
+	if u, err = s.activatePending(ctx, u); err != nil {
+		return User{}, err
 	}
 	if u.Status != "active" {
 		return User{}, errInvalidGrant()

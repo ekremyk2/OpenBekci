@@ -93,6 +93,8 @@ var authzMatrixRows = map[string]mrow{
 	"me.createWebLoginLink":       {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 201, build: fixed("POST", "/v1/me/web-login-link", `{}`)},
 	"auth.deleteSession":          {status: 204, build: fixed("DELETE", "/v1/auth/session", "")},
 	"auth.reauth":                 {status: 422, build: fixed("POST", "/v1/auth/reauth", `{}`)},
+	"people.listMyUnitClaims":     {perms: []authz.Permission{identity.PermMeRead}, status: 200, build: mget("/v1/me/unit-claims")},
+	"people.joinSignUp":           {status: 404, build: fixed("POST", "/v1/join/not-a-code:sign-up", `{"phone":"+905321110055"}`)},
 	"auth.requestReauthEmailCode": {status: 503 /* no mailer in the matrix environment */, build: fixed("POST", "/v1/auth/reauth/email-code", `{}`)},
 	"auth.changePassword":         {status: 422, build: fixed("POST", "/v1/auth/password", `{}`)},
 

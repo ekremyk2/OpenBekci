@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
+import { PackDefaultBadge, packDefaultEntries } from '@/features/packs/PackDefaultBadge'
 import { siteQueries } from './queries'
 
 /* ───────────────────────────── settings ───────────────────────────── */
@@ -157,7 +158,43 @@ function SettingsForm({
           ) : null}
         </div>
       ) : null}
+      <PackDefaultsList settings={settings} />
     </form>
+  )
+}
+
+/** Settings a pack's presets filled in that this site has not changed since (plan 04 §3.7). */
+function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
+  const entries = packDefaultEntries(settings)
+  if (entries.length === 0) return null
+  return (
+    <section
+      aria-labelledby="pack-defaults-title"
+      className="flex flex-col gap-2 rounded-md border p-3"
+    >
+      <h3 id="pack-defaults-title" className="text-sm font-semibold">
+        <Trans>Values from a pack</Trans>
+      </h3>
+      <p className="text-xs text-muted-foreground">
+        <Trans>
+          A pack filled these in. Change one in its own settings and it becomes this site&apos;s
+          own.
+        </Trans>
+      </p>
+      <ul className="divide-y text-sm">
+        {entries.map(([key, entry]) => (
+          <li key={key} className="flex flex-wrap items-center justify-between gap-2 py-2">
+            <span className="font-medium">{key}</span>
+            <span className="flex items-center gap-2">
+              <code className="rounded bg-muted px-1.5 py-0.5 text-xs" dir="ltr">
+                {JSON.stringify(entry.value)}
+              </code>
+              <PackDefaultBadge pack={entry.pack} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
