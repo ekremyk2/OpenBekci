@@ -1671,8 +1671,7 @@ schemas:
         description: The account's display name; an empty string clears it.
       locale:
         type: string
-        maxLength: 35
-        description: BCP 47 language tag, for example `tr` or `en`.
+        description: One of the locales the server has texts for, `tr` or `en`.
   ContactChangeCreate:
     type: object
     required:

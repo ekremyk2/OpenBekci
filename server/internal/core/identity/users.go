@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -299,7 +297,8 @@ type ProfileUpdate struct {
 	Locale      *string
 }
 
-var localeRE = regexp.MustCompile(`^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$`)
+// supportedLocale reports whether l is a locale the server has texts for (the ones sign-up accepts).
+func supportedLocale(l string) bool { return l == "tr" || l == "en" }
 
 // UpdateProfile changes the display name and locale of the account (me.updateProfile).
 // version is the If-Match value: a stale one answers 409 version_conflict. An empty
@@ -308,15 +307,16 @@ func (s *Service) UpdateProfile(ctx context.Context, userID uuid.UUID, version i
 	var fields []problem.Field
 	var name *string
 	if in.DisplayName != nil {
-		n := strings.TrimSpace(*in.DisplayName)
+		// the same plain-text rules as the sign-up name: NFC, no control, format or private-use characters
+		n, ok := cleanName(*in.DisplayName)
 		switch {
-		case utf8.RuneCountInString(n) > 200:
-			fields = append(fields, problem.Field{Field: "display_name", Code: "too_long"})
+		case !ok:
+			fields = append(fields, problem.Field{Field: "display_name", Code: "invalid_value", Params: map[string]any{"max": maxSignUpName}})
 		case n != "":
 			name = &n
 		}
 	}
-	if in.Locale != nil && (len(*in.Locale) > 35 || !localeRE.MatchString(*in.Locale)) {
+	if in.Locale != nil && !supportedLocale(*in.Locale) {
 		fields = append(fields, problem.Field{Field: "locale", Code: "invalid_value"})
 	}
 	if len(fields) > 0 {
