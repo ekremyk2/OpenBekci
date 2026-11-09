@@ -64,9 +64,21 @@ func newOps(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) (*opsServ
 		return nil, err
 	}
 	late := &lateNotifier{log: log}
+	ncfg := notifications.Config{Mail: mailer, SMS: gw, Log: log, BaseURL: cfg.BaseURL}
+	if len(cfg.EncryptionKey) > 0 {
+		dev, err := newDevices(cfg, d)
+		if err != nil {
+			return nil, err
+		}
+		sender, err := newPushSender(cfg, log)
+		if err != nil {
+			return nil, err
+		}
+		ncfg.Push, ncfg.Devices, ncfg.InstanceID = sender, dev, instanceIDFunc(d)
+	}
 	return &opsServices{
 		late:          late,
-		notifications: notifications.NewService(d, notifications.Config{Mail: mailer, SMS: gw, Log: log, BaseURL: cfg.BaseURL}),
+		notifications: notifications.NewService(d, ncfg),
 		tickets:       tickets.NewService(d, fs, late),
 		announcements: announcements.NewService(d, fs, late, announcements.Config{SMS: gw != nil, Mail: mailer != nil}),
 		documents:     documents.NewService(d, fs),

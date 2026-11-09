@@ -2808,6 +2808,9 @@ msgstr "Kişiye bir gerekçe yazın"
 msgid "Go home"
 msgstr "Ana sayfaya git"
 
+msgid "Go to sign in"
+msgstr "Girişe git"
+
 msgid "Governance sections"
 msgstr "Yönetişim bölümleri"
 
@@ -6046,6 +6049,9 @@ msgstr "Yasal süreler sağlanmıyor."
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr "Satırlar toplamla tutmuyor. Bu planı kaydetmeyin."
 
+msgid "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
+msgstr "Bağlantı daha önce kullanıldı, süresi doldu veya uygulamadan çıkış yapıldı. Uygulamadan yeniden açın ya da buradan giriş yapın."
+
 msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
 msgstr "Liste araç ve ziyaretçilerden türetilir. Burada yalnızca etiket ve PIN oluşturulur ve iptal edilir."
 
@@ -6290,6 +6296,9 @@ msgstr "Bu kapı kapalı."
 
 msgid "This is the only time the secret is shown. It cannot be read back later."
 msgstr "Gizli anahtar yalnızca bu kez gösterilir. Sonradan geri okunamaz."
+
+msgid "This link no longer works"
+msgstr "Bu bağlantı artık çalışmıyor"
 
 msgid "This number is not valid. Check the digits."
 msgstr "Bu numara geçerli değil. Rakamları kontrol edin."

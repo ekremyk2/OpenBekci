@@ -149,6 +149,10 @@ func (s *Service) RevokeSession(ctx context.Context, userID, familyID uuid.UUID)
 			return err
 		}
 		n = tag.RowsAffected()
+		// signing a session out unregisters the devices it registered (mobile plan 5.2)
+		if _, err := tx.Exec(ctx, `DELETE FROM device WHERE user_id = $1 AND session_family_id = $2`, userID, familyID); err != nil {
+			return err
+		}
 		if n == 0 {
 			return nil
 		}
@@ -164,8 +168,15 @@ func (s *Service) RevokeSession(ctx context.Context, userID, familyID uuid.UUID)
 func (s *Service) RevokeAllSessions(ctx context.Context, userID uuid.UUID) error {
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 		tag, err := tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL`, userID, s.now())
-		if err != nil || tag.RowsAffected() == 0 {
+		if err != nil {
 			return err
+		}
+		// every device of the user goes with the sessions
+		if _, err := tx.Exec(ctx, `DELETE FROM device WHERE user_id = $1`, userID); err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 0 {
+			return nil
 		}
 		return audit.Record(ctx, tx, audit.Event{Action: "session.revoke_all", TargetType: "user", TargetID: userID})
 	})
@@ -332,6 +343,11 @@ func (s *Service) Prune(ctx context.Context) (int64, error) {
 			// sealed grace blobs are useless after their 30 s; erase stale ones
 			{`UPDATE session SET grace_blob = NULL, grace_until = NULL WHERE grace_blob IS NOT NULL AND grace_until < $1`, now},
 			{`DELETE FROM delivery_log WHERE at < $1`, now.Add(-90 * 24 * time.Hour)},
+			// web-login links live minutes; a spent or expired one is kept a day for diagnosis
+			{`DELETE FROM web_login_link WHERE COALESCE(consumed_at, expires_at) < $1`, now.Add(-24 * time.Hour)},
+			// a device whose registering session is gone (expired or revoked) is unregistered
+			{`DELETE FROM device d WHERE d.session_family_id IS NOT NULL AND NOT EXISTS (
+				SELECT 1 FROM session s WHERE s.family_id = d.session_family_id AND s.revoked_at IS NULL AND s.expires_at > $1)`, now},
 		} {
 			tag, err := tx.Exec(ctx, q.sql, q.arg)
 			if err != nil {

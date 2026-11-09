@@ -2808,6 +2808,9 @@ msgstr "Give the person a reason"
 msgid "Go home"
 msgstr "Go home"
 
+msgid "Go to sign in"
+msgstr "Go to sign in"
+
 msgid "Governance sections"
 msgstr "Governance sections"
 
@@ -6046,6 +6049,9 @@ msgstr "The legal timing is not met."
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr "The lines do not add up to the total. Do not save this plan."
 
+msgid "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
+msgstr "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
+
 msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
 msgstr "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
 
@@ -6290,6 +6296,9 @@ msgstr "This gate is switched off."
 
 msgid "This is the only time the secret is shown. It cannot be read back later."
 msgstr "This is the only time the secret is shown. It cannot be read back later."
+
+msgid "This link no longer works"
+msgstr "This link no longer works"
 
 msgid "This number is not valid. Check the digits."
 msgstr "This number is not valid. Check the digits."

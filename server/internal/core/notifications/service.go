@@ -17,6 +17,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/opsx"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
+	"github.com/openbekci/openbekci/server/internal/platform/push"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -36,6 +37,13 @@ type Config struct {
 	// BaseURL is the public address of the web app; a notification's link is
 	// appended to emails as an absolute URL.
 	BaseURL string
+	// Push, Devices and InstanceID wire the push channel (all three or none):
+	// the sender (relay router or log driver), the registered devices and the
+	// instance id carried in every payload. Without them a push delivery is
+	// recorded as skipped (push_unavailable).
+	Push       push.Sender
+	Devices    DeviceSource
+	InstanceID InstanceIDFunc
 }
 
 // Service is the notifications module. It implements jobs.Deliverer.
@@ -153,6 +161,31 @@ func (s *Service) UnreadCount(ctx context.Context, orgID uuid.UUID, siteID *uuid
 			AND ($3::uuid IS NULL OR n.site_id = $3)`, orgID, person, siteID).Scan(&u.Unread)
 	})
 	return u, tenancy.DBProblem(err, "notifications")
+}
+
+// Get returns one of the caller's notifications: a single row through the same
+// join the list uses, cheap enough for a push handler. Another person's
+// notification is "not found".
+func (s *Service) Get(ctx context.Context, orgID, id uuid.UUID) (Notification, error) {
+	var n Notification
+	if err := authz.RequireInOrg(ctx, PermRead, orgID); err != nil {
+		return n, err
+	}
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		person, ok, err := opsx.PersonOf(ctx, tx, orgID)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			return problem.NotFound("no such notification")
+		}
+		n, err = scanNotification(tx.QueryRow(ctx, `SELECT `+notifColumns+notifFrom+` WHERE n.org_id = $1 AND n.id = $2 AND n.person_id = $3`, orgID, id, person))
+		if errors.Is(err, pgx.ErrNoRows) {
+			return problem.NotFound("no such notification")
+		}
+		return err
+	})
+	return n, tenancy.DBProblem(err, "notification")
 }
 
 // MarkRead marks one of the caller's notifications read (idempotent).

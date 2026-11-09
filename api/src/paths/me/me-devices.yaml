@@ -1,0 +1,41 @@
+post:
+  operationId: me.registerDevice
+  summary: Register or update a push device
+  description: |-
+    **Release 0.4.** Registers the caller's push token (FCM, APNs or a UnifiedPush endpoint), or updates the existing row of the same token and enables it again. The token is stored encrypted and never returned. The device is tied to the calling session: signing that session out unregisters it.
+
+    Permission: any signed-in caller (`sessions.manage_own`).
+
+    Problems: `validation_failed` (422), `rate_limited` (429).
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - sessions.manage_own
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/auth.yaml#/schemas/DeviceRegister
+  responses:
+    "200":
+      description: The device, created or updated.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/auth.yaml#/schemas/Device
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

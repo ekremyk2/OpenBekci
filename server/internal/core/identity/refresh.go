@@ -93,7 +93,10 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (Tok
 			}
 			// Reuse detection: burn the family. This commits (fn returns nil).
 			s.log.WarnContext(ctx, "refresh token reuse detected; revoking session family", "user_id", userID, "family_id", family)
-			_, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE family_id = $1 AND revoked_at IS NULL`, family, now)
+			if _, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE family_id = $1 AND revoked_at IS NULL`, family, now); err != nil {
+				return err
+			}
+			_, err = tx.Exec(ctx, `DELETE FROM device WHERE session_family_id = $1`, family)
 			return err
 		}
 		if !expires.After(now) || status != "active" {

@@ -116,6 +116,9 @@ func init() {
 		// notifications
 		"operations.listNotifications": {perms: perms(notifications.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/me/notifications")},
 		"operations.getUnreadCount":    {perms: perms(notifications.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/me/notifications/unread-count")},
+		"operations.getNotification": {perms: perms(notifications.PermRead), status: 404, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, "/me/notifications/"+uuid.NewString())}
+		}},
 		"operations.markNotificationRead": {perms: perms(notifications.PermRead), status: 404, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
 			return mreq{method: "POST", path: orgPath(org, "/me/notifications/"+uuid.NewString()+":read")}
 		}},
