@@ -12,6 +12,8 @@ import (
 type Check struct {
 	Name string
 	Fn   func(ctx context.Context) error
+	// Warn makes a failure show as "warn" without making the server unready (pack Ready hooks).
+	Warn bool
 }
 
 type healthResponse struct {
@@ -35,6 +37,10 @@ func readyz(log *slog.Logger, checks []Check) http.HandlerFunc {
 		for _, c := range checks {
 			if err := c.Fn(ctx); err != nil {
 				log.WarnContext(ctx, "readiness check failed", "check", c.Name, "error", err)
+				if c.Warn {
+					resp.Checks[c.Name] = "warn"
+					continue
+				}
 				resp.Status = "unavailable"
 				resp.Checks[c.Name] = "failed"
 				continue

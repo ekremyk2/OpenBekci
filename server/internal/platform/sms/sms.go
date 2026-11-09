@@ -8,6 +8,8 @@ import (
 	"errors"
 	"log/slog"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 // Gateway sends one text message.
@@ -15,6 +17,46 @@ type Gateway interface {
 	// Send delivers text to the E.164 number `to` and returns the provider's
 	// message id (for delivery reports).
 	Send(ctx context.Context, to, text string) (providerID string, err error)
+}
+
+type orgKey struct{}
+
+// WithOrg returns ctx carrying the organization a message is sent for. Callers
+// that know the organization set it so that Routed can pick the provider the
+// organization chose; sign-in codes, which have no organization, use the
+// instance gateway.
+func WithOrg(ctx context.Context, org uuid.UUID) context.Context {
+	return context.WithValue(ctx, orgKey{}, org)
+}
+
+// OrgFrom returns the organization set by WithOrg.
+func OrgFrom(ctx context.Context) (uuid.UUID, bool) {
+	o, ok := ctx.Value(orgKey{}).(uuid.UUID)
+	return o, ok && o != uuid.Nil
+}
+
+// Picker chooses a gateway for an organization, for example one a pack
+// provides and the organization selected; false means "use the default".
+type Picker interface {
+	Pick(ctx context.Context, org uuid.UUID) (Gateway, bool)
+}
+
+// Routed is the gateway the server wires when packs exist: it sends through
+// the organization's chosen provider when the Picker names one, else through
+// Default.
+type Routed struct {
+	Default Gateway
+	Picker  Picker
+}
+
+// Send implements Gateway.
+func (r Routed) Send(ctx context.Context, to, text string) (string, error) {
+	if org, ok := OrgFrom(ctx); ok && r.Picker != nil {
+		if g, ok := r.Picker.Pick(ctx, org); ok {
+			return g.Send(ctx, to, text)
+		}
+	}
+	return r.Default.Send(ctx, to, text)
 }
 
 // Errors drivers map provider failures to, so callers can react (alert the

@@ -33,6 +33,11 @@ type Service struct {
 	db       ledger.TxRunner
 	Now      func() time.Time
 	Notifier ledger.Notifier
+	// OnRecorded and OnRefunded, when set, are called inside the transaction
+	// after a payment was recorded (manually or through a provider) or refunded
+	// through a provider; the packs module uses them to emit payment events.
+	OnRecorded func(ctx context.Context, tx pgx.Tx, p Payment) error
+	OnRefunded func(ctx context.Context, tx pgx.Tx, p Payment) error
 }
 
 // NewService returns a Service; now nil means time.Now, notifier nil drops notifications.
@@ -125,8 +130,8 @@ func loadAllocations(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, p *Payment
 		sum += amt
 	}
 	if p.Status == "confirmed" {
-		p.Allocated = money.New(sum, p.Net.Currency)
-		p.Unallocated = money.New(p.Net.Amount-sum, p.Net.Currency)
+		p.Allocated = money.New(sum, p.Gross.Currency)
+		p.Unallocated = money.New(p.Gross.Amount-sum, p.Gross.Currency)
 	}
 	return rows.Err()
 }
@@ -163,7 +168,7 @@ func (in Input) validate(site tenancy.Site) error {
 
 // settle allocates a payment to the debtor's open items (or the listed
 // charges), posts its entry and records the allocations and the receipt number.
-func (s *Service) settle(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, ch ledger.Chart, p *Payment, d billing.Debtor, manual []uuid.UUID) ([]paymentalloc.Allocation, error) {
+func (s *Service) settle(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, ch ledger.Chart, p *Payment, d billing.Debtor, manual []uuid.UUID, feeAccount uuid.UUID) ([]paymentalloc.Allocation, error) {
 	tz := ledger.Location(site.Timezone)
 	cur := ledger.Currency(site)
 	// one posting at a time per debtor, and credit the debtor already holds goes against the open charges first
@@ -185,7 +190,7 @@ func (s *Service) settle(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site t
 	if len(manual) > 0 {
 		order = paymentalloc.Manual(manual)
 	}
-	res, err := paymentalloc.Allocate(p.Net, items, order, tz)
+	res, err := paymentalloc.Allocate(p.Gross, items, order, tz) // the resident pays gross; a provider fee is booked below
 	if err != nil {
 		if errors.Is(err, paymentalloc.ErrUnknownCharge) {
 			return nil, bad("charge_ids", "not_open")
@@ -231,6 +236,16 @@ func (s *Service) settle(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site t
 		lines = append(lines,
 			ledger.Line{AccountID: p.AssetAccountID, FundID: ch.OperatingFund, Debit: res.Credit.Amount},
 			d.Line(ledger.Line{AccountID: ch.Account(ledger.SubPrepayment), FundID: ch.OperatingFund, Credit: res.Credit.Amount}, nil))
+	}
+	if p.Fee.Amount > 0 {
+		// a provider keeps its fee: expense against the clearing account, so the clearing
+		// account is left holding the net that the settlement will bring to the bank
+		if feeAccount == uuid.Nil {
+			return nil, bad("fee", "invalid_value")
+		}
+		lines = append(lines,
+			ledger.Line{AccountID: feeAccount, FundID: ch.OperatingFund, Debit: p.Fee.Amount},
+			ledger.Line{AccountID: p.AssetAccountID, FundID: ch.OperatingFund, Credit: p.Fee.Amount})
 	}
 	eid, err := ledger.PostEntry(ctx, tx, ledger.Entry{OrgID: orgID, SiteID: site.ID, EntryDate: p.ReceivedOn, Memo: "Payment", SourceType: "payment", SourceID: &p.ID, Lines: lines})
 	if err != nil {
@@ -327,7 +342,7 @@ func (s *Service) Record(ctx context.Context, orgID uuid.UUID, in Input) (Paymen
 		pid := id.New()
 		p := Payment{ID: pid, OrgID: orgID, SiteID: in.SiteID, PayerPersonID: in.PayerPersonID, Method: in.Method, ReceivedOn: in.ReceivedOn, AssetAccountID: asset, Reference: in.Reference,
 			Gross: in.Amount, Fee: money.Zero(in.Amount.Currency), Net: in.Amount, RecordedBy: ledger.Actor(ctx)}
-		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, in.Debtor, in.ChargeIDs)
+		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, in.Debtor, in.ChargeIDs, uuid.Nil)
 		if err != nil {
 			return err
 		}
@@ -344,7 +359,13 @@ func (s *Service) Record(ctx context.Context, orgID uuid.UUID, in Input) (Paymen
 			return err
 		}
 		out, err = loadPayment(ctx, tx, orgID, p.ID)
-		return err
+		if err != nil {
+			return err
+		}
+		if s.OnRecorded != nil {
+			return s.OnRecorded(ctx, tx, out)
+		}
+		return nil
 	})
 	return out, err
 }

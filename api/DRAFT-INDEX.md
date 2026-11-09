@@ -20,6 +20,7 @@ Total: 436 new operations, plus the 15 already served (instance, auth, me) which
 | dashboards | 4 |
 | codes | 1 |
 | platform | 9 |
+| packs | 4 |
 | auth | 2 |
 
 | Module | operationId | Method and path | Release | Permission | Idempotency | Status |
@@ -465,3 +466,7 @@ Total: 436 new operations, plus the 15 already served (instance, auth, me) which
 | tenancy | `tenancy.downloadSiteTransferArchive` | `GET /v1/orgs/{org_id}/site-transfers/{transfer_id}/archive` | 0.1 | `sites.export` | - | served (not in the original draft) |
 | people | `people.deleteVendor` | `DELETE /v1/orgs/{org_id}/vendors/{vendor_id}` | 0.1 | `vendors.manage` | optional | served (not in the original draft) |
 | me | `me.listHouseholdMembers` | `GET /v1/orgs/{org_id}/me/household-members` | 0.1 | `invitations.household` | - | served (not in the original draft) |
+| packs | `packs.list` | `GET /v1/orgs/{org_id}/packs` | 0.4 | `packs.read` | - | served (not in the original draft) |
+| packs | `packs.enable` | `POST /v1/orgs/{org_id}/packs/{pack_id}/enable` | 0.4 | `packs.manage` | optional | served (not in the original draft) |
+| packs | `packs.updateSettings` | `PUT /v1/orgs/{org_id}/packs/{pack_id}/settings` | 0.4 | `packs.manage` | optional | served (not in the original draft) |
+| packs | `packs.disable` | `POST /v1/orgs/{org_id}/packs/{pack_id}/disable` | 0.4 | `packs.manage` | optional | served (not in the original draft) |

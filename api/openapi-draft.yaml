@@ -39,6 +39,8 @@ tags:
     description: Site, portfolio and resident dashboards.
   - name: codes
     description: Labels for open enums and site-defined statuses.
+  - name: packs
+    description: Packs compiled into the server and their per-organization enablement and settings (release 0.4).
   - name: platform
     description: Instance operator endpoints (platform administrators).
 paths:
@@ -16839,6 +16841,203 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/packs:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: packs.list
+      summary: List the packs
+      description: |-
+        **Release 0.4.** Every pack compiled into the server with its manifest, its settings schema (JSON Schema with `x-ui`
+        and `x-secret`) and the organization's enablement and settings. Secret fields are never returned: `secrets_set` names
+        the ones that are set.
+
+        Permission: `packs.read`.
+      tags:
+        - packs
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - packs.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/packs/{pack_id}/enable:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: pack_id
+        in: path
+        required: true
+        description: Id of the pack, for example `tr`.
+        schema:
+          type: string
+    post:
+      operationId: packs.enable
+      summary: Enable a pack
+      description: |-
+        **Release 0.4.** Enable the pack for the organization with settings. The settings are validated against the pack's
+        schema and its own checks (for example a live credential test), the presets of the pack are applied to the settings
+        the organization's sites have not changed, and the pack's own setup runs. Enabling an enabled pack updates its
+        settings and re-applies presets to settings still holding a pack default. Audited; secret values are not.
+
+        Permission: `packs.manage`.
+
+        Problems: `validation_failed` (422), `not_found` (404, unknown pack), `pack_error` (500).
+      tags:
+        - packs
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - packs.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackEnableRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/packs/{pack_id}/disable:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: pack_id
+        in: path
+        required: true
+        description: Id of the pack, for example `tr`.
+        schema:
+          type: string
+    post:
+      operationId: packs.disable
+      summary: Disable a pack
+      description: |-
+        **Release 0.4.** Disable the pack for the organization. Its data and settings are kept, its providers and importers
+        stop being offered, its routes answer 404, and the settings its presets filled stay as the sites' own. Disabling a
+        pack that is not enabled changes nothing. Removing the data is a separate operator command
+        (`openbekci admin packs purge`).
+
+        Permission: `packs.manage`.
+
+        Problems: `not_found` (404, unknown pack), `pack_error` (500).
+      tags:
+        - packs
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - packs.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/packs/{pack_id}/settings:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: pack_id
+        in: path
+        required: true
+        description: Id of the pack, for example `tr`.
+        schema:
+          type: string
+    put:
+      operationId: packs.updateSettings
+      summary: Update the settings of a pack
+      description: |-
+        **Release 0.4.** Replace the non-secret settings of one scope (`org`, or `site` with `site_id`). Secret fields
+        (`x-secret`) keep their stored value unless named in `values`; a `null` clears one. The result never contains secret
+        values. The pack must be enabled (`conflict`, 409, otherwise).
+
+        Permission: `packs.manage`.
+
+        Problems: `validation_failed` (422), `not_found` (404), `conflict` (409), `pack_error` (500).
+      tags:
+        - packs
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - packs.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackSettingsUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackSettings'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/platform/audit:
     get:
       operationId: platform.listAudit
@@ -24892,6 +25091,28 @@ components:
       type: object
       description: Instance policies. Empty until later phases add some.
       additionalProperties: true
+    InstancePack:
+      type: object
+      required:
+        - id
+        - version
+        - min_sdk
+        - countries
+        - enabled
+      properties:
+        id:
+          type: string
+        version:
+          type: string
+        min_sdk:
+          type: string
+        countries:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+          description: Enabled for at least one organization of the instance.
     Instance:
       description: Authenticated twin of the discovery document, with policies.
       allOf:
@@ -24899,9 +25120,15 @@ components:
         - type: object
           required:
             - policies
+            - pack_details
           properties:
             policies:
               $ref: '#/components/schemas/InstancePolicies'
+            pack_details:
+              type: array
+              description: The packs compiled into this server (`packs` lists the ones enabled for at least one organization).
+              items:
+                $ref: '#/components/schemas/InstancePack'
     AuthUser:
       type: object
       description: The signed-in account (instance-wide, not per organization).
@@ -25859,6 +26086,159 @@ components:
           additionalProperties: true
           nullable: true
           description: Pack-defined settings (schema-driven in 0.4).
+        pack_defaults:
+          type: object
+          description: |
+            The settings a pack filled in (presets) that still hold the value the pack wrote, by settings key, for the
+            "pack default" marker. A setting the site edited is its own and is not listed. Absent without packs.
+          additionalProperties:
+            type: object
+            required:
+              - pack
+              - value
+            properties:
+              pack:
+                type: string
+                description: Id of the pack that wrote the value.
+              value:
+                description: The value the pack wrote.
+    Pack:
+      type: object
+      description: |
+        A pack compiled into this server, with the organization's enablement and settings.
+        `settings_schemas` holds the JSON Schema 2020-12 of the `org` and `site` scope settings (extensions `x-ui` and
+        `x-secret`); only the scopes the pack has settings for are present.
+      required:
+        - id
+        - version
+        - min_sdk
+        - countries
+        - provides
+        - enabled
+        - enabled_at
+        - settings_schemas
+        - settings
+        - secrets_set
+        - sites
+      properties:
+        id:
+          type: string
+          description: The pack id, for example `tr`.
+        version:
+          type: string
+        min_sdk:
+          type: string
+          description: The oldest SDK version the pack builds against.
+        countries:
+          type: array
+          items:
+            type: string
+          description: ISO 3166-1 alpha-2 codes the pack is meant for (drives the suggested-packs hint).
+        provides:
+          type: array
+          items:
+            type: string
+          description: What the pack contributes, as `<extension point>:<id>` (open set).
+        enabled:
+          type: boolean
+        enabled_at:
+          type: string
+          format: date-time
+          nullable: true
+        settings_schemas:
+          type: object
+          additionalProperties: true
+        settings:
+          type: object
+          additionalProperties: true
+          description: The organization-scope settings without the secret fields.
+        secrets_set:
+          type: array
+          items:
+            type: string
+          description: Names of the organization-scope secret fields that are set.
+        sites:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackSiteSettings'
+          description: Site-scope settings, one entry per site that has some.
+    PackSiteSettings:
+      type: object
+      description: The site-scope settings of a pack for one site. Secret fields are never returned; `secrets_set` names the ones that are set.
+      required:
+        - site_id
+        - values
+        - secrets_set
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        values:
+          type: object
+          additionalProperties: true
+          description: The non-secret settings of the site.
+        secrets_set:
+          type: array
+          items:
+            type: string
+          description: Names of the secret fields that are set (the UI shows set / not set).
+    PackList:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pack'
+    PackEnableRequest:
+      type: object
+      description: Enable a pack for the organization. Without `settings` an enabled-before pack keeps its stored settings.
+      properties:
+        settings:
+          type: object
+          additionalProperties: true
+          description: Organization-scope settings, validated against the pack's schema. Secret fields are written once and never returned.
+    PackSettingsUpdate:
+      type: object
+      description: |
+        Replace the non-secret settings of a scope. Secret fields keep their value unless named here; a `null` secret clears it.
+      required:
+        - scope
+        - values
+      properties:
+        scope:
+          type: string
+          description: '`org` or `site`.'
+        site_id:
+          type: string
+          format: uuid
+          description: Required for the `site` scope.
+        values:
+          type: object
+          additionalProperties: true
+    PackSettings:
+      type: object
+      required:
+        - scope
+        - site_id
+        - values
+        - secrets_set
+      properties:
+        scope:
+          type: string
+          description: '`org` or `site`.'
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        values:
+          type: object
+          additionalProperties: true
+        secrets_set:
+          type: array
+          items:
+            type: string
     SiteSettingsUpdate:
       type: object
       description: Partial update of the site settings.
@@ -42944,6 +43324,8 @@ components:
         - occupancies.read
         - org.manage
         - org.read
+        - packs.manage
+        - packs.read
         - payments.declare
         - payments.record
         - people.erase

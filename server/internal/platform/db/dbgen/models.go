@@ -1243,6 +1243,28 @@ type OtpCode struct {
 	ConsumedAt pgtype.Timestamptz
 }
 
+type PackEnablement struct {
+	OrgID      pgtype.UUID
+	PackID     string
+	Enabled    bool
+	Settings   []byte
+	Secrets    []byte
+	Version    int32
+	EnabledAt  pgtype.Timestamptz
+	DisabledAt pgtype.Timestamptz
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
+}
+
+type PackEnablementSite struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PackID    string
+	Settings  []byte
+	Secrets   []byte
+	UpdatedAt pgtype.Timestamptz
+}
+
 type Payment struct {
 	ID             pgtype.UUID
 	OrgID          pgtype.UUID
@@ -1264,6 +1286,9 @@ type Payment struct {
 	JournalEntryID pgtype.UUID
 	VoidEntryID    pgtype.UUID
 	CreatedAt      pgtype.Timestamptz
+	Provider       pgtype.Text
+	ProviderTxnID  pgtype.Text
+	RefundRef      pgtype.Text
 }
 
 type PaymentAllocation struct {
@@ -1328,6 +1353,17 @@ type PollAnswer struct {
 	Answer       string
 	AnsweredBy   pgtype.UUID
 	AnsweredAt   pgtype.Timestamptz
+}
+
+type ProviderSettlement struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Provider  string
+	Ref       string
+	Net       int64
+	SettledOn pgtype.Date
+	EntryID   pgtype.UUID
+	CreatedAt pgtype.Timestamptz
 }
 
 type RecurringExpense struct {
@@ -1464,6 +1500,15 @@ type SiteNotificationConfig struct {
 	SiteID    pgtype.UUID
 	Version   int32
 	UpdatedAt pgtype.Timestamptz
+}
+
+type SitePackDefault struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Key       string
+	PackID    string
+	Value     []byte
+	AppliedAt pgtype.Timestamptz
 }
 
 type SmsUsage struct {

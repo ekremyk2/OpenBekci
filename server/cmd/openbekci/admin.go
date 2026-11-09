@@ -34,6 +34,7 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newImportSiteCmd(load),
 		newOffboardSiteCmd(load),
 		newResealCmd(load),
+		newPacksCmd(load),
 	)
 	return cmd
 }

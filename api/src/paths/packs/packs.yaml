@@ -1,0 +1,35 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: packs.list
+  summary: List the packs
+  description: |-
+    **Release 0.4.** Every pack compiled into the server with its manifest, its settings schema (JSON Schema with `x-ui`
+    and `x-secret`) and the organization's enablement and settings. Secret fields are never returned: `secrets_set` names
+    the ones that are set.
+
+    Permission: `packs.read`.
+  tags:
+    - packs
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - packs.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/packs.yaml#/schemas/PackList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

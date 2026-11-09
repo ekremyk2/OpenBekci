@@ -8,5 +8,5 @@ import (
 
 // WithTx returns a Service that runs inside the caller's transaction instead of opening its own.
 func (s *Service) WithTx(tx pgx.Tx) *Service {
-	return &Service{db: ledger.FixedTx{Tx: tx}, Now: s.Now, Notifier: s.Notifier}
+	return &Service{db: ledger.FixedTx{Tx: tx}, Now: s.Now, Notifier: s.Notifier, OnRecorded: s.OnRecorded, OnRefunded: s.OnRefunded}
 }

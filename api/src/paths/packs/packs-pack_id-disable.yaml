@@ -1,0 +1,47 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: pack_id
+    in: path
+    required: true
+    description: Id of the pack, for example `tr`.
+    schema:
+      type: string
+post:
+  operationId: packs.disable
+  summary: Disable a pack
+  description: |-
+    **Release 0.4.** Disable the pack for the organization. Its data and settings are kept, its providers and importers
+    stop being offered, its routes answer 404, and the settings its presets filled stay as the sites' own. Disabling a
+    pack that is not enabled changes nothing. Removing the data is a separate operator command
+    (`openbekci admin packs purge`).
+
+    Permission: `packs.manage`.
+
+    Problems: `not_found` (404, unknown pack), `pack_error` (500).
+  tags:
+    - packs
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - packs.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/packs.yaml#/schemas/Pack
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -37,6 +37,8 @@ tags:
     description: "Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1)."
   - name: money
     description: Ledger, billing, payments, expenses, collections, statements and reports.
+  - name: packs
+    description: Packs compiled into the server and their per-organization enablement and settings (release 0.4).
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
@@ -73,6 +75,14 @@ paths:
     $ref: ./paths/me-sessions-id.yaml
   /v1/orgs/{org_id}/audit:
     $ref: ./paths/orgs-org-id-audit.yaml
+  /v1/orgs/{org_id}/packs:
+    $ref: ./paths/packs/packs.yaml
+  /v1/orgs/{org_id}/packs/{pack_id}/enable:
+    $ref: ./paths/packs/packs-pack_id-enable.yaml
+  /v1/orgs/{org_id}/packs/{pack_id}/disable:
+    $ref: ./paths/packs/packs-pack_id-disable.yaml
+  /v1/orgs/{org_id}/packs/{pack_id}/settings:
+    $ref: ./paths/packs/packs-pack_id-settings.yaml
   /v1/platform/audit:
     $ref: ./paths/platform-audit.yaml
   /v1/orgs/{org_id}:
@@ -691,6 +701,8 @@ components:
       $ref: ./components/instance.yaml#/schemas/RelayEnrollment
     InstancePolicies:
       $ref: ./components/instance.yaml#/schemas/InstancePolicies
+    InstancePack:
+      $ref: ./components/instance.yaml#/schemas/InstancePack
     Instance:
       $ref: ./components/instance.yaml#/schemas/Instance
     AuthUser:
@@ -883,6 +895,18 @@ components:
       $ref: ./components/tenancy.yaml#/schemas/SiteOffboardRequest
     SiteSettings:
       $ref: ./components/tenancy.yaml#/schemas/SiteSettings
+    Pack:
+      $ref: ./components/packs.yaml#/schemas/Pack
+    PackSiteSettings:
+      $ref: ./components/packs.yaml#/schemas/PackSiteSettings
+    PackList:
+      $ref: ./components/packs.yaml#/schemas/PackList
+    PackEnableRequest:
+      $ref: ./components/packs.yaml#/schemas/PackEnableRequest
+    PackSettingsUpdate:
+      $ref: ./components/packs.yaml#/schemas/PackSettingsUpdate
+    PackSettings:
+      $ref: ./components/packs.yaml#/schemas/PackSettings
     SiteSettingsUpdate:
       $ref: ./components/tenancy.yaml#/schemas/SiteSettingsUpdate
     SiteTransfer:

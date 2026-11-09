@@ -1,0 +1,138 @@
+schemas:
+  PackSiteSettings:
+    type: object
+    description: The site-scope settings of a pack for one site. Secret fields are never returned; `secrets_set` names the ones that are set.
+    required:
+      - site_id
+      - values
+      - secrets_set
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      values:
+        type: object
+        additionalProperties: true
+        description: The non-secret settings of the site.
+      secrets_set:
+        type: array
+        items:
+          type: string
+        description: Names of the secret fields that are set (the UI shows set / not set).
+  Pack:
+    type: object
+    description: |
+      A pack compiled into this server, with the organization's enablement and settings.
+      `settings_schemas` holds the JSON Schema 2020-12 of the `org` and `site` scope settings (extensions `x-ui` and
+      `x-secret`); only the scopes the pack has settings for are present.
+    required:
+      - id
+      - version
+      - min_sdk
+      - countries
+      - provides
+      - enabled
+      - enabled_at
+      - settings_schemas
+      - settings
+      - secrets_set
+      - sites
+    properties:
+      id:
+        type: string
+        description: The pack id, for example `tr`.
+      version:
+        type: string
+      min_sdk:
+        type: string
+        description: The oldest SDK version the pack builds against.
+      countries:
+        type: array
+        items:
+          type: string
+        description: ISO 3166-1 alpha-2 codes the pack is meant for (drives the suggested-packs hint).
+      provides:
+        type: array
+        items:
+          type: string
+        description: What the pack contributes, as `<extension point>:<id>` (open set).
+      enabled:
+        type: boolean
+      enabled_at:
+        type: string
+        format: date-time
+        nullable: true
+      settings_schemas:
+        type: object
+        additionalProperties: true
+      settings:
+        type: object
+        additionalProperties: true
+        description: The organization-scope settings without the secret fields.
+      secrets_set:
+        type: array
+        items:
+          type: string
+        description: Names of the organization-scope secret fields that are set.
+      sites:
+        type: array
+        items:
+          $ref: '#/schemas/PackSiteSettings'
+        description: Site-scope settings, one entry per site that has some.
+  PackList:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/schemas/Pack'
+  PackEnableRequest:
+    type: object
+    description: Enable a pack for the organization. Without `settings` an enabled-before pack keeps its stored settings.
+    properties:
+      settings:
+        type: object
+        additionalProperties: true
+        description: Organization-scope settings, validated against the pack's schema. Secret fields are written once and never returned.
+  PackSettingsUpdate:
+    type: object
+    description: |
+      Replace the non-secret settings of a scope. Secret fields keep their value unless named here; a `null` secret clears it.
+    required:
+      - scope
+      - values
+    properties:
+      scope:
+        type: string
+        description: "`org` or `site`."
+      site_id:
+        type: string
+        format: uuid
+        description: Required for the `site` scope.
+      values:
+        type: object
+        additionalProperties: true
+  PackSettings:
+    type: object
+    required:
+      - scope
+      - site_id
+      - values
+      - secrets_set
+    properties:
+      scope:
+        type: string
+        description: "`org` or `site`."
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      values:
+        type: object
+        additionalProperties: true
+      secrets_set:
+        type: array
+        items:
+          type: string
