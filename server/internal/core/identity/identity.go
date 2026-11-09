@@ -12,10 +12,12 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
@@ -349,7 +351,15 @@ func instanceHost(baseURL string) (host string, plainHTTP bool) {
 // NormalizeEmail trims and lower-cases an address and rejects anything that
 // is not plausibly one address.
 func NormalizeEmail(s string) (string, bool) {
-	s = strings.ToLower(strings.TrimSpace(s))
+	// NFKC folds the compatibility forms (full-width letters and "@", ligatures)
+	// onto the plain ones, so a look-alike spelling cannot be a second contact
+	// with its own rate-limit buckets and its own pending account.
+	s = strings.ToLower(norm.NFKC.String(strings.TrimSpace(s)))
+	for _, r := range s {
+		if unicode.IsControl(r) || unicode.IsSpace(r) || unicode.Is(unicode.Cf, r) {
+			return "", false
+		}
+	}
 	at := strings.IndexByte(s, '@')
 	if at <= 0 || at == len(s)-1 || at != strings.LastIndexByte(s, '@') || len(s) > 254 || strings.ContainsAny(s, " \t\r\n,;<>") {
 		return "", false
@@ -384,6 +394,13 @@ func NormalizePhone(s, defaultCC string) (string, bool) {
 		d = d[2:]
 	default:
 		d = defaultCC + strings.TrimPrefix(d, "0")
+	}
+	// "+90 (0) 532 ..." and "0090 0532 ...": a national trunk 0 typed after the
+	// Turkish country code is the same number as without it, not another one
+	// (no Turkish number starts with 0 after the 90), so it must not get its
+	// own account and its own rate-limit buckets.
+	if strings.HasPrefix(d, "900") {
+		d = "90" + d[3:]
 	}
 	if len(d) < 7 || len(d) > 15 || d[0] == '0' {
 		return "", false

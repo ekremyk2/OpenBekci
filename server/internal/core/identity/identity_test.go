@@ -6,13 +6,16 @@ import (
 
 func TestNormalizePhone(t *testing.T) {
 	for in, want := range map[string]string{
-		"+905321234567":      "+905321234567",
-		"+90 532 123 45 67":  "+905321234567",
-		"05321234567":        "+905321234567",
-		"5321234567":         "+905321234567",
-		"0090 532-123-45-67": "+905321234567",
-		"(0532) 123 45 67":   "+905321234567",
-		"+44 20 7946 0958":   "+442079460958",
+		"+905321234567":         "+905321234567",
+		"+90 532 123 45 67":     "+905321234567",
+		"05321234567":           "+905321234567",
+		"5321234567":            "+905321234567",
+		"0090 532-123-45-67":    "+905321234567",
+		"(0532) 123 45 67":      "+905321234567",
+		"+44 20 7946 0958":      "+442079460958",
+		"+90 (0) 532 123 45 67": "+905321234567",
+		"0090 0532 123 45 67":   "+905321234567",
+		"+90.532.123.45.67":     "+905321234567",
 	} {
 		got, ok := NormalizePhone(in, "90")
 		if !ok || got != want {
@@ -30,7 +33,13 @@ func TestNormalizeEmail(t *testing.T) {
 	if got, ok := NormalizeEmail("  Ayse@Example.ORG "); !ok || got != "ayse@example.org" {
 		t.Errorf("got %q, %v", got, ok)
 	}
-	for _, bad := range []string{"", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
+	// look-alike spellings fold onto the plain address: one contact, one set of buckets
+	for _, in := range []string{"Ａyse＠Example.org", "AYSE@EXAMPLE.ORG", "ayse＠EXAMPLE.org"} {
+		if got, ok := NormalizeEmail(in); !ok || got != "ayse@example.org" {
+			t.Errorf("NormalizeEmail(%q) = %q, %v", in, got, ok)
+		}
+	}
+	for _, bad := range []string{"a​@x.org", "a\u0085@x.org", "a b@x.org", "", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
 		if _, ok := NormalizeEmail(bad); ok {
 			t.Errorf("NormalizeEmail(%q) accepted", bad)
 		}
