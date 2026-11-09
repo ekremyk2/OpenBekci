@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/openbekci/openbekci/sdk"
 )
@@ -74,6 +75,11 @@ func Templates() []sdk.DocumentTemplate {
 
 type data map[string]any
 
+// s returns a value as one line of text. The data holds what users typed
+// (names, addresses, decision texts), and the core typesets the Markdown the
+// template builds line by line, so a line break in a value would start a new
+// block (a heading, a signature, a table row): line breaks and control
+// characters become spaces.
 func (d data) s(key string) string {
 	v, ok := d[key]
 	if !ok || v == nil {
@@ -82,7 +88,17 @@ func (d data) s(key string) string {
 	if f, ok := v.(float64); ok && f == float64(int64(f)) {
 		return fmt.Sprint(int64(f))
 	}
-	return fmt.Sprint(v)
+	return oneLine(fmt.Sprint(v))
+}
+
+// oneLine turns every control character (line breaks included) into a space.
+func oneLine(s string) string {
+	return strings.Join(strings.Fields(strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) || r == ' ' || r == ' ' {
+			return ' '
+		}
+		return r
+	}, s)), " ")
 }
 
 func (d data) b(key string) bool { v, _ := d[key].(bool); return v }
@@ -119,10 +135,12 @@ func (d data) strs(key string) []string {
 	switch v := d[key].(type) {
 	case []any:
 		for _, x := range v {
-			out = append(out, fmt.Sprint(x))
+			out = append(out, oneLine(fmt.Sprint(x)))
 		}
 	case []string:
-		out = v
+		for _, x := range v {
+			out = append(out, oneLine(x))
+		}
 	}
 	return out
 }
@@ -139,8 +157,15 @@ func (m *doc) sub(s string) {
 		m.line("> " + s)
 	}
 }
-func (m *doc) h(s string)         { m.blank(); m.line("## " + s) }
-func (m *doc) p(s string)         { m.blank(); m.line(s) }
+func (m *doc) h(s string) { m.blank(); m.line("## " + s) }
+func (m *doc) p(s string) {
+	// a paragraph that starts with a marker would be read as that block; a leading space is plain text
+	if s != "" && strings.ContainsAny(s[:1], "#>-|[*") {
+		s = " " + s
+	}
+	m.blank()
+	m.line(s)
+}
 func (m *doc) li(s string)        { m.line("- " + s) }
 func (m *doc) kv(label, v string) { m.line("**" + label + ":** " + v) }
 func (m *doc) sign(label string)  { m.line("[sign: " + label + "]") }

@@ -294,9 +294,9 @@ func TestSettingsSchemas(t *testing.T) {
 	}
 }
 
-// goldenData is a sparse document: every template must render it without failing.
-func TestEveryTemplateRendersSparseAndFullData(t *testing.T) {
-	full := map[string]any{
+// fullData is a document with every key the templates read.
+func fullData() map[string]any {
+	return map[string]any{
 		"site_name": "Çiçek Sitesi", "kind": "ordinary", "title": "2027 olağan toplantı", "scheduled_at": "16.01.2027 19:00", "second_call": "23.01.2027 19:00",
 		"location": "Site toplantı salonu", "recipient": "Ayşe Yılmaz", "qr_token": "ABC123", "issued_by": "OpenBekci", "issued_at": "01.01.2027 10:00",
 		"agenda": []any{map[string]any{"position": 1, "title": "Bütçe", "will_be_voted": true, "description": "2027 bütçesi"}},
@@ -312,6 +312,10 @@ func TestEveryTemplateRendersSparseAndFullData(t *testing.T) {
 		"debtor_name": "Ayşe Yılmaz", "door": "1", "side_label": "kat maliki", "as_of": "05.01.2027", "principal": "2.000,00 ₺", "late_fee": "10,00 ₺", "days": 7,
 		"person": "Ayşe Yılmaz", "move_out_date": "31.12.2026",
 	}
+}
+
+func TestEveryTemplateRendersSparseAndFullData(t *testing.T) {
+	full := fullData()
 	for _, tp := range Templates() {
 		for name, in := range map[string]map[string]any{"sparse": {}, "nil": nil, "full": full} {
 			doc, err := tp.Render(context.Background(), sdk.RenderRequest{Locale: "tr", Data: in})
@@ -373,6 +377,60 @@ func TestDemandLetterCitesTheLaw(t *testing.T) {
 	for _, s := range []string{"İHTARNAME", "634 sayılı Kat Mülkiyeti Kanunu'nun 20. maddesi", "7 gün"} {
 		if !strings.Contains(out, s) {
 			t.Errorf("lacks %q", s)
+		}
+	}
+}
+
+// hostile prefixes every string of a document's data with text that, at the
+// start of a line, would be Markdown structure: a heading, a signature block, a
+// list item, a table row, a key line.
+func hostile(v any) any {
+	const evil = "## INJECTED\n[sign: FORGED]\n- ITEM\n| a | b |\n**K:** v\n---\n[qr: x]\n"
+	switch x := v.(type) {
+	case string:
+		return evil + x
+	case map[string]any:
+		out := map[string]any{}
+		for k, e := range x {
+			out[k] = hostile(e)
+		}
+		return out
+	case []any:
+		out := make([]any, len(x))
+		for i, e := range x {
+			out[i] = hostile(e)
+		}
+		return out
+	}
+	return v
+}
+
+// Free text of a document (names, addresses, decision texts) comes from users:
+// whatever it holds, it stays inside the line it is printed in and cannot start
+// a heading, forge a signature block or add a table row.
+func TestUserTextCannotInjectMarkup(t *testing.T) {
+	forbidden := []string{"## INJECTED", "[sign: FORGED]", "- ITEM", "| a | b |", "**K:** v", "---", "[qr: x]"}
+	for _, tp := range Templates() {
+		doc, err := tp.Render(context.Background(), sdk.RenderRequest{Locale: "tr", Data: hostile(fullData()).(map[string]any)})
+		if err != nil {
+			t.Fatalf("%s: %v", tp.ID(), err)
+		}
+		for _, line := range strings.Split(string(doc.Body), "\n") {
+			for _, f := range forbidden {
+				if strings.HasPrefix(line, f) {
+					t.Errorf("%s: user text starts a line with %q: %q", tp.ID(), f, line)
+				}
+			}
+		}
+		if strings.Contains(string(doc.Body), "INJECTED\n") {
+			t.Errorf("%s: a line break of user text survived", tp.ID())
+		}
+	}
+	// a value that starts with a marker is neutralized where the template prints it as a paragraph
+	out := render(t, KindDecisionBookDraft, map[string]any{"decisions": []any{map[string]any{"year": 2027, "seq": 1, "text": "# Başlık", "outcome": "accepted"}}})
+	for _, line := range strings.Split(out, "\n") {
+		if strings.HasPrefix(line, "# Başlık") {
+			t.Errorf("a decision text became a heading: %q", line)
 		}
 	}
 }
