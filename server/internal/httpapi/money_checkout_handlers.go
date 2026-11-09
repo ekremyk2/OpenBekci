@@ -136,12 +136,12 @@ func (s *apiServer) MoneyListPaymentSettlements(ctx context.Context, req gen.Mon
 		return nil, err
 	}
 	limit := 50
-	if req.Params.Limit != nil && int(*req.Params.Limit) > 0 {
-		limit = min(int(*req.Params.Limit), 200)
+	if req.Params.Limit != nil && *req.Params.Limit > 0 {
+		limit = min(*req.Params.Limit, 200)
 	}
 	var cursor string
 	if req.Params.Cursor != nil {
-		cursor = string(*req.Params.Cursor)
+		cursor = *req.Params.Cursor
 	}
 	after, err := decodeSettlementCursor(cursor)
 	if err != nil {
