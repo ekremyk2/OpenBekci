@@ -37,7 +37,8 @@ for (const role of ROLES) {
     ]
     if (role === 'resident')
       expect(labels.map((l) => l.trim())).toEqual(['Home', 'Money', ...portal.slice(1)])
-    if (role === 'household') expect(labels.map((l) => l.trim())).toEqual(portal)
+    if (role === 'household')
+      expect(labels.map((l) => l.trim())).toEqual(portal.filter((l) => l !== 'Meetings'))
     for (const label of labels) {
       await nav.getByRole('link', { name: label.trim(), exact: true }).click()
       const main = page.locator('main')

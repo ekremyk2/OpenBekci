@@ -46,6 +46,7 @@ export const ALL_PERMISSIONS = [
   'announcements.read',
   'announcements.publish',
   'documents.read',
+  'notifications.read',
   'documents.manage',
   'files.upload',
   'files.read',
@@ -138,6 +139,7 @@ const RESIDENT_PERMISSIONS = [
   'tickets.open',
   'announcements.read',
   'documents.read',
+  'notifications.read',
 ]
 /** The guard of the booth: the gate console only. */
 const GUARD_PERMISSIONS = ['gate.operate', 'access.open']
@@ -145,7 +147,12 @@ const GUARD_PERMISSIONS = ['gate.operate', 'access.open']
 /** A resident (`?mockRole=resident`) or a guard (`?mockRole=guard`), for the portal and gate views. */
 export function roleMe(role: 'resident' | 'household' | 'guard'): Me {
   const org = adminMe().organizations[0]!
-  const permissions = role === 'guard' ? GUARD_PERMISSIONS : RESIDENT_PERMISSIONS
+  const permissions =
+    role === 'guard'
+      ? GUARD_PERMISSIONS
+      : role === 'household' // a household member takes no part in assemblies
+        ? RESIDENT_PERMISSIONS.filter((p) => p !== 'meetings.read' && p !== 'polls.answer')
+        : RESIDENT_PERMISSIONS
   return {
     ...meFixture,
     organizations: [
