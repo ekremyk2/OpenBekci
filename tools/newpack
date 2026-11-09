@@ -1,0 +1,91 @@
+#!/bin/sh
+# Scaffold a new pack from packs/example (the deliberately tiny pack that
+# implements every extension point of the SDK).
+#
+#   tools/newpack <id> [module-path]
+#
+# <id> is the pack id: lower-case letters and digits, starting with a letter,
+# at most 24 characters ("tr", "de", "acme"). Everything the pack contributes is
+# prefixed with it. The module path defaults to
+# github.com/openbekci/openbekci/packs/<id>; give your own for a pack that lives
+# in another repository.
+#
+# The script copies packs/example to packs/<id>, renames the id everywhere (the
+# package, the manifest, the settings keys acme_*, the tables pack_acme_*, the
+# template and job ids), sets the module path, and adds the module to go.work.
+# Then it tells you what is left to do. It never overwrites an existing pack.
+set -eu
+
+usage() {
+	echo "usage: tools/newpack <id> [module-path]" >&2
+	exit 2
+}
+
+[ $# -ge 1 ] && [ $# -le 2 ] || usage
+id=$1
+module=${2:-github.com/openbekci/openbekci/packs/$id}
+
+case $id in
+*[!a-z0-9]* | [0-9]* | "")
+	echo "newpack: the id must be lower-case letters and digits and start with a letter" >&2
+	exit 2
+	;;
+esac
+if [ ${#id} -gt 24 ]; then
+	echo "newpack: the id may have at most 24 characters" >&2
+	exit 2
+fi
+case $id in
+enablement | site | goose | core | default | sdk | example)
+	echo "newpack: $id is reserved" >&2
+	exit 2
+	;;
+esac
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+src=$root/packs/example
+dst=$root/packs/$id
+if [ ! -d "$src" ]; then
+	echo "newpack: $src not found" >&2
+	exit 1
+fi
+if [ -e "$dst" ]; then
+	echo "newpack: $dst already exists" >&2
+	exit 1
+fi
+
+# capitalized id for prose ("Example" -> "Acme")
+first=$(printf '%s' "$id" | cut -c1 | tr 'a-z' 'A-Z')
+cap=$first$(printf '%s' "$id" | cut -c2-)
+
+mkdir -p "$dst"
+(cd "$src" && find . -type f ! -name '*.test' ! -name '*.out' -print) | while IFS= read -r f; do
+	mkdir -p "$dst/$(dirname "$f")"
+	sed -e "s|github.com/openbekci/openbekci/packs/example|$module|g" \
+		-e "s|example|$id|g" \
+		-e "s|Example|$cap|g" \
+		"$src/$f" >"$dst/$f"
+done
+mv "$dst/example.go" "$dst/$id.go"
+
+# the sdk module is a sibling in this repository; a pack elsewhere requires a released version instead
+if [ "$module" != "github.com/openbekci/openbekci/packs/$id" ]; then
+	echo "newpack: $module is outside this repository: edit $dst/go.mod and replace the 'replace' line with a released sdk version" >&2
+fi
+
+if command -v go >/dev/null 2>&1 && [ -f "$root/go.work" ] && [ "$module" = "github.com/openbekci/openbekci/packs/$id" ]; then
+	(cd "$root" && go work use "./packs/$id")
+fi
+
+cat <<EOF
+Created packs/$id (module $module).
+
+Next:
+  1. Read packs/$id/$id.go: Register is the table of contents of the pack. Delete what you do not need.
+  2. Edit the manifest (version, MinSDK, countries) and the settings schema (settings keys start with ${id}_).
+  3. Add the pack to the Official slice of server/cmd/openbekci/packs.go (or to a fork's copy):
+         Official = append(Official, $id.New())
+  4. Test it: add a test next to the example's in server/internal/sdktest that runs sdktest.New with your pack
+     and, for a payment provider or a statement importer, the conformance suites.
+  5. Write docs/packs/$id/LEGAL.md if the pack encodes law (see docs/packs/README.md).
+EOF

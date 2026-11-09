@@ -22,6 +22,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
+	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -60,7 +61,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -75,6 +76,10 @@ func MountAPI(r chi.Router, deps Deps) {
 	})
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
+	if deps.Packs != nil {
+		// webhooks and callbacks of packs: public, tenant from the path, not in the spec
+		deps.Packs.Mount(r)
+	}
 	if deps.Access != nil {
 		// the agent transport: documented in the spec, served outside the user pipeline
 		deps.Access.Mount(r)
@@ -117,6 +122,7 @@ type apiServer struct {
 	OpsDeps
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
+	packs           *packs.Host
 }
 
 var _ gen.StrictServerInterface = (*apiServer)(nil)
@@ -144,7 +150,7 @@ func (s *apiServer) InstanceGetInstance(ctx context.Context, _ gen.InstanceGetIn
 	return gen.InstanceGetInstance200JSONResponse(gen.Instance{
 		ApiBaseUrl: d.ApiBaseUrl, ApiVersions: d.ApiVersions, AuthMethods: d.AuthMethods,
 		Branding: d.Branding, InstanceId: d.InstanceId, InstanceName: d.InstanceName,
-		MinAppVersion: d.MinAppVersion, Packs: d.Packs, Push: d.Push,
+		MinAppVersion: d.MinAppVersion, PackDetails: packDetailsDTO(info.PackDetails), Packs: d.Packs, Push: d.Push,
 		RelayEnrollment: d.RelayEnrollment, SdkVersion: d.SdkVersion, ServerVersion: d.ServerVersion,
 		Policies: gen.InstancePolicies(info.Policies),
 	}), nil

@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
+	"github.com/openbekci/openbekci/server/internal/platform/sms"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -155,7 +156,7 @@ func (s *Service) deliver(ctx context.Context, orgID, invID uuid.UUID, channel s
 		if s.cfg.SMS == nil || phone == nil {
 			return "failed"
 		}
-		_, err = s.cfg.SMS.Send(ctx, *phone, body)
+		_, err = s.cfg.SMS.Send(sms.WithOrg(ctx, orgID), *phone, body)
 	case "email":
 		if s.cfg.Mail == nil || email == nil {
 			return "failed"

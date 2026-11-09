@@ -528,3 +528,35 @@ func TestIntegrationSidePoolHonoursConfiguredCap(t *testing.T) {
 		d.Close()
 	}
 }
+
+// A panic inside a transaction body (pack code runs there and the host
+// recovers it) must roll the transaction back and return its connection.
+func TestIntegrationPanicInTxReleasesConnection(t *testing.T) {
+	base := newTestDB(t)
+	ctx := context.Background()
+	cfg, err := pgxpool.ParseConfig(withDatabase(t, base.superURL, base.name, "openbekci_app", "openbekci"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg.MaxConns = 1
+	pool, err := pgxpool.NewWithConfig(ctx, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(pool.Close)
+	d := &DB{app: pool, platform: base.platform}
+	org := id.New()
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Error("the panic did not propagate")
+			}
+		}()
+		_ = d.InTenantTx(ctx, org, func(pgx.Tx) error { panic("pack bug") })
+	}()
+	short, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	if err := d.InTenantTx(short, org, func(pgx.Tx) error { return nil }); err != nil {
+		t.Fatalf("the connection of the panicked transaction was never released: %v", err)
+	}
+}

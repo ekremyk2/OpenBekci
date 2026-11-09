@@ -46,10 +46,25 @@ type TxRunner interface {
 type Service struct {
 	db         TxRunner
 	archiveKey []byte // signs site archives; see WithArchiveKey
+	siteHook   SiteHook
 }
 
 // NewService returns a Service.
 func NewService(db TxRunner) *Service { return &Service{db: db} }
+
+// SiteHook is called inside the transaction that creates a site, after the
+// site row exists. The packs module uses it to apply the presets of the
+// organization's enabled packs and to emit site.created. An error aborts the
+// site creation.
+type SiteHook interface {
+	SiteCreated(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) error
+}
+
+// WithSiteHook sets the hook called when a site is created and returns s.
+func (s *Service) WithSiteHook(h SiteHook) *Service {
+	s.siteHook = h
+	return s
+}
 
 // Org is an organization as the API shows it. The JSON tags are the audit
 // field names (see audit.Diff).

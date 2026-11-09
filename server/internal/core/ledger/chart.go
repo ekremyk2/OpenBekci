@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // Account subtypes the money modules look up.
@@ -33,7 +34,38 @@ const (
 	SubExpenseCategory     = "expense_category"
 	SubProvisionSeverance  = "provision_severance"
 	SubWithholding         = "withholding_receivable"
+	// SubClearing is a per-provider clearing account: the net of card payments until the provider settles.
+	SubClearing = "clearing"
+	// SubProviderFee is the expense account of payment provider fees.
+	SubProviderFee = "provider_fee"
 )
+
+// ProviderFeeCode is the code of the payment provider fee expense account.
+const ProviderFeeCode = "5050"
+
+// ClearingCode is the code of a provider's clearing account.
+func ClearingCode(provider string) string { return "1190." + provider }
+
+// EnsureAccount returns the id of the system account with code, creating it
+// when missing (idempotent). It is for accounts that appear after a site
+// exists, such as the clearing account of a payment provider; fund may be nil.
+func EnsureAccount(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, code, name, typ, subtype string, fund *uuid.UUID) (uuid.UUID, error) {
+	if _, err := tx.Exec(ctx, `INSERT INTO account (id, org_id, site_id, code, name, type, subtype, fund_id, is_system) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true)
+		ON CONFLICT (org_id, site_id, code) DO NOTHING`, id.New(), orgID, siteID, code, name, typ, subtype, fund); err != nil {
+		return uuid.Nil, err
+	}
+	var aid uuid.UUID
+	var gotType, gotSub string
+	if err := tx.QueryRow(ctx, `SELECT id, type, COALESCE(subtype, '') FROM account WHERE org_id = $1 AND site_id = $2 AND code = $3`, orgID, siteID, code).Scan(&aid, &gotType, &gotSub); err != nil {
+		return uuid.Nil, err
+	}
+	// the code may already belong to an account somebody created by hand: posting a
+	// provider fee or a clearing balance into it would silently misclassify the money
+	if gotType != typ || gotSub != subtype {
+		return uuid.Nil, problem.Conflict("account code " + code + " is already used by an account that is not the " + subtype + " account; rename or archive that account first")
+	}
+	return aid, nil
+}
 
 // Fund codes.
 const (

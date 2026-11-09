@@ -20,6 +20,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
+	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -45,7 +46,8 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money, rt.integrations)
+	cfg.SMSPicker = rt.pick
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money, rt.integrations, rt.packs)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -59,7 +61,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Access = rt.access
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
@@ -136,6 +138,8 @@ type runtime struct {
 	// sink that emits webhook events when the process stops.
 	integrations *integrations.Service
 	restoreSink  func()
+	packs        *packs.Host
+	pick         *lazySMSPicker
 	working      bool
 }
 
@@ -183,6 +187,8 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	d.WarnIfPlatformSuperuser(ctx, log)
 
+	pick := &lazySMSPicker{}
+	cfg.SMSPicker = pick
 	idem := idempotency.NewPG(d)
 	fs, err := newFiles(ctx, cfg, log, d)
 	if err != nil {
@@ -204,6 +210,18 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	mny := newMoney(d, ops.late, fs, ops.documents)
 	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
 	gov.SetEffects(newDecisionEffects(mny))
+	host, err := packs.New(packs.Config{DB: d, Log: log, EncryptionKey: cfg.EncryptionKey, Payments: mny.Payments, Files: fs, Notifier: ops.late}, cfg.Packs)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	if err := host.Start(ctx); err != nil {
+		d.Close()
+		return nil, fmt.Errorf("packs: %w", err)
+	}
+	host.AttachPayments(mny.Payments)
+	mny.BankImport.SetPacks(host.BankImporters())
+	pick.h.Store(host)
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
@@ -221,15 +239,17 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			comm.RegisterWorkers(w)
 			acc.Workers(w)
 			registerMoney(w)
+			host.RegisterWorkers(w)
 			integ.Workers(w)
 			identity.RegisterWorkers(w, d, log)
 		},
-		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), identity.PeriodicJobs(), periodicMoney)})
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), identity.PeriodicJobs(), periodicMoney, host.PeriodicJobs())})
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
 	ops.late.c.Store(client)
+	host.SetJobs(client)
 	gov.SetNotifier(governance.RiverNotifier{Client: client})
 	integ.SetInsert(integrations.Insert(client))
 	if withWorker {
@@ -240,7 +260,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	// every audited domain action (here, in jobs and in the worker alike) emits its webhook event in its own transaction
 	restore := audit.SetSink(integ.EmitFromAudit)
-	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, integrations: integ, restoreSink: restore, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, integrations: integ, packs: host, pick: pick, restoreSink: restore, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {
@@ -262,13 +282,21 @@ func (rt *runtime) stopJobs(log *slog.Logger) {
 }
 
 // readiness are the /readyz probes.
-func readiness(cfg Config, d *db.DB) []httpapi.Check {
-	return []httpapi.Check{
+func readiness(cfg Config, d *db.DB, host *packs.Host) []httpapi.Check {
+	checks := []httpapi.Check{
 		{Name: "database", Fn: d.PingApp},
 		{Name: "migrations", Fn: d.MigrationsCurrent},
 		{Name: "platform_role", Fn: d.CheckPlatformRole},
 		{Name: "data_dir", Fn: func(context.Context) error { return CheckDataDir(cfg.DataDir) }},
 	}
+	if host != nil {
+		checks = append(checks, httpapi.Check{Name: "pack_migrations", Fn: host.MigrationsCurrent})
+		// a pack's Ready hook is warn-only: it never makes the server unready
+		for _, rc := range host.ReadyChecks() {
+			checks = append(checks, httpapi.Check{Name: rc.Name, Fn: rc.Fn, Warn: true})
+		}
+	}
+	return checks
 }
 
 // Migrate runs a migrate subcommand (up, down or status) as the migrator role.
@@ -283,15 +311,30 @@ func Migrate(ctx context.Context, cfg Config, log *slog.Logger, action string, o
 	}
 	defer d.Close()
 
+	// the packs' migrations run after the core's, each with its own goose table
+	host, err := packs.New(packs.Config{DB: d, Log: log}, cfg.Packs)
+	if err != nil {
+		return err
+	}
+	if err := host.Start(ctx); err != nil {
+		return fmt.Errorf("packs: %w", err)
+	}
+
 	switch action {
 	case "up":
 		log.Info("applying migrations")
-		return d.MigrateUp(ctx)
+		if err := d.MigrateUp(ctx); err != nil {
+			return err
+		}
+		return host.MigrateUp(ctx)
 	case "down":
 		log.Info("rolling back one migration")
 		return d.MigrateDown(ctx)
 	case "status":
-		return d.MigrateStatus(ctx, out)
+		if err := d.MigrateStatus(ctx, out); err != nil {
+			return err
+		}
+		return host.MigrateStatus(ctx, out)
 	}
 	return fmt.Errorf("unknown migrate action %q", action)
 }

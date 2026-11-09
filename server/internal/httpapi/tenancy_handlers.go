@@ -170,7 +170,7 @@ func (s *apiServer) TenancyGetSiteSettings(ctx context.Context, req gen.TenancyG
 	if err != nil {
 		return nil, err
 	}
-	out, err := conv[gen.SiteSettings](settingsView(site.Settings, site.Version))
+	out, err := conv[gen.SiteSettings](s.settingsViewWithPacks(ctx, req.OrgId, req.SiteId, site.Settings, site.Version))
 	return gen.TenancyGetSiteSettings200JSONResponse(out), err
 }
 
@@ -195,7 +195,7 @@ func (s *apiServer) TenancyUpdateSiteSettings(ctx context.Context, req gen.Tenan
 	if err != nil {
 		return nil, err
 	}
-	out, err := conv[gen.SiteSettings](settingsView(site.Settings, site.Version))
+	out, err := conv[gen.SiteSettings](s.settingsViewWithPacks(ctx, req.OrgId, req.SiteId, site.Settings, site.Version))
 	return gen.TenancyUpdateSiteSettings200JSONResponse(out), err
 }
 

@@ -385,7 +385,18 @@ func (s *Service) CreateSite(ctx context.Context, orgID uuid.UUID, d Doc) (Site,
 		if err != nil {
 			return err
 		}
-		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.ID, Action: "site.create", TargetType: "site", TargetID: out.ID, Diff: diff})
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.ID, Action: "site.create", TargetType: "site", TargetID: out.ID, Diff: diff}); err != nil {
+			return err
+		}
+		if s.siteHook != nil {
+			if err := s.siteHook.SiteCreated(ctx, tx, orgID, out.ID); err != nil {
+				return err
+			}
+			// the hook may have filled settings
+			out, err = LoadSite(ctx, tx, orgID, out.ID, false, true)
+			return err
+		}
+		return nil
 	})
 	if err != nil {
 		return Site{}, DBProblem(err, "site")

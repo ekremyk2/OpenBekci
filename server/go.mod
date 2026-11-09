@@ -1,6 +1,6 @@
 module github.com/openbekci/openbekci/server
 
-go 1.27
+go 1.27.3
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.44.0
@@ -18,6 +18,8 @@ require (
 	github.com/oapi-codegen/nethttp-middleware v1.3.1
 	github.com/oapi-codegen/nullable v1.2.0
 	github.com/oapi-codegen/runtime v1.8.0
+	github.com/openbekci/openbekci/packs/example v0.0.0-00010101000000-000000000000
+	github.com/openbekci/openbekci/sdk v0.0.0-00010101000000-000000000000
 	github.com/pressly/goose/v3 v3.29.0
 	github.com/riverqueue/river v0.51.1
 	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.51.1
@@ -426,3 +428,7 @@ tool (
 	github.com/pressly/goose/v3/cmd/goose
 	github.com/sqlc-dev/sqlc/cmd/sqlc
 )
+
+replace github.com/openbekci/openbekci/sdk => ../sdk
+
+replace github.com/openbekci/openbekci/packs/example => ../packs/example
