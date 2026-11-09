@@ -2,14 +2,14 @@
 
 The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 449 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 457 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
 | tenancy | 48 |
 | people | 53 |
 | me | 9 |
-| money | 131 |
+| money | 138 |
 | operations | 56 |
 | audit | 4 |
 | governance | 45 |
@@ -201,6 +201,14 @@ Total: 449 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.declarePayment` | `POST /v1/orgs/{org_id}/payments:declare` | 0.1 | `payments.declare` | required | served |
 | money | `money.confirmPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:confirm` | 0.1 | `payments.record` | required | served |
 | money | `money.rejectPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:reject` | 0.1 | `payments.record` | optional | served |
+| money | `money.refundPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:refund` | 0.4 | `money.post` | required | served |
+| money | `money.createCheckout` | `POST /v1/orgs/{org_id}/checkouts` | 0.4 | `payments.checkout` | required | served |
+| money | `money.listCheckouts` | `GET /v1/orgs/{org_id}/checkouts` | 0.4 | `money.read` | - | served |
+| money | `money.getCheckout` | `GET /v1/orgs/{org_id}/checkouts/{checkout_id}` | 0.4 | `payments.checkout` | - | served |
+| money | `money.listMyCheckouts` | `GET /v1/orgs/{org_id}/me/checkouts` | 0.4 | `payments.checkout` | - | served |
+| money | `money.listPaymentSettlements` | `GET /v1/orgs/{org_id}/payment-settlements` | 0.4 | `money.read` | - | served |
+| money | `money.getPaymentClearing` | `GET /v1/orgs/{org_id}/payment-clearing` | 0.4 | `money.read` | - | served |
+| money | `money.payoutClientMoney` | `POST /v1/orgs/{org_id}/payment-clearing:payout` | 0.4 | `money.post` | required | served |
 | money | `money.listCredits` | `GET /v1/orgs/{org_id}/credits` | 0.1 | `money.read`, `statements.read_own` | - | not yet served |
 | money | `money.applyCredit` | `POST /v1/orgs/{org_id}/credits/{credit_id}:apply` | 0.1 | `payments.record` | required | not yet served |
 | money | `money.listTransfers` | `GET /v1/orgs/{org_id}/transfers` | 0.1 | `money.read` | - | served |

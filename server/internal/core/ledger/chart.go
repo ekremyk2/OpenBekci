@@ -40,6 +40,15 @@ const (
 	SubProviderFee = "provider_fee"
 )
 
+// SubClientMoney is the account that tracks money the management company holds for a site (merchant of
+// record = organization, decision M5): the net of a provider payout that arrived in the organization's
+// bank account instead of the site's. In the site's books it is a receivable from the organization; it is
+// the organization's liability to the site (client money owed per site).
+const SubClientMoney = "client_money"
+
+// ClientMoneyCode is the code of the client money account of a site.
+const ClientMoneyCode = "1195"
+
 // ProviderFeeCode is the code of the payment provider fee expense account.
 const ProviderFeeCode = "5050"
 

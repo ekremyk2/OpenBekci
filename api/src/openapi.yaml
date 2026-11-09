@@ -613,6 +613,20 @@ paths:
     $ref: './paths/money/payments-payment_id_confirm.yaml'
   /v1/orgs/{org_id}/payments/{payment_id}:reject:
     $ref: './paths/money/payments-payment_id_reject.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:refund:
+    $ref: './paths/money/payments-payment_id_refund.yaml'
+  /v1/orgs/{org_id}/checkouts:
+    $ref: './paths/money/checkouts.yaml'
+  /v1/orgs/{org_id}/checkouts/{checkout_id}:
+    $ref: './paths/money/checkouts-checkout_id.yaml'
+  /v1/orgs/{org_id}/me/checkouts:
+    $ref: './paths/money/me-checkouts.yaml'
+  /v1/orgs/{org_id}/payment-settlements:
+    $ref: './paths/money/payment-settlements.yaml'
+  /v1/orgs/{org_id}/payment-clearing:
+    $ref: './paths/money/payment-clearing.yaml'
+  /v1/orgs/{org_id}/payment-clearing:payout:
+    $ref: './paths/money/payment-clearing_payout.yaml'
   /v1/orgs/{org_id}/payments/{payment_id}/receipt:
     $ref: './paths/money/payments-payment_id-receipt.yaml'
   /v1/orgs/{org_id}/payments/{payment_id}:send-receipt:

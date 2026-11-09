@@ -54,6 +54,7 @@ func siteView(org uuid.UUID, s tenancy.Site) map[string]any {
 var settingsRenames = map[string]string{
 	"owner_financial_transparency": tenancy.SettingTransparencyToOwners,
 	"parking_storage_default":      tenancy.SettingAppurtenanceDefault,
+	"merchant_of_record":           tenancy.SettingMerchantOfRecord,
 }
 
 func settingKey(draft string) string {

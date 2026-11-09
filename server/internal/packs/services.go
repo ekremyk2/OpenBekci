@@ -445,12 +445,16 @@ func (r recorder) RecordSettlement(ctx context.Context, s sdk.ProviderSettlement
 	if err != nil {
 		return sdk.SettlementOutcome{}, err
 	}
-	entry, dup, err := svc.RecordSettlement(ledger.SystemContext(ctx, org), org, payments.SettlementInput{Provider: s.Provider, SiteID: site, Ref: s.Ref,
-		BankAccountCode: s.BankAccountCode, SettledOn: s.SettledOn, Net: toMoney(s.Net)})
+	res, err := svc.RecordProviderSettlement(ledger.SystemContext(ctx, org), org, payments.SettlementInput{Provider: s.Provider, SiteID: site, Ref: s.Ref,
+		BankAccountCode: s.BankAccountCode, SettledOn: s.SettledOn, Net: toMoney(s.Net), TxnIDs: s.ProviderTxnIDs})
 	if err != nil {
 		return sdk.SettlementOutcome{}, err
 	}
-	return sdk.SettlementOutcome{EntryID: sdk.ID(entry.String()), Duplicate: dup}, nil
+	out := sdk.SettlementOutcome{Duplicate: res.Duplicate}
+	if len(res.Postings) > 0 {
+		out.EntryID = sdk.ID(res.Postings[0].EntryID.String())
+	}
+	return out, nil
 }
 
 // ---- notifier

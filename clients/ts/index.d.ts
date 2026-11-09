@@ -8601,6 +8601,226 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/payments/{payment_id}:refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund a card payment
+         * @description **Release 0.4.** Refunds a payment made through a payment provider in full: the provider refunds first, then the
+         *     reversal is posted (gross back out of the clearing account, the fee reversed, the allocations released) and the
+         *     payment becomes `refunded`; its checkout becomes `refunded`. Partial refunds are not supported by the ledger.
+         *     A payment already refunded is returned unchanged. Re-authentication is not required (backend plan section 16 lists
+         *     it for other operations); the refund is audited under the manager's name.
+         *
+         *     `If-Match` is required: send the payment's `version` (a stale one is 409 `version_conflict`).
+         *
+         *     Permission: `money.post`.
+         *
+         *     Problems: `conflict` (409, not a provider payment or not confirmed), `version_conflict` (409),
+         *     `idempotency_mismatch` (422), `pack_error` (the provider refused or failed).
+         */
+        post: operations["money.refundPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/checkouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the checkouts of a site
+         * @description **Release 0.4.** The card checkouts of a site for its managers, oldest first.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listCheckouts"];
+        put?: never;
+        /**
+         * Start a card checkout
+         * @description **Release 0.4.** Starts a hosted card checkout for one side of a unit, for selected charges or an amount, and
+         *     returns the provider's `checkout_url`, the `return_url` and the `checkout_id` to poll (`money.getCheckout`).
+         *
+         *     A resident may pay only a side their current occupancy reaches: an owner both sides, a tenant the tenant side, a
+         *     household member their own side when `may_see_money` was granted (otherwise 403). A manager of the site may start
+         *     one for any side. The provider is the one of the enabled packs (the setting `payments.provider` picks one when
+         *     several are enabled); whose account it uses follows `payments.merchant_of_record`. Card data never passes through
+         *     the server: the payer enters it on the provider's page.
+         *
+         *     Permission: `payments.checkout`.
+         *
+         *     Problems: `payment_provider_unavailable` (409, no provider is enabled for the site), `validation_failed` (422,
+         *     `charge_ids` not open, nothing to pay), `idempotency_mismatch` (422), `pack_error` (the provider failed).
+         */
+        post: operations["money.createCheckout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/checkouts/{checkout_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the checkout. */
+                checkout_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Poll a checkout
+         * @description **Release 0.4.** The status poll of a checkout: `pending`, `paid`, `failed`, `expired` or `refunded`, and the
+         *     resulting `payment_id` once paid. A client opens `checkout_url`, and after the provider returns the payer to
+         *     `return_url` polls this until the status is no longer `pending` (the receipt arrives as a notification).
+         *
+         *     A pending checkout is reconciled with the provider (at most every few seconds), so a payment whose webhook was
+         *     lost is still found, and a pending checkout past `expires_at` is expired on the spot. Only the person who started
+         *     the checkout, a manager of the site and a resident who reaches the unit side can read it (404 otherwise).
+         *
+         *     Permission: `payments.checkout`.
+         */
+        get: operations["money.getCheckout"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/checkouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List my checkouts
+         * @description **Release 0.4.** The card checkouts the caller started in this organization, oldest first.
+         *
+         *     Permission: `payments.checkout`.
+         */
+        get: operations["money.listMyCheckouts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payment-settlements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List provider settlements
+         * @description **Release 0.4.** The payouts of the payment providers posted for a site, newest first. A periodic job asks each
+         *     enabled provider for its payouts and posts them: with the site as merchant of record, bank against the provider's
+         *     clearing account; with the organization as merchant of record, each site's share against its client money account.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listPaymentSettlements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payment-clearing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Clearing balance per provider
+         * @description **Release 0.4.** What a site has not yet received from each of its payment providers (the balance of the provider's
+         *     clearing account: card payments received minus payouts posted), the effective merchant of record of the site and,
+         *     when the organization collects centrally, the client money it holds for the site.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getPaymentClearing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payment-clearing:payout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a client money payout to a site
+         * @description **Release 0.4.** Records that the organization, as merchant of record, paid client money out to a site's bank
+         *     account: debit the site's bank account (`1100`), credit its client money account (`1195`), so the balance the
+         *     organization owes the site (`client_money_owed` of `money.getPaymentClearing`) goes down. The amount cannot
+         *     exceed that balance. `reference` (the bank transfer reference) is kept in the entry's memo and the audit trail.
+         *
+         *     Permission: `money.post` at the site.
+         *
+         *     Problems: `validation_failed` (422, `amount` not positive, in another currency or above the balance, `reference`
+         *     missing, `paid_on` in the future), `locked_period` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["money.payoutClientMoney"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/payments/{payment_id}/receipt": {
         parameters: {
             query?: never;
@@ -9332,7 +9552,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired" | "api_key_revoked" | "api_key_expired";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired" | "api_key_revoked" | "api_key_expired" | "payment_provider_unavailable" | "merchant_change_blocked";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -9779,7 +9999,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -10987,6 +11207,13 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "suspended" | "archived";
+            /**
+             * @description Organization settings, merged key by key on update (a null value removes the key). Core keys:
+             *     `payments.merchant_of_record` (`site`, the default: each site collects card payments into its own provider
+             *     account; or `organization`: the management company collects centrally and holds the net as client money owed per
+             *     site; a site may override it, see `tenancy.updateSiteSettings`, decision M5) and `payments.provider` (the id of
+             *     the payment provider card checkout uses when several are enabled).
+             */
             settings: {
                 [key: string]: unknown;
             };
@@ -11003,6 +11230,7 @@ export interface components {
             default_locale?: string;
             timezone?: string;
             country_code?: string;
+            /** @description Merged key by key into the stored settings; a null value removes the key. See `Org.settings` for the `payments.*` keys. */
             settings?: {
                 [key: string]: unknown;
             };
@@ -11287,6 +11515,26 @@ export interface components {
             extra: {
                 [key: string]: unknown;
             } | null;
+            /** @description Card payment capabilities and the merchant of record of the site (release 0.4). */
+            payments?: {
+                /** @description Whether "Pay by card" exists for the site; clients show it only when `available` is true. */
+                card: {
+                    /** @description A payment provider of an enabled pack is available for the site. */
+                    available: boolean;
+                    /** @description Id of the provider checkout would use. */
+                    provider: string | null;
+                };
+                /**
+                 * @description The effective merchant of record (the site override, else the organization setting, else `site`). Open enum.
+                 * @enum {string}
+                 */
+                merchant_of_record: "site" | "organization";
+                /**
+                 * @description The site's own override of the organization setting, null when it follows the organization. Open enum.
+                 * @enum {string|null}
+                 */
+                merchant_of_record_override: "site" | "organization" | null;
+            };
             /**
              * @description The settings a pack filled in (presets) that still hold the value the pack wrote, by settings key, for the
              *     "pack default" marker. A setting the site edited is its own and is not listed. Absent without packs.
@@ -11411,6 +11659,13 @@ export interface components {
             extra?: {
                 [key: string]: unknown;
             } | null;
+            /**
+             * @description Per-site override of the organization setting `payments.merchant_of_record` (decision M5): `site` (the site collects
+             *     into its own provider account) or `organization` (the management company collects centrally and holds the net as
+             *     client money). null removes the override. Changing it needs `org.manage`, not just `sites.manage`.
+             * @enum {string|null}
+             */
+            merchant_of_record?: "site" | "organization" | null;
         };
         /**
          * @description Record of a site export, import or offboarding (D2).
@@ -17925,7 +18180,8 @@ export interface components {
          *       ],
          *       "bank_transaction_id": null,
          *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z"
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
          *     }
          */
         Payment: {
@@ -17945,11 +18201,8 @@ export interface components {
              * @enum {string|null}
              */
             debtor_kind: "owner" | "tenant" | null;
-            /**
-             * @description `card:<provider>` values arrive in 0.4. Open enum.
-             * @enum {string}
-             */
-            method: "cash" | "bank_transfer" | "card";
+            /** @description `cash`, `bank_transfer`, or `card:<provider>` for a payment made through a payment provider (for example `card:iyzico`). Open set: clients tolerate unknown values. */
+            method: string;
             gross: components["schemas"]["Money"];
             fee: components["schemas"]["Money"];
             net: components["schemas"]["Money"];
@@ -17981,6 +18234,11 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /**
+             * Format: int64
+             * @description Moves whenever the payment changes status; send it as `If-Match` to refund a provider payment.
+             */
+            version?: number;
         };
         PaymentAllocation: {
             /** Format: uuid */
@@ -18081,7 +18339,8 @@ export interface components {
          *           ],
          *           "bank_transaction_id": null,
          *           "created_at": "2026-03-01T09:00:00Z",
-         *           "updated_at": "2026-03-01T09:00:00Z"
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
          *         }
          *       ],
          *       "next_cursor": null
@@ -19636,6 +19895,198 @@ export interface components {
         };
         PaymentReject: {
             reason: string;
+        };
+        PaymentRefund: {
+            /** @description Why the payment is refunded (audited and sent to the provider). */
+            reason?: string;
+        };
+        /**
+         * @description **Release 0.4.** A hosted card checkout for one side of a unit. Open `checkout_url` in a browser (a Custom Tab on
+         *     mobile, a top-level navigation on the web); the provider returns the payer to `return_url`; poll
+         *     `money.getCheckout` until `status` is final.
+         *
+         *     State machine: `pending` becomes `paid` (the provider confirmed the money), `failed` (the provider declined, or
+         *     could not create the checkout) or `expired` (`expires_at` passed). A payment that arrives for an `expired` or
+         *     `failed` checkout is still recorded and the checkout becomes `paid`. A `paid` checkout becomes `refunded`
+         *     when the payment is refunded.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000020",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "debtor_kind": "tenant",
+         *       "charge_ids": [],
+         *       "provider": "example",
+         *       "merchant_of_record": "site",
+         *       "amount": {
+         *         "amount": 150000,
+         *         "currency": "TRY"
+         *       },
+         *       "status": "pending",
+         *       "checkout_url": "https://pay.example.test/checkout/ex_0192a3f0",
+         *       "return_url": "https://app.example.test/orgs/0192a3f0-1000-7000-8000-000000000001/pay/return?checkout_id=0192a3f0-1000-7000-8000-000000000020",
+         *       "expires_at": "2026-11-09T11:00:00Z",
+         *       "payment_id": null,
+         *       "failure_code": null,
+         *       "created_by": "0192a3f0-1000-7000-8000-000000000009",
+         *       "created_at": "2026-11-09T10:00:00Z",
+         *       "completed_at": null
+         *     }
+         */
+        Checkout: {
+            /**
+             * Format: uuid
+             * @description The checkout id (`checkout_id`).
+             */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /**
+             * @description The unit side that pays. Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /** @description The charges the payment is applied to; empty means oldest first. */
+            charge_ids: string[];
+            /** @description Id of the payment provider (`<packid>` or `<packid>.<name>`). */
+            provider: string;
+            /**
+             * @description Whose provider account the checkout was created on (core setting `payments.merchant_of_record`). Open enum.
+             * @enum {string}
+             */
+            merchant_of_record: "site" | "organization";
+            amount: components["schemas"]["Money"];
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "paid" | "failed" | "expired" | "refunded";
+            /** @description The provider's hosted page; null only when creation failed. */
+            checkout_url: string | null;
+            /** @description Where the provider sends the payer back to, `{BASE_URL}/orgs/{org}/pay/return?checkout_id=...` or, for `client=mobile`, `openbekci://pay/return?org_id=...&checkout_id=...`. */
+            return_url: string;
+            /** Format: date-time */
+            expires_at: string;
+            /**
+             * Format: uuid
+             * @description The payment once the checkout is `paid` (or `refunded`).
+             */
+            payment_id: string | null;
+            /** @description `provider_error` or `provider_declined` when the checkout failed. */
+            failure_code: string | null;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            completed_at: string | null;
+            /**
+             * @description True when the provider confirmed another gross amount than `amount` (a partial capture, an adjustment at the
+             *     provider). The payment holds `confirmed_amount`, never `amount`; the difference is audited
+             *     (`checkout.amount_mismatch`). Absent or false otherwise.
+             */
+            amount_mismatch?: boolean;
+            /** @description The gross amount the provider confirmed, set only when it differs from `amount`. */
+            confirmed_amount?: components["schemas"]["Money"] | null;
+        };
+        CheckoutList: {
+            items: components["schemas"]["Checkout"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Start a card checkout for one side of a unit, for selected charges or an amount. */
+        CheckoutCreate: {
+            /** Format: uuid */
+            unit_id: string;
+            /**
+             * @description The unit side that pays. A resident may pay only a side their current occupancy reaches (an owner both sides, a tenant the tenant side, a household member their own side with `may_see_money`).
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /** @description Charges to pay (each must be open on that side). Omitted or empty means oldest first. */
+            charge_ids?: string[];
+            /** @description The gross amount to pay, in the site currency. With `charge_ids` it defaults to what is open on them; without, to everything open on the side (an amount above what is open becomes credit). */
+            amount?: components["schemas"]["Money"];
+            /**
+             * @description `mobile` makes `return_url` the app's `openbekci://pay/return`; the default `web` the web app's pay return page.
+             * @default web
+             * @enum {string}
+             */
+            client: "web" | "mobile";
+        };
+        /**
+         * @description **Release 0.4.** A payout of a payment provider as posted to one site. With the organization as merchant of record
+         *     one payout covers several sites and is listed once per site, each with its own share and entry.
+         */
+        ProviderSettlement: {
+            provider: string;
+            /** @description The provider's settlement id. */
+            ref: string;
+            /** Format: uuid */
+            site_id: string;
+            /** @description The part of the payout posted to this site. */
+            net: components["schemas"]["Money"];
+            /** @description Gross of the payout when the provider reported it and the payout is not split. */
+            gross: components["schemas"]["Money"] | null;
+            fee: components["schemas"]["Money"] | null;
+            /** Format: date */
+            settled_on: string;
+            /**
+             * Format: uuid
+             * @description The journal entry (bank against clearing, or client money against clearing).
+             */
+            entry_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            merchant_of_record: "site" | "organization";
+            /** Format: date-time */
+            created_at: string;
+        };
+        ProviderSettlementList: {
+            items: components["schemas"]["ProviderSettlement"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description **Release 0.4.** What a site has not yet received from its payment providers, and what the organization holds for
+         *     it as client money.
+         */
+        PaymentClearing: {
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * @description The effective merchant of record of the site. Open enum.
+             * @enum {string}
+             */
+            merchant_of_record: "site" | "organization";
+            providers: {
+                provider: string;
+                /** @description The clearing balance: card payments received minus payouts posted. */
+                balance: components["schemas"]["Money"];
+            }[];
+            /** @description What the organization holds for the site and has not passed on (merchant of record `organization`); zero otherwise. */
+            client_money_owed: components["schemas"]["Money"];
+            /** @description What the organization has paid out to the site so far (`money.payoutClientMoney`); absent on older servers. */
+            client_money_paid_out?: components["schemas"]["Money"];
+        };
+        /** @description **Release 0.4.** The organization paid client money out to a site's bank account. */
+        ClientMoneyPayoutCreate: {
+            /** Format: uuid */
+            site_id: string;
+            amount: components["schemas"]["Money"];
+            /** @description The bank transfer reference. */
+            reference: string;
+            /**
+             * Format: date
+             * @description The day the money arrived; defaults to today at the site, never in the future.
+             */
+            paid_on?: string;
         };
         StatementSend: {
             /** @description Whose statement to send. */
@@ -34196,6 +34647,283 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Payment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.refundPayment": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PaymentRefund"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listCheckouts": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createCheckout": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Checkout"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getCheckout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the checkout. */
+                checkout_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Checkout"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listMyCheckouts": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listPaymentSettlements": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Only the payouts of this payment provider. */
+                provider?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProviderSettlementList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getPaymentClearing": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentClearing"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.payoutClientMoney": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientMoneyPayoutCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentClearing"];
                 };
             };
             401: components["responses"]["Problem"];

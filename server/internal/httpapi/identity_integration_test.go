@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/checkout"
 	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/devices"
@@ -573,5 +574,6 @@ func (e *idEnv) moneyDeps(d *db.DB) MoneyDeps {
 	e.files.RegisterResolver(moneydocs.ScopePayment, moneydocs.PaymentFileResolver())
 	return MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: bill, Payments: pay, Reports: rep,
 		Treasury: treasury.NewService(d, e.files, nil), Docs: moneydocs.NewService(d, e.files, pay, rep, nil, nil),
-		BankImport: bankimport.NewService(d, pay, nil), Collections: collections.NewService(d, bill, nil, nil)}
+		BankImport: bankimport.NewService(d, pay, nil), Collections: collections.NewService(d, bill, nil, nil),
+		Checkout: checkout.NewService(checkout.Config{DB: d, Platform: d, Payments: pay, BaseURL: "https://app.example.test"})}
 }

@@ -57,6 +57,7 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `money.lock` | Move the lock date and close fiscal years (moving it back needs re-authentication). | `org_admin`, `site_manager`, `accountant` |
 | `payments.record` | Record and confirm payments, allocate them and issue receipts. Cash collectors (a person bound to a cash box: `staff` such as the kapici, or a board member) hold it only for payments into their own cash box. | `org_admin`, `site_manager`, `board_member`, `accountant`, `staff` |
 | `payments.declare` | Declare a bank transfer already made ("I have paid"). | `owner`, `tenant` |
+| `payments.checkout` | Start a card checkout for a unit side, poll it and list one's own checkouts (a resident only for a side their occupancy reaches; a household member needs `may_see_money`). | `org_admin`, `site_manager`, `owner`, `tenant`, `household` |
 | `statements.read` | Read unit-side and person statements. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
 | `statements.read_own` | Read statements, balances, charges, payments and receipts of the caller's own side only, including the resident lists of charges and payments (household: only with may_see_money; former occupants: their period). | `owner`, `tenant`, `household`, `former_occupant` |
 | `reports.read` | Read the financial reports. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |

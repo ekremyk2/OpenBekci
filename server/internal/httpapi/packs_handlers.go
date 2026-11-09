@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/sdk"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -29,6 +31,7 @@ func (s *apiServer) pk() (*packs.Host, error) {
 // settings keys a pack filled in that still hold the value the pack wrote.
 func (s *apiServer) settingsViewWithPacks(ctx context.Context, org, site uuid.UUID, settings map[string]any, version int) map[string]any {
 	v := settingsView(settings, version)
+	v["payments"] = s.paymentsView(ctx, org, site, settings)
 	if s.packs == nil {
 		return v
 	}
@@ -42,6 +45,27 @@ func (s *apiServer) settingsViewWithPacks(ctx context.Context, org, site uuid.UU
 	}
 	v["pack_defaults"] = m
 	return v
+}
+
+// paymentsView is the payments object of the site settings: whether card checkout is available (clients show "Pay
+// by card" only when it is) and the merchant of record, effective and overridden.
+func (s *apiServer) paymentsView(ctx context.Context, org, site uuid.UUID, settings map[string]any) map[string]any {
+	card := map[string]any{"available": false, "provider": nil}
+	mor, override := tenancy.EffectiveMerchantOfRecord(nil, settings), any(nil)
+	if o, ok := settings[tenancy.SettingMerchantOfRecord].(string); ok && tenancy.ValidMerchantOfRecord(o) {
+		override = o
+	}
+	if s.mny.Checkout != nil {
+		if v, err := s.mny.Checkout.SiteViewOf(ctx, org, site); err == nil {
+			mor = v.MerchantOfRecord
+			if v.CardAvailable {
+				card = map[string]any{"available": true, "provider": v.Provider}
+			}
+		} else {
+			slog.WarnContext(ctx, "reading the card payment availability of a site", "site_id", site, "error", err)
+		}
+	}
+	return map[string]any{"card": card, "merchant_of_record": mor, "merchant_of_record_override": override}
 }
 
 func packDetailsDTO(in []instance.PackDetail) []gen.InstancePack {

@@ -1,0 +1,120 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: money.createCheckout
+  summary: Start a card checkout
+  description: |-
+    **Release 0.4.** Starts a hosted card checkout for one side of a unit, for selected charges or an amount, and
+    returns the provider's `checkout_url`, the `return_url` and the `checkout_id` to poll (`money.getCheckout`).
+
+    A resident may pay only a side their current occupancy reaches: an owner both sides, a tenant the tenant side, a
+    household member their own side when `may_see_money` was granted (otherwise 403). A manager of the site may start
+    one for any side. The provider is the one of the enabled packs (the setting `payments.provider` picks one when
+    several are enabled); whose account it uses follows `payments.merchant_of_record`. Card data never passes through
+    the server: the payer enters it on the provider's page.
+
+    Permission: `payments.checkout`.
+
+    Problems: `payment_provider_unavailable` (409, no provider is enabled for the site), `validation_failed` (422,
+    `charge_ids` not open, nothing to pay), `idempotency_mismatch` (422), `pack_error` (the provider failed).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.checkout
+    site_manager:
+      - payments.checkout
+    owner:
+      - payments.checkout
+    tenant:
+      - payments.checkout
+    household:
+      - payments.checkout
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/CheckoutCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Checkout
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+get:
+  operationId: money.listCheckouts
+  summary: List the checkouts of a site
+  description: |-
+    **Release 0.4.** The card checkouts of a site for its managers, oldest first.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - paid
+          - failed
+          - expired
+          - refunded
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/CheckoutList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
