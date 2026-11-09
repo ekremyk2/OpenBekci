@@ -232,6 +232,26 @@ func (s *apiServer) CommunityCancelBooking(ctx context.Context, req gen.Communit
 	return gen.CommunityCancelBooking200JSONResponse(out), err
 }
 
+func (s *apiServer) CommunityPreviewBooking(ctx context.Context, req gen.CommunityPreviewBookingRequestObject) (gen.CommunityPreviewBookingResponseObject, error) {
+	c, err := s.cm()
+	if err != nil {
+		return nil, err
+	}
+	d, err := commBodyDoc(req.Body == nil, req.Body)
+	if err != nil {
+		return nil, err
+	}
+	if req.Body.FacilityId != req.FacilityId {
+		return nil, problem.Validation(problem.Field{Field: "facility_id", Code: "invalid_value"})
+	}
+	p, err := c.PreviewBooking(ctx, req.OrgId, d)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.BookingPreview](p)
+	return gen.CommunityPreviewBooking200JSONResponse(out), err
+}
+
 // --- visitors ---
 
 func (s *apiServer) CommunityListVisitorEntries(ctx context.Context, req gen.CommunityListVisitorEntriesRequestObject) (gen.CommunityListVisitorEntriesResponseObject, error) {
@@ -440,6 +460,19 @@ func (s *apiServer) CommunityListVisitorApprovalRequests(ctx context.Context, re
 	}
 	out, err := listOf[gen.VisitorApprovalRequestList](items, next)
 	return gen.CommunityListVisitorApprovalRequests200JSONResponse(out), err
+}
+
+func (s *apiServer) CommunityGetVisitorApprovalRequest(ctx context.Context, req gen.CommunityGetVisitorApprovalRequestRequestObject) (gen.CommunityGetVisitorApprovalRequestResponseObject, error) {
+	c, err := s.cm()
+	if err != nil {
+		return nil, err
+	}
+	r, err := c.GetApprovalRequest(ctx, req.OrgId, req.RequestId)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.VisitorApprovalRequest](r)
+	return gen.CommunityGetVisitorApprovalRequest200JSONResponse(out), err
 }
 
 func (s *apiServer) CommunityDecideVisitorApprovalRequest(ctx context.Context, req gen.CommunityDecideVisitorApprovalRequestRequestObject) (gen.CommunityDecideVisitorApprovalRequestResponseObject, error) {

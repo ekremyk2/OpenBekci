@@ -8450,6 +8450,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/facilities/{facility_id}/bookings:preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview a booking
+         * @description **Release 0.3.** What `community.createBooking` would do for the same body, without writing anything: the fee and the side it would be charged to, the refund rule that would apply, the unit's quota left in the period of the start, and the rule violations that would make create fail (the same field-error codes create answers 422 with). A blocked date or a taken slot is reported in `conflict` (create answers 409). The body is the one create takes; its `facility_id` must equal the path's, else 422 `facility_id` `invalid_value`.
+         *
+         *     Refusals that depend on who asks (not allowed to book, closed facility, someone else's unit) are answered as create would, with 403, 404, 409 or 422.
+         *
+         *     Permission: `bookings.create`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409).
+         */
+        post: operations["community.previewBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/bookings": {
         parameters: {
             query?: never;
@@ -8804,6 +8835,33 @@ export interface paths {
          *     Permission: `visitors.decide`.
          */
         get: operations["community.listVisitorApprovalRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-approval-requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the request. */
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * One visitor approval request
+         * @description **Release 0.3.** One approval request, in the shape of the list items (a pending request past its expiry reads as `expired`). Served to the resident it is addressed to (a unit they live in or own) and to the site's overview roles; anyone else gets 404, so a request is never confirmed to exist. The guard console polls the visitor with `community.getGateVisitor` instead.
+         *
+         *     Permission (any one of): `visitors.decide` (own units), `visitors.read`.
+         */
+        get: operations["community.getVisitorApprovalRequest"];
         put?: never;
         post?: never;
         delete?: never;
@@ -19134,6 +19192,8 @@ export interface components {
             agenda_item_id: string;
             title: string;
             answered_units: string[];
+            /** @description What the caller answered, per unit (their own answers only, never another owner's). */
+            answers: components["schemas"]["MyPollAnswer"][];
         };
         MyMeeting: {
             meeting: components["schemas"]["Meeting"];
@@ -22667,6 +22727,74 @@ export interface components {
             owners: components["schemas"]["EligibilityOwner"][];
             /** @description Door numbers of units without an owner of record; nobody votes for them. */
             unrepresented_units: string[];
+        };
+        MyPollAnswer: {
+            /** Format: uuid */
+            unit_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            answer: "yes" | "no" | "abstain";
+            /** Format: date-time */
+            answered_at: string;
+        };
+        /** @description What creating the booking would do, computed without writing anything. */
+        BookingPreview: {
+            /** Format: uuid */
+            facility_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            /** @description The fee create would post as a charge; null when the facility is free. */
+            fee: {
+                /**
+                 * Format: int64
+                 * @description Minor units.
+                 */
+                amount: number;
+                currency: string;
+                /**
+                 * @description Side the charge would go to (owner or tenant).
+                 * @enum {string}
+                 */
+                debtor_kind: "owner" | "tenant";
+            } | null;
+            refund_rule: {
+                /** @description The facility's cutoff; null when cancelling never refunds a resident (a manager's cancel always does). */
+                cancel_refund_cutoff_hours: number | null;
+                /**
+                 * Format: date-time
+                 * @description A resident cancelling up to this instant gets the fee back; null without a fee or a cutoff.
+                 */
+                refundable_until: string | null;
+            };
+            quota: {
+                /** @description Bookings per unit per period; null when the facility has no quota. */
+                limit: number | null;
+                /** @description week or month; the period that contains `start`. */
+                period: string | null;
+                /** @description Confirmed bookings of the unit in that period. */
+                used: number;
+                /** @description Bookings left before this one; 0 means the quota is used up. */
+                remaining: number | null;
+                /** Format: date-time */
+                period_from: string | null;
+                /** Format: date-time */
+                period_to: string | null;
+            };
+            /** @description The rules this request breaks, as create would answer 422 `validation_failed` (same codes). Managers are not held to the lead time, the horizon or the quota. */
+            violations: components["schemas"]["ProblemFieldError"][];
+            /**
+             * @description The 409 create would answer with, if any. Open enum.
+             * @enum {string|null}
+             */
+            conflict: "facility_blocked" | "slot_taken" | null;
+            /** @description True when create would succeed right now. */
+            bookable: boolean;
         };
         /**
          * @description A unit as the booth's picker shows it; nothing about who lives there.
@@ -36424,6 +36552,41 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "community.previewBooking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingCreate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingPreview"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "community.listBookings": {
         parameters: {
             query: {
@@ -37019,6 +37182,35 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getVisitorApprovalRequest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the request. */
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorApprovalRequest"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
