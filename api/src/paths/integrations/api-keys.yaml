@@ -15,7 +15,7 @@ get:
   x-openbekci-roles:
     org_admin:
       - apikeys.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: status
       in: query
@@ -64,7 +64,7 @@ post:
     org_admin:
       - apikeys.manage
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

@@ -29,7 +29,7 @@ post:
     guard:
       - access.open
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired

@@ -28,7 +28,7 @@ get:
       - gate.operate
     guard:
       - gate.operate
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
   responses:

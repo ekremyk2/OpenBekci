@@ -34,7 +34,7 @@ post:
     household:
       - payments.checkout
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:
@@ -85,7 +85,7 @@ get:
       - money.read
     accountant:
       - money.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: status

@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: |
     HTTP API of an OpenBekci instance (residential site management).
-    Conventions: see api/README.md. /v1 is not frozen until 1.0.
+    Conventions: see api/README.md. From 1.0 /v1 is frozen: additive changes only (docs/api/versioning.md).
   license:
     name: AGPL-3.0-or-later
     url: https://www.gnu.org/licenses/agpl-3.0.html
@@ -521,7 +521,7 @@ paths:
       x-openbekci-roles:
         - sessions.manage_own
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -634,8 +634,8 @@ paths:
         - sessions.manage_own
       summary: Update my profile
       description: |-
-        **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes go through
-        `me.startContactChange`. Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
+        **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes are not part of /v1 yet (see `docs/api/deferred.md`).
+        Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
         `version_conflict`. Returns the updated `user`, with its new `version`. The display name is the account's own: it wins over the
         name of the linked person in `GET /v1/me`; an empty string clears it. The locale is one the server has texts for: `tr` or `en`.
 
@@ -684,7 +684,7 @@ paths:
         - auth
       security: []
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -790,7 +790,7 @@ paths:
       x-openbekci-roles:
         org_admin:
           - packs.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -836,7 +836,7 @@ paths:
         org_admin:
           - packs.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -892,7 +892,7 @@ paths:
         org_admin:
           - packs.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -939,7 +939,7 @@ paths:
         org_admin:
           - packs.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -6008,7 +6008,7 @@ paths:
       x-openbekci-roles:
         member:
           - codes.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: locale
           in: query
@@ -9232,7 +9232,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -9267,7 +9267,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -9312,7 +9312,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: country_code
           in: query
@@ -9353,7 +9353,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: status
@@ -9421,7 +9421,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -9471,7 +9471,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -9504,7 +9504,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -9549,7 +9549,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       responses:
@@ -9594,7 +9594,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -9649,7 +9649,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -9696,7 +9696,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -9743,7 +9743,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -9790,7 +9790,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -9842,7 +9842,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - attendance.manage
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -9938,7 +9938,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: person_id
           in: query
@@ -9988,7 +9988,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - attendance.manage
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: The file.
@@ -10029,7 +10029,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -10072,7 +10072,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -10116,7 +10116,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -10156,7 +10156,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.manage
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: phase
           in: query
@@ -10233,7 +10233,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -10286,7 +10286,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -10341,7 +10341,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
         - $ref: '#/components/parameters/DryRun'
@@ -10396,7 +10396,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
@@ -10432,7 +10432,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -10487,7 +10487,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -10532,7 +10532,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       responses:
@@ -10577,7 +10577,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -10623,7 +10623,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -10658,7 +10658,7 @@ paths:
       x-openbekci-roles:
         - meetings.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -10715,7 +10715,7 @@ paths:
       x-idempotent: optional
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -10765,7 +10765,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - polls.answer
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -10848,7 +10848,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -10881,7 +10881,7 @@ paths:
       x-openbekci-roles:
         - decisions.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -10931,7 +10931,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - attendance.manage
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: mode
           in: query
@@ -10985,7 +10985,7 @@ paths:
       x-openbekci-roles:
         - attendance.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -11047,7 +11047,7 @@ paths:
       x-openbekci-roles:
         - attendance.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       responses:
         '204':
           description: No content
@@ -11088,7 +11088,7 @@ paths:
       x-openbekci-roles:
         - attendance.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -11133,7 +11133,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: meeting_id
@@ -11202,7 +11202,7 @@ paths:
       x-openbekci-roles:
         - decisions.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -11340,7 +11340,7 @@ paths:
       x-openbekci-roles:
         - decisions.manage
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
         - $ref: '#/components/parameters/DryRun'
@@ -11386,7 +11386,7 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         - meetings.manage
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: status
@@ -11446,7 +11446,7 @@ paths:
           - bookings.read
         household:
           - bookings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: enabled
@@ -11493,7 +11493,7 @@ paths:
         board_member:
           - facilities.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -11557,7 +11557,7 @@ paths:
           - bookings.read
         household:
           - bookings.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -11595,7 +11595,7 @@ paths:
         board_member:
           - facilities.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -11645,7 +11645,7 @@ paths:
         board_member:
           - facilities.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       responses:
@@ -11701,7 +11701,7 @@ paths:
           - bookings.read
         household:
           - bookings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: from
           in: query
@@ -11756,7 +11756,7 @@ paths:
         board_member:
           - facilities.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -11823,7 +11823,7 @@ paths:
         board_member:
           - facilities.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       responses:
         '204':
           description: No content
@@ -11872,7 +11872,7 @@ paths:
           - bookings.create
         household:
           - bookings.create
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: from
           in: query
@@ -11999,7 +11999,7 @@ paths:
           - bookings.read
         household:
           - bookings.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: facility_id
@@ -12084,7 +12084,7 @@ paths:
         household:
           - bookings.create
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
       requestBody:
@@ -12202,7 +12202,7 @@ paths:
         household:
           - bookings.create
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
       requestBody:
@@ -12263,7 +12263,7 @@ paths:
           - visitors.manage
         household:
           - visitors.manage
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: unit_id
@@ -12350,7 +12350,7 @@ paths:
         household:
           - visitors.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -12526,7 +12526,7 @@ paths:
         household:
           - visitors.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -12584,7 +12584,7 @@ paths:
         household:
           - visitors.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -12637,7 +12637,7 @@ paths:
           - visitors.manage
         household:
           - visitors.manage
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: unit_id
@@ -12700,7 +12700,7 @@ paths:
         household:
           - visitors.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -12876,7 +12876,7 @@ paths:
         household:
           - visitors.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -12976,7 +12976,7 @@ paths:
           - visitors.decide
         household:
           - visitors.decide
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: status
           in: query
@@ -13096,7 +13096,7 @@ paths:
         household:
           - visitors.decide
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -13212,7 +13212,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - $ref: '#/components/parameters/GuardSession'
@@ -13255,7 +13255,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: q
@@ -13332,7 +13332,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
       responses:
@@ -13379,7 +13379,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13435,7 +13435,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13498,7 +13498,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13561,7 +13561,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13613,7 +13613,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
       responses:
@@ -13708,7 +13708,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: q
@@ -13759,7 +13759,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: unit_door_number
@@ -13817,7 +13817,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13878,7 +13878,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -13934,7 +13934,7 @@ paths:
         guard:
           - gate.operate
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -13984,7 +13984,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - $ref: '#/components/parameters/Limit'
@@ -14080,7 +14080,7 @@ paths:
           - access.read
         auditor:
           - access.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: agent_id
@@ -14131,7 +14131,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -14188,7 +14188,7 @@ paths:
           - access.read
         auditor:
           - access.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -14224,7 +14224,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -14272,7 +14272,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       responses:
@@ -14322,7 +14322,7 @@ paths:
         guard:
           - access.open
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
@@ -14377,7 +14377,7 @@ paths:
           - access.read
         auditor:
           - access.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: status
@@ -14426,7 +14426,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -14577,7 +14577,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -14627,7 +14627,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -14677,7 +14677,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -14715,7 +14715,7 @@ paths:
       x-openbekci-roles:
         org_admin:
           - apikeys.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: status
           in: query
@@ -14764,7 +14764,7 @@ paths:
         org_admin:
           - apikeys.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -14818,7 +14818,7 @@ paths:
         org_admin:
           - apikeys.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -14867,7 +14867,7 @@ paths:
         org_admin:
           - apikeys.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -14903,7 +14903,7 @@ paths:
       x-openbekci-roles:
         org_admin:
           - webhooks.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
@@ -14943,7 +14943,7 @@ paths:
         org_admin:
           - webhooks.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       requestBody:
         required: true
         content:
@@ -14992,7 +14992,7 @@ paths:
       x-openbekci-roles:
         org_admin:
           - webhooks.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -15027,7 +15027,7 @@ paths:
         org_admin:
           - webhooks.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -15071,7 +15071,7 @@ paths:
         org_admin:
           - webhooks.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -15113,7 +15113,7 @@ paths:
         org_admin:
           - webhooks.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       responses:
         '202':
           description: Accepted
@@ -15160,7 +15160,7 @@ paths:
         org_admin:
           - webhooks.manage
       x-idempotent: none
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: The new secret, shown once.
@@ -15202,7 +15202,7 @@ paths:
       x-openbekci-roles:
         org_admin:
           - webhooks.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - name: status
           in: query
@@ -15256,7 +15256,7 @@ paths:
           - access.read
         auditor:
           - access.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: kind
@@ -15342,7 +15342,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
       requestBody:
@@ -15399,7 +15399,7 @@ paths:
           - access.read
         auditor:
           - access.read
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -15435,7 +15435,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -15474,7 +15474,7 @@ paths:
         site_manager:
           - access.manage
       x-idempotent: optional
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -15524,7 +15524,7 @@ paths:
           - access.view_events
         auditor:
           - access.view_events
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: point_id
@@ -15609,7 +15609,7 @@ paths:
           - gate.operate
         guard:
           - gate.operate
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: after
@@ -15671,7 +15671,7 @@ paths:
           - access.open
         guard:
           - access.open
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/GuardSession'
       responses:
@@ -20815,7 +20815,7 @@ paths:
         accountant:
           - money.post
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
         - $ref: '#/components/parameters/IfMatch'
@@ -20881,7 +20881,7 @@ paths:
         household:
           - payments.checkout
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
       requestBody:
@@ -20932,7 +20932,7 @@ paths:
           - money.read
         accountant:
           - money.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: status
@@ -21004,7 +21004,7 @@ paths:
           - payments.checkout
         household:
           - payments.checkout
-      x-stability: preview
+      x-stability: stable
       responses:
         '200':
           description: OK
@@ -21046,7 +21046,7 @@ paths:
           - payments.checkout
         household:
           - payments.checkout
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
@@ -21093,7 +21093,7 @@ paths:
           - money.read
         accountant:
           - money.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: provider
@@ -21148,7 +21148,7 @@ paths:
           - money.read
         accountant:
           - money.read
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
       responses:
@@ -21197,7 +21197,7 @@ paths:
         accountant:
           - money.post
       x-idempotent: required
-      x-stability: preview
+      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
       requestBody:

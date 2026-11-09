@@ -38,7 +38,7 @@ post:
     household:
       - bookings.create
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:

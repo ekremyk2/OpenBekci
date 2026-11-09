@@ -11,7 +11,7 @@ import (
 // Version is the SDK version this module implements. The server exposes it as
 // sdk_version in the discovery document and refuses packs whose
 // Manifest.MinSDK is newer or from another incompatible line.
-const Version = "0.1.0"
+const Version = "1.0.0"
 
 // ID is an identifier (a UUID in its canonical text form) of a core record.
 type ID string

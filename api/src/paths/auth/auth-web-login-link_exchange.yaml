@@ -9,7 +9,7 @@ post:
     - auth
   security: []
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

@@ -44,8 +44,8 @@ func (p *Pack) Register(ctx context.Context, r sdk.Registry) error {
 
 - **id**: lower-case letters and digits, starting with a letter, at most 24 characters. `enablement`, `site`, `goose`,
   `core`, `default` and `sdk` are reserved.
-- **MinSDK**: the oldest SDK the pack builds against. The server refuses a pack that needs a newer SDK, and before 1.0 one
-  of another minor line (minor versions may break until the project's 1.0).
+- **MinSDK**: the oldest SDK the pack builds against. The server refuses a pack that needs a newer SDK or another major
+  version.
 - **Countries**: ISO 3166-1 alpha-2. They drive the "suggested packs" hint and which organizations receive the pack's
   presets when a site is created. An empty list means no restriction.
 - **Register** hands every contribution to the `sdk.Registry`. There is no `init()` registration and nothing is found by
@@ -315,18 +315,25 @@ it in `server/cmd/openbekci/packs.go` and append `acme.New()` to `Official`, the
 
 ## Evolution rules
 
-`sdk/` is versioned independently of the server; v1.0 is frozen at project release 1.0, and until then minor versions may
-break with notes. Behaviour is added only through new optional interfaces checked by type assertion; an existing
-interface is never widened. Breaking changes batch into `sdk/v2`.
+`sdk/` is versioned independently of the server and **frozen at 1.0.0** (project release 1.0). The freeze rule:
 
-## Known limitations before SDK 1.0
+- Within `sdk` v1 no exported name is removed or renamed, no signature or struct field changes, no documented behaviour
+  changes, and an existing interface never gains a method.
+- Behaviour is added only through a new optional interface checked by type assertion (or a new exported name), in a
+  minor release, and recorded in [`sdk/CHANGELOG.md`](../../sdk/CHANGELOG.md).
+- A pack declares `MinSDK` and keeps working on every later 1.x server. Breaking changes batch into `sdk/v2`, which a
+  server may load next to v1.
+- Generality was checked on paper before the freeze: [paper-packs.md](paper-packs.md) maps Germany (WEG) and the
+  Netherlands (VvE) onto the extension points, lists the gaps it found and which ones the SDK now covers.
+
+## Known limitations at the 1.0 freeze
 
 - **Raw SQL on the tenant transaction is not restricted to pack tables.** `Services.DB()` isolates tenants (row-level
   security, `app.org_id` set by the host, context-changing statements refused), but a pack can still read or write core
-  tables of its own organization. Enforcing "own tables only" through a restricted database role is a 1.0 item.
-- **`sdk.WithOrg` is public.** Services act for the organization in the call's context, and a pack can put another
-  organization into a context it creates. Packs are trusted code compiled into the binary; a host-private binding is a
-  1.0 item.
+  tables of its own organization. Enforcing "own tables only" through a restricted database role is a host change that needs no SDK change.
+- **`sdk.WithOrg` is public** and stays so (removing it would break v1). Services act for the organization in the call's context, and a pack can put another
+  organization into a context it creates. Packs are trusted code compiled into the binary; a host-side check
+  may tighten this in a 1.x without changing the SDK.
 - **The migration fingerprint check runs after commit.** A pack migration that alters a table outside its namespace stops
   startup with a named error, but the change is not rolled back.
 - **Webhook batches post per event.** Each event of one webhook delivery is posted in its own transaction. A failure in

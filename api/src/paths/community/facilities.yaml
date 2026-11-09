@@ -28,7 +28,7 @@ get:
       - bookings.read
     household:
       - bookings.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: enabled
@@ -75,7 +75,7 @@ post:
     board_member:
       - facilities.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

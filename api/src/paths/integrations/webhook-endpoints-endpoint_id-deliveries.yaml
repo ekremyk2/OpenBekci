@@ -23,7 +23,7 @@ get:
   x-openbekci-roles:
     org_admin:
       - webhooks.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: status
       in: query
