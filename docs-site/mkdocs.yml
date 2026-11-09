@@ -1,0 +1,53 @@
+site_name: OpenBekci
+site_description: Open-source residential community management
+repo_url: https://github.com/ekremyk2/OpenBekci
+edit_uri: edit/main/docs/
+# The site is built from the repository's docs/ folder; the plans, the decision
+# files and the ADRs are project-internal and stay on GitHub.
+docs_dir: ../docs
+site_dir: site
+exclude_docs: |
+  plans/
+  decisions/
+  adr/
+  packs/README.md
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+hooks:
+  - hooks.py
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+nav:
+  - Overview: index.md
+  - Install:
+      - Docker Compose: install/compose.md
+      - Helm: install/helm.md
+  - Operate:
+      - Backup, restore, upgrade: operate/backup-restore-upgrade.md
+      - Push relay: operate/relay.md
+      - On-site agent: operate/agent.md
+  - Use:
+      - Setup and people: use/setup-people.md
+      - Money: use/money.md
+      - Daily operations: use/operations.md
+      - Assemblies and decisions: use/governance.md
+      - Bookings, visitors, parcels: use/community.md
+  - Integrate:
+      - API keys and webhooks: integrations.md
+      - API reference: integrate/reference.html
+  - Packs:
+      - Authoring guide: packs/authoring.md
+      - SDK reference: packs/sdk.md
+      - Turkish pack: packs/tr.md
+      - Pack index: packs/index.md
+  - Mobile: mobile.md
+  - Contributing: contributing.md
