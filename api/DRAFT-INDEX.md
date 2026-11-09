@@ -208,6 +208,7 @@ Total: 453 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.listMyCheckouts` | `GET /v1/orgs/{org_id}/me/checkouts` | 0.4 | `payments.checkout` | - | served |
 | money | `money.listPaymentSettlements` | `GET /v1/orgs/{org_id}/payment-settlements` | 0.4 | `money.read` | - | served |
 | money | `money.getPaymentClearing` | `GET /v1/orgs/{org_id}/payment-clearing` | 0.4 | `money.read` | - | served |
+| money | `money.payoutClientMoney` | `POST /v1/orgs/{org_id}/payment-clearing:payout` | 0.4 | `money.post` | required | served |
 | money | `money.listCredits` | `GET /v1/orgs/{org_id}/credits` | 0.1 | `money.read`, `statements.read_own` | - | not yet served |
 | money | `money.applyCredit` | `POST /v1/orgs/{org_id}/credits/{credit_id}:apply` | 0.1 | `payments.record` | required | not yet served |
 | money | `money.listTransfers` | `GET /v1/orgs/{org_id}/transfers` | 0.1 | `money.read` | - | served |
