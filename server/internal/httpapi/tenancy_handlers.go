@@ -215,7 +215,18 @@ func (s *apiServer) TenancyGetBankDetails(ctx context.Context, req gen.TenancyGe
 	if err != nil {
 		return nil, err
 	}
-	out, err := conv[gen.BankDetails](bankView(bank, version))
+	view := bankView(bank, version)
+	if req.Params.UnitId != nil {
+		// a pack that has a transfer reference scheme (the Turkish pack: <door>-<period>) names the text to write
+		ref, err := t.SuggestedReference(ctx, req.OrgId, req.SiteId, *req.Params.UnitId)
+		if err != nil {
+			return nil, err
+		}
+		if ref != nil {
+			view["suggested_reference"] = *ref
+		}
+	}
+	out, err := conv[gen.BankDetails](view)
 	return gen.TenancyGetBankDetails200JSONResponse(out), err
 }
 

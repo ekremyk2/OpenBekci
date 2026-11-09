@@ -200,6 +200,46 @@ per `(organization, provider, provider_txn_id)`. The webhook URL the provider is
 401, `ErrNotFound` 404, `ErrRejected`/`ErrUnsupported`/`ErrCredentials` 422, `ErrUnavailable` 503; anything else is
 `pack_error` 500). Partial refunds are unsupported in 0.4.
 
+Whose account a call uses follows the core setting `payments.merchant_of_record`: pass `CheckoutRequest.MerchantOfRecord` or `SettlementRequest.MerchantOfRecord` and the site to `sdk.AccountScope` and read the credentials at that scope. `Status` and `Refund` get only the transaction id, so remember the account per checkout in a pack table. Return `Settlement.ProviderTxnIDs` when the provider can name them: in organization mode the core splits a payout over sites by them.
+
+Practical notes from the first real provider (`packs/tr`, iyzico, `packs/tr/PAYMENTS.md`):
+
+- Give the provider client an injectable `*http.Client` (a pack option) so that tests put an in-process fake behind it and
+  a [`go-vcr`](https://github.com/dnaeon/go-vcr) recording can replace the fake without code changes. Put the fake in
+  a non-test package of the pack (`packs/<id>/<id>test`) so that `sdktest` suites in the server module can use it.
+- A webhook may carry nothing but a token. Authenticate it by the signature the provider documents, then **ask the
+  provider** (a signed retrieve call) for the amounts, fee and your metadata, rather than reading money from the body.
+  Leave `PaymentEvent.OccurredAt` zero when the payment is booked on the day it is confirmed: the core uses the site's
+  today, and refuses a date in its own future.
+- Use one provider transaction id from checkout to refund (the provider's checkout token if the payment id only exists
+  later), because the core keys payments by it and calls `Status` and `Refund` with it.
+- If the provider has no payout report API, derive settlements with deterministic references (`<provider>-<date>`) and
+  document that `SettledOn` is not the bank date.
+- Read credentials with `Services.Settings()` at the scope of the account that owns the checkout; never put a key in
+  an error message (the host redacts settings secrets from `ValidateSettings` errors, but not from other errors).
+
+## 10a. Statement importers and SMS providers
+
+A **statement importer** (`StatementImporter`) parses one bank's export: `Detect` must work on the first KiB of the file
+(a compressed workbook cannot be sniffed, so detect it by its zip signature and file name), `Parse` returns lines with
+money in positive, running balances when the file has them, and **row errors** for lines it cannot read instead of
+failing the file (the import is then `partial`). Keep what the core needs out of `Raw`; `Raw` repeats the source row
+and is deleted after 90 days. Lift a reference code (`<unit>-<period>`, see `packs/tr/BANKS.md`) into
+`StatementLine.Reference`: the core's matching suggestions rank it first. Make formats **data** (`packs/tr/bankformats/*.yaml`)
+so that a new bank is a format file and a fixture. Fixtures must be anonymized or synthetic and say so in a README.
+`ConformStatementImporter` takes `ImporterSample.Text` for fixtures whose bytes are not the text (a workbook, a
+windows-1254 file): the raw rows are checked against it.
+
+A pack with a transfer reference scheme also implements the optional `sdk.ReferenceHinter` (`SuggestedReference(ctx, door,
+period)`): the core's bank details response returns it as `suggested_reference` when the pack is enabled.
+
+An **SMS provider** (`SMSProvider`) is selected for an organization by its `sms_provider` setting (the provider id), through
+`sms.Routed` and the host's `SMSPicker`; with no setting the instance gateway (Netgsm or log) sends. The provider reads
+its credentials from the organization-scope settings. Map the provider's status codes to `ErrCredentials`, `ErrRejected`
+and `ErrUnavailable`. A pack that tags messages (for example Turkey's İYS commercial/operational flag) should tag every
+message it sends the same way and say so in its legal notes. Do not call the provider from `ValidateSettings` unless the
+pack was given an explicit test endpoint: a settings form must not trigger traffic to a live account.
+
 ## 11. Testing
 
 `server/internal/sdktest` boots the core against the local PostgreSQL test database (the same throwaway databases the

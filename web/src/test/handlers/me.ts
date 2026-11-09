@@ -85,6 +85,8 @@ export const ALL_PERMISSIONS = [
   'apikeys.manage',
   'webhooks.read',
   'webhooks.manage',
+  // card checkout (0.4)
+  'payments.checkout',
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */
@@ -122,6 +124,7 @@ export const adminHandlers = (permissions?: string[], occupancies?: Me['occupanc
 const RESIDENT_PERMISSIONS = [
   'statements.read_own',
   'payments.declare',
+  'payments.checkout',
   'meetings.read',
   'polls.answer',
   'bookings.read',

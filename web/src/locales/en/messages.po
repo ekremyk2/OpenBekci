@@ -153,6 +153,15 @@ msgstr "+{rest} more"
 msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
 msgstr "<0/> received, <1/> applied to charges, <2/> kept as credit."
 
+msgid "<0/> went back to your card."
+msgstr "<0/> went back to your card."
+
+msgid "<0>{name}</0>: the organization holds <1/> for the site as client money (account {account}). Record the payout to the site, then try again."
+msgstr "<0>{name}</0>: the organization holds <1/> for the site as client money (account {account}). Record the payout to the site, then try again."
+
+msgid "<0>{name}</0>: the payment provider has not paid out <1/> yet (clearing account {account}). Wait until the payout is posted."
+msgstr "<0>{name}</0>: the payment provider has not paid out <1/> yet (clearing account {account}). Wait until the payout is posted."
+
 msgid "A block that still has units cannot be deleted."
 msgstr "A block that still has units cannot be deleted."
 
@@ -213,6 +222,9 @@ msgstr "A parcel is logged at the gate"
 
 msgid "A payment is recorded"
 msgstr "A payment is recorded"
+
+msgid "A periodic job posts each provider's payouts here."
+msgstr "A periodic job posts each provider's payouts here."
 
 msgid "A person"
 msgstr "A person"
@@ -502,6 +514,9 @@ msgstr "All packs"
 msgid "All points"
 msgstr "All points"
 
+msgid "All providers"
+msgstr "All providers"
+
 msgid "All sites"
 msgstr "All sites"
 
@@ -544,6 +559,9 @@ msgstr "Amount"
 msgid "Amount (partial payments are fine)"
 msgstr "Amount (partial payments are fine)"
 
+msgid "Amount differs"
+msgstr "Amount differs"
+
 msgid "Amount is"
 msgstr "Amount is"
 
@@ -561,6 +579,9 @@ msgstr "Amount you paid"
 
 msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
 msgstr "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+
+msgid "An amount"
+msgstr "An amount"
 
 msgid "An announcement is published"
 msgstr "An announcement is published"
@@ -783,6 +804,12 @@ msgstr "Back to automatic"
 msgid "Back to columns"
 msgstr "Back to columns"
 
+msgid "Back to my account"
+msgstr "Back to my account"
+
+msgid "Back to Pay"
+msgstr "Back to Pay"
+
 msgid "Back to sign in"
 msgstr "Back to sign in"
 
@@ -836,6 +863,9 @@ msgstr "Bank statement import"
 
 msgid "Bank transfer"
 msgstr "Bank transfer"
+
+msgid "Bank transfer reference"
+msgstr "Bank transfer reference"
 
 msgid "Becomes a charge when the booking is confirmed. Empty: free."
 msgstr "Becomes a charge when the booking is confirmed. Empty: free."
@@ -943,6 +973,9 @@ msgstr "By"
 msgid "By area"
 msgstr "By area"
 
+msgid "By default each site collects card payments into its own account at the payment provider. A management company can instead collect centrally: the money reaches the company's bank account and is held as client money owed to each site until it is passed on. A single site can differ, see its own settings."
+msgstr "By default each site collects card payments into its own account at the payment provider. A management company can instead collect centrally: the money reaches the company's bank account and is held as client money owed to each site until it is passed on. A single site can differ, see its own settings."
+
 msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
 msgstr "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
 
@@ -1018,6 +1051,27 @@ msgstr "Cancelled"
 
 msgid "Card"
 msgstr "Card"
+
+msgid "Card checkouts"
+msgstr "Card checkouts"
+
+msgid "Card payment"
+msgstr "Card payment"
+
+msgid "Card payment is not available for this site right now."
+msgstr "Card payment is not available for this site right now."
+
+msgid "Card payments"
+msgstr "Card payments"
+
+msgid "Card payments received minus the payouts posted: money the provider still owes."
+msgstr "Card payments received minus the payouts posted: money the provider still owes."
+
+msgid "Card payments: who collects"
+msgstr "Card payments: who collects"
+
+msgid "Card settlements"
+msgstr "Card settlements"
 
 msgid "Carried debt"
 msgstr "Carried debt"
@@ -1151,6 +1205,9 @@ msgstr "Check"
 msgid "Check (dry run)"
 msgstr "Check (dry run)"
 
+msgid "Check again"
+msgstr "Check again"
+
 msgid "Check recipients"
 msgstr "Check recipients"
 
@@ -1250,6 +1307,9 @@ msgstr "Choose at least one unit"
 msgid "Choose at least one unit."
 msgstr "Choose at least one unit."
 
+msgid "Choose charges"
+msgstr "Choose charges"
+
 msgid "Choose charges myself"
 msgstr "Choose charges myself"
 
@@ -1321,6 +1381,9 @@ msgstr "Clear {group}"
 
 msgid "Clear selection"
 msgstr "Clear selection"
+
+msgid "Client money"
+msgstr "Client money"
 
 msgid "Clock suspect"
 msgstr "Clock suspect"
@@ -1459,6 +1522,12 @@ msgstr "Confirmed. Please repeat the action."
 msgid "Confirmed. Receipt {0}"
 msgstr "Confirmed. Receipt {0}"
 
+msgid "Confirming your payment with the provider. This usually takes a few seconds."
+msgstr "Confirming your payment with the provider. This usually takes a few seconds."
+
+msgid "Continue to payment"
+msgstr "Continue to payment"
+
 msgid "Copied"
 msgstr "Copied"
 
@@ -1570,6 +1639,12 @@ msgstr "Could not generate the minutes."
 msgid "Could not load the decisions."
 msgstr "Could not load the decisions."
 
+msgid "Could not load the payment."
+msgstr "Could not load the payment."
+
+msgid "Could not load your charges."
+msgstr "Could not load your charges."
+
 msgid "Could not log the parcel."
 msgstr "Could not log the parcel."
 
@@ -1618,6 +1693,9 @@ msgstr "Could not record the expense."
 msgid "Could not record the payment."
 msgstr "Could not record the payment."
 
+msgid "Could not record the payout."
+msgstr "Could not record the payout."
+
 msgid "Could not record the proxy."
 msgstr "Could not record the proxy."
 
@@ -1626,6 +1704,9 @@ msgstr "Could not record the refund."
 
 msgid "Could not record the transfer."
 msgstr "Could not record the transfer."
+
+msgid "Could not refund the payment."
+msgstr "Could not refund the payment."
 
 msgid "Could not register the visitor."
 msgstr "Could not register the visitor."
@@ -1672,6 +1753,9 @@ msgstr "Could not save the poll."
 msgid "Could not save the recurring visitor."
 msgstr "Could not save the recurring visitor."
 
+msgid "Could not save the setting."
+msgstr "Could not save the setting."
+
 msgid "Could not save the settings."
 msgstr "Could not save the settings."
 
@@ -1683,6 +1767,9 @@ msgstr "Could not save your answer."
 
 msgid "Could not save your preferences."
 msgstr "Could not save your preferences."
+
+msgid "Could not save your profile."
+msgstr "Could not save your profile."
 
 msgid "Could not send the call."
 msgstr "Could not send the call."
@@ -1713,6 +1800,9 @@ msgstr "Could not sign out. Please try again."
 
 msgid "Could not start the assembly."
 msgstr "Could not start the assembly."
+
+msgid "Could not start the card payment. Please try again."
+msgstr "Could not start the card payment. Please try again."
 
 msgid "Could not start the rebuild."
 msgstr "Could not start the rebuild."
@@ -1850,6 +1940,9 @@ msgstr "Date"
 
 msgid "Date and place"
 msgstr "Date and place"
+
+msgid "Date the money arrived"
+msgstr "Date the money arrived"
 
 msgid "Date you paid"
 msgstr "Date you paid"
@@ -2083,6 +2176,9 @@ msgstr "Disabled"
 msgid "Dismiss"
 msgstr "Dismiss"
 
+msgid "Display name"
+msgstr "Display name"
+
 msgid "Dissent text"
 msgstr "Dissent text"
 
@@ -2196,6 +2292,9 @@ msgstr "Dunning stages"
 
 msgid "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
 msgstr "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
+
+msgid "Each site, into its own account (default)"
+msgstr "Each site, into its own account (default)"
 
 msgid "Each unit counts by its floor area. Change areas on the unit pages."
 msgstr "Each unit counts by its floor area. Change areas on the unit pages."
@@ -2515,6 +2614,9 @@ msgstr "Event"
 msgid "Events"
 msgstr "Events"
 
+msgid "Every card payment residents started for this site. A payment that arrives late still counts: the checkout turns to paid."
+msgstr "Every card payment residents started for this site. A payment that arrives late still counts: the checkout turns to paid."
+
 msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 msgstr "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 
@@ -2535,6 +2637,9 @@ msgstr "Everyone"
 
 msgid "Everything is matched"
 msgstr "Everything is matched"
+
+msgid "Everything that is open"
+msgstr "Everything that is open"
 
 msgid "Everything this pack provides stops working for your organization until you enable it again. Your settings are kept."
 msgstr "Everything this pack provides stops working for your organization until you enable it again. Your settings are kept."
@@ -2709,6 +2814,9 @@ msgstr "Folder settings"
 msgid "Folders"
 msgstr "Folders"
 
+msgid "Follow the organization"
+msgstr "Follow the organization"
+
 msgid "For"
 msgstr "For"
 
@@ -2720,6 +2828,9 @@ msgstr "For discussion"
 
 msgid "For information"
 msgstr "For information"
+
+msgid "For this site"
+msgstr "For this site"
 
 msgid "Four fifths"
 msgstr "Four fifths"
@@ -2817,6 +2928,9 @@ msgstr "Governance sections"
 msgid "Grace days"
 msgstr "Grace days"
 
+msgid "Gross"
+msgstr "Gross"
+
 msgid "Guard"
 msgstr "Guard"
 
@@ -2849,6 +2963,9 @@ msgstr "Heading"
 
 msgid "Health"
 msgstr "Health"
+
+msgid "Held for this site, not passed on"
+msgstr "Held for this site, not passed on"
 
 msgid "Hide"
 msgstr "Hide"
@@ -3255,6 +3372,9 @@ msgstr "Loading all units and values: {loadedUnits} units, {loadedValues} values
 msgid "Loading charges…"
 msgstr "Loading charges…"
 
+msgid "Loading your open charges…"
+msgstr "Loading your open charges…"
+
 msgid "Lock date"
 msgstr "Lock date"
 
@@ -3393,6 +3513,9 @@ msgstr "mock"
 msgid "Money"
 msgstr "Money"
 
+msgid "Money from card payments is still on its way, and switching now would leave it with the wrong account. Settle the following first, then try again."
+msgstr "Money from card payments is still on its way, and switching now would leave it with the wrong account. Settle the following first, then try again."
+
 msgid "Money overview"
 msgstr "Money overview"
 
@@ -3429,6 +3552,9 @@ msgstr "More than {0}% needed: met."
 #. placeholder {0}: v.requiredSharePct
 msgid "More than {0}% needed."
 msgstr "More than {0}% needed."
+
+msgid "More than you owe becomes a prepayment credit."
+msgstr "More than you owe becomes a prepayment credit."
 
 msgid "More yes than no among those present"
 msgstr "More yes than no among those present"
@@ -3498,6 +3624,9 @@ msgstr "My balance"
 msgid "My call letter"
 msgstr "My call letter"
 
+msgid "My card payments"
+msgstr "My card payments"
+
 msgid "My check-in code"
 msgstr "My check-in code"
 
@@ -3544,6 +3673,9 @@ msgstr "Needs"
 
 msgid "Needs attention"
 msgstr "Needs attention"
+
+msgid "Net to this site"
+msgstr "Net to this site"
 
 msgid "Net: <0/>"
 msgstr "Net: <0/>"
@@ -3720,6 +3852,12 @@ msgstr "No bookings in this period."
 msgid "No budget lines yet"
 msgstr "No budget lines yet"
 
+msgid "No card checkouts yet"
+msgstr "No card checkouts yet"
+
+msgid "No card payments yet"
+msgstr "No card payments yet"
+
 msgid "No cases"
 msgstr "No cases"
 
@@ -3728,6 +3866,9 @@ msgstr "No cash boxes yet"
 
 msgid "No charges match"
 msgstr "No charges match"
+
+msgid "No checkouts with this status"
+msgstr "No checkouts with this status"
 
 msgid "No claims waiting"
 msgstr "No claims waiting"
@@ -3853,6 +3994,9 @@ msgstr "No payments match."
 msgid "No payments yet"
 msgstr "No payments yet"
 
+msgid "No payouts yet"
+msgstr "No payouts yet"
+
 msgid "No people yet"
 msgstr "No people yet"
 
@@ -3868,8 +4012,14 @@ msgstr "No postings yet"
 msgid "No preference"
 msgstr "No preference"
 
+msgid "No privacy texts are published for this organization."
+msgstr "No privacy texts are published for this organization."
+
 msgid "No problems found."
 msgstr "No problems found."
+
+msgid "No provider has handled money for this site yet."
+msgstr "No provider has handled money for this site yet."
 
 msgid "No rates yet"
 msgstr "No rates yet"
@@ -4054,6 +4204,9 @@ msgstr "Nothing has been sent to this endpoint yet."
 msgid "Nothing here yet"
 msgstr "Nothing here yet"
 
+msgid "Nothing is open on this side."
+msgstr "Nothing is open on this side."
+
 msgid "Nothing is waiting for you."
 msgstr "Nothing is waiting for you."
 
@@ -4074,6 +4227,9 @@ msgstr "Nothing to show"
 
 msgid "Nothing to show for this period"
 msgstr "Nothing to show for this period"
+
+msgid "Nothing was lost. Check your statement or your notifications, or try again."
+msgstr "Nothing was lost. Check your statement or your notifications, or try again."
 
 msgid "Nothing yet."
 msgstr "Nothing yet."
@@ -4163,6 +4319,9 @@ msgstr "One-off"
 msgid "Online"
 msgstr "Online"
 
+msgid "Only an organization administrator can change this."
+msgstr "Only an organization administrator can change this."
+
 msgid "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
 msgstr "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
 
@@ -4206,6 +4365,9 @@ msgstr "Open common tickets"
 msgid "Open for booking"
 msgstr "Open for booking"
 
+msgid "Open it from the link the payment provider sent you back to, or start again from Pay."
+msgstr "Open it from the link the payment provider sent you back to, or start again from Pay."
+
 msgid "Open menu"
 msgstr "Open menu"
 
@@ -4228,6 +4390,9 @@ msgstr "Open the assembly"
 
 msgid "Open the second call"
 msgstr "Open the second call"
+
+msgid "Open the settlements and client money view"
+msgstr "Open the settlements and client money view"
 
 msgid "Open ticket"
 msgstr "Open ticket"
@@ -4312,6 +4477,9 @@ msgstr "Organization"
 
 msgid "Organization admin"
 msgstr "Organization admin"
+
+msgid "Organization collects"
+msgstr "Organization collects"
 
 msgid "Organization created."
 msgstr "Organization created."
@@ -4437,6 +4605,9 @@ msgstr "Paid from"
 msgid "Paid on"
 msgstr "Paid on"
 
+msgid "Paid out to the site so far"
+msgstr "Paid out to the site so far"
+
 msgid "Parcel"
 msgstr "Parcel"
 
@@ -4480,6 +4651,12 @@ msgstr "Pay"
 msgid "Pay bill"
 msgstr "Pay bill"
 
+msgid "Pay by card"
+msgstr "Pay by card"
+
+msgid "Pay your open charges, chosen charges or an amount with your card. The payment page is run by the payment provider, and the receipt arrives as soon as it is confirmed."
+msgstr "Pay your open charges, chosen charges or an amount with your card. The payment page is run by the payment provider, and the receipt arrives as soon as it is confirmed."
+
 msgid "Payer"
 msgstr "Payer"
 
@@ -4497,6 +4674,9 @@ msgstr "Payment confirmed"
 
 msgid "Payment receipts"
 msgstr "Payment receipts"
+
+msgid "Payment received"
+msgstr "Payment received"
 
 msgid "Payment recorded"
 msgstr "Payment recorded"
@@ -4650,6 +4830,9 @@ msgstr "Preferences"
 msgid "Preferred channel"
 msgstr "Preferred channel"
 
+msgid "Preferred language"
+msgstr "Preferred language"
+
 msgid "Prepayment credit"
 msgstr "Prepayment credit"
 
@@ -4690,6 +4873,18 @@ msgstr "Print poster"
 msgid "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
 msgstr "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
 
+msgid "Privacy"
+msgstr "Privacy"
+
+msgid "Privacy notice"
+msgstr "Privacy notice"
+
+msgid "Privacy notice and consent texts"
+msgstr "Privacy notice and consent texts"
+
+msgid "Privacy notice and consents"
+msgstr "Privacy notice and consents"
+
 msgid "Private"
 msgstr "Private"
 
@@ -4708,6 +4903,9 @@ msgstr "Private: that unit and management"
 msgid "Profile"
 msgstr "Profile"
 
+msgid "Profile saved."
+msgstr "Profile saved."
+
 msgid "Progress"
 msgstr "Progress"
 
@@ -4719,6 +4917,15 @@ msgstr "Proof (photo or PDF)"
 
 msgid "Proof attached"
 msgstr "Proof attached"
+
+msgid "Provider"
+msgstr "Provider"
+
+msgid "provider confirmed <0/>"
+msgstr "provider confirmed <0/>"
+
+msgid "Provider payouts"
+msgstr "Provider payouts"
 
 msgid "Provides"
 msgstr "Provides"
@@ -4900,6 +5107,12 @@ msgstr "Record for selected today"
 msgid "Record payment"
 msgstr "Record payment"
 
+msgid "Record payout"
+msgstr "Record payout"
+
+msgid "Record payout to site"
+msgstr "Record payout to site"
+
 msgid "Record proxy"
 msgstr "Record proxy"
 
@@ -4914,6 +5127,9 @@ msgstr "Record what the site spends: electricity, cleaning, repairs."
 
 msgid "Recurring"
 msgstr "Recurring"
+
+msgid "Reference"
+msgstr "Reference"
 
 msgid "Reference (optional)"
 msgstr "Reference (optional)"
@@ -4936,6 +5152,12 @@ msgstr "Refund a credit"
 
 msgid "Refund recorded."
 msgstr "Refund recorded."
+
+msgid "Refund the payment"
+msgstr "Refund the payment"
+
+msgid "Refund this card payment?"
+msgstr "Refund this card payment?"
 
 msgid "Refunded"
 msgstr "Refunded"
@@ -5149,6 +5371,12 @@ msgstr "Revoke this permission?"
 msgid "Revoked"
 msgstr "Revoked"
 
+msgid "Right now the organization collects this site's card payments centrally and holds the money as client money until it is passed on."
+msgstr "Right now the organization collects this site's card payments centrally and holds the money as client money until it is passed on."
+
+msgid "Right now this site collects its own card payments into its provider account."
+msgstr "Right now this site collects its own card payments into its provider account."
+
 msgid "Role"
 msgstr "Role"
 
@@ -5256,6 +5484,9 @@ msgstr "Save plan"
 
 msgid "Save policy"
 msgstr "Save policy"
+
+msgid "Save profile"
+msgstr "Save profile"
 
 msgid "Save settings"
 msgstr "Save settings"
@@ -5383,6 +5614,9 @@ msgstr "Second meeting: latest, days after the first"
 msgid "Section"
 msgstr "Section"
 
+msgid "See my statement"
+msgstr "See my statement"
+
 msgid "See statement"
 msgstr "See statement"
 
@@ -5504,8 +5738,14 @@ msgstr "Settings saved."
 msgid "Settings sections"
 msgstr "Settings sections"
 
+msgid "Settled on"
+msgstr "Settled on"
+
 msgid "Settlement"
 msgstr "Settlement"
+
+msgid "Settlements"
+msgstr "Settlements"
 
 msgid "Setup"
 msgstr "Setup"
@@ -5565,6 +5805,15 @@ msgstr "Showing the first 200 charges. Narrow the filters to see the rest."
 msgid "Showing the first 200 payments. Filter by status to narrow the list."
 msgstr "Showing the first 200 payments. Filter by status to narrow the list."
 
+msgid "Showing the newest 200 payouts. Filter by provider to narrow the list."
+msgstr "Showing the newest 200 payouts. Filter by provider to narrow the list."
+
+msgid "Showing the oldest 200 card payments."
+msgstr "Showing the oldest 200 card payments."
+
+msgid "Showing the oldest 200 checkouts. Filter by status to narrow the list."
+msgstr "Showing the oldest 200 checkouts. Filter by status to narrow the list."
+
 msgid "Side"
 msgstr "Side"
 
@@ -5594,6 +5843,9 @@ msgstr "Signing you in"
 
 msgid "Site"
 msgstr "Site"
+
+msgid "Site collects"
+msgstr "Site collects"
 
 msgid "Site manager"
 msgstr "Site manager"
@@ -5702,6 +5954,9 @@ msgstr "Start the assembly"
 msgid "Start the shift"
 msgstr "Start the shift"
 
+msgid "Started"
+msgstr "Started"
+
 msgid "Starts"
 msgstr "Starts"
 
@@ -5757,6 +6012,9 @@ msgstr "Steps"
 
 msgid "Still in the box"
 msgstr "Still in the box"
+
+msgid "Still waiting for the provider"
+msgstr "Still waiting for the provider"
 
 msgid "Stop camera"
 msgstr "Stop camera"
@@ -5818,6 +6076,9 @@ msgstr "tagged units"
 msgid "Taken"
 msgstr "Taken"
 
+msgid "Taking you to the payment page…"
+msgstr "Taking you to the payment page…"
+
 msgid "Target type"
 msgstr "Target type"
 
@@ -5866,6 +6127,9 @@ msgstr "Terms ending soon"
 msgid "Test ping sent"
 msgstr "Test ping sent"
 
+msgid "Thank you. We received <0/> by card."
+msgstr "Thank you. We received <0/> by card."
+
 msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
 msgstr "Thank you. Your manager will confirm the payment when it shows up in the bank."
 
@@ -5905,6 +6169,9 @@ msgstr "The agent's clock is wrong."
 msgid "The allow-list is being rebuilt."
 msgstr "The allow-list is being rebuilt."
 
+msgid "The amount cannot be more than the client money held for the site."
+msgstr "The amount cannot be more than the client money held for the site."
+
 msgid "The amount is more than the accrued fee."
 msgstr "The amount is more than the accrued fee."
 
@@ -5939,6 +6206,9 @@ msgstr "The call must go out at least {0} days before the meeting. Move the date
 msgid "The camera is not available ({error}). Type the code instead."
 msgstr "The camera is not available ({error}). Type the code instead."
 
+msgid "The card payments you started, and where each one stands."
+msgstr "The card payments you started, and where each one stands."
+
 msgid "The change has been created."
 msgstr "The change has been created."
 
@@ -5956,6 +6226,9 @@ msgstr "The code is switched off, so there is no poster to print."
 
 msgid "The data is in. You can review it on the units and people pages."
 msgstr "The data is in. You can review it on the units and people pages."
+
+msgid "The date cannot be in the future."
+msgstr "The date cannot be in the future."
 
 msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
 msgstr "The decisions go to the owners who were not present. Each delivery is recorded like the call."
@@ -6058,6 +6331,12 @@ msgstr "The list is derived from vehicles and visitors. Only tags and PINs are c
 msgid "The list of units is not available to this account."
 msgstr "The list of units is not available to this account."
 
+msgid "The merchant of record cannot change while money is on its way."
+msgstr "The merchant of record cannot change while money is on its way."
+
+msgid "The merchant of record cannot change yet"
+msgstr "The merchant of record cannot change yet"
+
 msgid "The minutes can be generated once the assembly is closed."
 msgstr "The minutes can be generated once the assembly is closed."
 
@@ -6082,11 +6361,17 @@ msgstr "The opening balances were imported."
 msgid "The opening log is not available."
 msgstr "The opening log is not available."
 
+msgid "The organization collects centrally"
+msgstr "The organization collects centrally"
+
 msgid "The organization has no sites yet."
 msgstr "The organization has no sites yet."
 
 msgid "The organization has reached its limit of 20 endpoints."
 msgstr "The organization has reached its limit of 20 endpoints."
+
+msgid "The organization, centrally (client money)"
+msgstr "The organization, centrally (client money)"
 
 msgid "The pack could not apply these settings."
 msgstr "The pack could not apply these settings."
@@ -6096,6 +6381,30 @@ msgstr "The page you are looking for does not exist or has moved."
 
 msgid "The pass was cancelled."
 msgstr "The pass was cancelled."
+
+msgid "The payment did not go through"
+msgstr "The payment did not go through"
+
+msgid "The payment page expired"
+msgstr "The payment page expired"
+
+msgid "The payment provider could not complete this. Please try again later."
+msgstr "The payment provider could not complete this. Please try again later."
+
+msgid "The payment was not completed in time. Nothing was charged."
+msgstr "The payment was not completed in time. Nothing was charged."
+
+msgid "The payment was refunded."
+msgstr "The payment was refunded."
+
+msgid "The payment window has closed and the provider has not confirmed a payment yet. If your card was charged, it can still show up in a few minutes and you will get a notification with the receipt."
+msgstr "The payment window has closed and the provider has not confirmed a payment yet. If your card was charged, it can still show up in a few minutes and you will get a notification with the receipt."
+
+msgid "The payment's version is missing. Reload the page."
+msgstr "The payment's version is missing. Reload the page."
+
+msgid "The payout was recorded."
+msgstr "The payout was recorded."
 
 msgid "The permission was revoked."
 msgstr "The permission was revoked."
@@ -6121,6 +6430,15 @@ msgstr "The preview is not available for these settings yet."
 #. placeholder {0}: formatInstant(revealed.previousExpiresAt, i18n.locale)
 msgid "The previous secret keeps signing until <0>{0}</0>. Every call carries both signatures until then."
 msgstr "The previous secret keeps signing until <0>{0}</0>. Every call carries both signatures until then."
+
+msgid "The provider confirmed <0/> instead of the <1/> you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+msgstr "The provider confirmed <0/> instead of the <1/> you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+
+msgid "The provider confirmed a different amount than the one you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+msgstr "The provider confirmed a different amount than the one you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+
+msgid "The provider could not complete the payment. Nothing was charged."
+msgstr "The provider could not complete the payment. Nothing was charged."
 
 msgid "The QR code could not be rotated."
 msgstr "The QR code could not be rotated."
@@ -6176,6 +6494,9 @@ msgstr "The settings were refused. Check the values and try again."
 msgid "The side's person"
 msgstr "The side's person"
 
+msgid "The site collects card payments into its own provider account, so the organization holds no client money for it."
+msgstr "The site collects card payments into its own provider account, so the organization holds no client money for it."
+
 msgid "The site has not published bank details yet. Ask your manager how to pay."
 msgstr "The site has not published bank details yet. Ask your manager how to pay."
 
@@ -6197,6 +6518,9 @@ msgstr "The table on the right updates as you change the amount or split rule."
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 
+msgid "The texts your organization uses to tell you how your data is handled, in the language you pick."
+msgstr "The texts your organization uses to tell you how your data is handled, in the language you pick."
+
 msgid "The transfer could not be started. Please try again."
 msgstr "The transfer could not be started. Please try again."
 
@@ -6208,6 +6532,9 @@ msgstr "The values could not be saved. Check them and try again."
 
 msgid "The visit must end after it starts."
 msgstr "The visit must end after it starts."
+
+msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
+msgstr "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
 
 msgid "Theme"
 msgstr "Theme"
@@ -6227,6 +6554,12 @@ msgstr "These columns have values that are not whole numbers: {0}. Write amounts
 
 msgid "These neighbours chose to be listed."
 msgstr "These neighbours chose to be listed."
+
+msgid "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
+msgstr "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
+
+msgid "They appear here once a resident pays by card."
+msgstr "They appear here once a resident pays by card."
 
 msgid "They receive a link to set a password and join the site."
 msgstr "They receive a link to set a password and join the site."
@@ -6309,6 +6642,9 @@ msgstr "This pack has no settings."
 msgid "This pack has not filled in any site setting, or the sites changed them."
 msgstr "This pack has not filled in any site setting, or the sites changed them."
 
+msgid "This page needs a payment to look up"
+msgstr "This page needs a payment to look up"
+
 msgid "This pass is for another site."
 msgstr "This pass is for another site."
 
@@ -6320,6 +6656,12 @@ msgstr "This pass was already used."
 
 msgid "This pass was cancelled or revoked."
 msgstr "This pass was cancelled or revoked."
+
+msgid "This payment cannot be refunded (it is not a confirmed card payment, or it changed). Reload and try again."
+msgstr "This payment cannot be refunded (it is not a confirmed card payment, or it changed). Reload and try again."
+
+msgid "This payment was refunded"
+msgstr "This payment was refunded"
 
 msgid "This period is locked."
 msgstr "This period is locked."
@@ -6359,6 +6701,9 @@ msgstr "This setting is not known to the pack"
 
 msgid "This side has no open charges; the payment becomes credit."
 msgstr "This side has no open charges; the payment becomes credit."
+
+msgid "This site collects into its own account"
+msgstr "This site collects into its own account"
 
 msgid "This site has its own workflow."
 msgstr "This site has its own workflow."
@@ -6520,6 +6865,9 @@ msgstr "Topic"
 
 msgid "Total"
 msgstr "Total"
+
+msgid "Total <0/>"
+msgstr "Total <0/>"
 
 #. placeholder {0}: preview.unit_count
 msgid "Total <0/> across {0} units"
@@ -6803,6 +7151,10 @@ msgstr "Vendor payable"
 msgid "Vendors"
 msgstr "Vendors"
 
+#. placeholder {0}: c.version
+msgid "Version {0}"
+msgstr "Version {0}"
+
 msgid "View"
 msgstr "View"
 
@@ -6889,6 +7241,9 @@ msgstr "Votes and proxies"
 msgid "Waiting"
 msgstr "Waiting"
 
+msgid "Waiting at the providers"
+msgstr "Waiting at the providers"
+
 msgid "Waiting deliveries"
 msgstr "Waiting deliveries"
 
@@ -6933,8 +7288,14 @@ msgstr "Waivers above this ask for re-authentication"
 msgid "Walk-in visitor"
 msgstr "Walk-in visitor"
 
+msgid "We could not check your payment"
+msgstr "We could not check your payment"
+
 msgid "We could not find that."
 msgstr "We could not find that."
+
+msgid "We could not find this payment"
+msgstr "We could not find this payment"
 
 msgid "We could not send the code. Please try again."
 msgstr "We could not send the code. Please try again."
@@ -6981,11 +7342,17 @@ msgstr "What people say, for example A-12."
 msgid "What should be created"
 msgstr "What should be created"
 
+msgid "What the payment providers have not paid out yet, the client money held for this site, and the payouts posted so far."
+msgstr "What the payment providers have not paid out yet, the client money held for this site, and the payouts posted so far."
+
 msgid "What to fix"
 msgstr "What to fix"
 
 msgid "What to import"
 msgstr "What to import"
+
+msgid "What to pay"
+msgstr "What to pay"
 
 msgid "What was it for?"
 msgstr "What was it for?"
@@ -7016,6 +7383,9 @@ msgstr "When the guard asks about an unexpected visitor, the request shows up he
 
 msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
 msgstr "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
+
+msgid "When you pay by card, it shows up here."
+msgstr "When you pay by card, it shows up here."
 
 msgid "Where do tickets of removed statuses go?"
 msgstr "Where do tickets of removed statuses go?"
@@ -7177,6 +7547,13 @@ msgstr "You get a QR code to send to your guest. The guard scans it at the gate.
 msgid "You may not open gates."
 msgstr "You may not open gates."
 
+msgid "You may not refund payments."
+msgstr "You may not refund payments."
+
+#. placeholder {0}: ctx.siteName
+msgid "You passed client money on to {0}'s bank account. The balance the organization owes the site goes down by this amount (now <0/>)."
+msgstr "You passed client money on to {0}'s bank account. The balance the organization owes the site goes down by this amount (now <0/>)."
+
 msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr "You see everyone as a manager. Residents only see the people who chose to be listed."
 
@@ -7192,17 +7569,26 @@ msgstr "You will be able to create or link your account here."
 msgid "You will be asked to confirm your password. The key is shown once after you create it."
 msgstr "You will be asked to confirm your password. The key is shown once after you create it."
 
+msgid "You will go to the payment provider's page to enter your card. Your card details never reach this site."
+msgstr "You will go to the payment provider's page to enter your card. Your card details never reach this site."
+
 msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
 msgstr "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
 
 msgid "Your answer was saved."
 msgstr "Your answer was saved."
 
+msgid "Your card was declined. Nothing was charged."
+msgstr "Your card was declined. Nothing was charged."
+
 msgid "Your dashboard is on its way"
 msgstr "Your dashboard is on its way"
 
 msgid "Your new API key"
 msgstr "Your new API key"
+
+msgid "Your open charges are paid oldest first. Today you owe <0/>."
+msgstr "Your open charges are paid oldest first. Today you owe <0/>."
 
 msgid "Your sign-in link will be completed here."
 msgstr "Your sign-in link will be completed here."

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
+import { OrgMerchantCard } from './MerchantOfRecord'
 
 export function OrganizationSettings() {
   const { t } = useLingui()
@@ -81,45 +82,48 @@ export function OrganizationSettings() {
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
   const errors = form.formState.errors
   return (
-    <Card className="max-w-xl" key={saved}>
-      <CardHeader>
-        <CardTitle>
-          <Trans>Organization</Trans>
-        </CardTitle>
-        <CardDescription>
-          <Trans>
-            Timezone {query.data.timezone}, country {query.data.country_code}. Site settings live
-            under{' '}
-            <Link to="/orgs/$orgId/settings/site" params={{ orgId }} className="underline">
-              Site
-            </Link>
-            .
-          </Trans>
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          className="flex flex-col gap-4"
-          noValidate
-          onSubmit={(e) => void form.handleSubmit((v) => save.mutate(v))(e)}
-        >
-          <FormField id="org-name" label={<Trans>Name</Trans>} error={errors.name?.message}>
-            <Input id="org-name" disabled={!canManage} {...form.register('name')} />
-          </FormField>
-          <FormField id="org-locale" label={<Trans>Default language</Trans>}>
-            <Select id="org-locale" disabled={!canManage} {...form.register('default_locale')}>
-              <option value="tr">Türkçe</option>
-              <option value="en">English</option>
-            </Select>
-          </FormField>
-          <FormError message={errors.root?.message} />
-          {canManage ? (
-            <SubmitButton busy={save.isPending} className="w-fit">
-              <Trans>Save</Trans>
-            </SubmitButton>
-          ) : null}
-        </form>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-6">
+      <Card className="max-w-xl" key={saved}>
+        <CardHeader>
+          <CardTitle>
+            <Trans>Organization</Trans>
+          </CardTitle>
+          <CardDescription>
+            <Trans>
+              Timezone {query.data.timezone}, country {query.data.country_code}. Site settings live
+              under{' '}
+              <Link to="/orgs/$orgId/settings/site" params={{ orgId }} className="underline">
+                Site
+              </Link>
+              .
+            </Trans>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            className="flex flex-col gap-4"
+            noValidate
+            onSubmit={(e) => void form.handleSubmit((v) => save.mutate(v))(e)}
+          >
+            <FormField id="org-name" label={<Trans>Name</Trans>} error={errors.name?.message}>
+              <Input id="org-name" disabled={!canManage} {...form.register('name')} />
+            </FormField>
+            <FormField id="org-locale" label={<Trans>Default language</Trans>}>
+              <Select id="org-locale" disabled={!canManage} {...form.register('default_locale')}>
+                <option value="tr">Türkçe</option>
+                <option value="en">English</option>
+              </Select>
+            </FormField>
+            <FormError message={errors.root?.message} />
+            {canManage ? (
+              <SubmitButton busy={save.isPending} className="w-fit">
+                <Trans>Save</Trans>
+              </SubmitButton>
+            ) : null}
+          </form>
+        </CardContent>
+      </Card>
+      <OrgMerchantCard key={query.data.version} org={query.data} canManage={canManage} />
+    </div>
   )
 }

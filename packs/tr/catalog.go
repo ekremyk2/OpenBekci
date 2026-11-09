@@ -54,10 +54,15 @@ var labelsTR = map[string]string{
 	"tr.consent_financial": "Mali bilgiler için açık rıza",
 	"tr.consent_camera":    "Kamera ve ziyaretçi kayıtları için açık rıza",
 
-	"tr.settings.kvkk_data_controller": "KVKK veri sorumlusu",
-	"tr.settings.iyzico":               "iyzico ile kartla ödeme",
-	"tr.settings.iletimerkezi":         "İleti Merkezi SMS",
-	"tr.settings.bank_formats":         "Banka ekstre biçimleri",
+	"tr.settings.kvkk_data_controller":     "KVKK veri sorumlusu",
+	"tr.settings.iyzico":                   "iyzico ile kartla ödeme",
+	"tr.settings.iletimerkezi":             "İleti Merkezi SMS",
+	"tr.settings.bank_formats":             "Banka ekstre biçimleri",
+	"tr.settings.iyzico_callback_base_url": "Sunucunun herkese açık adresi (iyzico geri çağrısı için)",
+	"tr.iyzico":                            "iyzico (kart)",
+	"tr.iletimerkezi":                      "İleti Merkezi SMS",
+	"tr.ziraat":                            "Ziraat Bankası ekstresi",
+	"tr.isbank":                            "İş Bankası ekstresi",
 }
 
 var labelsEN = map[string]string{
@@ -102,10 +107,15 @@ var labelsEN = map[string]string{
 	"tr.consent_financial": "Explicit consent: financial data",
 	"tr.consent_camera":    "Explicit consent: camera and visitor logs",
 
-	"tr.settings.kvkk_data_controller": "KVKK data controller",
-	"tr.settings.iyzico":               "Card payments with iyzico",
-	"tr.settings.iletimerkezi":         "İleti Merkezi SMS",
-	"tr.settings.bank_formats":         "Bank statement formats",
+	"tr.settings.kvkk_data_controller":     "KVKK data controller",
+	"tr.settings.iyzico":                   "Card payments with iyzico",
+	"tr.settings.iletimerkezi":             "İleti Merkezi SMS",
+	"tr.settings.bank_formats":             "Bank statement formats",
+	"tr.settings.iyzico_callback_base_url": "Public address of the server (for the iyzico callback)",
+	"tr.iyzico":                            "iyzico (card)",
+	"tr.iletimerkezi":                      "İleti Merkezi SMS",
+	"tr.ziraat":                            "Ziraat Bankası statement",
+	"tr.isbank":                            "İş Bankası statement",
 }
 
 // Labels implements sdk.Catalog. Turkish and English are supplied; the host

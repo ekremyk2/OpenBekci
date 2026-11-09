@@ -35,7 +35,7 @@ describe('settings', () => {
     const name = await screen.findByLabelText('Name')
     await userEvent.clear(name)
     await userEvent.type(name, 'Yeni Yönetim')
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await userEvent.click(screen.getAllByRole('button', { name: 'Save' })[0]!)
     await waitFor(() => expect(db.org.name).toBe('Yeni Yönetim'))
   })
 

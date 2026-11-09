@@ -153,6 +153,15 @@ msgstr "+{rest} daha"
 msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
 msgstr "<0/> alındı, <1/> tahakkuklara uygulandı, <2/> alacak olarak tutuldu."
 
+msgid "<0/> went back to your card."
+msgstr "<0/> kartınıza iade edildi."
+
+msgid "<0>{name}</0>: the organization holds <1/> for the site as client money (account {account}). Record the payout to the site, then try again."
+msgstr "<0>{name}</0>: kuruluş site adına <1/> müşteri parası olarak tutuyor (hesap {account}). Siteye yapılan ödemeyi kaydedin, sonra yeniden deneyin."
+
+msgid "<0>{name}</0>: the payment provider has not paid out <1/> yet (clearing account {account}). Wait until the payout is posted."
+msgstr "<0>{name}</0>: ödeme sağlayıcı henüz <1/> ödemedi (takas hesabı {account}). Ödeme kaydedilene kadar bekleyin."
+
 msgid "A block that still has units cannot be deleted."
 msgstr "Hâlâ birimi olan bir blok silinemez."
 
@@ -213,6 +222,9 @@ msgstr "Kapıda bir kargo kaydedilir"
 
 msgid "A payment is recorded"
 msgstr "Bir ödeme kaydedilir"
+
+msgid "A periodic job posts each provider's payouts here."
+msgstr "Düzenli bir iş, her sağlayıcının ödemelerini buraya işler."
 
 msgid "A person"
 msgstr "Bir kişi"
@@ -502,6 +514,9 @@ msgstr "Tüm paketler"
 msgid "All points"
 msgstr "Tüm noktalar"
 
+msgid "All providers"
+msgstr "Tüm sağlayıcılar"
+
 msgid "All sites"
 msgstr "Tüm siteler"
 
@@ -544,6 +559,9 @@ msgstr "Tutar"
 msgid "Amount (partial payments are fine)"
 msgstr "Tutar (kısmi ödeme olabilir)"
 
+msgid "Amount differs"
+msgstr "Tutar farklı"
+
 msgid "Amount is"
 msgstr "Tutar şudur"
 
@@ -561,6 +579,9 @@ msgstr "Ödediğiniz tutar"
 
 msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
 msgstr "Tutarlar, en küçük para biriminde ve ayraçsız tam sayılardır: {exampleMinor}, {exampleFormatted} demektir."
+
+msgid "An amount"
+msgstr "Bir tutar"
 
 msgid "An announcement is published"
 msgstr "Bir duyuru yayımlanır"
@@ -783,6 +804,12 @@ msgstr "Otomatiğe dön"
 msgid "Back to columns"
 msgstr "Sütunlara dön"
 
+msgid "Back to my account"
+msgstr "Hesabıma dön"
+
+msgid "Back to Pay"
+msgstr "Ödemeye dön"
+
 msgid "Back to sign in"
 msgstr "Girişe dön"
 
@@ -836,6 +863,9 @@ msgstr "Banka ekstresi aktarımı"
 
 msgid "Bank transfer"
 msgstr "Banka havalesi"
+
+msgid "Bank transfer reference"
+msgstr "Banka havalesi açıklaması"
 
 msgid "Becomes a charge when the booking is confirmed. Empty: free."
 msgstr "Rezervasyon onaylandığında tahakkuk olur. Boş: ücretsiz."
@@ -943,6 +973,9 @@ msgstr "Gönderim"
 msgid "By area"
 msgstr "Alana göre"
 
+msgid "By default each site collects card payments into its own account at the payment provider. A management company can instead collect centrally: the money reaches the company's bank account and is held as client money owed to each site until it is passed on. A single site can differ, see its own settings."
+msgstr "Varsayılan olarak her site kartlı ödemeleri ödeme sağlayıcıdaki kendi hesabına tahsil eder. Bir yönetim şirketi bunun yerine merkezi tahsilat yapabilir: para şirketin banka hesabına gelir ve siteye aktarılana kadar her sitenin alacağı olarak müşteri parası şeklinde tutulur. Tek bir site farklı olabilir, sitenin kendi ayarlarına bakın."
+
 msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
 msgstr "Varsayılan olarak otopark ve depo bir daireye bağlıdır ve kendi aidatı yoktur. Bağımsız bir birim yapmak için bunu temizleyin."
 
@@ -1018,6 +1051,27 @@ msgstr "İptal edildi"
 
 msgid "Card"
 msgstr "Kart"
+
+msgid "Card checkouts"
+msgstr "Kartlı ödeme işlemleri"
+
+msgid "Card payment"
+msgstr "Kartlı ödeme"
+
+msgid "Card payment is not available for this site right now."
+msgstr "Bu site için kartlı ödeme şu anda kullanılamıyor."
+
+msgid "Card payments"
+msgstr "Kartlı ödemeler"
+
+msgid "Card payments received minus the payouts posted: money the provider still owes."
+msgstr "Alınan kartlı ödemeler eksi işlenen ödemeler: sağlayıcının hâlâ borçlu olduğu para."
+
+msgid "Card payments: who collects"
+msgstr "Kartlı ödemeler: kim tahsil eder"
+
+msgid "Card settlements"
+msgstr "Kartlı ödeme mutabakatları"
 
 msgid "Carried debt"
 msgstr "Devredilen borç"
@@ -1151,6 +1205,9 @@ msgstr "Kontrol"
 msgid "Check (dry run)"
 msgstr "Kontrol et (deneme çalıştırması)"
 
+msgid "Check again"
+msgstr "Yeniden kontrol et"
+
 msgid "Check recipients"
 msgstr "Alıcıları denetle"
 
@@ -1250,6 +1307,9 @@ msgstr "En az bir daire seçin"
 msgid "Choose at least one unit."
 msgstr "En az bir daire seçin."
 
+msgid "Choose charges"
+msgstr "Tahakkukları seç"
+
 msgid "Choose charges myself"
 msgstr "Tahakkukları kendim seçeyim"
 
@@ -1321,6 +1381,9 @@ msgstr "{group} seçimini kaldır"
 
 msgid "Clear selection"
 msgstr "Seçimi temizle"
+
+msgid "Client money"
+msgstr "Müşteri parası"
 
 msgid "Clock suspect"
 msgstr "Saat uyumsuz"
@@ -1459,6 +1522,12 @@ msgstr "Doğrulandı. Lütfen işlemi tekrarlayın."
 msgid "Confirmed. Receipt {0}"
 msgstr "Onaylandı. Makbuz {0}"
 
+msgid "Confirming your payment with the provider. This usually takes a few seconds."
+msgstr "Ödemeniz sağlayıcıyla doğrulanıyor. Bu genellikle birkaç saniye sürer."
+
+msgid "Continue to payment"
+msgstr "Ödemeye devam et"
+
 msgid "Copied"
 msgstr "Kopyalandı"
 
@@ -1570,6 +1639,12 @@ msgstr "Tutanak oluşturulamadı."
 msgid "Could not load the decisions."
 msgstr "Kararlar yüklenemedi."
 
+msgid "Could not load the payment."
+msgstr "Ödeme yüklenemedi."
+
+msgid "Could not load your charges."
+msgstr "Tahakkuklarınız yüklenemedi."
+
 msgid "Could not log the parcel."
 msgstr "Paket kaydedilemedi."
 
@@ -1618,6 +1693,9 @@ msgstr "Gider kaydedilemedi."
 msgid "Could not record the payment."
 msgstr "Ödeme kaydedilemedi."
 
+msgid "Could not record the payout."
+msgstr "Ödeme kaydedilemedi."
+
 msgid "Could not record the proxy."
 msgstr "Vekâlet kaydedilemedi."
 
@@ -1626,6 +1704,9 @@ msgstr "İade kaydedilemedi."
 
 msgid "Could not record the transfer."
 msgstr "Virman kaydedilemedi."
+
+msgid "Could not refund the payment."
+msgstr "Ödeme iade edilemedi."
 
 msgid "Could not register the visitor."
 msgstr "Ziyaretçi kaydedilemedi."
@@ -1672,6 +1753,9 @@ msgstr "Anket kaydedilemedi."
 msgid "Could not save the recurring visitor."
 msgstr "Düzenli ziyaretçi kaydedilemedi."
 
+msgid "Could not save the setting."
+msgstr "Ayar kaydedilemedi."
+
 msgid "Could not save the settings."
 msgstr "Ayarlar kaydedilemedi."
 
@@ -1683,6 +1767,9 @@ msgstr "Yanıtınız kaydedilemedi."
 
 msgid "Could not save your preferences."
 msgstr "Tercihleriniz kaydedilemedi."
+
+msgid "Could not save your profile."
+msgstr "Profiliniz kaydedilemedi."
 
 msgid "Could not send the call."
 msgstr "Çağrı gönderilemedi."
@@ -1713,6 +1800,9 @@ msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
 
 msgid "Could not start the assembly."
 msgstr "Toplantı başlatılamadı."
+
+msgid "Could not start the card payment. Please try again."
+msgstr "Kartlı ödeme başlatılamadı. Lütfen yeniden deneyin."
 
 msgid "Could not start the rebuild."
 msgstr "Yeniden oluşturma başlatılamadı."
@@ -1850,6 +1940,9 @@ msgstr "Tarih"
 
 msgid "Date and place"
 msgstr "Tarih ve yer"
+
+msgid "Date the money arrived"
+msgstr "Paranın ulaştığı tarih"
 
 msgid "Date you paid"
 msgstr "Ödediğiniz tarih"
@@ -2083,6 +2176,9 @@ msgstr "Devre dışı"
 msgid "Dismiss"
 msgstr "Kapat"
 
+msgid "Display name"
+msgstr "Görünen ad"
+
 msgid "Dissent text"
 msgstr "Muhalefet metni"
 
@@ -2196,6 +2292,9 @@ msgstr "İhtar aşamaları"
 
 msgid "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
 msgstr "Nakit tahsil eden her kişinin bir kasası vardır. Nakdi teslim etmek veya bankaya yatırmak hesaplar arası bir virmandır."
+
+msgid "Each site, into its own account (default)"
+msgstr "Her site, kendi hesabına (varsayılan)"
 
 msgid "Each unit counts by its floor area. Change areas on the unit pages."
 msgstr "Her birim kendi brüt alanı kadar sayılır. Alanları birim sayfalarından değiştirin."
@@ -2515,6 +2614,9 @@ msgstr "Olay"
 msgid "Events"
 msgstr "Olaylar"
 
+msgid "Every card payment residents started for this site. A payment that arrives late still counts: the checkout turns to paid."
+msgstr "Sakinlerin bu site için başlattığı tüm kartlı ödemeler. Geç gelen ödeme de sayılır: işlem ödendi durumuna geçer."
+
 msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 msgstr "Her makbuz, sitenin boşluksuz sırasında bir sonraki numarayı alır. Hata gerekçeyle iptal edilir, asla silinmez."
 
@@ -2535,6 +2637,9 @@ msgstr "Herkes"
 
 msgid "Everything is matched"
 msgstr "Her şey eşleşti"
+
+msgid "Everything that is open"
+msgstr "Açık olan her şey"
 
 msgid "Everything this pack provides stops working for your organization until you enable it again. Your settings are kept."
 msgstr "Bu paketin sağladığı her şey, yeniden etkinleştirene kadar kuruluşunuz için çalışmaz. Ayarlarınız saklanır."
@@ -2709,6 +2814,9 @@ msgstr "Klasör ayarları"
 msgid "Folders"
 msgstr "Klasörler"
 
+msgid "Follow the organization"
+msgstr "Kuruluşu izle"
+
 msgid "For"
 msgstr "Kim için"
 
@@ -2720,6 +2828,9 @@ msgstr "Görüşme için"
 
 msgid "For information"
 msgstr "Bilgi için"
+
+msgid "For this site"
+msgstr "Bu site için"
 
 msgid "Four fifths"
 msgstr "Beşte dört"
@@ -2817,6 +2928,9 @@ msgstr "Yönetişim bölümleri"
 msgid "Grace days"
 msgstr "Ek gün (tolerans)"
 
+msgid "Gross"
+msgstr "Brüt"
+
 msgid "Guard"
 msgstr "Güvenlik görevlisi"
 
@@ -2849,6 +2963,9 @@ msgstr "Başlık"
 
 msgid "Health"
 msgstr "Sağlık"
+
+msgid "Held for this site, not passed on"
+msgstr "Bu site için tutulan, henüz aktarılmayan"
 
 msgid "Hide"
 msgstr "Gizle"
@@ -3255,6 +3372,9 @@ msgstr "Tüm bağımsız bölümler ve değerler yükleniyor: şimdiye kadar {lo
 msgid "Loading charges…"
 msgstr "Tahakkuklar yükleniyor…"
 
+msgid "Loading your open charges…"
+msgstr "Açık tahakkuklarınız yükleniyor…"
+
 msgid "Lock date"
 msgstr "Kilit tarihi"
 
@@ -3393,6 +3513,9 @@ msgstr "sahte"
 msgid "Money"
 msgstr "Para"
 
+msgid "Money from card payments is still on its way, and switching now would leave it with the wrong account. Settle the following first, then try again."
+msgstr "Kartlı ödemelerden gelen para hâlâ yolda ve şimdi değiştirmek onu yanlış hesapta bırakır. Önce aşağıdakileri kapatın, sonra yeniden deneyin."
+
 msgid "Money overview"
 msgstr "Para özeti"
 
@@ -3429,6 +3552,9 @@ msgstr "Gerekli oran %{0}'dan fazla: sağlandı."
 #. placeholder {0}: v.requiredSharePct
 msgid "More than {0}% needed."
 msgstr "%{0}'dan fazlası gerekli."
+
+msgid "More than you owe becomes a prepayment credit."
+msgstr "Borcunuzdan fazlası ön ödeme alacağı olur."
 
 msgid "More yes than no among those present"
 msgstr "Hazır bulunanlar arasında evet sayısı hayırdan fazla"
@@ -3498,6 +3624,9 @@ msgstr "Bakiyem"
 msgid "My call letter"
 msgstr "Çağrı mektubum"
 
+msgid "My card payments"
+msgstr "Kartlı ödemelerim"
+
 msgid "My check-in code"
 msgstr "Giriş kodum"
 
@@ -3544,6 +3673,9 @@ msgstr "Gerekli"
 
 msgid "Needs attention"
 msgstr "İlgi gerektirenler"
+
+msgid "Net to this site"
+msgstr "Bu siteye net"
 
 msgid "Net: <0/>"
 msgstr "Net: <0/>"
@@ -3720,6 +3852,12 @@ msgstr "Bu dönemde rezervasyon yok."
 msgid "No budget lines yet"
 msgstr "Henüz bütçe satırı yok"
 
+msgid "No card checkouts yet"
+msgstr "Henüz kartlı ödeme işlemi yok"
+
+msgid "No card payments yet"
+msgstr "Henüz kartlı ödeme yok"
+
 msgid "No cases"
 msgstr "Dosya yok"
 
@@ -3728,6 +3866,9 @@ msgstr "Henüz kasa yok"
 
 msgid "No charges match"
 msgstr "Eşleşen tahakkuk yok"
+
+msgid "No checkouts with this status"
+msgstr "Bu durumda ödeme işlemi yok"
 
 msgid "No claims waiting"
 msgstr "Bekleyen talep yok"
@@ -3853,6 +3994,9 @@ msgstr "Eşleşen ödeme yok."
 msgid "No payments yet"
 msgstr "Henüz ödeme yok"
 
+msgid "No payouts yet"
+msgstr "Henüz ödeme yok"
+
 msgid "No people yet"
 msgstr "Henüz kişi yok"
 
@@ -3868,8 +4012,14 @@ msgstr "Henüz kayıt yok"
 msgid "No preference"
 msgstr "Tercih yok"
 
+msgid "No privacy texts are published for this organization."
+msgstr "Bu kuruluş için yayımlanmış gizlilik metni yok."
+
 msgid "No problems found."
 msgstr "Sorun bulunamadı."
+
+msgid "No provider has handled money for this site yet."
+msgstr "Henüz hiçbir sağlayıcı bu site için para işlemedi."
 
 msgid "No rates yet"
 msgstr "Henüz oran yok"
@@ -4054,6 +4204,9 @@ msgstr "Bu uç noktaya henüz bir şey gönderilmedi."
 msgid "Nothing here yet"
 msgstr "Henüz burada bir şey yok"
 
+msgid "Nothing is open on this side."
+msgstr "Bu tarafta açık bir şey yok."
+
 msgid "Nothing is waiting for you."
 msgstr "Sizi bekleyen bir şey yok."
 
@@ -4074,6 +4227,9 @@ msgstr "Gösterilecek bir şey yok"
 
 msgid "Nothing to show for this period"
 msgstr "Bu dönem için gösterilecek bir şey yok"
+
+msgid "Nothing was lost. Check your statement or your notifications, or try again."
+msgstr "Hiçbir şey kaybolmadı. Ekstrenizi veya bildirimlerinizi kontrol edin ya da yeniden deneyin."
 
 msgid "Nothing yet."
 msgstr "Henüz bir şey yok."
@@ -4163,6 +4319,9 @@ msgstr "Tek seferlik"
 msgid "Online"
 msgstr "Çevrim içi"
 
+msgid "Only an organization administrator can change this."
+msgstr "Bunu yalnızca kuruluş yöneticisi değiştirebilir."
+
 msgid "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
 msgstr "Yalnızca herkese açık bir adrese çözümlenen https adresleri kabul edilir. İmza anahtarı, uç noktayı oluşturduktan sonra bir kez gösterilir."
 
@@ -4206,6 +4365,9 @@ msgstr "Açık ortak talepler"
 msgid "Open for booking"
 msgstr "Rezervasyona açık"
 
+msgid "Open it from the link the payment provider sent you back to, or start again from Pay."
+msgstr "Ödeme sağlayıcının sizi yönlendirdiği bağlantıdan açın ya da Öde bölümünden yeniden başlayın."
+
 msgid "Open menu"
 msgstr "Menüyü aç"
 
@@ -4228,6 +4390,9 @@ msgstr "Toplantıyı aç"
 
 msgid "Open the second call"
 msgstr "İkinci toplantıyı aç"
+
+msgid "Open the settlements and client money view"
+msgstr "Mutabakat ve müşteri parası görünümünü aç"
 
 msgid "Open ticket"
 msgstr "Talebi aç"
@@ -4312,6 +4477,9 @@ msgstr "Kuruluş"
 
 msgid "Organization admin"
 msgstr "Kurum yöneticisi"
+
+msgid "Organization collects"
+msgstr "Kuruluş tahsil eder"
 
 msgid "Organization created."
 msgstr "Kuruluş oluşturuldu."
@@ -4437,6 +4605,9 @@ msgstr "Ödeme kaynağı"
 msgid "Paid on"
 msgstr "Ödeme tarihi"
 
+msgid "Paid out to the site so far"
+msgstr "Şimdiye kadar siteye ödenen"
+
 msgid "Parcel"
 msgstr "Paket"
 
@@ -4480,6 +4651,12 @@ msgstr "Öde"
 msgid "Pay bill"
 msgstr "Faturayı öde"
 
+msgid "Pay by card"
+msgstr "Kartla öde"
+
+msgid "Pay your open charges, chosen charges or an amount with your card. The payment page is run by the payment provider, and the receipt arrives as soon as it is confirmed."
+msgstr "Açık tahakkuklarınızı, seçtiğiniz tahakkukları ya da bir tutarı kartınızla ödeyin. Ödeme sayfasını ödeme sağlayıcı işletir; makbuz onaylanır onaylanmaz gelir."
+
 msgid "Payer"
 msgstr "Ödeyen"
 
@@ -4497,6 +4674,9 @@ msgstr "Ödeme onaylandı"
 
 msgid "Payment receipts"
 msgstr "Ödeme makbuzları"
+
+msgid "Payment received"
+msgstr "Ödeme alındı"
 
 msgid "Payment recorded"
 msgstr "Ödeme kaydedildi"
@@ -4650,6 +4830,9 @@ msgstr "Tercihler"
 msgid "Preferred channel"
 msgstr "Tercih edilen kanal"
 
+msgid "Preferred language"
+msgstr "Tercih edilen dil"
+
 msgid "Prepayment credit"
 msgstr "Peşin ödeme alacağı"
 
@@ -4690,6 +4873,18 @@ msgstr "Afişi yazdır"
 msgid "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
 msgstr "Bu afişi ilan panosu için yazdırın veya bağlantıyı sakinlerin grubunda paylaşın. Okutan kişiler kaydolup biriminin kendisine ait olduğunu bildirir; her talebi siz onaylarsınız."
 
+msgid "Privacy"
+msgstr "Gizlilik"
+
+msgid "Privacy notice"
+msgstr "Aydınlatma metni"
+
+msgid "Privacy notice and consent texts"
+msgstr "Aydınlatma metni ve rıza metinleri"
+
+msgid "Privacy notice and consents"
+msgstr "Aydınlatma metni ve rızalar"
+
 msgid "Private"
 msgstr "Özel"
 
@@ -4708,6 +4903,9 @@ msgstr "Özel: o daire ve yönetim"
 msgid "Profile"
 msgstr "Profil"
 
+msgid "Profile saved."
+msgstr "Profil kaydedildi."
+
 msgid "Progress"
 msgstr "İlerleme"
 
@@ -4719,6 +4917,15 @@ msgstr "Kanıt (fotoğraf veya PDF)"
 
 msgid "Proof attached"
 msgstr "Kanıt eklendi"
+
+msgid "Provider"
+msgstr "Sağlayıcı"
+
+msgid "provider confirmed <0/>"
+msgstr "sağlayıcı <0/> onayladı"
+
+msgid "Provider payouts"
+msgstr "Sağlayıcı ödemeleri"
 
 msgid "Provides"
 msgstr "Sağladıkları"
@@ -4900,6 +5107,12 @@ msgstr "Seçilenler için bugün kaydet"
 msgid "Record payment"
 msgstr "Ödemeyi kaydet"
 
+msgid "Record payout"
+msgstr "Ödemeyi kaydet"
+
+msgid "Record payout to site"
+msgstr "Siteye yapılan ödemeyi kaydet"
+
 msgid "Record proxy"
 msgstr "Vekâleti kaydet"
 
@@ -4914,6 +5127,9 @@ msgstr "Sitenin harcadıklarını kaydedin: elektrik, temizlik, onarım."
 
 msgid "Recurring"
 msgstr "Tekrarlayan"
+
+msgid "Reference"
+msgstr "Referans"
 
 msgid "Reference (optional)"
 msgstr "Referans (isteğe bağlı)"
@@ -4936,6 +5152,12 @@ msgstr "Alacağı iade et"
 
 msgid "Refund recorded."
 msgstr "İade kaydedildi."
+
+msgid "Refund the payment"
+msgstr "Ödemeyi iade et"
+
+msgid "Refund this card payment?"
+msgstr "Bu kartlı ödeme iade edilsin mi?"
 
 msgid "Refunded"
 msgstr "İade edildi"
@@ -5149,6 +5371,12 @@ msgstr "Bu izin iptal edilsin mi?"
 msgid "Revoked"
 msgstr "İptal edildi"
 
+msgid "Right now the organization collects this site's card payments centrally and holds the money as client money until it is passed on."
+msgstr "Şu anda kuruluş bu sitenin kartlı ödemelerini merkezi olarak tahsil ediyor ve parayı aktarılana kadar müşteri parası olarak tutuyor."
+
+msgid "Right now this site collects its own card payments into its provider account."
+msgstr "Şu anda bu site kartlı ödemelerini kendi sağlayıcı hesabına tahsil ediyor."
+
 msgid "Role"
 msgstr "Rol"
 
@@ -5256,6 +5484,9 @@ msgstr "Planı kaydet"
 
 msgid "Save policy"
 msgstr "Politikayı kaydet"
+
+msgid "Save profile"
+msgstr "Profili kaydet"
 
 msgid "Save settings"
 msgstr "Ayarları kaydet"
@@ -5383,6 +5614,9 @@ msgstr "İkinci toplantı: en geç, ilkinden sonra kaç gün"
 msgid "Section"
 msgstr "Bölüm"
 
+msgid "See my statement"
+msgstr "Ekstremi gör"
+
 msgid "See statement"
 msgstr "Ekstreyi gör"
 
@@ -5504,8 +5738,14 @@ msgstr "Ayarlar kaydedildi."
 msgid "Settings sections"
 msgstr "Ayar bölümleri"
 
+msgid "Settled on"
+msgstr "Mutabakat tarihi"
+
 msgid "Settlement"
 msgstr "Uzlaşma"
+
+msgid "Settlements"
+msgstr "Mutabakatlar"
 
 msgid "Setup"
 msgstr "Kurulum"
@@ -5565,6 +5805,15 @@ msgstr "İlk 200 tahakkuk gösteriliyor. Gerisini görmek için filtreleri daral
 msgid "Showing the first 200 payments. Filter by status to narrow the list."
 msgstr "İlk 200 ödeme gösteriliyor. Listeyi daraltmak için duruma göre süzün."
 
+msgid "Showing the newest 200 payouts. Filter by provider to narrow the list."
+msgstr "En yeni 200 ödeme gösteriliyor. Listeyi daraltmak için sağlayıcıya göre süzün."
+
+msgid "Showing the oldest 200 card payments."
+msgstr "En eski 200 kartlı ödeme gösteriliyor."
+
+msgid "Showing the oldest 200 checkouts. Filter by status to narrow the list."
+msgstr "En eski 200 ödeme işlemi gösteriliyor. Listeyi daraltmak için duruma göre süzün."
+
 msgid "Side"
 msgstr "Taraf"
 
@@ -5594,6 +5843,9 @@ msgstr "Giriş yapılıyor"
 
 msgid "Site"
 msgstr "Site"
+
+msgid "Site collects"
+msgstr "Site tahsil eder"
 
 msgid "Site manager"
 msgstr "Site yöneticisi"
@@ -5702,6 +5954,9 @@ msgstr "Toplantıyı başlat"
 msgid "Start the shift"
 msgstr "Vardiyayı başlat"
 
+msgid "Started"
+msgstr "Başlangıç"
+
 msgid "Starts"
 msgstr "Başlangıç"
 
@@ -5757,6 +6012,9 @@ msgstr "Adımlar"
 
 msgid "Still in the box"
 msgstr "Kasada kalan"
+
+msgid "Still waiting for the provider"
+msgstr "Sağlayıcı bekleniyor"
 
 msgid "Stop camera"
 msgstr "Kamerayı durdur"
@@ -5818,6 +6076,9 @@ msgstr "etiketli birimler"
 msgid "Taken"
 msgstr "Dolu"
 
+msgid "Taking you to the payment page…"
+msgstr "Ödeme sayfasına yönlendiriliyorsunuz…"
+
 msgid "Target type"
 msgstr "Hedef türü"
 
@@ -5866,6 +6127,9 @@ msgstr "Yakında biten görev süreleri"
 msgid "Test ping sent"
 msgstr "Test ping gönderildi"
 
+msgid "Thank you. We received <0/> by card."
+msgstr "Teşekkürler. Kartla <0/> aldık."
+
 msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
 msgstr "Teşekkürler. Ödeme bankada göründüğünde yöneticiniz onaylayacak."
 
@@ -5905,6 +6169,9 @@ msgstr "Ajanın saati yanlış."
 msgid "The allow-list is being rebuilt."
 msgstr "İzin listesi yeniden oluşturuluyor."
 
+msgid "The amount cannot be more than the client money held for the site."
+msgstr "Tutar, site için tutulan müşteri parasından fazla olamaz."
+
 msgid "The amount is more than the accrued fee."
 msgstr "Tutar, tahakkuk eden tazminattan fazla."
 
@@ -5939,6 +6206,9 @@ msgstr "Çağrı, toplantıdan en az {0} gün önce gönderilmelidir. Kurallar i
 msgid "The camera is not available ({error}). Type the code instead."
 msgstr "Kamera kullanılamıyor ({error}). Bunun yerine kodu yazın."
 
+msgid "The card payments you started, and where each one stands."
+msgstr "Başlattığınız kartlı ödemeler ve her birinin durumu."
+
 msgid "The change has been created."
 msgstr "Değişiklik oluşturuldu."
 
@@ -5956,6 +6226,9 @@ msgstr "Kod kapalı, bu yüzden yazdırılacak afiş yok."
 
 msgid "The data is in. You can review it on the units and people pages."
 msgstr "Veriler alındı. Birimler ve kişiler sayfalarından inceleyebilirsiniz."
+
+msgid "The date cannot be in the future."
+msgstr "Tarih gelecekte olamaz."
 
 msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
 msgstr "Kararlar hazır bulunmayan maliklere gider. Her tebliğ, çağrı gibi kaydedilir."
@@ -6058,6 +6331,12 @@ msgstr "Liste araç ve ziyaretçilerden türetilir. Burada yalnızca etiket ve P
 msgid "The list of units is not available to this account."
 msgstr "Bağımsız bölüm listesi bu hesaba açık değil."
 
+msgid "The merchant of record cannot change while money is on its way."
+msgstr "Para yoldayken tahsilatçı değiştirilemez."
+
+msgid "The merchant of record cannot change yet"
+msgstr "Tahsilatçı henüz değiştirilemez"
+
 msgid "The minutes can be generated once the assembly is closed."
 msgstr "Tutanak, toplantı kapatıldıktan sonra oluşturulabilir."
 
@@ -6082,11 +6361,17 @@ msgstr "Açılış bakiyeleri içe aktarıldı."
 msgid "The opening log is not available."
 msgstr "Açılış kaydı kullanılamıyor."
 
+msgid "The organization collects centrally"
+msgstr "Kuruluş merkezi olarak tahsil eder"
+
 msgid "The organization has no sites yet."
 msgstr "Kuruluşun henüz sitesi yok."
 
 msgid "The organization has reached its limit of 20 endpoints."
 msgstr "Kuruluş 20 uç nokta sınırına ulaştı."
+
+msgid "The organization, centrally (client money)"
+msgstr "Kuruluş, merkezi olarak (müşteri parası)"
 
 msgid "The pack could not apply these settings."
 msgstr "Paket bu ayarları uygulayamadı."
@@ -6096,6 +6381,30 @@ msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
 
 msgid "The pass was cancelled."
 msgstr "Geçiş iptal edildi."
+
+msgid "The payment did not go through"
+msgstr "Ödeme gerçekleşmedi"
+
+msgid "The payment page expired"
+msgstr "Ödeme sayfasının süresi doldu"
+
+msgid "The payment provider could not complete this. Please try again later."
+msgstr "Ödeme sağlayıcı bunu tamamlayamadı. Lütfen daha sonra yeniden deneyin."
+
+msgid "The payment was not completed in time. Nothing was charged."
+msgstr "Ödeme zamanında tamamlanmadı. Hiçbir tutar çekilmedi."
+
+msgid "The payment was refunded."
+msgstr "Ödeme iade edildi."
+
+msgid "The payment window has closed and the provider has not confirmed a payment yet. If your card was charged, it can still show up in a few minutes and you will get a notification with the receipt."
+msgstr "Ödeme süresi doldu ve sağlayıcı henüz bir ödeme onaylamadı. Kartınızdan çekim yapıldıysa birkaç dakika içinde görünebilir ve makbuzla birlikte bir bildirim alırsınız."
+
+msgid "The payment's version is missing. Reload the page."
+msgstr "Ödemenin sürümü eksik. Sayfayı yenileyin."
+
+msgid "The payout was recorded."
+msgstr "Ödeme kaydedildi."
 
 msgid "The permission was revoked."
 msgstr "İzin iptal edildi."
@@ -6121,6 +6430,15 @@ msgstr "Önizleme bu ayarlar için henüz kullanılamıyor."
 #. placeholder {0}: formatInstant(revealed.previousExpiresAt, i18n.locale)
 msgid "The previous secret keeps signing until <0>{0}</0>. Every call carries both signatures until then."
 msgstr "Önceki gizli anahtar <0>{0}</0> tarihine kadar imzalamaya devam eder. O zamana kadar her çağrı iki imzayı da taşır."
+
+msgid "The provider confirmed <0/> instead of the <1/> you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+msgstr "Sağlayıcı, seçtiğiniz <1/> yerine <0/> onayladı. Ödemeniz sağlayıcının onayladığı tutarla kaydedildi. Bu yanlış görünüyorsa yöneticinizle iletişime geçin."
+
+msgid "The provider confirmed a different amount than the one you chose. Your payment was recorded for the amount the provider confirmed. If this looks wrong, contact your manager."
+msgstr "Sağlayıcı, seçtiğinizden farklı bir tutar onayladı. Ödemeniz sağlayıcının onayladığı tutarla kaydedildi. Bu yanlış görünüyorsa yöneticinizle iletişime geçin."
+
+msgid "The provider could not complete the payment. Nothing was charged."
+msgstr "Sağlayıcı ödemeyi tamamlayamadı. Hiçbir tutar çekilmedi."
 
 msgid "The QR code could not be rotated."
 msgstr "QR kodu yenilenemedi."
@@ -6176,6 +6494,9 @@ msgstr "Ayarlar kabul edilmedi. Değerleri kontrol edip yeniden deneyin."
 msgid "The side's person"
 msgstr "Tarafın kişisi"
 
+msgid "The site collects card payments into its own provider account, so the organization holds no client money for it."
+msgstr "Site kartlı ödemeleri kendi sağlayıcı hesabına tahsil eder; bu nedenle kuruluş onun için müşteri parası tutmaz."
+
 msgid "The site has not published bank details yet. Ask your manager how to pay."
 msgstr "Site henüz banka bilgilerini yayımlamadı. Nasıl ödeyeceğinizi yöneticinize sorun."
 
@@ -6197,6 +6518,9 @@ msgstr "Sağdaki tablo, tutarı veya bölüştürme kuralını değiştirdikçe 
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı). Toplantıyı zamanında planlayın."
 
+msgid "The texts your organization uses to tell you how your data is handled, in the language you pick."
+msgstr "Kuruluşunuzun verilerinizin nasıl işlendiğini anlatmak için kullandığı metinler, seçtiğiniz dilde."
+
 msgid "The transfer could not be started. Please try again."
 msgstr "Devir başlatılamadı. Lütfen yeniden deneyin."
 
@@ -6208,6 +6532,9 @@ msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
 
 msgid "The visit must end after it starts."
 msgstr "Ziyaret, başladıktan sonra bitmelidir."
+
+msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
+msgstr "Tutarın tamamı, <0/>, sağlayıcı aracılığıyla sakinin kartına iade edilir. Ödediği tahakkuklar yeniden açılır. Kısmi iade mümkün değildir."
 
 msgid "Theme"
 msgstr "Tema"
@@ -6227,6 +6554,12 @@ msgstr "Bu sütunlarda tam sayı olmayan değerler var: {0}. Tutarları en küç
 
 msgid "These neighbours chose to be listed."
 msgstr "Bu komşular listede yer almayı seçti."
+
+msgid "These texts are shown for reading. Accepting or declining a consent is not possible in the web app yet: your manager records it for now."
+msgstr "Bu metinler okumak için gösterilir. Rızayı kabul etmek veya reddetmek web uygulamasında henüz mümkün değil: şimdilik yöneticiniz kaydeder."
+
+msgid "They appear here once a resident pays by card."
+msgstr "Bir sakin kartla ödeme yapınca burada görünürler."
 
 msgid "They receive a link to set a password and join the site."
 msgstr "Parola belirleyip siteye katılmaları için bir bağlantı alırlar."
@@ -6309,6 +6642,9 @@ msgstr "Bu paketin ayarı yok."
 msgid "This pack has not filled in any site setting, or the sites changed them."
 msgstr "Bu paket hiçbir site ayarını doldurmadı veya siteler onları değiştirdi."
 
+msgid "This page needs a payment to look up"
+msgstr "Bu sayfanın sorgulayacağı bir ödeme gerekir"
+
 msgid "This pass is for another site."
 msgstr "Bu geçiş başka bir site içindir."
 
@@ -6320,6 +6656,12 @@ msgstr "Bu geçiş zaten kullanıldı."
 
 msgid "This pass was cancelled or revoked."
 msgstr "Bu geçiş iptal edildi veya geri alındı."
+
+msgid "This payment cannot be refunded (it is not a confirmed card payment, or it changed). Reload and try again."
+msgstr "Bu ödeme iade edilemez (onaylanmış bir kartlı ödeme değil ya da değişti). Sayfayı yenileyip yeniden deneyin."
+
+msgid "This payment was refunded"
+msgstr "Bu ödeme iade edildi"
 
 msgid "This period is locked."
 msgstr "Bu dönem kilitli."
@@ -6359,6 +6701,9 @@ msgstr "Bu ayarı paket tanımıyor"
 
 msgid "This side has no open charges; the payment becomes credit."
 msgstr "Bu tarafın açık tahakkuku yok; ödeme alacağa dönüşür."
+
+msgid "This site collects into its own account"
+msgstr "Bu site kendi hesabına tahsil eder"
 
 msgid "This site has its own workflow."
 msgstr "Bu sitenin kendi iş akışı var."
@@ -6520,6 +6865,9 @@ msgstr "Konu"
 
 msgid "Total"
 msgstr "Toplam"
+
+msgid "Total <0/>"
+msgstr "Toplam <0/>"
 
 #. placeholder {0}: preview.unit_count
 msgid "Total <0/> across {0} units"
@@ -6803,6 +7151,10 @@ msgstr "Tedarikçi borcu"
 msgid "Vendors"
 msgstr "Tedarikçiler"
 
+#. placeholder {0}: c.version
+msgid "Version {0}"
+msgstr "Sürüm {0}"
+
 msgid "View"
 msgstr "Görünüm"
 
@@ -6889,6 +7241,9 @@ msgstr "Oylar ve vekâletler"
 msgid "Waiting"
 msgstr "Bekliyor"
 
+msgid "Waiting at the providers"
+msgstr "Sağlayıcılarda bekleyen"
+
 msgid "Waiting deliveries"
 msgstr "Bekleyen teslimatlar"
 
@@ -6933,8 +7288,14 @@ msgstr "Bunun üzerindeki affetmeler yeniden kimlik doğrulaması ister"
 msgid "Walk-in visitor"
 msgstr "Yaya ziyaretçi"
 
+msgid "We could not check your payment"
+msgstr "Ödemenizi kontrol edemedik"
+
 msgid "We could not find that."
 msgstr "Bulunamadı."
+
+msgid "We could not find this payment"
+msgstr "Bu ödemeyi bulamadık"
 
 msgid "We could not send the code. Please try again."
 msgstr "Kod gönderemedik. Lütfen yeniden deneyin."
@@ -6981,11 +7342,17 @@ msgstr "İnsanların söylediği, örneğin A-12."
 msgid "What should be created"
 msgstr "Ne oluşturulsun"
 
+msgid "What the payment providers have not paid out yet, the client money held for this site, and the payouts posted so far."
+msgstr "Ödeme sağlayıcıların henüz ödemediği tutar, bu site için tutulan müşteri parası ve şimdiye kadar işlenen ödemeler."
+
 msgid "What to fix"
 msgstr "Düzeltilecekler"
 
 msgid "What to import"
 msgstr "Ne içe aktarılacak"
+
+msgid "What to pay"
+msgstr "Ne ödenecek"
 
 msgid "What was it for?"
 msgstr "Ne için yapıldı?"
@@ -7016,6 +7383,9 @@ msgstr "Güvenlik beklenmedik bir ziyaretçiyi sorduğunda istek burada ve SMS i
 
 msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
 msgstr "Onayladığınızda ayrılan kişi için bir kapanış ekstresi ve bir borç durum belgesi oluşturulur ve birimin dosyasına eklenir."
+
+msgid "When you pay by card, it shows up here."
+msgstr "Kartla ödeme yaptığınızda burada görünür."
 
 msgid "Where do tickets of removed statuses go?"
 msgstr "Kaldırılan durumların talepleri nereye gitsin?"
@@ -7177,6 +7547,13 @@ msgstr "Misafirinize göndereceğiniz bir QR kod alırsınız. Güvenlik kapıda
 msgid "You may not open gates."
 msgstr "Kapıları açma yetkiniz yok."
 
+msgid "You may not refund payments."
+msgstr "Ödeme iade etme yetkiniz yok."
+
+#. placeholder {0}: ctx.siteName
+msgid "You passed client money on to {0}'s bank account. The balance the organization owes the site goes down by this amount (now <0/>)."
+msgstr "Müşteri parasını {0} sitesinin banka hesabına aktardınız. Kuruluşun siteye borcu bu tutar kadar azalır (şu an <0/>)."
+
 msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr "Yönetici olarak herkesi görürsünüz. Sakinler yalnızca listede yer almayı seçenleri görür."
 
@@ -7192,17 +7569,26 @@ msgstr "Hesabınızı burada oluşturabilir veya bağlayabileceksiniz."
 msgid "You will be asked to confirm your password. The key is shown once after you create it."
 msgstr "Parolanızı onaylamanız istenecek. Anahtar, oluşturduktan sonra bir kez gösterilir."
 
+msgid "You will go to the payment provider's page to enter your card. Your card details never reach this site."
+msgstr "Kartınızı girmek için ödeme sağlayıcının sayfasına gideceksiniz. Kart bilgileriniz bu siteye hiç ulaşmaz."
+
 msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
 msgstr "Yanıtınız bir oy değildir: yöneticiye maliklerin ne düşündüğünü söyler. Bağlayıcı oy toplantıda kullanılır. Bağımsız bölüm başına bir yanıt; anket kapanana kadar değiştirebilirsiniz."
 
 msgid "Your answer was saved."
 msgstr "Yanıtınız kaydedildi."
 
+msgid "Your card was declined. Nothing was charged."
+msgstr "Kartınız reddedildi. Hiçbir tutar çekilmedi."
+
 msgid "Your dashboard is on its way"
 msgstr "Panonuz hazırlanıyor"
 
 msgid "Your new API key"
 msgstr "Yeni API anahtarınız"
+
+msgid "Your open charges are paid oldest first. Today you owe <0/>."
+msgstr "Açık tahakkuklarınız en eskisinden başlayarak ödenir. Bugün borcunuz <0/>."
 
 msgid "Your sign-in link will be completed here."
 msgstr "Giriş bağlantınız burada tamamlanacak."

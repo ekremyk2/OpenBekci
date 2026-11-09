@@ -240,7 +240,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Identity:     ident,
 		Devices:      devs,
 		Authz:        authz.NewResolver(d, reg, nil),
-		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(siteHooks{host, tickets.SiteSeeder{}}).WithValidators(host),
+		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(siteHooks{host, tickets.SiteSeeder{}}).WithValidators(host).WithBankReferenceHint(host),
 		Packs:        host,
 		People:       peopleSvc,
 		Community:    communitySvc,

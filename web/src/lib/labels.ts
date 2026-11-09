@@ -28,6 +28,9 @@ const PROBLEM_MESSAGES: Record<string, MessageDescriptor> = {
   version_conflict: msg`Someone else changed this record. Reload to see the latest version.`,
   insufficient_permission: msg`You do not have permission to do this.`,
   rate_limited: msg`Too many requests. Please wait a moment and try again.`,
+  payment_provider_unavailable: msg`Card payment is not available for this site right now.`,
+  merchant_change_blocked: msg`The merchant of record cannot change while money is on its way.`,
+  pack_error: msg`The payment provider could not complete this. Please try again later.`,
 }
 
 type Translate = { _: (descriptor: MessageDescriptor) => string }
