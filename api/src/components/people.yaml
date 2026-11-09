@@ -1787,17 +1787,34 @@ schemas:
       person_id: 0192a3f0-1000-7000-8000-000000000001
   PersonErase:
     type: object
-    description: 'Erasure = `privacy_erase(person_id)`: the person row is anonymized, the user unlinked; ledger lines, ballots and attendance keep their rows with the name replaced by "Former owner #n". Blocked (409 `conflict`) while the person has an open balance unless `override_open_balance` is set (audited).'
+    description: 'Erasure: the person row is pseudonymized ("Former person xxxxxxxx", no contact, notes or national id) and unlinked from the sign-in account, whose sessions and devices are deleted; ledger lines, ballots and attendance keep their rows pointing at the pseudonymized person. Blocked (409 `conflict`) while the person has open charges unless `override_open_balance` is set (audited as forced).'
     required:
       - reason
     properties:
       reason:
         type: string
-        description: Why (a data-subject request, a court order, ...); audited.
+        description: Why (a data-subject request, a court order, ...); audited (as a keyed hash, like every free text).
       override_open_balance:
         type: boolean
         default: false
-        description: Erase although the person still owes or is owed money.
+        description: Erase although the person still has open charges.
     example:
       reason: Data subject request 2026/17
       override_open_balance: false
+  DataExportRequested:
+    type: object
+    description: A data export that was queued. When the job is done the person's JSON and PDF bundle is filed as private documents (in the "Privacy" folder of their site, readable by the person and the managers) and the person, and the manager who asked, get a `privacy.export_ready` notification.
+    required:
+      - request_id
+      - status
+    properties:
+      request_id:
+        type: string
+        format: uuid
+      status:
+        type: string
+        enum:
+          - queued
+    example:
+      request_id: 0192a3f0-1000-7000-8000-000000000009
+      status: queued

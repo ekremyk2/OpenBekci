@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/privacy"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -76,6 +77,11 @@ func (a *Admin) PackTables(ctx context.Context, pack string) ([]string, error) {
 func (a *Admin) HasPack(id string) bool {
 	_, ok := a.packs.Lookup(id)
 	return ok
+}
+
+// ErasePerson runs the privacy erase as the operator (see privacy.Service.EraseAsOperator).
+func (a *Admin) ErasePerson(ctx context.Context, org, person uuid.UUID, reason string, force bool) (privacy.EraseResult, error) {
+	return privacy.NewService(a.db, privacy.Config{}).EraseAsOperator(ctx, org, person, reason, force)
 }
 
 // Close releases the database connections.

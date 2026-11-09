@@ -10,6 +10,7 @@ const (
 	PermPersonManage     authz.Permission = "people.manage"
 	PermNationalID       authz.Permission = "people.national_id"
 	PermPersonErase      authz.Permission = "people.erase"
+	PermPersonExport     authz.Permission = "people.export"
 	PermMoveOutManage    authz.Permission = "people.move_out"
 	PermOccupancyRead    authz.Permission = "occupancies.read"
 	PermOccupancyManage  authz.Permission = "occupancies.manage"
@@ -52,6 +53,7 @@ func Permissions() []authz.PermissionDef {
 		{Name: PermPersonManage, Description: "Create and edit persons", Roles: board, Scopes: orgSite},
 		{Name: PermNationalID, Description: "Read the masked national id and set or clear it", Roles: managers, Scopes: orgSite},
 		{Name: PermPersonErase, Description: "Erase a person for a privacy request (re-authentication required)", Roles: []authz.Role{authz.RoleOrgAdmin}, Scopes: []authz.ScopeType{authz.ScopeOrg}},
+		{Name: PermPersonExport, Description: "Request a person's data export (the person requests their own with me.manage)", Roles: managers, Scopes: orgSite},
 		{Name: PermMoveOutManage, Description: "Record and read move-outs and sales", Roles: managers, Scopes: orgSiteBlock},
 		{Name: PermOccupancyRead, Description: "Read occupancies (occupants read their own through me/occupancies until the service narrows reads to their unit)",
 			Roles: overview, Scopes: orgSiteBlock},

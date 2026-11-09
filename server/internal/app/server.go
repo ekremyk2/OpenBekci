@@ -11,6 +11,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -19,6 +20,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/integrations"
+	"github.com/openbekci/openbekci/server/internal/core/privacy"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/packs"
@@ -60,6 +62,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Ops = rt.ops.deps()
 	deps.Governance = rt.gov
 	deps.Access = rt.access
+	deps.Privacy = rt.privacy
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs)},
@@ -140,6 +143,7 @@ type runtime struct {
 	integrations *integrations.Service
 	restoreSink  func()
 	packs        *packs.Host
+	privacy      *privacy.Service
 	pick         *lazySMSPicker
 	working      bool
 }
@@ -247,6 +251,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	priv := privacy.NewService(d, privacy.Config{Filer: ops.documents, Notifier: ops.late, Log: log})
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
 		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) {
 			registerGov(w)
@@ -257,8 +262,9 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			host.RegisterWorkers(w)
 			integ.Workers(w)
 			identity.RegisterWorkers(w, d, log)
+			priv.RegisterWorkers(w)
 		},
-		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), identity.PeriodicJobs(), periodicMoney, periodicCheckout, host.PeriodicJobs())})
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), identity.PeriodicJobs(), periodicMoney, periodicCheckout, host.PeriodicJobs(), privacy.PeriodicJobs())})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -267,6 +273,10 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	host.SetJobs(client)
 	gov.SetNotifier(governance.RiverNotifier{Client: client})
 	integ.SetInsert(integrations.Insert(client))
+	priv.SetInsert(func(ctx context.Context, tx pgx.Tx, args river.JobArgs) error {
+		_, err := client.InsertTx(ctx, tx, args, nil)
+		return err
+	})
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
@@ -275,7 +285,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	// every audited domain action (here, in jobs and in the worker alike) emits its webhook event in its own transaction
 	restore := audit.SetSink(integ.EmitFromAudit)
-	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, integrations: integ, packs: host, pick: pick, restoreSink: restore, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, integrations: integ, packs: host, privacy: priv, pick: pick, restoreSink: restore, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

@@ -68,6 +68,7 @@ schemas:
       - payments.declare
       - payments.record
       - people.erase
+      - people.export
       - people.manage
       - people.move_out
       - people.national_id
@@ -162,6 +163,7 @@ x-openbekci-roles:
     - payments.declare
     - payments.record
     - people.erase
+    - people.export
     - people.manage
     - people.move_out
     - people.national_id
@@ -244,6 +246,7 @@ x-openbekci-roles:
     - payments.checkout
     - payments.declare
     - payments.record
+    - people.export
     - people.manage
     - people.move_out
     - people.national_id

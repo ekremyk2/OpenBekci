@@ -4,7 +4,7 @@ get:
   operationId: codes.listConsents
   summary: Privacy notice and consent texts
   description: |-
-    **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown.
+    **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown. **Release 1.0:** each text carries whether it is `required` (the privacy notice) and the caller's `state` on its current version (`pending`, `accepted`, `declined`); decide with `POST .../privacy/consents/{purpose}:accept` or `:decline`.
 
     Permission: `codes.read`.
   tags:

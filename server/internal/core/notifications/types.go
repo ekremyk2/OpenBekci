@@ -42,6 +42,9 @@ const (
 	// TypeWebhookFailing tells the organization's administrators that an
 	// outbound webhook endpoint keeps failing (integrations module).
 	TypeWebhookFailing = "webhook.endpoint_failing"
+	// TypeDataExportReady tells a person (and the manager who asked) that the
+	// export of their data is filed in the documents (privacy module).
+	TypeDataExportReady = "privacy.export_ready"
 
 	// Always delivered, cannot be muted, channels fixed (SMS when the person has
 	// a phone, otherwise email). The identity and people modules send these
@@ -57,7 +60,7 @@ var Vocabulary = []string{
 	TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent, TypeTicketUpdated, TypeTicketCommented,
 	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeAssemblyDue, TypeTermExpiring,
 	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived, TypeDeliveryWaiting, TypeVisitorQRRotated,
-	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped, TypeWebhookFailing,
+	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped, TypeWebhookFailing, TypeDataExportReady,
 }
 
 // Unmutable are the types no preference and no site default can change.
@@ -85,7 +88,7 @@ func DefaultChannels(t string) []string {
 	switch t {
 	case TypeChargeDueSoon, TypeChargeOverdue, TypeDunningReminder, TypePaymentReceipt:
 		return []string{jobs.ChannelInApp, jobs.ChannelSMS}
-	case TypeStatementSent, TypePaymentConfirmed, TypePaymentRejected, TypeTicketUpdated, TypeTicketCommented:
+	case TypeStatementSent, TypePaymentConfirmed, TypePaymentRejected, TypeTicketUpdated, TypeTicketCommented, TypeDataExportReady:
 		return []string{jobs.ChannelInApp, jobs.ChannelEmail}
 	case TypeSignInCode, TypeInvitation:
 		return []string{jobs.ChannelSMS, jobs.ChannelEmail} // candidates; UnmutableChannel picks one

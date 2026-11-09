@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -15,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/documents"
 	"github.com/openbekci/openbekci/server/internal/core/notifications"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tickets"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
@@ -279,6 +281,27 @@ func init() {
 		"dashboards.getMyDashboard":        {perms: perms(dashboards.PermMe), status: 200, build: mget("/v1/orgs/{org_id}/me/dashboard")},
 		"codes.listCodes":                  {perms: perms(codes.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/codes?locale=tr")},
 		"codes.listConsents":               {perms: perms(codes.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/privacy/consents?locale=tr")},
+		"codes.acceptConsent":              {perms: perms(people.PermMeManage), status: 200, build: fixed("POST", "/v1/orgs/{org_id}/privacy/consents/core.privacy_notice:accept", `{"version":"1"}`)},
+		"codes.declineConsent":             {perms: perms(people.PermMeManage), status: 200, build: fixed("POST", "/v1/orgs/{org_id}/privacy/consents/core.privacy_notice:decline", `{"version":"1"}`)},
+		// a manager may export anybody's data, anybody else only their own: the matrix asks for a stranger's
+		"people.requestDataExport": {perms: perms(people.PermMeManage + "|" + people.PermPersonExport), status: 202, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f, pid := w.NewSite(t, org), w.NewPerson(t, org)
+			w.Exec(t, `UPDATE person SET site_id = $1 WHERE org_id = $2 AND id = $3`, f.Site, org.ID, pid)
+			return mreq{method: "POST", path: orgPath(org, "/persons/"+pid.String()+"/data-export")}
+		}, override: func(actor, target string) (int, bool) {
+			if target == "own" && slices.Contains([]string{"board_member", "auditor", "accountant", "staff", "guard"}, actor) {
+				return 403, true
+			}
+			return 0, false
+		}},
+		"people.erasePerson": {perms: perms(people.PermPersonErase), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/persons/"+w.NewPerson(t, org).String()+":erase"), `{"reason":"Matrix"}`, "Idempotency-Key", "matrix-"+id.New().String())
+		}, override: func(actor, target string) (int, bool) {
+			if actor == "org_admin" && target == "own" {
+				return 403, true // needs a recent re-authentication
+			}
+			return 0, false
+		}},
 		// no pack is enabled in the matrix organizations: the permitted caller gets a 404, the denied one a 403
 		"codes.listReference": {perms: perms(codes.PermRead), status: 404, build: mget("/v1/orgs/{org_id}/reference/province")},
 	}

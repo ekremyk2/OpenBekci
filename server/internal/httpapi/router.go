@@ -21,6 +21,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/people"
+	"github.com/openbekci/openbekci/server/internal/core/privacy"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -71,6 +72,9 @@ type Deps struct {
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service
+	// Privacy serves consents, data export and erase. Nil answers those operations
+	// with an internal error (unit tests only).
+	Privacy *privacy.Service
 	// Ops serves the daily-operations operations (tickets, announcements,
 	// documents, notifications, dashboards, codes). Nil fields answer their
 	// operations with an internal error (unit tests only).

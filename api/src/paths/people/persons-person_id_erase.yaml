@@ -11,13 +11,13 @@ post:
   operationId: people.erasePerson
   summary: Erase a person (privacy)
   description: |-
-    **Release 0.1.** Anonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates.
+    **Release 1.0.** Pseudonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates; ledger lines, ballots and attendance keep pointing at the person, who is now "Former person xxxxxxxx". The sign-in account is unlinked and its sessions and devices deleted. Also available to the operator as `openbekci admin privacy erase`.
 
     Permission: `people.erase`.
 
     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
 
-    Problems: `reauth_required` (403), `conflict` (409, open balance without override), `idempotency_mismatch` (422).
+    Problems: `reauth_required` (403), `not_found` (404), `conflict` (409, open charges without override, or already erased), `idempotency_mismatch` (422).
   tags:
     - people
   security:

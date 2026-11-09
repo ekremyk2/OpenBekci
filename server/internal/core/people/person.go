@@ -532,3 +532,10 @@ func (s *Service) UpdatePerson(ctx context.Context, orgID, personID uuid.UUID, e
 	}
 	return out, nil
 }
+
+// CanSee reports whether the caller holds perm for the person: organization-wide,
+// or at a site the person is tied to. The privacy module uses it to decide who may
+// export a person's data.
+func CanSee(ctx context.Context, tx pgx.Tx, orgID, personID uuid.UUID, perm authz.Permission) (bool, error) {
+	return canSee(ctx, tx, orgID, personID, perm)
+}

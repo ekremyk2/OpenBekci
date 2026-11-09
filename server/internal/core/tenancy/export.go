@@ -129,6 +129,7 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"notification":          "personal inbox entries of accounts of the old organization; ephemeral and not site data",
 	"notification_delivery": "delivery bookkeeping (provider ids, attempts) of messages already sent",
 	"notification_mute":     "personal preferences of an account, not site data; people set them again",
+	"consent":               "a user's decisions on the organization's privacy texts; the new organization asks again",
 	"sms_usage":             "the instance's SMS counter of the old organization; the new site starts at zero",
 	"org_storage_usage":     "derived byte counter of the organization; recomputed from its files",
 	// Governance: the legal paperwork is exported, these two are not.

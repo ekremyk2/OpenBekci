@@ -417,6 +417,11 @@ schemas:
         format: uuid
         nullable: true
         description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
+      pending_consents:
+        type: array
+        description: "Ids of the required consent texts (the privacy notice) of this organization the caller has not accepted at their current version; empty or absent when none. A client sends the person to the privacy screen (`GET /v1/orgs/{org_id}/privacy/consents`) to accept them."
+        items:
+          type: string
   MeOccupancy:
     type: object
     description: One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.

@@ -1,13 +1,13 @@
 # Draft API index
 
-The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
+The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 464 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 467 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
 | tenancy | 50 |
-| people | 54 |
+| people | 55 |
 | me | 10 |
 | money | 140 |
 | operations | 56 |
@@ -18,7 +18,7 @@ Total: 464 new operations, plus the 15 already served (instance, auth, me) which
 | integrations | 12 |
 | agent | 4 |
 | dashboards | 4 |
-| codes | 3 |
+| codes | 5 |
 | platform | 9 |
 | packs | 4 |
 | auth | 3 |
@@ -77,7 +77,8 @@ Total: 464 new operations, plus the 15 already served (instance, auth, me) which
 | people | `people.createPerson` | `POST /v1/orgs/{org_id}/persons` | 0.1 | `people.manage` | optional | served |
 | people | `people.getPerson` | `GET /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.read` | - | served |
 | people | `people.updatePerson` | `PATCH /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.manage` | optional | served |
-| people | `people.erasePerson` | `POST /v1/orgs/{org_id}/persons/{person_id}:erase` | 0.1 | `people.erase` | required | not yet served |
+| people | `people.erasePerson` | `POST /v1/orgs/{org_id}/persons/{person_id}:erase` | 1.0 | `people.erase` | required | served |
+| people | `people.requestDataExport` | `POST /v1/orgs/{org_id}/persons/{person_id}/data-export` | 1.0 | `people.export`, `me.manage` | optional | served |
 | people | `people.getNationalId` | `GET /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | - | served |
 | people | `people.setNationalId` | `PUT /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional | served |
 | people | `people.clearNationalId` | `DELETE /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional | served |
@@ -450,6 +451,8 @@ Total: 464 new operations, plus the 15 already served (instance, auth, me) which
 | codes | `codes.listCodes` | `GET /v1/orgs/{org_id}/codes` | 0.1 | `codes.read` | - | served |
 | codes | `codes.listReference` | `GET /v1/orgs/{org_id}/reference/{kind}` | 0.4 | `codes.read` | - | served (not in the original draft) |
 | codes | `codes.listConsents` | `GET /v1/orgs/{org_id}/privacy/consents` | 0.4 | `codes.read` | - | served (not in the original draft) |
+| codes | `codes.acceptConsent` | `POST /v1/orgs/{org_id}/privacy/consents/{purpose}:accept` | 1.0 | `me.manage` | optional | served |
+| codes | `codes.declineConsent` | `POST /v1/orgs/{org_id}/privacy/consents/{purpose}:decline` | 1.0 | `me.manage` | optional | served |
 | integrations | `integrations.listApiKeys` | `GET /v1/orgs/{org_id}/api-keys` | 0.4 | `apikeys.read` | - | served |
 | integrations | `integrations.createApiKey` | `POST /v1/orgs/{org_id}/api-keys` | 0.4 | `apikeys.manage` | none | served |
 | integrations | `integrations.rotateApiKey` | `POST /v1/orgs/{org_id}/api-keys/{key_id}:rotate` | 0.4 | `apikeys.manage` | none | served |
