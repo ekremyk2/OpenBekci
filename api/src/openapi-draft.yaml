@@ -600,6 +600,8 @@ paths:
     $ref: ./paths/community/facilities-facility_id-blocks-block_id.yaml
   /v1/orgs/{org_id}/facilities/{facility_id}/availability:
     $ref: ./paths/community/facilities-facility_id-availability.yaml
+  /v1/orgs/{org_id}/facilities/{facility_id}/bookings:preview:
+    $ref: ./paths/community/facilities-facility_id-bookings_preview.yaml
   /v1/orgs/{org_id}/bookings:
     $ref: ./paths/community/bookings.yaml
   /v1/orgs/{org_id}/bookings/{booking_id}:
@@ -624,6 +626,8 @@ paths:
     $ref: ./paths/community/recurring-visitors-recurring_visitor_id-qr.yaml
   /v1/orgs/{org_id}/visitor-approval-requests:
     $ref: ./paths/community/visitor-approval-requests.yaml
+  /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:
+    $ref: ./paths/community/visitor-approval-requests-request_id.yaml
   /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide:
     $ref: ./paths/community/visitor-approval-requests-request_id_decide.yaml
   /v1/orgs/{org_id}/deliveries:

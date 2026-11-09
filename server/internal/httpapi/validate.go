@@ -1,9 +1,11 @@
 package httpapi
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"regexp"
 	"strings"
@@ -26,6 +28,9 @@ func (p *pipeline) validation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		info := p.op(r)
 		if !info.stream {
+			if info.bodyOptional {
+				dropNullBody(r)
+			}
 			full.ServeHTTP(w, r)
 			return
 		}
@@ -54,6 +59,42 @@ func requestValidator(spec *openapi3.T, excludeBody bool) func(http.Handler) htt
 		},
 	})
 }
+
+// dropNullBody treats a request body that is exactly JSON null (or only
+// whitespace) as absent, for operations whose requestBody is not required:
+// generated clients send null for an omitted optional body. Required bodies
+// never pass through here.
+func dropNullBody(r *http.Request) {
+	if r.Body == nil || r.Body == http.NoBody {
+		return
+	}
+	const peek = 64
+	buf := make([]byte, peek)
+	n, err := io.ReadFull(r.Body, buf)
+	buf = buf[:n]
+	if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
+		// a read error (for example the size limit): the validator meets it again
+		r.Body = readCloser{io.MultiReader(bytes.NewReader(buf), errReader{err}), r.Body}
+		return
+	}
+	if err != nil { // the whole body fit in the peek
+		if t := bytes.TrimSpace(buf); len(t) == 0 || string(t) == "null" {
+			_ = r.Body.Close()
+			r.Body, r.ContentLength = http.NoBody, 0
+			return
+		}
+	}
+	r.Body = readCloser{io.MultiReader(bytes.NewReader(buf), r.Body), r.Body}
+}
+
+type readCloser struct {
+	io.Reader
+	io.Closer
+}
+
+type errReader struct{ err error }
+
+func (e errReader) Read([]byte) (int, error) { return 0, e.err }
 
 // validationProblem converts a kin-openapi validation error to a problem.
 func validationProblem(err error, suggested int) *problem.Error {

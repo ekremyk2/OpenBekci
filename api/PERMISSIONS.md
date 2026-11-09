@@ -134,11 +134,11 @@ Account permissions are instance grants held by every signed-in caller (`me.read
 |---|---|---|
 | `facilities.manage` | Edit facilities, their rules and blocked dates. | `org_admin`, `site_manager`, `board_member` |
 | `bookings.read` | Read bookings (residents: own bookings and the taken slots). | `org_admin`, `site_manager`, `board_member`, `owner`, `tenant`, `household` |
-| `bookings.create` | Book a facility (managers: on behalf of a unit). | `org_admin`, `site_manager`, `board_member`, `owner`, `tenant`, `household` |
+| `bookings.create` | Book a facility, or preview one with `POST .../facilities/{facility_id}/bookings:preview` (managers: on behalf of a unit). | `org_admin`, `site_manager`, `board_member`, `owner`, `tenant`, `household` |
 | `bookings.manage` | Cancel any booking. | `org_admin`, `site_manager`, `board_member` |
 | `visitors.read` | Read the site visitor log. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 | `visitors.manage` | Pre-register visitors, manage recurring visitors and cancel entries (residents: own unit). | `org_admin`, `site_manager`, `board_member`, `owner`, `tenant`, `household` |
-| `visitors.decide` | Answer a visitor approval request for the caller's unit. | `owner`, `tenant`, `household` |
+| `visitors.decide` | Read and answer a visitor approval request for the caller's unit (the list and `GET .../visitor-approval-requests/{request_id}`). | `owner`, `tenant`, `household` |
 | `deliveries.read` | Read parcels logged against the caller's unit. | `owner`, `tenant`, `household` |
 | `gate.operate` | Use the guard console: expected visitors, scanning, walk-ins, arrivals, parcels, minimized search. | `org_admin`, `site_manager`, `guard` |
 | `gate.manage` | Set guard PINs. | `org_admin`, `site_manager` |

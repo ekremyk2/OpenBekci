@@ -261,6 +261,30 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	}
 	c.must(403, owner2, "GET", base("/agenda-items/"+item1+"/poll/answers"), "")
 
+	// the owner reads back what they answered per unit: the value and when, and only their own answers
+	w.Exec(t, `INSERT INTO poll_answer (org_id, site_id, agenda_item_id, unit_id, answer, answered_by) VALUES ($1, $2, $3, $4, 'no', $5)`, org.ID, f.Site, item1, u[0], p1) // another owner's answer
+	my = c.must(200, owner2, "GET", base(mpath+"/me"), "")
+	mp := my["polls"].([]any)[0].(map[string]any)
+	ans := mp["answers"].([]any)
+	if len(ans) != 1 || len(mp["answered_units"].([]any)) != 1 {
+		t.Fatalf("my poll answers = %v", mp)
+	}
+	a0 := ans[0].(map[string]any)
+	if gstr(a0, "unit_id") != u[2].String() || gstr(a0, "answer") != "yes" || gstr(a0, "answered_at") == "" || mp["answered_units"].([]any)[0] != gstr(a0, "unit_id") {
+		t.Fatalf("my poll answer = %v", a0)
+	}
+	c.must(200, owner2, "PUT", base("/agenda-items/"+item1+"/poll/answer"), fmt.Sprintf(`{"unit_id":%q,"answer":"abstain"}`, u[2])) // changing the answer is read back
+	my = c.must(200, owner2, "GET", base(mpath+"/me"), "")
+	if a1 := my["polls"].([]any)[0].(map[string]any)["answers"].([]any); len(a1) != 1 || gstr(a1[0].(map[string]any), "answer") != "abstain" {
+		t.Fatalf("changed answer = %v", a1)
+	}
+	c.must(200, owner2, "PUT", base("/agenda-items/"+item1+"/poll/answer"), fmt.Sprintf(`{"unit_id":%q,"answer":"yes"}`, u[2]))
+	w.Exec(t, `DELETE FROM poll_answer WHERE org_id = $1 AND agenda_item_id = $2 AND answered_by = $3`, org.ID, item1, p1)
+	// staff who own nothing see no answers of anyone
+	if sp := c.must(200, mgr, "GET", base(mpath+"/me"), "")["polls"].([]any); len(sp) != 0 {
+		t.Fatalf("a non-owner sees polls to answer: %v", sp)
+	}
+
 	// the session: nobody present, then QR and desk check-in; the per-person cap holds p1 to one vote
 	c.must(200, mgr, "POST", base(mpath+":open-first-call"), ``)
 	q := c.must(200, mgr, "GET", base(mpath+"/quorum"), "")
@@ -532,6 +556,19 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	dn := litems(c.must(200, mgr, "GET", base(mpath+"/notices?phase=decisions"), ""))
 	if len(dn) != 1 || gstr(dn[0], "status") != "recorded" || gstr(dn[0], "method") != "sms" || gstr(dn[0], "person_id") != p5.String() {
 		t.Fatalf("decision notices = %v", dn)
+	}
+	// the meeting notifications carry the meeting id in the payload (clients route from it, not from the web path in link)
+	mnSeen := map[string]int{}
+	for _, x := range rn.notifies {
+		if x.Type == "meeting.called" || x.Type == "meeting.decisions" {
+			if x.Payload["meeting_id"] == nil || fmt.Sprint(x.Payload["meeting_id"]) != mid || x.Link != "/meetings/"+mid {
+				t.Fatalf("%s payload = %v link %q", x.Type, x.Payload, x.Link)
+			}
+			mnSeen[x.Type]++
+		}
+	}
+	if mnSeen["meeting.called"] == 0 || mnSeen["meeting.decisions"] == 0 {
+		t.Fatalf("meeting notifications seen = %v", mnSeen)
 	}
 	nBefore := len(rn.notifies)
 	runJob() // a repeat does nothing

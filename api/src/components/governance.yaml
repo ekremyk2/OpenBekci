@@ -627,6 +627,7 @@ schemas:
       - agenda_item_id
       - title
       - answered_units
+      - answers
     properties:
       agenda_item_id:
         type: string
@@ -638,6 +639,32 @@ schemas:
         items:
           type: string
           format: uuid
+      answers:
+        type: array
+        description: What the caller answered, per unit (their own answers only, never another owner's).
+        items:
+          $ref: "#/schemas/MyPollAnswer"
+  MyPollAnswer:
+    type: object
+    required:
+      - unit_id
+      - answer
+      - answered_at
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      answer:
+        type: string
+        description: Open enum.
+        enum:
+          - "yes"
+          - "no"
+          - abstain
+        x-open-enum: true
+      answered_at:
+        type: string
+        format: date-time
   MyMeeting:
     type: object
     required:
