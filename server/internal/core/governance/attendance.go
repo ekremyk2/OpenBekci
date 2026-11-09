@@ -605,6 +605,15 @@ type MyPoll struct {
 	AgendaItemID  uuid.UUID   `json:"agenda_item_id"`
 	Title         string      `json:"title"`
 	AnsweredUnits []uuid.UUID `json:"answered_units"`
+	// Answers is what the caller answered per unit (their own answers only).
+	Answers []MyPollAnswer `json:"answers"`
+}
+
+// MyPollAnswer is the caller's answer for one unit.
+type MyPollAnswer struct {
+	UnitID     uuid.UUID `json:"unit_id"`
+	Answer     string    `json:"answer"`
+	AnsweredAt time.Time `json:"answered_at"`
 }
 
 // MyMeeting is the meeting as the caller sees it.
@@ -674,13 +683,38 @@ func (s *Service) GetMyMeeting(ctx context.Context, orgID, meetingID uuid.UUID) 
 		}
 		defer prows.Close()
 		for prows.Next() {
-			mp := MyPoll{}
+			mp := MyPoll{Answers: []MyPollAnswer{}}
 			if err := prows.Scan(&mp.AgendaItemID, &mp.Title, &mp.AnsweredUnits); err != nil {
 				return err
 			}
 			out.Polls = append(out.Polls, mp)
 		}
-		return prows.Err()
+		if err := prows.Err(); err != nil {
+			return err
+		}
+		prows.Close()
+		// the caller's own answers per unit (answered_by = me: never another owner's)
+		for i := range out.Polls {
+			arows, err := tx.Query(ctx, `SELECT unit_id, answer, answered_at FROM poll_answer WHERE org_id = $1 AND agenda_item_id = $2 AND answered_by = $3 ORDER BY unit_id`,
+				orgID, out.Polls[i].AgendaItemID, me)
+			if err != nil {
+				return err
+			}
+			for arows.Next() {
+				var a MyPollAnswer
+				if err := arows.Scan(&a.UnitID, &a.Answer, &a.AnsweredAt); err != nil {
+					arows.Close()
+					return err
+				}
+				a.AnsweredAt = a.AnsweredAt.UTC()
+				out.Polls[i].Answers = append(out.Polls[i].Answers, a)
+			}
+			arows.Close()
+			if err := arows.Err(); err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 	return out, dbErr(err, "my meeting")
 }

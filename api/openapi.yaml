@@ -11860,6 +11860,72 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities/{facility_id}/bookings:preview:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: facility_id
+        in: path
+        required: true
+        description: Id of the facility.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.previewBooking
+      summary: Preview a booking
+      description: |-
+        **Release 0.3.** What `community.createBooking` would do for the same body, without writing anything: the fee and the side it would be charged to, the refund rule that would apply, the unit's quota left in the period of the start, and the rule violations that would make create fail (the same field-error codes create answers 422 with). A blocked date or a taken slot is reported in `conflict` (create answers 409). The body is the one create takes; its `facility_id` must equal the path's, else 422 `facility_id` `invalid_value`.
+
+        Refusals that depend on who asks (not allowed to book, closed facility, someone else's unit) are answered as create would, with 403, 404, 409 or 422.
+
+        Permission: `bookings.create`.
+
+        Problems: `validation_failed` (422), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.create
+        site_manager:
+          - bookings.create
+        board_member:
+          - bookings.create
+        owner:
+          - bookings.create
+        tenant:
+          - bookings.create
+        household:
+          - bookings.create
+      x-idempotent: none
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingPreview'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/bookings:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -12897,6 +12963,59 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: request_id
+        in: path
+        required: true
+        description: Id of the request.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getVisitorApprovalRequest
+      summary: One visitor approval request
+      description: |-
+        **Release 0.3.** One approval request, in the shape of the list items (a pending request past its expiry reads as `expired`). Served to the resident it is addressed to (a unit they live in or own) and to the site's overview roles; anyone else gets 404, so a request is never confirmed to exist. The guard console polls the visitor with `community.getGateVisitor` instead.
+
+        Permission (any one of): `visitors.decide` (own units), `visitors.read`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+        site_manager:
+          - visitors.read
+        board_member:
+          - visitors.read
+        auditor:
+          - visitors.read
+        owner:
+          - visitors.decide
+        tenant:
+          - visitors.decide
+        household:
+          - visitors.decide
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorApprovalRequest'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -30542,6 +30661,7 @@ components:
         - agenda_item_id
         - title
         - answered_units
+        - answers
       properties:
         agenda_item_id:
           type: string
@@ -30553,6 +30673,11 @@ components:
           items:
             type: string
             format: uuid
+        answers:
+          type: array
+          description: What the caller answered, per unit (their own answers only, never another owner's).
+          items:
+            $ref: '#/components/schemas/MyPollAnswer'
     MyMeeting:
       type: object
       required:
@@ -38713,6 +38838,140 @@ components:
           description: Door numbers of units without an owner of record; nobody votes for them.
           items:
             type: string
+    MyPollAnswer:
+      type: object
+      required:
+        - unit_id
+        - answer
+        - answered_at
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        answer:
+          type: string
+          description: Open enum.
+          enum:
+            - 'yes'
+            - 'no'
+            - abstain
+          x-open-enum: true
+        answered_at:
+          type: string
+          format: date-time
+    BookingPreview:
+      type: object
+      description: What creating the booking would do, computed without writing anything.
+      required:
+        - facility_id
+        - unit_id
+        - start
+        - end
+        - fee
+        - refund_rule
+        - quota
+        - violations
+        - conflict
+        - bookable
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        fee:
+          type: object
+          nullable: true
+          description: The fee create would post as a charge; null when the facility is free.
+          required:
+            - amount
+            - currency
+            - debtor_kind
+          properties:
+            amount:
+              type: integer
+              format: int64
+              description: Minor units.
+            currency:
+              type: string
+            debtor_kind:
+              type: string
+              description: Side the charge would go to (owner or tenant).
+              x-open-enum: true
+              enum:
+                - owner
+                - tenant
+        refund_rule:
+          type: object
+          required:
+            - cancel_refund_cutoff_hours
+            - refundable_until
+          properties:
+            cancel_refund_cutoff_hours:
+              type: integer
+              nullable: true
+              description: The facility's cutoff; null when cancelling never refunds a resident (a manager's cancel always does).
+            refundable_until:
+              type: string
+              format: date-time
+              nullable: true
+              description: A resident cancelling up to this instant gets the fee back; null without a fee or a cutoff.
+        quota:
+          type: object
+          required:
+            - limit
+            - period
+            - used
+            - remaining
+            - period_from
+            - period_to
+          properties:
+            limit:
+              type: integer
+              nullable: true
+              description: Bookings per unit per period; null when the facility has no quota.
+            period:
+              type: string
+              nullable: true
+              description: week or month; the period that contains `start`.
+            used:
+              type: integer
+              description: Confirmed bookings of the unit in that period.
+            remaining:
+              type: integer
+              nullable: true
+              description: Bookings left before this one; 0 means the quota is used up.
+            period_from:
+              type: string
+              format: date-time
+              nullable: true
+            period_to:
+              type: string
+              format: date-time
+              nullable: true
+        violations:
+          type: array
+          description: The rules this request breaks, as create would answer 422 `validation_failed` (same codes). Managers are not held to the lead time, the horizon or the quota.
+          items:
+            $ref: '#/components/schemas/ProblemFieldError'
+        conflict:
+          type: string
+          nullable: true
+          description: The 409 create would answer with, if any. Open enum.
+          x-open-enum: true
+          enum:
+            - facility_blocked
+            - slot_taken
+        bookable:
+          type: boolean
+          description: True when create would succeed right now.
     Job:
       type: object
       description: A background job (River).

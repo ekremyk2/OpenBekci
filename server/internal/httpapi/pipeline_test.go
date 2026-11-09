@@ -78,6 +78,29 @@ paths:
                 properties:
                   id: {type: integer}
         default: {$ref: "#/components/responses/Problem"}
+  /v1/opt-body:
+    post:
+      operationId: test.optBody
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: {type: string, maxLength: 5}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [len]
+                properties:
+                  len: {type: integer}
+        default: {$ref: "#/components/responses/Problem"}
   /v1/things-optional:
     post:
       operationId: test.createOptional
@@ -325,6 +348,11 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 		ta.creates.Add(1)
 		problem.Write(w, r, problem.Conflict("name taken"))
 	})
+	g.Post("/v1/opt-body", func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"len":` + itoa(len(b)) + `}`))
+	})
 	g.Post("/v1/things-optional", func(w http.ResponseWriter, _ *http.Request) {
 		n := ta.creates.Add(1)
 		w.Header().Set("Content-Type", "application/json")
@@ -469,6 +497,33 @@ func TestValidationBody(t *testing.T) {
 	if len(p.Errors) != 1 || p.Errors[0].Field != "name" || p.Errors[0].Code != "invalid_type" {
 		t.Errorf("wrong type: %+v", p.Errors)
 	}
+}
+
+// A body that is exactly JSON null (or empty) is an absent body for an
+// operation whose requestBody is not required (generated clients send null);
+// a real body is still validated and a required body is never loosened.
+func TestOptionalBodyNullIsAbsent(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	key := []string{"Idempotency-Key", "key-12345678"}
+	for _, body := range []string{"null", " null\n", ""} {
+		rec := ta.doAuth("POST", "/v1/opt-body", body)
+		if rec.Code != 200 || !strings.Contains(rec.Body.String(), `"len":0`) {
+			t.Errorf("body %q: %d %s", body, rec.Code, rec.Body)
+		}
+	}
+	if rec := ta.doAuth("POST", "/v1/opt-body", `{"reason":"ok"}`); rec.Code != 200 || !strings.Contains(rec.Body.String(), `"len":15`) {
+		t.Errorf("a real body passes through intact: %d %s", rec.Code, rec.Body)
+	}
+	decodeProblem(t, ta.doAuth("POST", "/v1/opt-body", `{"reason":"toolong"}`), 422, "validation_failed")
+	decodeProblem(t, ta.doAuth("POST", "/v1/opt-body", `[1]`), 422, "validation_failed")
+	decodeProblem(t, ta.doAuth("POST", "/v1/opt-body", `nul`), 400, "bad_request")
+	// a body longer than the peek window arrives whole
+	long := `{"reason":"a","x":"` + strings.Repeat("y", 100) + `"}`
+	if rec := ta.doAuth("POST", "/v1/opt-body", long); rec.Code != 200 || !strings.Contains(rec.Body.String(), `"len":`+itoa(len(long))) {
+		t.Errorf("long body: %d %s", rec.Code, rec.Body)
+	}
+	// required bodies stay required: null is still rejected
+	decodeProblem(t, ta.doAuth("POST", "/v1/things", `null`, key...), 422, "validation_failed")
 }
 
 func TestUnknownPathIsProblem(t *testing.T) {
