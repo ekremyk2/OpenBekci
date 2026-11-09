@@ -10,22 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
-
-// account gives a person of the world a login and returns its token.
-func (w *residentWorld) account(t *testing.T, person uuid.UUID) string {
-	t.Helper()
-	u, err := w.p.e.svc.CreateUser(context.Background(), identity.CreateUserParams{Email: id.New().String() + "@example.org"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	w.p.w.Exec(t, `UPDATE person SET user_id = $2 WHERE id = $1`, person, u.ID)
-	return tokenOf(t, w.p.e, u.ID)
-}
 
 // The statement fallback (a resident has no units.read) is open to the occupants of the
 // unit and nobody else, in every format: a resident of another unit, a household member
@@ -163,9 +151,9 @@ func TestIntegrationProfileNameAndLocaleRules(t *testing.T) {
 		return p.call("PATCH", "/v1/me/profile", body, w.tenantTok, "If-Match", fmt.Sprintf(`"%d"`, ver))
 	}
 	for _, bad := range []string{
-		`{"display_name":"Ayse‮evil"}`,  // bidi override
-		`{"display_name":"Ay\u0000se"}`, // control
-		`{"display_name":"Ay​se"}`,      // zero width
+		"{\"display_name\":\"Ayse\\u202eevil\"}", // bidi override
+		"{\"display_name\":\"Ay\\u0000se\"}",     // control
+		"{\"display_name\":\"Ay\\u200bse\"}",     // zero width
 		`{"locale":"fr"}`,
 		`{"locale":"tr-TR"}`,
 	} {
