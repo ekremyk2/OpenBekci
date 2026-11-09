@@ -14,8 +14,10 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/opsx"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/chat"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
 	"github.com/openbekci/openbekci/server/internal/platform/push"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
@@ -44,6 +46,15 @@ type Config struct {
 	Push       push.Sender
 	Devices    DeviceSource
 	InstanceID InstanceIDFunc
+	// Chat wires the chat channel (*chat.Service); without it a chat delivery is
+	// recorded as skipped (chat_unavailable).
+	Chat ChatSource
+}
+
+// ChatSource is the part of the chat module the dispatcher needs.
+type ChatSource interface {
+	Reaches(ctx context.Context, tx pgx.Tx, org uuid.UUID, users []uuid.UUID) (map[uuid.UUID]chatcore.Reach, error)
+	Send(ctx context.Context, org, user uuid.UUID, m chat.Message) error
 }
 
 // Service is the notifications module. It implements jobs.Deliverer.

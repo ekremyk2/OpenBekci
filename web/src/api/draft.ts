@@ -41,7 +41,7 @@ export type PlatformJob = S['PlatformJob']
 export type PlatformSettings = S['PlatformSettings']
 export type Job = S['Job']
 export type ApiFile = S['File']
-export type Channel = 'in_app' | 'email' | 'sms' | 'push'
+export type Channel = 'in_app' | 'email' | 'sms' | 'push' | 'chat'
 
 /** Client typed with the draft paths (same middleware as `api`). */
 export const draftApi = createApiClient<paths>()

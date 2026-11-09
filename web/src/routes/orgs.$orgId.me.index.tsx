@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProfileForm } from '@/features/people/ProfileForm'
 import { HouseholdPanel } from '@/features/people/HouseholdPanel'
+import { ChatLinksPanel } from '@/features/chat/ChatLinksPanel'
 
 export const Route = createFileRoute('/orgs/$orgId/me/')({
   component: function MyAccount() {
@@ -52,6 +53,7 @@ export const Route = createFileRoute('/orgs/$orgId/me/')({
           </CardContent>
         </Card>
         <HouseholdPanel />
+        <ChatLinksPanel />
         <Card>
           <CardHeader>
             <CardTitle>

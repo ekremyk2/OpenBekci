@@ -469,6 +469,9 @@ msgstr "Administrator email (optional)"
 msgid "Admit"
 msgstr "Admit"
 
+msgid "After saving, the operator registers the address below with <0>openbekci admin chat set-webhook</0>."
+msgstr "After saving, the operator registers the address below with <0>openbekci admin chat set-webhook</0>."
+
 msgid "Agenda"
 msgstr "Agenda"
 
@@ -1211,6 +1214,15 @@ msgstr "Charges go to the default payer (the tenant for regular dues, the owner 
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Chat (Telegram/WhatsApp)"
+msgstr "Chat (Telegram/WhatsApp)"
+
+msgid "Chat link QR code"
+msgstr "Chat link QR code"
+
 msgid "Check"
 msgstr "Check"
 
@@ -1502,6 +1514,9 @@ msgstr "Concerns residents (tenants can see it)"
 
 msgid "configured"
 msgstr "configured"
+
+msgid "Configured"
+msgstr "Configured"
 
 msgid "Confirm"
 msgstr "Confirm"
@@ -2532,6 +2547,9 @@ msgstr "Enter opening balances"
 msgid "Enter the account holder"
 msgstr "Enter the account holder"
 
+msgid "Enter the address below and the verify token in the webhook settings of your Meta app."
+msgstr "Enter the address below and the verify token in the webhook settings of your Meta app."
+
 msgid "Enter the area in square metres"
 msgstr "Enter the area in square metres"
 
@@ -3367,6 +3385,9 @@ msgstr "Lines"
 msgid "Link"
 msgstr "Link"
 
+msgid "Link Telegram"
+msgstr "Link Telegram"
+
 msgid "link text"
 msgstr "link text"
 
@@ -3381,6 +3402,15 @@ msgstr "Link to declared payment"
 
 msgid "Link to unit"
 msgstr "Link to unit"
+
+msgid "Link WhatsApp"
+msgstr "Link WhatsApp"
+
+msgid "Linked"
+msgstr "Linked"
+
+msgid "Linked chats"
+msgstr "Linked chats"
 
 msgid "Linked to the declared payment."
 msgstr "Linked to the declared payment."
@@ -3919,6 +3949,9 @@ msgstr "No cash boxes yet"
 msgid "No charges match"
 msgstr "No charges match"
 
+msgid "No chat is linked yet."
+msgstr "No chat is linked yet."
+
 msgid "No checkouts with this status"
 msgstr "No checkouts with this status"
 
@@ -4184,6 +4217,9 @@ msgstr "Not available"
 msgid "not configured"
 msgstr "not configured"
 
+msgid "Not configured"
+msgstr "Not configured"
+
 msgid "Not determined"
 msgstr "Not determined"
 
@@ -4445,6 +4481,9 @@ msgstr "Open the second call"
 
 msgid "Open the settlements and client money view"
 msgstr "Open the settlements and client money view"
+
+msgid "Open this link on the phone that has {startedName}, or scan the code, then send the message the bot offers."
+msgstr "Open this link on the phone that has {startedName}, or scan the code, then send the message the bot offers."
 
 msgid "Open ticket"
 msgstr "Open ticket"
@@ -5099,6 +5138,9 @@ msgstr "Receivables aging"
 
 msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
 msgstr "Receivables in this file: <0/>. Bank and cash balances: <1/>."
+
+msgid "Receive notifications in Telegram or WhatsApp."
+msgstr "Receive notifications in Telegram or WhatsApp."
 
 msgid "Received"
 msgstr "Received"
@@ -6276,6 +6318,9 @@ msgstr "The change has been created."
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 
+msgid "The chat could not be reached; link again"
+msgstr "The chat could not be reached; link again"
+
 msgid "The checklist appears when the assembly has been called."
 msgstr "The checklist appears when the assembly has been called."
 
@@ -6651,6 +6696,9 @@ msgstr "This cannot be undone from here. Type the site name to continue."
 
 msgid "This cannot be undone."
 msgstr "This cannot be undone."
+
+msgid "This chat service is not set up by your administrator yet."
+msgstr "This chat service is not set up by your administrator yet."
 
 msgid "This code is not known."
 msgstr "This code is not known."
@@ -7038,6 +7086,12 @@ msgstr "Units with a tag"
 msgid "unknown permission"
 msgstr "unknown permission"
 
+msgid "Unlink"
+msgstr "Unlink"
+
+msgid "Unlink {name}"
+msgstr "Unlink {name}"
+
 msgid "Unmatch"
 msgstr "Unmatch"
 
@@ -7337,6 +7391,9 @@ msgstr "Waiting for enrolment"
 msgid "Waiting for the resident"
 msgstr "Waiting for the resident"
 
+msgid "Waiting for your message to the bot"
+msgstr "Waiting for your message to the bot"
+
 msgid "Waive"
 msgstr "Waive"
 
@@ -7369,6 +7426,9 @@ msgstr "We could not find this payment"
 
 msgid "We could not send the code. Please try again."
 msgstr "We could not send the code. Please try again."
+
+msgid "Webhook address"
+msgstr "Webhook address"
 
 msgid "Webhook endpoints"
 msgstr "Webhook endpoints"

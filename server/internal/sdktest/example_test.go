@@ -3,6 +3,7 @@ package sdktest_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
@@ -13,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/sdk"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/packs"
+	"github.com/openbekci/openbekci/server/internal/platform/chat"
 	"github.com/openbekci/openbekci/server/internal/problem"
 	"github.com/openbekci/openbekci/server/internal/sdktest"
 )
@@ -359,7 +361,7 @@ func TestExamplePackContributions(t *testing.T) {
 	h := sdktest.New(t, example.New(), sdktest.WithSettings(settings))
 	pk, _ := h.Host.Lookup("example")
 	got := strings.Join(pk.C.Provides(), " ")
-	for _, want := range []string{"payment_provider:example", "sms_provider:example", "statement_importer:example", "quorum_preset:example", "threshold_preset:example",
+	for _, want := range []string{"payment_provider:example", "sms_provider:example", "chat_provider:example", "statement_importer:example", "quorum_preset:example", "threshold_preset:example",
 		"vote_weight_preset:example", "schedule_preset:example", "transfer_rule:example", "late_fee_preset:example", "allocation_policy:example.even",
 		"payment_allocation_order:example.newest_first", "document_template:example.receipt", "chart_of_accounts:example", "address_format:example.xx",
 		"validator:example.tax_id", "reference_data:example.areas", "consent_texts:example.privacy", "catalog:example.labels", "settings_schema:settings",
@@ -369,6 +371,11 @@ func TestExamplePackContributions(t *testing.T) {
 		}
 	}
 	ctx := context.Background()
+	if cps, err := h.Host.ChatProviders(ctx, h.Env.OrgID); err != nil || len(cps) != 1 || cps[0].ID() != "example" || cps[0].DeepLink("BEKCI-X") != "https://chat.example.test/start?code=BEKCI-X" {
+		t.Errorf("chat providers: %v %v", cps, err)
+	} else if err := cps[0].Send(ctx, "gone", chat.Message{Text: "t"}); !errors.Is(err, chat.ErrDead) {
+		t.Errorf("an unreachable chat is %v, want chat.ErrDead", err)
+	}
 	if labels, _ := h.Host.Labels(ctx, h.Env.OrgID, "tr"); labels["example.status.paid"] != "Odendi" {
 		t.Errorf("catalog labels: %v", labels)
 	}

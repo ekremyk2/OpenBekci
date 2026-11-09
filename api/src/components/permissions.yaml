@@ -20,6 +20,7 @@ schemas:
       - bookings.create
       - bookings.manage
       - bookings.read
+      - chat.manage
       - claims.decide
       - codes.read
       - collections.manage
@@ -119,6 +120,7 @@ x-openbekci-roles:
     - bookings.create
     - bookings.manage
     - bookings.read
+    - chat.manage
     - claims.decide
     - codes.read
     - collections.manage

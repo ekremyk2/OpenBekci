@@ -295,6 +295,16 @@ paths:
     $ref: ./paths/operations/notification-defaults.yaml
   /v1/orgs/{org_id}/me/notification-mutes:
     $ref: ./paths/operations/me-notification-mutes.yaml
+  /v1/orgs/{org_id}/me/chat-links:
+    $ref: ./paths/operations/me-chat-links.yaml
+  /v1/orgs/{org_id}/me/chat-links/{provider}:start:
+    $ref: ./paths/operations/me-chat-links-provider_start.yaml
+  /v1/orgs/{org_id}/me/chat-links/{link_id}:
+    $ref: ./paths/operations/me-chat-links-link_id.yaml
+  /v1/orgs/{org_id}/chat-settings:
+    $ref: ./paths/operations/chat-settings.yaml
+  /v1/orgs/{org_id}/chat-settings/{provider}:
+    $ref: ./paths/operations/chat-settings-provider.yaml
   /v1/orgs/{org_id}/sms-usage:
     $ref: ./paths/operations/sms-usage.yaml
   /v1/orgs/{org_id}/files:

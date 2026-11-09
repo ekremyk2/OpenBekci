@@ -408,7 +408,17 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 	if err := s.pendingConsents(ctx, p.UserID, orgs); err != nil {
 		return nil, err
 	}
+	var chatLinks *[]gen.ChatLink
+	if s.chat != nil {
+		ls, err := s.chat.ForUser(ctx, p.UserID)
+		if err != nil {
+			return nil, problem.Internal(err)
+		}
+		dtos := chatLinkDTOs(ls)
+		chatLinks = &dtos
+	}
 	return gen.MeGet200JSONResponse(gen.Me{
+		ChatLinks: chatLinks,
 		User: gen.MeUser{
 			Id: me.User.ID, DisplayName: me.DisplayName, Email: nullStr(me.User.Email), Phone: nullStr(me.User.Phone),
 			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin, Version: me.User.Version,

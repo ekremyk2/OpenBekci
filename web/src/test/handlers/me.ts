@@ -83,6 +83,7 @@ export const ALL_PERMISSIONS = [
   // integrations (0.4)
   'packs.read',
   'packs.manage',
+  'chat.manage',
   'apikeys.read',
   'apikeys.manage',
   'webhooks.read',

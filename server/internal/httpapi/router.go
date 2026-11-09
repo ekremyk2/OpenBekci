@@ -14,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/devices"
 	"github.com/openbekci/openbekci/server/internal/core/files"
@@ -76,6 +77,9 @@ type Deps struct {
 	// Privacy serves consents, data export and erase. Nil answers those operations
 	// with an internal error (unit tests only).
 	Privacy *privacy.Service
+	// Chat serves the chat channel (links, bot settings, provider webhooks). Nil
+	// answers those operations with an internal error (unit tests only).
+	Chat *chatcore.Service
 	// Ops serves the daily-operations operations (tickets, announcements,
 	// documents, notifications, dashboards, codes). Nil fields answer their
 	// operations with an internal error (unit tests only).

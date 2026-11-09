@@ -462,7 +462,7 @@ func checkChannels(ch []string, field string) []problem.Field {
 	}
 	for i, c := range ch {
 		switch c {
-		case jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush:
+		case jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat:
 		default:
 			bad = append(bad, problem.Field{Field: fmt.Sprintf("%s[%d]", field, i), Code: "invalid_value"})
 		}
@@ -472,7 +472,7 @@ func checkChannels(ch []string, field string) []problem.Field {
 
 func normChannels(ch []string) []string {
 	var out []string
-	for _, c := range []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush} {
+	for _, c := range []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat} {
 		if slices.Contains(ch, c) {
 			out = append(out, c)
 		}

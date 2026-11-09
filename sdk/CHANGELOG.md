@@ -5,6 +5,11 @@ exported is removed, renamed or changed in signature, and an existing interface 
 new optional interface (found by type assertion) or a new exported name, in a minor release. A breaking change waits for `sdk/v2`.
 A pack built for 1.x (`MinSDK` 1.x.z) runs on every server whose SDK is 1.y.w that is not older than that.
 
+## 1.1.0
+
+- New optional extension point `ChatProvider` (messengers such as BiP for the notification channel `chat`), registered through the
+  optional `ChatRegistrar` that the host's registry implements (an existing interface never gains a method). See `docs/packs/authoring.md`.
+
 ## 1.0.0
 
 Freeze, with project release 1.0.

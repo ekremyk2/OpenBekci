@@ -1,0 +1,45 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: provider
+    in: path
+    required: true
+    description: The chat provider, `telegram`, `whatsapp` or the id of a provider of an enabled pack.
+    schema:
+      type: string
+post:
+  operationId: operations.startChatLink
+  summary: Start linking a chat account
+  description: |-
+    **Release 1.0.** Issues a single-use linking code (valid 10 minutes) and returns the provider's deep link that
+    carries it: `https://t.me/<bot>?start=<code>` for Telegram, `https://wa.me/<number>?text=<code>` for WhatsApp. When the
+    person sends the code to the organization's bot, the provider's webhook verifies the link. Asking again replaces the
+    code; an already linked account stays linked until the new code is verified.
+
+    Permission: `notifications.read`.
+
+    Problems: `conflict` (409, the provider is not configured for the organization).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-idempotent: optional
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/ChatLinkStarted
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

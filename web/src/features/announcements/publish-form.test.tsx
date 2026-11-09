@@ -124,4 +124,17 @@ describe('publish from the form (B3)', () => {
     expect(sent[1]!.body).toEqual({ channels: ['in_app', 'sms'] })
     expect(sent[1]!.key).not.toBe(sent[0]!.key)
   })
+
+  it('sends the chat channel when it is ticked', async () => {
+    const calls = spy('*/v1/orgs/:org/announcements/:id')
+    mountApp('/orgs/org-1/announcements/new', 'manager')
+    await fillNewForm()
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Chat (Telegram/WhatsApp)' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Publish' })).toBeEnabled())
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }))
+    await waitFor(() => expect(calls.filter((c) => c.url.includes(':publish'))).toHaveLength(1))
+    expect(calls.find((c) => c.url.includes(':publish'))!.body).toEqual({
+      channels: ['in_app', 'chat'],
+    })
+  })
 })
