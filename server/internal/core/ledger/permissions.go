@@ -39,7 +39,7 @@ func Permissions() []authz.PermissionDef {
 		{Name: PermPaymentsCheckout, Description: "Start a card checkout for a unit side (a resident only for a side their occupancy reaches; managers for any), poll it and list one's own checkouts",
 			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager}, Scopes: orgSite, Occupants: all},
 		{Name: PermStatementsRead, Description: "Read unit-side and person statements", Roles: overview, Scopes: orgSite},
-		{Name: PermStatementsReadOwn, Description: "Read statements, balances, charges, payments and receipts of the caller's own side", Roles: overview, Scopes: orgSite, Occupants: all},
+		{Name: PermStatementsReadOwn, Description: "Read statements, balances, charges, payments and receipts of the caller's own side; former occupants: what is dated inside their occupancy period", Roles: overview, Scopes: orgSite, Occupants: all, Former: true},
 		{Name: PermReportsRead, Description: "Read the financial reports", Roles: overview, Scopes: orgSite},
 		{Name: PermReportsDebtors, Description: "Read the debtor list (never public)", Roles: overview, Scopes: orgSite},
 		{Name: PermReportsAggregate, Description: "Read gelir-gider and budget vs actual when the site enables financial transparency to owners",
