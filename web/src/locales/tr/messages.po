@@ -469,6 +469,9 @@ msgstr "Yönetici e-postası (isteğe bağlı)"
 msgid "Admit"
 msgstr "İçeri al"
 
+msgid "After saving, the operator registers the address below with <0>openbekci admin chat set-webhook</0>."
+msgstr "Kaydettikten sonra operatör aşağıdaki adresi <0>openbekci admin chat set-webhook</0> ile kaydeder."
+
 msgid "Agenda"
 msgstr "Gündem"
 
@@ -1211,6 +1214,15 @@ msgstr "Giderler varsayılan ödeyene gider (olağan aidatta kiracı, olağanüs
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr "Bir birimin bir tarafı veya bir kişi için, yürüyen bakiyeli tahakkuklar, ödemeler ve tazminatlar."
 
+msgid "Chat"
+msgstr "Sohbet"
+
+msgid "Chat (Telegram/WhatsApp)"
+msgstr "Sohbet (Telegram/WhatsApp)"
+
+msgid "Chat link QR code"
+msgstr "Sohbet bağlantısı QR kodu"
+
 msgid "Check"
 msgstr "Kontrol"
 
@@ -1502,6 +1514,9 @@ msgstr "Sakinleri ilgilendirir (kiracılar görebilir)"
 
 msgid "configured"
 msgstr "yapılandırılmış"
+
+msgid "Configured"
+msgstr "Yapılandırıldı"
 
 msgid "Confirm"
 msgstr "Onayla"
@@ -2532,6 +2547,9 @@ msgstr "Açılış bakiyelerini girin"
 msgid "Enter the account holder"
 msgstr "Hesap sahibini girin"
 
+msgid "Enter the address below and the verify token in the webhook settings of your Meta app."
+msgstr "Aşağıdaki adresi ve doğrulama belirtecini Meta uygulamanızın webhook ayarlarına girin."
+
 msgid "Enter the area in square metres"
 msgstr "Alanı metrekare olarak girin"
 
@@ -3367,6 +3385,9 @@ msgstr "Satırlar"
 msgid "Link"
 msgstr "Bağlantı"
 
+msgid "Link Telegram"
+msgstr "Telegram'a bağla"
+
 msgid "link text"
 msgstr "bağlantı metni"
 
@@ -3381,6 +3402,15 @@ msgstr "Bildirilen ödemeye bağla"
 
 msgid "Link to unit"
 msgstr "Birime bağla"
+
+msgid "Link WhatsApp"
+msgstr "WhatsApp'a bağla"
+
+msgid "Linked"
+msgstr "Bağlı"
+
+msgid "Linked chats"
+msgstr "Bağlı sohbetler"
 
 msgid "Linked to the declared payment."
 msgstr "Bildirilen ödemeye bağlandı."
@@ -3919,6 +3949,9 @@ msgstr "Henüz kasa yok"
 msgid "No charges match"
 msgstr "Eşleşen tahakkuk yok"
 
+msgid "No chat is linked yet."
+msgstr "Henüz bağlı bir sohbet yok."
+
 msgid "No checkouts with this status"
 msgstr "Bu durumda ödeme işlemi yok"
 
@@ -4184,6 +4217,9 @@ msgstr "Kullanılamıyor"
 msgid "not configured"
 msgstr "yapılandırılmamış"
 
+msgid "Not configured"
+msgstr "Yapılandırılmadı"
+
 msgid "Not determined"
 msgstr "Belirlenmedi"
 
@@ -4445,6 +4481,9 @@ msgstr "İkinci toplantıyı aç"
 
 msgid "Open the settlements and client money view"
 msgstr "Mutabakat ve müşteri parası görünümünü aç"
+
+msgid "Open this link on the phone that has {startedName}, or scan the code, then send the message the bot offers."
+msgstr "Bu bağlantıyı {startedName} yüklü telefonda açın veya kodu okutun, ardından botun önerdiği mesajı gönderin."
 
 msgid "Open ticket"
 msgstr "Talebi aç"
@@ -5099,6 +5138,9 @@ msgstr "Alacak yaşlandırma"
 
 msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
 msgstr "Bu dosyadaki alacaklar: <0/>. Banka ve kasa bakiyeleri: <1/>."
+
+msgid "Receive notifications in Telegram or WhatsApp."
+msgstr "Bildirimleri Telegram veya WhatsApp'ta alın."
 
 msgid "Received"
 msgstr "Alınan"
@@ -6276,6 +6318,9 @@ msgstr "Değişiklik oluşturuldu."
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr "<0/> tutarındaki tahakkuk kayıtlarda kalır. Gerekçenizle bir ters kayıt oluşturulur, hiçbir şey kaybolmaz."
 
+msgid "The chat could not be reached; link again"
+msgstr "Sohbete ulaşılamadı; yeniden bağlayın"
+
 msgid "The checklist appears when the assembly has been called."
 msgstr "Kontrol listesi, toplantı çağrıldığında görünür."
 
@@ -6651,6 +6696,9 @@ msgstr "Buradan geri alınamaz. Devam etmek için site adını yazın."
 
 msgid "This cannot be undone."
 msgstr "Bu işlem geri alınamaz."
+
+msgid "This chat service is not set up by your administrator yet."
+msgstr "Bu sohbet hizmeti yöneticiniz tarafından henüz kurulmadı."
 
 msgid "This code is not known."
 msgstr "Bu kod tanınmıyor."
@@ -7038,6 +7086,12 @@ msgstr "Etiketli birimler"
 msgid "unknown permission"
 msgstr "bilinmeyen yetki"
 
+msgid "Unlink"
+msgstr "Bağlantıyı kaldır"
+
+msgid "Unlink {name}"
+msgstr "{name} bağlantısını kaldır"
+
 msgid "Unmatch"
 msgstr "Eşleşmeyi kaldır"
 
@@ -7337,6 +7391,9 @@ msgstr "Kayıt bekleniyor"
 msgid "Waiting for the resident"
 msgstr "Sakin bekleniyor"
 
+msgid "Waiting for your message to the bot"
+msgstr "Bota mesajınız bekleniyor"
+
 msgid "Waive"
 msgstr "Affet"
 
@@ -7369,6 +7426,9 @@ msgstr "Bu ödemeyi bulamadık"
 
 msgid "We could not send the code. Please try again."
 msgstr "Kod gönderemedik. Lütfen yeniden deneyin."
+
+msgid "Webhook address"
+msgstr "Webhook adresi"
 
 msgid "Webhook endpoints"
 msgstr "Webhook uç noktaları"

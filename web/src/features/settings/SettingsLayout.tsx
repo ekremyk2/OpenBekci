@@ -19,6 +19,7 @@ export function SettingsLayout() {
       label: t`Notifications`,
       show: can('notifications.manage'),
     },
+    { to: '/orgs/$orgId/settings/chat', label: t`Chat`, show: can('chat.manage') },
     { to: '/orgs/$orgId/settings/audit', label: t`Audit log`, show: can('audit.read') },
     { to: '/orgs/$orgId/settings/packs', label: t`Packs`, show: can('packs.read') },
     {

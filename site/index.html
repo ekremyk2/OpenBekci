@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en" data-type="software" data-radius="soft" data-ground="sky" data-buttons="arrow" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OpenBekci: site management software for boards and managers</title>
+<meta name="description" content="OpenBekci is open-source site and apartment management: dues, assemblies, tickets, announcements and gate control for managers, boards and residents.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OpenBekci: site management software for boards and managers">
+<meta property="og:description" content="Open-source site management for managers, boards and residents. AGPL-3.0, self-hosted in one compose file.">
+<meta property="og:image" content="share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#eef0f3">
+<!-- <link rel="canonical" href="https://[the project's domain]/"> until the domain exists -->
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
+<style>
+:root {
+  --p-bg: #eef0f3; --p-surface: #e2e5ea; --p-ink: #0b0c0e; --p-muted: #5d6470;
+  --p-accent: #1f2de6; --p-accent-ink: #ffffff; --p-action: #1f2de6; --p-action-ink: #ffffff;
+  --p-inv-bg: #0b0c0e; --p-inv-surface: #17181a; --p-inv-ink: #eef0f3; --p-inv-muted: #8e8f92;
+  --p-inv-accent: #eef0f3; --p-inv-accent-ink: #0b0c0e; --p-inv-action: #eef0f3; --p-inv-action-ink: #0b0c0e;
+  --font-display: "Urbanist", system-ui, sans-serif;
+  --font-text: "Urbanist", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.03em;
+  --display-tracking-xl: -0.04em;
+}
+</style>
+<link rel="stylesheet" href="assets/ui/base.css">
+<link rel="stylesheet" href="assets/ui/terminal-run/fragment.css">
+<link rel="stylesheet" href="assets/diagrams/diagram.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/word-highlight/moment.js">
+<link rel="modulepreload" href="assets/moments/iris-opens/moment.js">
+<style>
+  /* the product's own screenshots (img/): shown at their size and cut by their frame; page CSS inside a visual only */
+  .shot { position: relative; overflow: hidden; background: #fcfcfd; border: 1px solid var(--line-strong); border-radius: var(--r-md); }
+  .shot > img { display: block; max-width: none; height: auto; }
+  .shot--fit > img { width: 100%; }
+  .shot--crop > img { position: absolute; left: calc(var(--sx, 0) * -1px); top: calc(var(--sy, 0) * -1px); width: 1440px; }
+  .hero--centred .hero__window > .shot { z-index: 1; position: absolute; }
+  .hero--centred .hero__lead { color: var(--ink); }
+  @media (min-width: 640px) and (max-width: 1279px) { .hero--centred .shot > img { margin-top: -92px; } }
+  @media (max-width: 639px) { .hero--centred .shot > img { width: 900px; max-width: none; margin: -96px 0 0 -150px; } }
+  /* the money window: one app window across the .wrap, cut by the frame under a short fade */
+  .app { margin-top: var(--s-7); }
+  @media (max-width: 639px) { .app > img { position: absolute; left: -264px; top: -190px; width: 1440px; } }
+  .app::after { content: ""; position: absolute; inset: auto 0 0 0; height: 64px; background: linear-gradient(transparent, #fcfcfd); pointer-events: none; }
+  /* three open cards with the product's own crops */
+  #features .panel { --p-h: 336px; }
+  #features .stage > .shot { left: var(--ax, 24px); top: var(--ay, 32px); width: calc(100% - var(--ax, 24px) + 64px); height: calc(100% - var(--ay, 32px) + 72px); }
+  @media (max-width: 639px) { #features .panel { --p-h: 220px; } #features .stage > .shot { --ay: 16px; --ax: 16px; } }
+  .frame--split { --ratio: 84%; background: var(--ground-bg); }
+  #install .frame--split { --ratio: 100%; }
+  @media (min-width: 640px) and (max-width: 1023px) { #install .frame--split { --ratio: 62%; } }
+  @media (min-width: 640px) and (max-width: 800px) { #questions .faq__item:nth-child(4) { display: none; } }
+  @media (max-width: 639px) { #install .frame--split { --ratio: 60%; } }
+  /* assemblies: the call's delivery list in the split frame */
+  #assemblies .stage > .shot { left: 40px; top: 40px; width: calc(100% - 40px + 64px); height: calc(100% - 40px + 72px); }
+  @media (max-width: 639px) { #assemblies .stage > .shot { left: 16px; top: 16px; } }
+  #ledger .mo-wh__text { font-size: clamp(36px, 6.1vw, 88px); line-height: 1.08; max-width: none; }
+  /* the Turkish pack: diagram card beside the rows */
+  #turkey .panel { --p-h: 400px; border-radius: var(--r-lg); }
+  @media (min-width: 640px) and (max-width: 1279px) { #features { --h: 2; } }
+  @media (min-width: 1024px) and (max-width: 1279px) { #features .panel { --p-h: 450px; } }
+  @media (min-width: 640px) and (max-width: 1023px) { #features .panel { --p-h: clamp(442px, calc(113vw - 426px), 560px); } }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #turkey .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    #turkey .grid > .span-6 { grid-column: span 6; } #turkey .grid > .start-7 { grid-column: 7 / span 6; }
+    #turkey .panel { --p-h: 340px; }
+    #assemblies .frame--split { --ratio: 56%; }
+    #questions .section-head > p:first-of-type { display: none; }
+  }
+  /* install: the terminal in the split frame, whole */
+  .install-win { --ax: 40px; --ay: 48px; width: calc(100% - 80px); }
+  @media (max-width: 639px) { .install-win { --ax: 16px; --ay: 16px; width: calc(100% - 32px); left: 16px; right: auto; } }
+  .install-term { width: 100%; }
+  .install-term .ui-term__ln { height: 20px; }
+  .install-term .ui-term__cmd { color: var(--u-ink, var(--ink)); }
+  .install-chips { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-5); }
+  .install-chips .ic-chip { min-height: 44px; }
+  .install-chips .ic-chip > .ic { --ic-s: 28px; }
+  .install-facts { display: grid; gap: var(--s-2); margin-top: var(--s-5); }
+  @media (max-width: 639px) { .install-facts { display: none; } }
+</style>
+</head>
+<body>
+<!-- type: software
+     plan: hero centred (screenshot of the dashboard) / money (app-frame, the statement) / features (three open cards: tickets, announcements, gate) / assemblies (split, the call's delivery list) / ledger (statement moment) / turkey (hub diagram and rows) / install (surface band, iris moment, terminal) / questions / footer
+     deal: hero centred, nav nav-centre, close close-word, footer footer-columns, rhythm surface-pairs, buttons arrow, mark arc, palette cool-grey-cobalt, type urbanist, radius soft, ground sand, effect gradient-mesh (hero frame), grounds none
+     moments: word-highlight in #ledger (the one rule a board needs, lit word by word), iris-opens in #install (the page changes ground into the install steps)
+     motion: hero entrance: the headline first, then what to do; word-highlight: the ledger rule read at the speed of scrolling; iris-opens: the install steps open from the page's ground; hover: every link and card answers -->
+
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top"><span class="mark" data-mark="arc" aria-hidden="true"></span>OpenBekci</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#money">Money</a></div>
+      <div class="nav__item"><a class="nav__link" href="#assemblies">Assemblies</a></div>
+      <div class="nav__item"><a class="nav__link" href="#turkey">Turkey</a></div>
+      <div class="nav__item"><a class="nav__link" href="#install">Install</a></div>
+      <div class="nav__item"><a class="nav__link" href="#questions">Questions</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--primary" href="/docs/">Install OpenBekci</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero hero--centred" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__c">
+        <h1 id="hero-h">Site management for boards</h1>
+        <p class="hero__lead">Dues, assemblies, tickets, announcements and gate control for managers, boards and residents. AGPL-3.0, self-hosted in one compose file.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="/docs/">Install OpenBekci<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="#money">See the demo</a></div>
+      </div>
+      <div class="hero__window" data-fx="gradient-mesh" data-fx-seed="11" data-fx-palette='{"bg":"#c6d3df","surface":"#d6e0e9","ink":"#8da2b5","accent":"#a9c0d6"}'>
+        <div class="ly-piece shot shot--fit"><img src="img/dashboard-en.webp" width="1440" height="900" alt="OpenBekci dashboard for a demo site: overdue amount, cash, bank balance, collection rate and open tickets" fetchpriority="high"></div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="money" aria-labelledby="money-h">
+    <div class="wrap">
+      <div class="grid">
+        <h2 id="money-h" class="span-5">What each unit owes the site today</h2>
+        <div class="span-6 start-7"><p class="t-lead">Dues generate each period and arrive by cash, bank transfer or card. Every statement shows the late fee accrued to today.</p></div>
+      </div>
+      <div class="app shot shot--fit fill"><img src="img/statement-en.webp" width="1440" height="900" alt="Owner statement for unit A-2 with charges, late fees and the balance owed today" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section class="section" id="features" style="--hm: 2" aria-labelledby="features-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="features-h">Tickets, notices and the site’s gate booth. <span class="muted">Everyone on site works in one system.</span></h2>
+      </div>
+      <div class="grid">
+        <article class="card card--row card--open span-4 m-nolift">
+          <h3>Tracks every site request as a ticket</h3>
+          <p>Residents attach up to 10 photos. A common problem takes +1 votes instead of duplicates, and internal notes stay with management.</p>
+          <div class="panel"><div class="stage"><div class="shot shot--crop ui" style="--sx:264;--sy:282"><img src="img/tickets-en.webp" width="1440" height="900" alt="Ticket list with three open requests, two private and one common with a +1 vote" loading="lazy"></div></div></div>
+        </article>
+        <article class="card card--row card--open span-4 m-nolift">
+          <h3>Shows who has read each site notice</h3>
+          <p>Choose the audience and the channels, see the SMS count before you publish, then check who opened it and who has not.</p>
+          <div class="panel"><div class="stage"><div class="shot shot--crop ui" style="--sx:264;--sy:70"><img src="img/announcements-en.webp" width="1440" height="900" alt="Announcements list with two published notices and how many of 29 recipients have read each" loading="lazy"></div></div></div>
+        </article>
+        <article class="card card--row card--open span-4 m-nolift">
+          <h3>Admits visitors at the site gate</h3>
+          <p>Guards scan a pass or log a walk-in, and the resident approves from the app. Each action carries a guard’s name.</p>
+          <div class="panel"><div class="stage"><div class="shot shot--crop ui" style="--sx:0;--sy:90"><img src="img/guard-en.webp" width="1440" height="900" alt="Gate console with a scan field, a walk-in visitor form, today’s expected visitors and parcels" loading="lazy"></div></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="assemblies" aria-labelledby="assemblies-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5">
+          <h2 id="assemblies-h">Site assemblies, from call to minutes</h2>
+          <p class="t-lead" style="margin-top: var(--s-5)">OpenBekci builds the call letter and a delivery checklist per owner, then runs the day: attendance, live quorum and a recorded count for every agenda item.</p>
+          <ul class="install-facts">
+            <li>Law 634 quorum and thresholds preset</li>
+            <li>Check-in by QR code or at the desk</li>
+            <li>Minutes filed as PDF, decisions numbered</li>
+          </ul>
+          <p style="margin-top: var(--s-5)"><a class="link" href="#turkey">See the Turkish pack</a></p>
+        </div>
+        <div class="frame frame--split span-6 start-7"><div class="stage stage--fade-br"><div class="shot shot--crop ui" style="--sx:264;--sy:150"><img src="img/meeting-en.webp" width="1440" height="900" alt="Assembly page for the 2026 ordinary assembly, showing the delivery of the call to 24 owners" loading="lazy"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section statement" id="ledger" data-moment="word-highlight" aria-label="The ledger rule">
+    <div class="wrap">
+      <p class="mo-wh__text">The ledger is never edited. A mistake is <strong>reversed</strong> with a visible correction and a reason, so the sheet the board reads in January matches the books kept all year.</p>
+    </div>
+  </section>
+
+  <section class="section" id="turkey" style="--hm: 2" aria-labelledby="turkey-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="turkey-h">Law 634, iyzico and KVKK in one pack. <span class="muted">Enabled per organization.</span></h2>
+      </div>
+      <div class="grid grid--top">
+        <ul class="rows span-6">
+          <li><span class="rows__name">Law 634 presets</span><p>Quorum, decision thresholds, vote caps and notice periods, editable where the management plan allows.</p></li>
+          <li><span class="rows__name">iyzico card payments</span><p>Hosted checkout, signed webhooks and refunds, with the provider fee booked as an expense.</p></li>
+          <li><span class="rows__name">Bank imports</span><p>Ziraat and İş Bankası CSV and Excel statements, matched to units by reference, name and amount.</p></li>
+          <li><span class="rows__name">Netgsm SMS</span><p>Sign-in codes, invitations, receipts and reminders. İleti Merkezi is the alternative provider.</p></li>
+          <li><span class="rows__name">KVKK texts</span><p>Disclosure and explicit-consent texts in Turkish and English; the debtor list is never public.</p></li>
+        </ul>
+        <div class="panel span-6 start-7"><div class="dg" data-dg-still data-diagram><script type="application/json">{"layout":"hub","alt":"The Turkish pack connects Law 634 presets, iyzico, bank imports, Netgsm SMS, KVKK texts and eleven document templates.","center":{"label":"Turkish pack","icon":"ui:flag"},"spokes":[{"label":"Law 634","icon":"ui:scale"},{"label":"iyzico","icon":"ui:credit-card"},{"label":"Bank imports","icon":"ui:landmark"},{"label":"Netgsm SMS","icon":"ui:message-square"},{"label":"KVKK","icon":"ui:shield-check"},{"label":"11 documents","icon":"ui:file-text"}]}</script></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section ground-surface" id="install" data-moment="iris-opens" data-moment-opts='{"from": "base"}' aria-labelledby="install-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5">
+          <h2 id="install-h">Self-host OpenBekci with Docker Compose</h2>
+          <p class="t-lead" style="margin-top: var(--s-5)">Fill in the required values in .env, start the stack and create your first organization. The compose file runs OpenBekci, PostgreSQL 17 and Caddy with automatic HTTPS.</p>
+          <p class="install-facts">A 2 vCPU, 2 GB server serves a 500-unit organization. The same product runs hosted or self-hosted, and a site can move between them.</p>
+          <div class="install-chips">
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="docker" src="assets/icons/docker.svg" alt="">Docker</span>
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="postgres" src="assets/icons/postgres.svg" alt="">PostgreSQL</span>
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="si:caddy" src="assets/icons/caddy.svg" alt="">Caddy</span>
+          </div>
+          <p style="margin-top: var(--s-5)"><a class="link" href="/docs/install/compose/">Read the install guide</a></p>
+        </div>
+        <div class="frame frame--split span-6 start-7"><div class="stage"><div class="at-corner install-win">
+          <div class="ui ui-panel ui-term install-term" role="img" aria-label="Terminal with the commands that start OpenBekci with Docker Compose and create an organization">
+            <div class="ui-term__head"><span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ui-term__title">deploy/compose</span><span class="ui-meta">sh</span></div>
+            <div class="ui-term__screen"><div class="ui-term__track">
+              <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span class="ui-term__typed">cp .env.example .env</span></div>
+              <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span class="ui-term__typed">docker compose up -d</span></div>
+              <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig">$</span><span class="ui-term__typed">docker compose exec openbekci \</span></div>
+              <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig"></span><span class="ui-term__typed">  openbekci admin create-org \</span></div>
+              <div class="ui-term__ln ui-term__cmd"><span class="ui-term__sig"></span><span class="ui-term__typed">  --slug my-site --country TR</span></div>
+            </div></div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions" style="--hm: 2" aria-labelledby="questions-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5 section-head">
+          <h2 id="questions-h">Questions</h2>
+          <p>Short answers on data, the gate and where the project stands.</p>
+          <p><a class="link" href="mailto:hello@openbekci.example">Email us</a></p>
+          <div class="install-chips">
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="android" src="assets/icons/android.svg" alt="">Android</span>
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="apple" src="assets/icons/apple.svg" alt="">iOS</span>
+            <span class="ic-chip"><img class="ic" width="24" height="24" loading="lazy" data-icon="flutter" src="assets/icons/flutter.svg" alt="">Flutter</span>
+          </div>
+        </div>
+        <div class="faq span-6 start-7">
+          <div class="faq__item"><h3>Can I take a site’s data out?</h3><p>Yes. A manager exports a whole site (people, money history, documents, decisions, meetings, settings) and imports it into another organization. Exporting asks for identity confirmation again and is audited.</p></div>
+          <div class="faq__item"><h3>Does OpenBekci have a mobile app?</h3><p>Yes, for Android and iOS, in English and Turkish. It connects to any OpenBekci server, hosted or self-hosted. Managers do their bookkeeping on the web.</p></div>
+          <div class="faq__item"><h3>What happens when the site’s gate loses internet?</h3><p>The on-site agent decides locally and logs every decision. A credential revoked while offline keeps working for 72 hours by default, then the agent stops opening.</p></div>
+          <div class="faq__item"><h3>Does OpenBekci connect to e-Devlet?</h3><p>No. Identity is a TCKN check plus manual verification by the manager.</p></div>
+          <div class="faq__item"><h3>Is OpenBekci ready for production?</h3><p>OpenBekci is pre-1.0. Minor versions may change configuration, and the release notes list every change under a fixed heading.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing g2m" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--word">
+      <div class="section-head--split">
+        <div><h2 id="close-h">Run OpenBekci on your own server</h2><p class="t-lead">AGPL-3.0, self-hosted in one compose file.</p></div>
+        <a class="btn btn--primary" href="/docs/">Install OpenBekci<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+      </div>
+      <p class="close__word" aria-hidden="true">OpenBekci</p>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="#top"><span class="mark" data-mark="arc" aria-hidden="true"></span>OpenBekci</a>
+          <p class="footer__lede">Open-source site management.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Money</h3><ul><li><a href="#money">Statements</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Assemblies</h3><ul><li><a href="#assemblies">Owners’ assemblies</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Turkey</h3><ul><li><a href="#turkey">The Turkish pack</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Install</h3><ul><li><a href="#install">Docker Compose</a></li><li><a href="#questions">Questions</a></li><li><a href="mailto:hello@openbekci.example">Email us</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 OpenBekci</span>
+        <div class="socials"></div>
+        <span>Product names and logos are trademarks of their owners</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<nav class="actionbar" aria-label="Main"><a class="btn btn--primary" href="/docs/">Install OpenBekci</a></nav>
+
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script type="module" src="assets/diagrams/mount.js"></script>
+</body>
+</html>

@@ -24,6 +24,7 @@ const (
 	ChannelEmail = "email"
 	ChannelSMS   = "sms"
 	ChannelPush  = "push" // 0.4
+	ChannelChat  = "chat" // Telegram, WhatsApp, pack messengers
 )
 
 // Recipient is one person to notify, named by person id or by user id (the

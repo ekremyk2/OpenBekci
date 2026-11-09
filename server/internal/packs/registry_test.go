@@ -81,7 +81,7 @@ func TestStartRejectsWhatBreaksTheRules(t *testing.T) {
 		{"reserved id", &fakePack{man: manifest("enablement")}, ErrManifest, "reserved"},
 		{"bad version", &fakePack{man: sdk.Manifest{ID: "acme", Version: "one", MinSDK: v1}}, ErrManifest, "semantic"},
 		{"bad country", &fakePack{man: sdk.Manifest{ID: "acme", Version: "1.0.0", MinSDK: v1, Countries: []string{"deu"}}}, ErrManifest, "ISO"},
-		{"min sdk too new", &fakePack{man: sdk.Manifest{ID: "acme", Version: "1.0.0", MinSDK: "1.0.99"}}, ErrMinSDK, "provides only"},
+		{"min sdk too new", &fakePack{man: sdk.Manifest{ID: "acme", Version: "1.0.0", MinSDK: "1.9.0"}}, ErrMinSDK, "provides only"},
 		{"min sdk other major", &fakePack{man: sdk.Manifest{ID: "acme", Version: "1.0.0", MinSDK: "0.1.0"}}, ErrMinSDK, "different major"},
 		{"register error", &fakePack{man: manifest("acme"), register: func(sdk.Registry) error { return errors.New("no config") }}, ErrRegister, "no config"},
 		{"register panic", &fakePack{man: manifest("acme"), register: func(sdk.Registry) error { panic("boom") }}, ErrRegister, "boom"},

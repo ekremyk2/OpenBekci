@@ -1,0 +1,138 @@
+// Builds index.html (English) and tr/index.html (Turkish) from page.html and the strings below.
+// Run from site/: node _src/build.mjs
+import fs from 'node:fs';
+
+const page = fs.readFileSync(new URL('./page.html', import.meta.url), 'utf8');
+
+const hub = (t) => JSON.stringify({
+  layout: 'hub',
+  alt: t.dg_alt,
+  center: { label: t.dg_center, icon: 'ui:flag' },
+  spokes: [
+    { label: t.dg1, icon: 'ui:scale' },
+    { label: t.dg2, icon: 'ui:credit-card' },
+    { label: t.dg3, icon: 'ui:landmark' },
+    { label: t.dg4, icon: 'ui:message-square' },
+    { label: t.dg5, icon: 'ui:shield-check' },
+    { label: t.dg6, icon: 'ui:file-text' },
+  ],
+});
+
+const en = {
+  lang: 'en', root: '', docs: '/docs/', docs_compose: '/docs/install/compose/',
+  title: 'OpenBekci: site management software for boards and managers',
+  desc: 'OpenBekci is open-source site and apartment management: dues, assemblies, tickets, announcements and gate control for managers, boards and residents.',
+  ogdesc: 'Open-source site management for managers, boards and residents. AGPL-3.0, self-hosted in one compose file.',
+  skip: 'Skip to content', navlabel: 'Main', menu: 'Menu',
+  nav1: 'Money', nav2: 'Assemblies', nav3: 'Turkey', nav4: 'Install', nav5: 'Questions',
+  main: 'Install OpenBekci', demo: 'See the demo',
+  pill1: 'AGPL-3.0, self-hosted in one compose file', pill2: 'See the install',
+  h1: 'Site management for boards',
+  lead: 'Dues, assemblies, tickets, announcements and gate control for managers, boards and residents. AGPL-3.0, self-hosted in one compose file.',
+  alt_dash: 'OpenBekci dashboard for a demo site: overdue amount, cash, bank balance, collection rate and open tickets',
+  money_h: 'What each unit owes the site today',
+  money_p: 'Dues generate each period and arrive by cash, bank transfer or card. Every statement shows the late fee accrued to today.',
+  alt_statement: 'Owner statement for unit A-2 with charges, late fees and the balance owed today',
+  feat_h: 'Tickets, notices and the site’s gate booth.', feat_h2: 'Everyone on site works in one system.',
+  c1_t: 'Tracks every site request as a ticket', c1_p: 'Residents attach up to 10 photos. A common problem takes +1 votes instead of duplicates, and internal notes stay with management.',
+  c2_t: 'Shows who has read each site notice', c2_p: 'Choose the audience and the channels, see the SMS count before you publish, then check who opened it and who has not.',
+  c3_t: 'Admits visitors at the site gate', c3_p: 'Guards scan a pass or log a walk-in, and the resident approves from the app. Each action carries a guard’s name.',
+  alt_tickets: 'Ticket list with three open requests, two private and one common with a +1 vote',
+  alt_ann: 'Announcements list with two published notices and how many of 29 recipients have read each',
+  alt_guard: 'Gate console with a scan field, a walk-in visitor form, today’s expected visitors and parcels',
+  asm_h: 'Site assemblies, from call to minutes',
+  asm_p: 'OpenBekci builds the call letter and a delivery checklist per owner, then runs the day: attendance, live quorum and a recorded count for every agenda item.',
+  asm_f1: 'Law 634 quorum and thresholds preset', asm_f2: 'Check-in by QR code or at the desk', asm_f3: 'Minutes filed as PDF, decisions numbered',
+  asm_link: 'See the Turkish pack',
+  alt_meeting: 'Assembly page for the 2026 ordinary assembly, showing the delivery of the call to 24 owners',
+  ledger_label: 'The ledger rule',
+  ledger: 'The ledger is never edited. A mistake is <strong>reversed</strong> with a visible correction and a reason, so the sheet the board reads in January matches the books kept all year.',
+  tr_h: 'Law 634, iyzico and KVKK in one pack.', tr_h2: 'Enabled per organization.',
+  r1_n: 'Law 634 presets', r1_p: 'Quorum, decision thresholds, vote caps and notice periods, editable where the management plan allows.',
+  r2_n: 'iyzico card payments', r2_p: 'Hosted checkout, signed webhooks and refunds, with the provider fee booked as an expense.',
+  r3_n: 'Bank imports', r3_p: 'Ziraat and İş Bankası CSV and Excel statements, matched to units by reference, name and amount.',
+  r4_n: 'Netgsm SMS', r4_p: 'Sign-in codes, invitations, receipts and reminders. İleti Merkezi is the alternative provider.',
+  r5_n: 'KVKK texts', r5_p: 'Disclosure and explicit-consent texts in Turkish and English; the debtor list is never public.',
+  dg_alt: 'The Turkish pack connects Law 634 presets, iyzico, bank imports, Netgsm SMS, KVKK texts and eleven document templates.',
+  dg_center: 'Turkish pack', dg1: 'Law 634', dg2: 'iyzico', dg3: 'Bank imports', dg4: 'Netgsm SMS', dg5: 'KVKK', dg6: '11 documents',
+  ins_h: 'Self-host OpenBekci with Docker Compose',
+  ins_p: 'Fill in the required values in .env, start the stack and create your first organization. The compose file runs OpenBekci, PostgreSQL 17 and Caddy with automatic HTTPS.',
+  ins_f: 'A 2 vCPU, 2 GB server serves a 500-unit organization. The same product runs hosted or self-hosted, and a site can move between them.',
+  ins_link: 'Read the install guide',
+  alt_term: 'Terminal with the commands that start OpenBekci with Docker Compose and create an organization',
+  q_h: 'Questions', q_p: 'Short answers on data, the gate and where the project stands.', q_link: 'Email us',
+  q1: 'Can I take a site’s data out?', a1: 'Yes. A manager exports a whole site (people, money history, documents, decisions, meetings, settings) and imports it into another organization. Exporting asks for identity confirmation again and is audited.',
+  q2: 'Does OpenBekci have a mobile app?', a2: 'Yes, for Android and iOS, in English and Turkish. It connects to any OpenBekci server, hosted or self-hosted. Managers do their bookkeeping on the web.',
+  q3: 'What happens when the site’s gate loses internet?', a3: 'The on-site agent decides locally and logs every decision. A credential revoked while offline keeps working for 72 hours by default, then the agent stops opening.',
+  q4: 'Does OpenBekci connect to e-Devlet?', a4: 'No. Identity is a TCKN check plus manual verification by the manager.',
+  q5: 'Is OpenBekci ready for production?', a5: 'OpenBekci is pre-1.0. Minor versions may change configuration, and the release notes list every change under a fixed heading.',
+  close_h: 'Run OpenBekci on your own server', close_p: 'AGPL-3.0, self-hosted in one compose file.',
+  lede: 'Open-source site management.',
+  f1: 'Statements', f2: 'Owners’ assemblies', f3: 'The Turkish pack', f4: 'Docker Compose', f5: 'Email us',
+  marks: 'Product names and logos are trademarks of their owners',
+};
+
+const tr = {
+  lang: 'tr', root: '../', docs: '/docs/', docs_compose: '/docs/install/compose/',
+  title: 'OpenBekci: yönetim kurulları ve yöneticiler için site yönetimi yazılımı',
+  desc: 'OpenBekci, açık kaynaklı site ve apartman yönetimi yazılımıdır: yöneticiler, kurullar ve sakinler için aidat, genel kurul, talep, duyuru ve kapı kontrolü.',
+  ogdesc: 'Yöneticiler, kurullar ve sakinler için açık kaynaklı site yönetimi. AGPL-3.0, tek compose dosyasıyla kendi sunucunuzda.',
+  skip: 'İçeriğe geç', navlabel: 'Ana menü', menu: 'Menü',
+  nav1: 'Para', nav2: 'Genel kurul', nav3: 'Türkiye', nav4: 'Kurulum', nav5: 'Sorular',
+  main: 'OpenBekci’yi kur', demo: 'Demoyu gör',
+  pill1: 'AGPL-3.0, tek compose dosyasıyla kendi sunucunuzda', pill2: 'Kurulumu gör',
+  h1: 'Kurullar için site yönetimi',
+  lead: 'Yöneticiler, kurullar ve sakinler için aidat, genel kurul, talep, duyuru ve kapı kontrolü. AGPL-3.0, tek compose dosyasıyla kendi sunucunuzda.',
+  alt_dash: 'Örnek bir site için OpenBekci ana sayfası: gecikmiş tutar, kasa, banka bakiyesi, tahsilat oranı ve açık talepler',
+  money_h: 'Sitedeki her bağımsız bölümün bugünkü borcu',
+  money_p: 'Aidat her dönem otomatik oluşur; nakit, havale veya kartla ödenir. Her ekstre, bugüne kadar işleyen gecikme tazminatını gösterir.',
+  alt_statement: 'A-2 bağımsız bölümünün malik ekstresi: tahakkuklar, gecikme tazminatları ve bugünkü bakiye',
+  feat_h: 'Talepler, duyurular ve site kapısı.', feat_h2: 'Sitedeki herkes aynı sistemi kullanır.',
+  c1_t: 'Sitedeki her talebi bir kayda bağlar', c1_p: 'Sakinler en fazla 10 fotoğraf ekler. Ortak sorunlarda tekrar yerine +1 oyu verilir; iç notlar yönetimde kalır.',
+  c2_t: 'Site duyurusunu kimin okuduğunu gösterir', c2_p: 'Hedef kitleyi ve kanalları seçin, yayımlamadan önce SMS sayısını görün, sonra kimlerin açtığına, kimlerin açmadığına bakın.',
+  c3_t: 'Ziyaretçiyi site kapısında karşılar', c3_p: 'Güvenlik görevlisi geçiş kodunu okutur veya yaya ziyaretçiyi kaydeder; sakin uygulamadan onaylar. Her işlem görevlinin adıyla tutulur.',
+  alt_tickets: 'Üç açık talebi gösteren liste: ikisi özel, biri ortak alan ve +1 oyuyla',
+  alt_ann: 'İki yayımlanmış duyuru ve 29 alıcıdan kaçının okuduğunu gösteren liste',
+  alt_guard: 'Geçiş okutma alanı, yaya ziyaretçi formu, bugün beklenenler ve paketlerle kapı konsolu',
+  asm_h: 'Site genel kurulu, çağrıdan tutanağa',
+  asm_p: 'OpenBekci çağrı mektubunu ve her malik için tebliğ listesini hazırlar; sonra günü yürütür: katılım, anlık toplantı nisabı ve her gündem maddesi için kayıtlı oy sayısı.',
+  asm_f1: '634 sayılı Kanun nisabı ve karar oranları hazır', asm_f2: 'QR kodla veya masada katılım kaydı', asm_f3: 'Tutanak PDF olarak dosyalanır, kararlar numaralanır',
+  asm_link: 'Türkiye paketine bak',
+  alt_meeting: '2026 Olağan Genel Kurul sayfası: çağrının 24 malike tebliği',
+  ledger_label: 'Defter kuralı',
+  ledger: 'Defter hiçbir zaman düzenlenmez. Hata, görünür bir düzeltme ve bir gerekçeyle <strong>ters kaydedilir</strong>; böylece kurulun Ocak ayında okuduğu tablo, yıl boyunca tutulan defterlerle bire bir aynıdır.',
+  tr_h: '634, iyzico ve KVKK tek pakette.', tr_h2: 'Her kuruluş için ayrı açılır.',
+  r1_n: '634 sayılı Kanun ön ayarları', r1_p: 'Nisap, karar oranları, oy sınırları ve çağrı süreleri; yönetim planının izin verdiği yerde düzenlenebilir.',
+  r2_n: 'iyzico ile kartlı ödeme', r2_p: 'Barındırılan ödeme sayfası, imzalı webhook’lar ve iade; sağlayıcı komisyonu gider olarak kaydedilir.',
+  r3_n: 'Banka aktarımı', r3_p: 'Ziraat ve İş Bankası CSV ve Excel ekstreleri; referans, ad ve tutara göre bağımsız bölümle eşleşir.',
+  r4_n: 'Netgsm SMS', r4_p: 'Giriş kodları, davetler, makbuzlar ve hatırlatmalar. İleti Merkezi alternatif sağlayıcıdır.',
+  r5_n: 'KVKK metinleri', r5_p: 'Türkçe ve İngilizce aydınlatma ve açık rıza metinleri; borçlu listesi hiçbir zaman herkese açık değildir.',
+  dg_alt: 'Türkiye paketi; 634 sayılı Kanun ön ayarlarını, iyzico’yu, banka aktarımını, Netgsm SMS’i, KVKK metinlerini ve on bir belge şablonunu birleştirir.',
+  dg_center: 'Türkiye paketi', dg1: '634 sayılı Kanun', dg2: 'iyzico', dg3: 'Banka aktarımı', dg4: 'Netgsm SMS', dg5: 'KVKK', dg6: '11 belge',
+  ins_h: 'OpenBekci’yi Docker Compose ile kurun',
+  ins_p: 'Gerekli değerleri .env dosyasına yazın, yığını başlatın ve ilk kuruluşunuzu oluşturun. Compose dosyası OpenBekci’yi, PostgreSQL 17’yi ve otomatik HTTPS veren Caddy’yi çalıştırır.',
+  ins_f: '2 vCPU ve 2 GB’lık bir sunucu 500 bağımsız bölümlü bir kuruluşu rahatça taşır. Aynı ürün barındırılmış ya da kendi sunucunuzda çalışır; bir site ikisi arasında geçebilir.',
+  ins_link: 'Kurulum kılavuzunu oku',
+  alt_term: 'OpenBekci’yi Docker Compose ile başlatan ve bir kuruluş oluşturan komutlar',
+  q_h: 'Sorular', q_p: 'Veri, kapı ve projenin durumu hakkında kısa cevaplar.', q_link: 'E-posta gönderin',
+  q1: 'Sitenin verilerini dışarı alabilir miyim?', a1: 'Evet. Yönetici bir siteyi bütünüyle (kişiler, para geçmişi, belgeler, kararlar, toplantılar, ayarlar) dışa aktarır ve başka bir kuruluşa içe aktarır. Dışa aktarma kimlik doğrulamasını yeniden ister ve denetim kaydına geçer.',
+  q2: 'OpenBekci’nin mobil uygulaması var mı?', a2: 'Evet, Android ve iOS için, Türkçe ve İngilizce. Barındırılmış ya da kendi sunucunuzdaki her OpenBekci sunucusuna bağlanır. Yöneticiler muhasebeyi web’de yapar.',
+  q3: 'Site kapısında internet kesilirse ne olur?', a3: 'Sahadaki ajan kararları yerelde verir ve her kararı kaydeder. Çevrimdışıyken iptal edilen bir yetki varsayılan olarak 72 saat çalışmaya devam eder, sonra ajan açmayı durdurur.',
+  q4: 'OpenBekci e-Devlet ile bağlanır mı?', a4: 'Hayır. Kimlik, TCKN doğrulaması ve yönetici tarafından elle yapılan teyitten oluşur.',
+  q5: 'OpenBekci canlı kullanıma hazır mı?', a5: 'OpenBekci 1.0 öncesi sürümde. Küçük sürümler yapılandırmayı değiştirebilir; sürüm notları her değişikliği sabit bir başlık altında listeler.',
+  close_h: 'OpenBekci’yi kendi sunucunuzda çalıştırın', close_p: 'AGPL-3.0, tek compose dosyasıyla kendi sunucunuzda.',
+  lede: 'Açık kaynaklı site yönetimi.',
+  f1: 'Ekstreler', f2: 'Kat malikleri kurulu', f3: 'Türkiye paketi', f4: 'Docker Compose', f5: 'E-posta gönderin',
+  marks: 'Ürün adları ve logolar sahiplerinin ticari markalarıdır',
+};
+
+for (const [t, out] of [[en, 'index.html'], [tr, 'tr/index.html']]) {
+  t.diagram = hub(t);
+  const html = page.replace(/\{\{(\w+)\}\}/g, (_, k) => {
+    if (!(k in t)) throw new Error('missing string: ' + k + ' in ' + t.lang);
+    return t[k];
+  });
+  fs.mkdirSync(new URL('../' + out.replace(/[^/]*$/, ''), import.meta.url), { recursive: true });
+  fs.writeFileSync(new URL('../' + out, import.meta.url), html);
+  console.log('wrote', out, html.length);
+}

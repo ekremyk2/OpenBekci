@@ -529,6 +529,11 @@ schemas:
           $ref: "#/schemas/MeOccupancy"
       policies:
         $ref: "#/schemas/MePolicies"
+      chat_links:
+        type: array
+        description: "**Release 1.0.** The caller's linked chats (Telegram, WhatsApp, pack messengers) across organizations; see `operations.startChatLink`. Absent from servers that predate the chat channel."
+        items:
+          $ref: "operations.yaml#/schemas/ChatLink"
   Session:
     type: object
     description: One open session of the caller. Mobile sessions keep their id across token rotation.

@@ -991,6 +991,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
           x-open-enum: true
         description: Chosen by the sender (O5).
       recipient_count:
@@ -1105,6 +1106,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
           x-open-enum: true
       file_ids:
         type: array
@@ -1141,6 +1143,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
           x-open-enum: true
       file_ids:
         type: array
@@ -1213,6 +1216,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
       title:
         type: string
         maxLength: 200
@@ -1257,6 +1261,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
         description: Overrides the stored channels.
   AnnouncementRead:
     type: object
@@ -1777,6 +1782,7 @@ schemas:
             - email
             - sms
             - push
+            - chat
           x-open-enum: true
       locked:
         type: boolean
@@ -1826,6 +1832,115 @@ schemas:
             - email
             - sms
             - push
+            - chat
+  ChatLink:
+    type: object
+    description: A user's link to a chat account of one provider in one organization. The chat account itself is never shown.
+    required:
+      - id
+      - org_id
+      - provider
+      - status
+      - linked_at
+      - created_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      provider:
+        type: string
+        description: "`telegram`, `whatsapp` or the id of a provider of an enabled pack."
+      status:
+        type: string
+        description: Open enum. `linked`, `pending` (a code was issued) or `unverified` (the provider reported the chat gone; link again).
+        enum:
+          - linked
+          - pending
+          - unverified
+        x-open-enum: true
+      linked_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+  ChatLinkList:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/ChatLink"
+  ChatLinkStarted:
+    type: object
+    required:
+      - provider
+      - deep_link
+      - expires_at
+    properties:
+      provider:
+        type: string
+      deep_link:
+        type: string
+        description: Open it (or show it as a QR code) on the phone that has the chat app; it carries the single-use code.
+      expires_at:
+        type: string
+        format: date-time
+  ChatProviderSettings:
+    type: object
+    required:
+      - provider
+      - schema
+      - values
+      - secrets_set
+      - configured
+      - webhook_url
+    properties:
+      provider:
+        type: string
+      schema:
+        type: object
+        additionalProperties: true
+        description: JSON schema of the settings (`x-secret` marks write-only fields; the web SchemaForm renders it).
+      values:
+        type: object
+        additionalProperties: true
+        description: The stored non-secret values.
+      secrets_set:
+        type: array
+        items:
+          type: string
+        description: Names of the secret fields that have a value.
+      configured:
+        type: boolean
+        description: Every required field is set and well formed.
+      webhook_url:
+        type: string
+        description: The URL to register with the provider.
+  ChatSettingsList:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/ChatProviderSettings"
+  ChatSettingsUpdate:
+    type: object
+    required:
+      - values
+    properties:
+      values:
+        type: object
+        additionalProperties: true
+        description: Fields to set; `null` clears one, a field left out keeps its value.
   NotificationMutes:
     type: object
     required:

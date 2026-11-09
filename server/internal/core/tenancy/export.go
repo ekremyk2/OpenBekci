@@ -129,6 +129,8 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"notification":          "personal inbox entries of accounts of the old organization; ephemeral and not site data",
 	"notification_delivery": "delivery bookkeeping (provider ids, attempts) of messages already sent",
 	"notification_mute":     "personal preferences of an account, not site data; people set them again",
+	"chat_config":           "the organization's bot credentials (sealed with the instance key); enter them again in the new organization",
+	"chat_link":             "a user's link to a chat account of the old organization's bot; people link again",
 	"consent":               "a user's decisions on the organization's privacy texts; the new organization asks again",
 	"data_export":           "records of privacy exports of the old organization; their files are short-lived",
 	"sms_usage":             "the instance's SMS counter of the old organization; the new site starts at zero",

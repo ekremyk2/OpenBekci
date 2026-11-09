@@ -7,6 +7,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/announcements"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/documents"
@@ -50,6 +51,7 @@ func NewRegistry() (*authz.Registry, error) {
 		{"money", ledger.Permissions()},
 		{"packs", packs.Permissions()},
 		{"integrations", integrations.Permissions()},
+		{"chat", chat.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err

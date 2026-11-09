@@ -60,6 +60,7 @@ Every interface in `sdk/` is documented with the core call sites that use it. Th
 |---|---|---|
 | Payment provider | `PaymentProvider` | payments: checkout, status, webhooks, refunds, settlement |
 | SMS provider | `SMSProvider` | the core SMS gateway, when the organization setting `sms_provider` names it |
+| Chat provider (SDK 1.1, optional) | `ChatProvider`, registered through `ChatRegistrar` | the notification channel `chat`, the linking flow and the chat webhook (see 10a) |
 | Statement importer | `StatementImporter` | the bank import module, next to the generic CSV importer |
 | Legal presets | `QuorumPreset`, `ThresholdPreset`, `VoteWeightPreset`, `SchedulePreset`, `TransferRule`, `LateFeePreset` | site creation and pack enablement; they fill **site settings** |
 | Allocation policy / payment order | `AllocationPolicy`, `PaymentAllocationOrder` | billing, payments |
@@ -238,6 +239,31 @@ its credentials from the organization-scope settings. Map the provider's status 
 and `ErrUnavailable`. A pack that tags messages (for example Turkey's İYS commercial/operational flag) should tag every
 message it sends the same way and say so in its legal notes. Do not call the provider from `ValidateSettings` unless the
 pack was given an explicit test endpoint: a settings form must not trigger traffic to a live account.
+
+A **chat provider** (`ChatProvider`, SDK 1.1.0) adds a messenger (for example BiP) to the notification channel `chat` next to the
+core's Telegram and WhatsApp. The 1.x freeze forbids a new method on `Registry`, so the registration is an optional interface the
+host's registry implements; find it by type assertion, which also keeps the pack loadable on an older host:
+
+```go
+if cr, ok := r.(sdk.ChatRegistrar); ok {
+	cr.RegisterChatProvider(&bip{svc: r.Services()})
+}
+```
+
+A person links a chat account in the web profile or the app: `POST /v1/orgs/{org}/me/chat-links/{provider}:start` returns the
+provider's `DeepLink(code)` (the code is `BEKCI-` and ten characters, single use, 15 minutes). The person sends the code to the
+organization's bot; the service calls **the webhook the core mounts** at `/v1/orgs/{org}/chat/webhooks/<provider id>` (the provider id
+as in `ID()`, `<packid>` or `<packid>.<name>`). The core calls `VerifyWebhook` first (an unauthenticated request is a 401 and its
+body is never parsed; check a signature or secret header in constant time), then `ParseInbound`, whose `ExternalID` (chat id or number)
+is stored sealed against the code's owner. Any later message from a linked account also reaches `ParseInbound` and refreshes its session
+window. Provider credentials are the pack's own settings (`x-secret`); the provider reads them through `Services().Settings()`.
+
+`Send` gets a `ChatMessage`: the title (with the site name), an absolute link back to the web app and the localized label of the link
+button. That is all a chat message carries (no body, no amounts beyond what the SMS of the same event shows); escape `Text` the way
+the service needs. Errors steer the dispatcher: `ErrChatUnreachable` marks the person's link unverified and sends nothing again until they
+link anew; `ErrChatWindowClosed` (a service that only accepts session messages for a while after the person wrote, WhatsApp's 24 hours;
+`Window()` says how long, zero for none) is skipped without a retry; `ErrUnavailable` or any other error fails the job and the job policy
+retries it with backoff. `packs/example/chat.go` shows all of it.
 
 ## 11. Testing
 

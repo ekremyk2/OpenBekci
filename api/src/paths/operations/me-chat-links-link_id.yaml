@@ -1,0 +1,39 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: link_id
+    in: path
+    required: true
+    description: Id of the chat link.
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: operations.deleteChatLink
+  summary: Unlink a chat account
+  description: |-
+    **Release 1.0.** Removes the caller's link; nothing is sent to that chat any more. A link of another user answers 404.
+
+    Permission: `notifications.read`.
+
+    Problems: `not_found` (404).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-idempotent: optional
+  x-stability: preview
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

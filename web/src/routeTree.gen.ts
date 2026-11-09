@@ -64,6 +64,7 @@ import { Route as OrgsOrgIdPeopleNewRouteImport } from './routes/orgs.$orgId.peo
 import { Route as OrgsOrgIdSettingsIndexRouteImport } from './routes/orgs.$orgId.settings.index'
 import { Route as OrgsOrgIdSettingsApiKeysRouteImport } from './routes/orgs.$orgId.settings.api-keys'
 import { Route as OrgsOrgIdSettingsAuditRouteImport } from './routes/orgs.$orgId.settings.audit'
+import { Route as OrgsOrgIdSettingsChatRouteImport } from './routes/orgs.$orgId.settings.chat'
 import { Route as OrgsOrgIdSettingsCodesRouteImport } from './routes/orgs.$orgId.settings.codes'
 import { Route as OrgsOrgIdSettingsNotificationsRouteImport } from './routes/orgs.$orgId.settings.notifications'
 import { Route as OrgsOrgIdSettingsSiteRouteImport } from './routes/orgs.$orgId.settings.site'
@@ -386,6 +387,11 @@ const OrgsOrgIdSettingsAuditRoute = OrgsOrgIdSettingsAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => OrgsOrgIdSettingsRoute,
 } as any)
+const OrgsOrgIdSettingsChatRoute = OrgsOrgIdSettingsChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => OrgsOrgIdSettingsRoute,
+} as any)
 const OrgsOrgIdSettingsCodesRoute = OrgsOrgIdSettingsCodesRouteImport.update({
   id: '/codes',
   path: '/codes',
@@ -619,6 +625,7 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
   '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/chat': typeof OrgsOrgIdSettingsChatRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
@@ -705,6 +712,7 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
   '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/chat': typeof OrgsOrgIdSettingsChatRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
@@ -796,6 +804,7 @@ export interface FileRoutesById {
   '/orgs/$orgId/people/new': typeof OrgsOrgIdPeopleNewRoute
   '/orgs/$orgId/settings/api-keys': typeof OrgsOrgIdSettingsApiKeysRoute
   '/orgs/$orgId/settings/audit': typeof OrgsOrgIdSettingsAuditRoute
+  '/orgs/$orgId/settings/chat': typeof OrgsOrgIdSettingsChatRoute
   '/orgs/$orgId/settings/codes': typeof OrgsOrgIdSettingsCodesRoute
   '/orgs/$orgId/settings/notifications': typeof OrgsOrgIdSettingsNotificationsRoute
   '/orgs/$orgId/settings/site': typeof OrgsOrgIdSettingsSiteRoute
@@ -888,6 +897,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/new'
     | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/chat'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
@@ -974,6 +984,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/new'
     | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/chat'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
@@ -1064,6 +1075,7 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/people/new'
     | '/orgs/$orgId/settings/api-keys'
     | '/orgs/$orgId/settings/audit'
+    | '/orgs/$orgId/settings/chat'
     | '/orgs/$orgId/settings/codes'
     | '/orgs/$orgId/settings/notifications'
     | '/orgs/$orgId/settings/site'
@@ -1506,6 +1518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdSettingsAuditRouteImport
       parentRoute: typeof OrgsOrgIdSettingsRoute
     }
+    '/orgs/$orgId/settings/chat': {
+      id: '/orgs/$orgId/settings/chat'
+      path: '/chat'
+      fullPath: '/orgs/$orgId/settings/chat'
+      preLoaderRoute: typeof OrgsOrgIdSettingsChatRouteImport
+      parentRoute: typeof OrgsOrgIdSettingsRoute
+    }
     '/orgs/$orgId/settings/codes': {
       id: '/orgs/$orgId/settings/codes'
       path: '/codes'
@@ -1816,6 +1835,7 @@ const OrgsOrgIdMoneyRouteWithChildren = OrgsOrgIdMoneyRoute._addFileChildren(
 interface OrgsOrgIdSettingsRouteChildren {
   OrgsOrgIdSettingsApiKeysRoute: typeof OrgsOrgIdSettingsApiKeysRoute
   OrgsOrgIdSettingsAuditRoute: typeof OrgsOrgIdSettingsAuditRoute
+  OrgsOrgIdSettingsChatRoute: typeof OrgsOrgIdSettingsChatRoute
   OrgsOrgIdSettingsCodesRoute: typeof OrgsOrgIdSettingsCodesRoute
   OrgsOrgIdSettingsNotificationsRoute: typeof OrgsOrgIdSettingsNotificationsRoute
   OrgsOrgIdSettingsSiteRoute: typeof OrgsOrgIdSettingsSiteRoute
@@ -1829,6 +1849,7 @@ interface OrgsOrgIdSettingsRouteChildren {
 const OrgsOrgIdSettingsRouteChildren: OrgsOrgIdSettingsRouteChildren = {
   OrgsOrgIdSettingsApiKeysRoute: OrgsOrgIdSettingsApiKeysRoute,
   OrgsOrgIdSettingsAuditRoute: OrgsOrgIdSettingsAuditRoute,
+  OrgsOrgIdSettingsChatRoute: OrgsOrgIdSettingsChatRoute,
   OrgsOrgIdSettingsCodesRoute: OrgsOrgIdSettingsCodesRoute,
   OrgsOrgIdSettingsNotificationsRoute: OrgsOrgIdSettingsNotificationsRoute,
   OrgsOrgIdSettingsSiteRoute: OrgsOrgIdSettingsSiteRoute,

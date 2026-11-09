@@ -70,6 +70,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Governance = rt.gov
 	deps.Access = rt.access
 	deps.Privacy = rt.privacy
+	deps.Chat = rt.ops.chat
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs), MetricsToken: cfg.MetricsToken},
@@ -252,6 +253,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	mny.Docs.PackDocs = host
 	mny.Collections.PackDocs = host
 	pick.h.Store(host)
+	ops.chatPacks.h.Store(host)
 	// organizations of a pack's country that never chose get its defaults (once per organization, never against a recorded decision)
 	if _, err := host.AutoEnableForCountry(ctx); err != nil {
 		log.WarnContext(ctx, "packs: enabling country packs for existing organizations failed", "error", err)

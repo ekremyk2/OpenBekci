@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/devices"
 	"github.com/openbekci/openbekci/server/internal/core/files"
@@ -63,7 +64,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, devices: deps.Devices, tenancy: deps.Tenancy, files: deps.Files, privacy: deps.Privacy, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
+	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, devices: deps.Devices, tenancy: deps.Tenancy, files: deps.Files, privacy: deps.Privacy, chat: deps.Chat, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -81,6 +82,10 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.Packs != nil {
 		// webhooks and callbacks of packs: public, tenant from the path, not in the spec
 		deps.Packs.Mount(r)
+	}
+	if deps.Chat != nil {
+		// chat provider webhooks: public, authenticated by the provider's secret or signature, not in the spec
+		deps.Chat.Mount(r)
 	}
 	if deps.Access != nil {
 		// the agent transport: documented in the spec, served outside the user pipeline
@@ -123,6 +128,7 @@ type apiServer struct {
 	audit        *audit.Service
 	files        *files.Service
 	privacy      *privacy.Service
+	chat         *chatcore.Service
 	OpsDeps
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie

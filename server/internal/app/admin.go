@@ -10,6 +10,7 @@ import (
 	"log/slog"
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
@@ -82,6 +83,15 @@ func (a *Admin) HasPack(id string) bool {
 // ErasePerson runs the privacy erase as the operator (see privacy.Service.EraseAsOperator).
 func (a *Admin) ErasePerson(ctx context.Context, org, person uuid.UUID, reason string, force bool) (privacy.EraseResult, error) {
 	return privacy.NewService(a.db, privacy.Config{}).EraseAsOperator(ctx, org, person, reason, force)
+}
+
+// ChatSetWebhook registers an organization's chat bot webhook with the provider.
+func (a *Admin) ChatSetWebhook(ctx context.Context, org uuid.UUID, provider, url string) (string, error) {
+	svc, err := chatcore.NewService(a.db, chatcore.Config{EncryptionKey: a.encKey, Packs: nil, BaseURL: a.cfg.BaseURL})
+	if err != nil {
+		return "", err
+	}
+	return svc.RegisterWebhook(ctx, org, provider, url)
 }
 
 // Close releases the database connections.
