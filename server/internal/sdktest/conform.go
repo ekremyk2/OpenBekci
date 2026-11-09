@@ -308,7 +308,9 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		h, unit := boot(t)
 		co, err := h.Host.CreateCheckout(h.Ctx(), h.Env.OrgID, h.PackID, fx.Provider, sdk.CheckoutRequest{
 			Reference: "chk-" + strconv.FormatInt(time.Now().UnixNano(), 36), Gross: sdk.Money{Amount: 10000, Currency: "TRY"}, Locale: "en",
-			Target: sdk.PaymentTarget{SiteID: h.Site, UnitID: unit, DebtorKind: "owner"}, ReturnURL: "https://example.test/return"})
+			Target: sdk.PaymentTarget{SiteID: h.Site, UnitID: unit, DebtorKind: "owner"}, ReturnURL: "https://example.test/return",
+			// the fixture settings are organization settings: the organization is the merchant
+			MerchantOfRecord: sdk.MerchantOrganization})
 		if err != nil {
 			t.Fatalf("CreateCheckout: %v", err)
 		}
