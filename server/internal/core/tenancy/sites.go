@@ -323,6 +323,20 @@ func (s *Service) GetSite(ctx context.Context, orgID, siteID uuid.UUID) (Site, e
 	return out, nil
 }
 
+// checkIBAN checks the iban of the bank details of a site, when it has one, with
+// the validators of the packs enabled for the organization (the Turkish IBAN
+// rules); a failure is a field error on bank_details.iban.
+func (s *Service) checkIBAN(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, bank map[string]any) error {
+	iban, _ := bank["iban"].(string)
+	if iban == "" {
+		return nil
+	}
+	if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindIBAN, "bank_details.iban", iban); f != nil {
+		return problem.Validation(*f)
+	}
+	return nil
+}
+
 // CreateSite creates a site with its hidden block (or the named blocks) and the
 // Law 634 allocation keys (arsa_payi by share, equal per unit). It needs site.create.
 func (s *Service) CreateSite(ctx context.Context, orgID uuid.UUID, d Doc) (Site, error) {
@@ -344,6 +358,9 @@ func (s *Service) CreateSite(ctx context.Context, orgID uuid.UUID, d Doc) (Site,
 		base := Site{Address: map[string]any{}, Settings: map[string]any{}, BankDetails: map[string]any{}, Timezone: tz, Currency: "TRY", FiscalYearStartMonth: 1}
 		site, err := applySite(base, d, true)
 		if err != nil {
+			return err
+		}
+		if err := s.checkIBAN(ctx, tx, orgID, site.BankDetails); err != nil {
 			return err
 		}
 		site.ID = id.New()
@@ -425,11 +442,8 @@ func (s *Service) UpdateSite(ctx context.Context, orgID, siteID uuid.UUID, expec
 			return err
 		}
 		if d.Has("bank_details") {
-			// the IBAN is checked with the validators of the packs enabled for the organization (Turkish IBAN rules)
-			if iban, _ := next.BankDetails["iban"].(string); iban != "" {
-				if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindIBAN, "bank_details.iban", iban); f != nil {
-					return problem.Validation(*f)
-				}
+			if err := s.checkIBAN(ctx, tx, orgID, next.BankDetails); err != nil {
+				return err
 			}
 		}
 		diff, err := audit.Diff("site", before.audit(), next.audit())

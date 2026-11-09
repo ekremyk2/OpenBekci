@@ -465,8 +465,18 @@ func TestTRValidatorsRejectBadInputAtTheCoreValidationPoints(t *testing.T) {
 	if _, err := tn.UpdateSite(ctx, org, h.Env.SiteID, site.Version, doc(map[string]any{"bank_details": map[string]any{"iban": "TR330006100519786457841326", "holder": "Gül Sitesi"}})); err != nil {
 		t.Fatal(err)
 	}
+	// a new site is checked the same way as an update
+	if _, err := tn.CreateSite(ctx, org, doc(map[string]any{"name": "Kötü IBAN Sitesi", "bank_details": map[string]any{"iban": "TR330006100519786457841327"}})); err == nil {
+		t.Fatal("a new site with an IBAN that fails its check digits")
+	}
+	if s, err := tn.CreateSite(ctx, org, doc(map[string]any{"name": "İyi IBAN Sitesi", "bank_details": map[string]any{"iban": "TR330006100519786457841326"}})); err != nil || s.ID == uuid.Nil {
+		t.Fatalf("a new site with a valid IBAN: %v", err)
+	}
 	// the same inputs are accepted where the pack is not enabled
 	h.Disable()
+	if _, err := tn.CreateSite(ctx, org, doc(map[string]any{"name": "Paketsiz Site", "bank_details": map[string]any{"iban": "TR330006100519786457841327"}})); err != nil {
+		t.Fatalf("without the pack any IBAN is accepted: %v", err)
+	}
 	if _, err := ps.CreateVendor(ctx, org, doc(map[string]any{"name": "Başka AŞ", "tax_id": "1234567891"})); err != nil {
 		t.Fatalf("without the pack any tax id is accepted: %v", err)
 	}
