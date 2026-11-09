@@ -490,8 +490,9 @@ func (s *apiServer) statementUnitSite(ctx context.Context, orgID, unitID uuid.UU
 	}
 	var pe *problem.Error
 	if errors.As(err, &pe) && pe.Status == http.StatusForbidden {
-		for _, o := range authz.GrantsFromContext(ctx).Occupancies {
-			if o.UnitID == unitID {
+		g := authz.GrantsFromContext(ctx)
+		for _, o := range g.Occupancies {
+			if g.OrgID == orgID && o.UnitID == unitID {
 				return o.SiteID, nil
 			}
 		}

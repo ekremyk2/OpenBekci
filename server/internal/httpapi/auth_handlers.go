@@ -337,31 +337,21 @@ func (s *apiServer) permissionGrants(o identity.OrgAccess) []gen.PermissionGrant
 }
 
 // occupantPermissionGrants lists the portal permissions the caller holds in one
-// organization through current occupancies (the Resolver's occupantGrants, at the
+// organization through current occupancies (the Resolver's OccupantGrants, at the
 // site of each unit), so a client can gate resident screens without guessing.
 func (s *apiServer) occupantPermissionGrants(orgID uuid.UUID, occs []identity.MeOccupancy) []gen.PermissionGrant {
 	out := []gen.PermissionGrant{}
 	if s.resolver == nil {
 		return out
 	}
-	reg := s.resolver.Registry()
-	var grants []authz.Grant
-	seen := map[[2]string]bool{}
+	var current []authz.OccupancyAccess
 	for _, o := range occs {
-		if o.OrgID != orgID || !o.Current {
-			continue
-		}
-		for _, perm := range reg.OccupantPermissions(authz.OccupancyKind(o.Kind)) {
-			k := [2]string{string(perm), o.SiteID.String()}
-			if seen[k] {
-				continue
-			}
-			seen[k] = true
-			site := o.SiteID
-			grants = append(grants, authz.Grant{Permission: perm, ScopeType: authz.ScopeSite, ScopeID: &site, FromOccupancy: true})
+		if o.OrgID == orgID && o.Current {
+			current = append(current, authz.OccupancyAccess{UnitID: o.UnitID, SiteID: o.SiteID, Kind: authz.OccupancyKind(o.Kind)})
 		}
 	}
-	for _, ps := range authz.Summarize(grants) {
+	// the same derivation the request's grants use, not a parallel list
+	for _, ps := range authz.Summarize(s.resolver.OccupantGrants(current)) {
 		ids := ps.SiteIDs
 		out = append(out, gen.PermissionGrant{Permission: gen.Permission(ps.Permission), SiteIds: &ids})
 	}
