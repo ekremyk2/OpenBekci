@@ -129,14 +129,17 @@ func (s *Service) RequestSignUp(ctx context.Context, in SignUpInput, m Meta) err
 		return problem.New(503, problem.CodeMailUnavailable, "sign-up by email link is not available on this instance")
 	}
 
-	if ok, wait := s.cfg.Limits.SignUpCode.Allow(in.Code); !ok {
-		return problem.RateLimited(wait)
-	}
 	ipL, targetL, target := s.cfg.Limits.OTPSendIP, s.cfg.Limits.OTPSendTarget, phone
 	if email != "" {
 		ipL, targetL, target = s.cfg.Limits.LinkSendIP, s.cfg.Limits.LinkSendTarget, email
 	}
+	// The address goes first: a client that is already limited must not keep
+	// draining the join code's shared budget with refused requests, which
+	// would lock the residents out of a code they all use.
 	if ok, wait := ipL.Allow(m.IP); !ok {
+		return problem.RateLimited(wait)
+	}
+	if ok, wait := s.cfg.Limits.SignUpCode.Allow(in.Code); !ok {
 		return problem.RateLimited(wait)
 	}
 	if ok, wait := targetL.Allow(target); !ok {
