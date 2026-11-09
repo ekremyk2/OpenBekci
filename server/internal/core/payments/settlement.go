@@ -357,6 +357,8 @@ type ClearingBalances struct {
 	// ClientMoneyOwed is what the organization holds for the site and has not passed on (merchant of record =
 	// organization); zero otherwise.
 	ClientMoneyOwed money.Money `json:"client_money_owed"`
+	// ClientMoneyPaidOut is what the organization has paid out to the site so far.
+	ClientMoneyPaidOut money.Money `json:"client_money_paid_out"`
 }
 
 // ClearingBalancesOf returns the clearing balance per provider and the client money balance of a site (money.read).
@@ -371,7 +373,7 @@ func (s *Service) ClearingBalancesOf(ctx context.Context, orgID, siteID uuid.UUI
 			return err
 		}
 		cur := ledger.Currency(site)
-		out = ClearingBalances{SiteID: siteID, Providers: []ProviderClearing{}, ClientMoneyOwed: money.Zero(cur)}
+		out = ClearingBalances{SiteID: siteID, Providers: []ProviderClearing{}, ClientMoneyOwed: money.Zero(cur), ClientMoneyPaidOut: money.Zero(cur)}
 		if out.MerchantOfRecord, err = merchantOf(ctx, tx, orgID, site); err != nil {
 			return err
 		}
@@ -403,6 +405,7 @@ func (s *Service) ClearingBalancesOf(ctx context.Context, orgID, siteID uuid.UUI
 			}
 			if a.sub == ledger.SubClientMoney {
 				out.ClientMoneyOwed = money.New(d-c, cur)
+				out.ClientMoneyPaidOut = money.New(c, cur)
 				continue
 			}
 			out.Providers = append(out.Providers, ProviderClearing{Provider: a.code[len("1190."):], Balance: money.New(d-c, cur)})

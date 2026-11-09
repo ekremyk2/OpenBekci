@@ -617,6 +617,8 @@ paths:
     $ref: './paths/money/payment-settlements.yaml'
   /v1/orgs/{org_id}/payment-clearing:
     $ref: './paths/money/payment-clearing.yaml'
+  /v1/orgs/{org_id}/payment-clearing:payout:
+    $ref: './paths/money/payment-clearing_payout.yaml'
   /v1/orgs/{org_id}/payments/{payment_id}/receipt:
     $ref: './paths/money/payments-payment_id-receipt.yaml'
   /v1/orgs/{org_id}/payments/{payment_id}:send-receipt:

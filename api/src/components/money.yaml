@@ -6272,6 +6272,29 @@ schemas:
           - web
           - mobile
         default: web
+  ClientMoneyPayoutCreate:
+    type: object
+    description: |-
+      **Release 0.4.** The organization paid client money out to a site's bank account.
+    required:
+      - site_id
+      - amount
+      - reference
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      amount:
+        $ref: ./common.yaml#/schemas/Money
+      reference:
+        type: string
+        minLength: 1
+        maxLength: 200
+        description: The bank transfer reference.
+      paid_on:
+        type: string
+        format: date
+        description: The day the money arrived; defaults to today at the site, never in the future.
   PaymentRefund:
     type: object
     properties:
@@ -6389,3 +6412,7 @@ schemas:
         allOf:
           - $ref: ./common.yaml#/schemas/Money
         description: What the organization holds for the site and has not passed on (merchant of record `organization`); zero otherwise.
+      client_money_paid_out:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: What the organization has paid out to the site so far (`money.payoutClientMoney`); absent on older servers.

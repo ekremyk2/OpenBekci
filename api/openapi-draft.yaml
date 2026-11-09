@@ -10752,6 +10752,65 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payment-clearing:payout:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.payoutClientMoney
+      summary: Record a client money payout to a site
+      description: |-
+        **Release 0.4.** Records that the organization, as merchant of record, paid client money out to a site's bank
+        account: debit the site's bank account (`1100`), credit its client money account (`1195`), so the balance the
+        organization owes the site (`client_money_owed` of `money.getPaymentClearing`) goes down. The amount cannot
+        exceed that balance. `reference` (the bank transfer reference) is kept in the entry's memo and the audit trail.
+
+        Permission: `money.post` at the site.
+
+        Problems: `validation_failed` (422, `amount` not positive, in another currency or above the balance, `reference`
+        missing, `paid_on` in the future), `locked_period` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientMoneyPayoutCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentClearing'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/credits:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -25568,6 +25627,7 @@ components:
             - api_key_revoked
             - api_key_expired
             - payment_provider_unavailable
+            - merchant_change_blocked
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.
@@ -33291,6 +33351,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: What the organization holds for the site and has not passed on (merchant of record `organization`); zero otherwise.
+        client_money_paid_out:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: What the organization has paid out to the site so far (`money.payoutClientMoney`); absent on older servers.
     Credit:
       type: object
       description: Unallocated money held as a prepayment liability, per unit side or person.
@@ -44579,6 +44643,28 @@ components:
       example:
         mode: person
         person_id: 0192a3f0-1000-7000-8000-000000000002
+    ClientMoneyPayoutCreate:
+      type: object
+      description: '**Release 0.4.** The organization paid client money out to a site''s bank account.'
+      required:
+        - site_id
+        - amount
+        - reference
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: The bank transfer reference.
+        paid_on:
+          type: string
+          format: date
+          description: The day the money arrived; defaults to today at the site, never in the future.
     TicketWorkflowRestore:
       type: object
       description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.

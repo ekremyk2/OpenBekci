@@ -8684,6 +8684,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/payment-clearing:payout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a client money payout to a site
+         * @description **Release 0.4.** Records that the organization, as merchant of record, paid client money out to a site's bank
+         *     account: debit the site's bank account (`1100`), credit its client money account (`1195`), so the balance the
+         *     organization owes the site (`client_money_owed` of `money.getPaymentClearing`) goes down. The amount cannot
+         *     exceed that balance. `reference` (the bank transfer reference) is kept in the entry's memo and the audit trail.
+         *
+         *     Permission: `money.post` at the site.
+         *
+         *     Problems: `validation_failed` (422, `amount` not positive, in another currency or above the balance, `reference`
+         *     missing, `paid_on` in the future), `locked_period` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["money.payoutClientMoney"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/payments/{payment_id}/receipt": {
         parameters: {
             query?: never;
@@ -9415,7 +9446,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired" | "api_key_revoked" | "api_key_expired" | "payment_provider_unavailable";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired" | "api_key_revoked" | "api_key_expired" | "payment_provider_unavailable" | "merchant_change_blocked";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -19869,6 +19900,21 @@ export interface components {
             }[];
             /** @description What the organization holds for the site and has not passed on (merchant of record `organization`); zero otherwise. */
             client_money_owed: components["schemas"]["Money"];
+            /** @description What the organization has paid out to the site so far (`money.payoutClientMoney`); absent on older servers. */
+            client_money_paid_out?: components["schemas"]["Money"];
+        };
+        /** @description **Release 0.4.** The organization paid client money out to a site's bank account. */
+        ClientMoneyPayoutCreate: {
+            /** Format: uuid */
+            site_id: string;
+            amount: components["schemas"]["Money"];
+            /** @description The bank transfer reference. */
+            reference: string;
+            /**
+             * Format: date
+             * @description The day the money arrived; defaults to today at the site, never in the future.
+             */
+            paid_on?: string;
         };
         StatementSend: {
             /** @description Whose statement to send. */
@@ -34549,6 +34595,42 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.payoutClientMoney": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientMoneyPayoutCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentClearing"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

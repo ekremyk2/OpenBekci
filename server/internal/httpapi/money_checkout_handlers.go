@@ -163,6 +163,26 @@ func (s *apiServer) MoneyListPaymentSettlements(ctx context.Context, req gen.Mon
 	return gen.MoneyListPaymentSettlements200JSONResponse(out), err
 }
 
+func (s *apiServer) MoneyPayoutClientMoney(ctx context.Context, req gen.MoneyPayoutClientMoneyRequestObject) (gen.MoneyPayoutClientMoneyResponseObject, error) {
+	p, err := s.py()
+	if err != nil {
+		return nil, err
+	}
+	if req.Body == nil {
+		return nil, hasBody(true)
+	}
+	in := payments.ClientMoneyPayoutInput{SiteID: req.Body.SiteId, Amount: money.New(req.Body.Amount.Amount, money.Code(req.Body.Amount.Currency)), Reference: req.Body.Reference}
+	if req.Body.PaidOn != nil {
+		in.PaidOn = req.Body.PaidOn.Format("2006-01-02")
+	}
+	v, err := p.PayoutClientMoney(ctx, req.OrgId, in)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.PaymentClearing](v)
+	return gen.MoneyPayoutClientMoney201JSONResponse(out), err
+}
+
 func (s *apiServer) MoneyGetPaymentClearing(ctx context.Context, req gen.MoneyGetPaymentClearingRequestObject) (gen.MoneyGetPaymentClearingResponseObject, error) {
 	p, err := s.py()
 	if err != nil {
