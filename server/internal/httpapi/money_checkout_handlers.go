@@ -106,6 +106,7 @@ func (s *apiServer) MoneyRefundPayment(ctx context.Context, req gen.MoneyRefundP
 	if err != nil {
 		return nil, err
 	}
+	s.fileCreditNote(ctx, req.OrgId, req.PaymentId)
 	out, err := conv[gen.Payment](p)
 	return gen.MoneyRefundPayment200JSONResponse(out), err
 }

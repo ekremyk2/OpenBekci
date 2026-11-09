@@ -464,9 +464,19 @@ func decisionBookDraft(d data) string {
 // receipt: the aidat makbuzu.
 func receipt(d data) string {
 	var m doc
-	m.title("AİDAT MAKBUZU")
+	credit := d.b("credit_note") // iade: the credit note of a voided or refunded payment
+	if credit {
+		m.title("İADE MAKBUZU")
+	} else {
+		m.title("AİDAT MAKBUZU")
+	}
 	m.sub(d.s("site_name"))
-	m.kv("Makbuz no", d.s("receipt_no"))
+	if credit {
+		m.kv("İade makbuzu no", d.s("credit_note_no"))
+		m.kv("Makbuz no", d.s("receipt_no"))
+	} else {
+		m.kv("Makbuz no", d.s("receipt_no"))
+	}
 	m.kv("Tarih", d.s("date"))
 	m.kv("Ödeyen", dash(d.s("payer")))
 	m.kv("Bağımsız bölüm", dash(d.s("unit")))
@@ -479,7 +489,11 @@ func receipt(d data) string {
 		m.table([]string{"Karşılığı", "Tutar"}, rows)
 	}
 	m.blank()
-	m.kv("Toplam tahsilat", d.s("total"))
+	if credit {
+		m.kv("Toplam iade", d.s("total"))
+	} else {
+		m.kv("Toplam tahsilat", d.s("total"))
+	}
 	if b := d.s("balance"); b != "" {
 		m.kv("Kalan borç", b)
 	}

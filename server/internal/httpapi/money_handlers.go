@@ -233,6 +233,7 @@ func (s *apiServer) MoneyVoidPayment(ctx context.Context, req gen.MoneyVoidPayme
 	if err != nil {
 		return nil, err
 	}
+	s.fileCreditNote(ctx, req.OrgId, req.PaymentId)
 	out, err := conv[gen.Payment](v)
 	return gen.MoneyVoidPayment200JSONResponse(out), err
 }
