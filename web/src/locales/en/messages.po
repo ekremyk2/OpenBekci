@@ -6382,6 +6382,9 @@ msgstr "The page you are looking for does not exist or has moved."
 msgid "The pass was cancelled."
 msgstr "The pass was cancelled."
 
+msgid "The payment changed. Open Refund again to see its current state."
+msgstr "The payment changed. Open Refund again to see its current state."
+
 msgid "The payment did not go through"
 msgstr "The payment did not go through"
 

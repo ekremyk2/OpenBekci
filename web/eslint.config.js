@@ -28,6 +28,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'openbekci/logical-properties': 'error',
+      'openbekci/no-untranslated-text': 'error',
       'no-restricted-syntax': [
         'error',
         {
