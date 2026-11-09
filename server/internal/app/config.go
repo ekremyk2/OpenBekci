@@ -84,10 +84,14 @@ type Config struct {
 	AccessMaxSnapshotEntries, AccessSnapshotPartEntries, AccessSnapshotPartBytes int
 
 	// Worker runs the job worker inside serve.
-	Worker      bool
-	AutoMigrate bool
-	InsecureDev bool
-	Debug       bool
+	Worker bool
+	// MetricsToken enables GET /metrics (OPENBEKCI_METRICS_TOKEN, bearer); MetricsAddr
+	// (OPENBEKCI_METRICS_ADDR) makes a worker-only process listen for /metrics and /healthz.
+	MetricsToken string
+	MetricsAddr  string
+	AutoMigrate  bool
+	InsecureDev  bool
+	Debug        bool
 
 	// ValidateResponses checks every API response against the spec (a dev aid).
 	ValidateResponses bool
@@ -202,7 +206,7 @@ func ParsePushRelays(items []string) ([]PushRelayEntry, error) {
 var secretNames = map[string]bool{
 	"DATABASE_URL": true, "MIGRATOR_DATABASE_URL": true, "PLATFORM_DATABASE_URL": true,
 	"SECRET_KEY": true, "ENCRYPTION_KEY": true, "SMS_NETGSM_PASSWORD": true, "SMTP_PASSWORD": true,
-	"STORAGE_S3_SECRET_KEY": true,
+	"STORAGE_S3_SECRET_KEY": true, "METRICS_TOKEN": true,
 }
 
 // devKeys are the throwaway keys shipped in the repository's .env.example. They
@@ -317,6 +321,10 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		}
 	}
 
+	if c.MetricsToken, err = l.get("METRICS_TOKEN"); err != nil {
+		return Config{}, err
+	}
+	c.MetricsAddr = l.must("METRICS_ADDR")
 	switch w := strings.ToLower(l.must("WORKER")); w {
 	case "", "embedded":
 		c.Worker = true

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: openbekci
+description: OpenBekci site-management server (API, job worker, migrations)
+type: application
+version: 0.1.0
+# Pin to the server version this chart was tested with; override with image.tag.
+appVersion: "0.4.0"
+kubeVersion: ">=1.27.0-0"
+dependencies:
+  # Evaluation only: use a managed or operator-run PostgreSQL in production.
+  - name: postgresql
+    version: 16.x.x
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql.enabled

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"io"
 	"net/http"
 	"strings"
@@ -61,7 +62,7 @@ func postJSON(ctx context.Context, relayURL, path string, in any, out any) error
 		return fmt.Errorf("relay url: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	c := &http.Client{Timeout: 30 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	c := &http.Client{Timeout: 30 * time.Second, Transport: obs.Transport(http.DefaultTransport), CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	resp, err := c.Do(req)
 	if err != nil {
 		return fmt.Errorf("reach the relay: %w", err)

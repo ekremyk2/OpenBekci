@@ -1,0 +1,80 @@
+# Example Prometheus alert rules; adjust job labels and thresholds to the install.
+# Assumes the scrape job is named "openbekci" (server and worker pods).
+groups:
+  - name: openbekci
+    rules:
+      - alert: OpenBekciDown
+        expr: up{job="openbekci"} == 0
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: "OpenBekci target {{ $labels.instance }} is not scrapeable (readiness failing or process down)"
+
+      - alert: OpenBekciHighErrorRatio
+        expr: |
+          sum(rate(openbekci_http_requests_total{status=~"5.."}[10m]))
+            / sum(rate(openbekci_http_requests_total[10m])) > 0.02
+        for: 10m
+        labels: {severity: page}
+        annotations:
+          summary: "More than 2 % of requests fail with 5xx"
+
+      - alert: OpenBekciSlowRequests
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(openbekci_http_request_duration_seconds_bucket[10m]))) > 2
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: "p95 request latency above 2 s"
+
+      - alert: OpenBekciJobsFailing
+        expr: sum by (kind) (rate(openbekci_job_duration_seconds_count{outcome="error"}[15m])) > 0.05
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: "Jobs of kind {{ $labels.kind }} keep failing (River retries them; look at the worker logs)"
+
+      - alert: OpenBekciNoJobsRun
+        expr: sum(rate(openbekci_job_duration_seconds_count[30m])) == 0
+        for: 30m
+        labels: {severity: page}
+        annotations:
+          summary: "No job ran for 30 minutes: the worker is down or stuck (hourly maintenance jobs should always run)"
+
+      - alert: OpenBekciNotificationsFailing
+        expr: |
+          sum by (channel) (rate(openbekci_notification_deliveries_total{status="failed"}[30m]))
+            / sum by (channel) (rate(openbekci_notification_deliveries_total{status=~"sent|failed"}[30m])) > 0.2
+        for: 30m
+        labels: {severity: ticket}
+        annotations:
+          summary: "More than 20 % of {{ $labels.channel }} notifications fail"
+
+      - alert: OpenBekciPushErrors
+        expr: |
+          sum(rate(openbekci_push_results_total{outcome=~"error|no_route|rejected"}[30m]))
+            / sum(rate(openbekci_push_results_total[30m])) > 0.2
+        for: 30m
+        labels: {severity: ticket}
+        annotations:
+          summary: "Push delivery is failing (relay unreachable, disabled or misconfigured)"
+
+      - alert: OpenBekciWebhooksFailing
+        expr: sum(rate(openbekci_webhook_deliveries_total{result="failed"}[1h])) > 0
+        for: 1h
+        labels: {severity: ticket}
+        annotations:
+          summary: "Webhook deliveries are exhausting their retries"
+
+      - alert: OpenBekciCheckoutsFailing
+        expr: sum(increase(openbekci_checkout_transitions_total{status="failed"}[1h])) > 5
+        labels: {severity: ticket}
+        annotations:
+          summary: "Several online payments failed within an hour (provider outage?)"
+
+      - alert: OpenBekciDBPoolSaturated
+        expr: openbekci_db_pool_acquired_conns / openbekci_db_pool_max_conns > 0.9
+        for: 10m
+        labels: {severity: ticket}
+        annotations:
+          summary: "DB pool {{ $labels.pool }} on {{ $labels.instance }} is over 90 % used"
