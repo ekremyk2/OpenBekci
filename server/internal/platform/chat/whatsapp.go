@@ -43,11 +43,11 @@ var whatsappBuiltin = Builtin{
 		},
 	},
 	Factory: func(cfg map[string]string, o Options) (Provider, error) {
-		w := &whatsapp{phoneID: cfg["phone_number_id"], number: strings.TrimPrefix(cfg["display_number"], "+"), token: cfg["access_token"], appSecret: cfg["app_secret"], verify: cfg["verify_token"], base: o.WhatsAppBase, hc: client(o)}
+		w := &whatsapp{senderID: cfg["phone_number_id"], number: strings.TrimPrefix(cfg["display_number"], "+"), token: cfg["access_token"], appSecret: cfg["app_secret"], verify: cfg["verify_token"], base: o.WhatsAppBase, hc: client(o)}
 		if w.base == "" {
 			w.base = "https://graph.facebook.com/v21.0"
 		}
-		if !waPhoneIDRe.MatchString(w.phoneID) || !waNumberRe.MatchString(cfg["display_number"]) || !waTokenRe.MatchString(w.token) || !waSecretRe.MatchString(w.appSecret) || !waSecretRe.MatchString(w.verify) {
+		if !waPhoneIDRe.MatchString(w.senderID) || !waNumberRe.MatchString(cfg["display_number"]) || !waTokenRe.MatchString(w.token) || !waSecretRe.MatchString(w.appSecret) || !waSecretRe.MatchString(w.verify) {
 			return nil, fmt.Errorf("whatsapp: display_number, phone_number_id, access_token, app_secret and verify_token are required and must be well formed")
 		}
 		return w, nil
@@ -55,7 +55,7 @@ var whatsappBuiltin = Builtin{
 }
 
 type whatsapp struct {
-	phoneID, number, token, appSecret, verify, base string
+	senderID, number, token, appSecret, verify, base string
 	hc                                              *http.Client
 }
 
@@ -76,7 +76,7 @@ func (w *whatsapp) Send(ctx context.Context, to string, m Message) error {
 		text += "\n" + m.Link
 	}
 	b, _ := json.Marshal(map[string]any{"messaging_product": "whatsapp", "to": to, "type": "text", "text": map[string]any{"preview_url": false, "body": text}})
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, w.base+"/"+w.phoneID+"/messages", bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, w.base+"/"+w.senderID+"/messages", bytes.NewReader(b))
 	if err != nil {
 		return err
 	}
