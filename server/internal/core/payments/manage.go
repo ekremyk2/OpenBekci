@@ -133,7 +133,7 @@ func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, asset
 		if err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6, asset_account_id=$7 WHERE org_id=$1 AND id=$2`,
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6, asset_account_id=$7, version = version + 1 WHERE org_id=$1 AND id=$2`,
 			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx), p.AssetAccountID); err != nil {
 			return err
 		}
@@ -173,7 +173,7 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 		if p.Status != "pending_declared" {
 			return problem.Conflict("only a declared payment can be rejected")
 		}
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status='voided' WHERE org_id=$1 AND id=$2`, orgID, paymentID); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='voided', version = version + 1 WHERE org_id=$1 AND id=$2`, orgID, paymentID); err != nil {
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.reject", "payment", paymentID, map[string]any{"status": "pending_declared"}, map[string]any{"status": "voided", "reason": reason}); err != nil {
@@ -278,7 +278,7 @@ func (s *Service) reverse(ctx context.Context, orgID, paymentID uuid.UUID, reaso
 			ids = append(ids, cid)
 		}
 		rows.Close()
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status=$4, void_entry_id=$3, refund_ref=$5 WHERE org_id=$1 AND id=$2`, orgID, paymentID, rid, final, refundRef); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status=$4, void_entry_id=$3, refund_ref=$5, version = version + 1 WHERE org_id=$1 AND id=$2`, orgID, paymentID, rid, final, refundRef); err != nil {
 			return err
 		}
 		if _, err := billing.RefreshStatus(ctx, tx, orgID, p.SiteID, ids); err != nil {

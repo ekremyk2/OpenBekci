@@ -63,6 +63,10 @@ const (
 	CodeAPIKeyRevoked Code = "api_key_revoked"
 	// CodeAPIKeyExpired: the API key is past its expires_at (401).
 	CodeAPIKeyExpired Code = "api_key_expired"
+	// CodePaymentProviderUnavailable: no card payment provider is enabled for the site (409).
+	CodePaymentProviderUnavailable Code = "payment_provider_unavailable"
+	// CodeMerchantChangeBlocked: the merchant of record cannot change while a clearing or client money balance is open (409).
+	CodeMerchantChangeBlocked Code = "merchant_change_blocked"
 )
 
 // Field is one entry of the errors[] array.

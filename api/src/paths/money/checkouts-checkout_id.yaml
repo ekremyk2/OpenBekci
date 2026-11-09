@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: checkout_id
+    in: path
+    required: true
+    description: Id of the checkout.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getCheckout
+  summary: Poll a checkout
+  description: |-
+    **Release 0.4.** The status poll of a checkout: `pending`, `paid`, `failed`, `expired` or `refunded`, and the
+    resulting `payment_id` once paid. A client opens `checkout_url`, and after the provider returns the payer to
+    `return_url` polls this until the status is no longer `pending` (the receipt arrives as a notification).
+
+    A pending checkout is reconciled with the provider (at most every few seconds), so a payment whose webhook was
+    lost is still found, and a pending checkout past `expires_at` is expired on the spot. Only the person who started
+    the checkout, a manager of the site and a resident who reaches the unit side can read it (404 otherwise).
+
+    Permission: `payments.checkout`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.checkout
+    site_manager:
+      - payments.checkout
+    owner:
+      - payments.checkout
+    tenant:
+      - payments.checkout
+    household:
+      - payments.checkout
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Checkout
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

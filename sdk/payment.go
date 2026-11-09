@@ -15,9 +15,9 @@ import (
 //
 // Core call sites (the payments module, never the pack):
 //
-//   - CreateCheckout: the core checkout endpoint (planned for release 0.4)
+//   - CreateCheckout: the core checkout endpoint (POST /v1/orgs/{org}/checkouts)
 //     asks the provider for a hosted checkout and returns checkout_url.
-//   - Status: the checkout status poll of the client.
+//   - Status: the checkout status poll of the client (GET /v1/orgs/{org}/checkouts/{id}).
 //   - HandleWebhook: the core route POST /v1/orgs/{org}/packs/{id}/payments/{provider}/webhook
 //     reads the body, calls HandleWebhook and records the returned events
 //     through the payments module, idempotently per (org, provider,
@@ -26,7 +26,14 @@ import (
 //   - Settlements: the settlement import; the core posts bank against clearing.
 //
 // Implementations read their credentials with Services.Settings (secret
-// fields included) and must verify webhook signatures themselves.
+// fields included) and must verify webhook signatures themselves. Whose
+// provider account a call uses follows the core setting
+// payments.merchant_of_record: CheckoutRequest.MerchantOfRecord and
+// SettlementRequest.MerchantOfRecord say which, and AccountScope turns it into
+// the settings scope (the site's own, or the organization's) to read the
+// credentials from. A webhook event whose transaction belongs to a checkout is
+// recorded for the debtor and the charges the checkout was created for, never
+// from what the event says about them.
 type PaymentProvider interface {
 	// ID is the provider id ("<packid>" or "<packid>.<name>"); the payment's
 	// method is "card:<id>".
@@ -70,6 +77,34 @@ type CheckoutRequest struct {
 	// Locale is the resident's locale ("tr", "en").
 	Locale string
 	Payer  Payer
+	// MerchantOfRecord is MerchantSite or MerchantOrganization (core setting
+	// payments.merchant_of_record): whose provider account the checkout is
+	// created on. Read the account with AccountScope(MerchantOfRecord, Target.SiteID).
+	MerchantOfRecord string
+}
+
+// Merchant of record values (core setting payments.merchant_of_record, decision
+// M5): whose provider account collects the money.
+const (
+	// MerchantSite: the site collects into its own provider account (the default).
+	// The provider reads its credentials at the site scope.
+	MerchantSite = "site"
+	// MerchantOrganization: the management company collects centrally into the
+	// organization's provider account; the net is client money owed to the site.
+	// The provider reads its credentials at the organization scope.
+	MerchantOrganization = "organization"
+)
+
+// AccountScope is the settings scope a provider reads its account (credentials,
+// merchant id) from for a call: the organization scope when the organization is
+// the merchant of record, else the scope of the site. The core fills
+// CheckoutRequest.MerchantOfRecord and SettlementRequest.MerchantOfRecord; a
+// provider passes that and the site of the target.
+func AccountScope(merchantOfRecord string, site ID) Scope {
+	if merchantOfRecord == MerchantOrganization || site == "" {
+		return OrgScope()
+	}
+	return SiteScope(site)
 }
 
 // Payer is what the provider may need to know about the payer.
@@ -184,6 +219,12 @@ type RefundResult struct {
 // SettlementRequest selects a period (civil dates, inclusive).
 type SettlementRequest struct {
 	From, To string
+	// Site is the site whose provider account is asked (MerchantSite); empty
+	// when the organization's account is asked (MerchantOrganization).
+	Site ID
+	// MerchantOfRecord is MerchantSite or MerchantOrganization; read the
+	// account with AccountScope(MerchantOfRecord, Site).
+	MerchantOfRecord string
 }
 
 // Settlement is one payout of the provider: gross, fee and net, and the

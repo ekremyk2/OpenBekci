@@ -8,6 +8,7 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/checkout"
 	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
@@ -34,6 +35,8 @@ type MoneyDeps struct {
 	Treasury *treasury.Service
 	// Docs makes the receipts, closing documents and sent statements.
 	Docs *moneydocs.Service
+	// Checkout serves card checkouts and refunds of provider payments (release 0.4); nil without the packs runtime.
+	Checkout *checkout.Service
 }
 
 func (s *apiServer) lg() (*ledger.Service, error) {
