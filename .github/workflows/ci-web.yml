@@ -1,17 +1,7 @@
 name: ci-web
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "web/**"
-      - "clients/ts/**"
-      - ".github/workflows/ci-web.yml"
-  pull_request:
-    paths:
-      - "web/**"
-      - "clients/ts/**"
-      - ".github/workflows/ci-web.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
