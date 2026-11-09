@@ -140,7 +140,7 @@ func waSig(body string) string {
 	return "sha256=" + hex.EncodeToString(m.Sum(nil))
 }
 
-var codeFromLink = regexp.MustCompile(`BEKCI-[A-Z0-9]{10}`)
+var codeFromLink = regexp.MustCompile(`BEKCI-[A-Z2-7]{26}`)
 
 type startedJSON struct {
 	Provider  string `json:"provider"`

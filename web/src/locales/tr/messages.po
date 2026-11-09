@@ -275,6 +275,9 @@ msgstr "Yok"
 msgid "Abstain"
 msgstr "Çekimser"
 
+msgid "Accent"
+msgstr "Vurgu rengi"
+
 msgid "Accept"
 msgstr "Kabul et"
 
@@ -2884,6 +2887,9 @@ msgstr "Bilgi için"
 msgid "For this site"
 msgstr "Bu site için"
 
+msgid "Forest"
+msgstr "Orman"
+
 msgid "Four fifths"
 msgstr "Beşte dört"
 
@@ -3730,6 +3736,9 @@ msgstr "Kimlik numarası"
 msgid "Navigation"
 msgstr "Gezinme"
 
+msgid "Navy"
+msgstr "Lacivert"
+
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
 msgid "Needed: at least {0} yes votes{1}"
@@ -4562,6 +4571,9 @@ msgstr "Kurum yöneticisi"
 
 msgid "Organization collects"
 msgstr "Kuruluş tahsil eder"
+
+msgid "Organization color"
+msgstr "Kuruluş rengi"
 
 msgid "Organization created."
 msgstr "Kuruluş oluşturuldu."
@@ -5956,6 +5968,9 @@ msgstr "Boyut"
 msgid "Skip to content"
 msgstr "İçeriğe geç"
 
+msgid "Slate"
+msgstr "Arduvaz"
+
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr "Başkalarının rezerve ettiği saatler yalnızca \"dolu\" olarak görünür."
 
@@ -6208,6 +6223,9 @@ msgstr "Görev başlangıcı"
 
 msgid "Terms ending soon"
 msgstr "Yakında biten görev süreleri"
+
+msgid "Terracotta"
+msgstr "Kiremit"
 
 msgid "Test ping sent"
 msgstr "Test ping gönderildi"

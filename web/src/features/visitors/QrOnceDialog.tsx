@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { CheckIcon, CopyIcon, MailIcon, MessageCircleIcon, SmartphoneIcon } from 'lucide-react'
+import { CheckIcon, CopyIcon, MailIcon, SmartphoneIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Button } from '@/components/ui/button'
+import { WhatsAppIcon } from '@/components/ui/brand-icons'
 import {
   Dialog,
   DialogContent,
@@ -71,7 +72,7 @@ export function QrOnceDialog({
         <div className="grid gap-2 sm:grid-cols-2">
           <Button asChild variant="outline">
             <a href={links.whatsapp} target="_blank" rel="noopener noreferrer">
-              <MessageCircleIcon />
+              <WhatsAppIcon />
               <Trans>WhatsApp</Trans>
             </a>
           </Button>

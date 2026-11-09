@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base32"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -81,21 +82,17 @@ func NewService(db TxRunner, cfg Config) (*Service, error) {
 
 const (
 	codePrefix = "BEKCI-"
-	codeTTL    = 15 * time.Minute
-	codeAlpha  = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+	codeTTL    = 10 * time.Minute
 )
 
-var codeRe = regexp.MustCompile(`(?i)BEKCI-[A-Z0-9]{10}`)
+var codeRe = regexp.MustCompile(`(?i)BEKCI-[A-Z2-7]{26}`) // 16 random bytes in base32: 128 bits
 
 func newCode() (string, error) {
-	b := make([]byte, 10)
+	b := make([]byte, 16)
 	if _, err := rand.Read(b); err != nil {
 		return "", err
 	}
-	for i := range b {
-		b[i] = codeAlpha[int(b[i])%len(codeAlpha)]
-	}
-	return codePrefix + string(b), nil
+	return codePrefix + base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(b), nil
 }
 
 func hash(parts ...string) []byte {

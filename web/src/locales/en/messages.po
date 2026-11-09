@@ -275,6 +275,9 @@ msgstr "Absent"
 msgid "Abstain"
 msgstr "Abstain"
 
+msgid "Accent"
+msgstr "Accent"
+
 msgid "Accept"
 msgstr "Accept"
 
@@ -2884,6 +2887,9 @@ msgstr "For information"
 msgid "For this site"
 msgstr "For this site"
 
+msgid "Forest"
+msgstr "Forest"
+
 msgid "Four fifths"
 msgstr "Four fifths"
 
@@ -3730,6 +3736,9 @@ msgstr "National id"
 msgid "Navigation"
 msgstr "Navigation"
 
+msgid "Navy"
+msgstr "Navy"
+
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
 msgid "Needed: at least {0} yes votes{1}"
@@ -4562,6 +4571,9 @@ msgstr "Organization admin"
 
 msgid "Organization collects"
 msgstr "Organization collects"
+
+msgid "Organization color"
+msgstr "Organization color"
 
 msgid "Organization created."
 msgstr "Organization created."
@@ -5956,6 +5968,9 @@ msgstr "Size"
 msgid "Skip to content"
 msgstr "Skip to content"
 
+msgid "Slate"
+msgstr "Slate"
+
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr "Slots booked by others are shown only as \"taken\"."
 
@@ -6208,6 +6223,9 @@ msgstr "Term starts"
 
 msgid "Terms ending soon"
 msgstr "Terms ending soon"
+
+msgid "Terracotta"
+msgstr "Terracotta"
 
 msgid "Test ping sent"
 msgstr "Test ping sent"

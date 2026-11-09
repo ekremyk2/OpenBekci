@@ -8965,7 +8965,7 @@ paths:
       operationId: operations.startChatLink
       summary: Start linking a chat account
       description: |-
-        **Release 1.0.** Issues a single-use linking code (valid 15 minutes) and returns the provider's deep link that
+        **Release 1.0.** Issues a single-use linking code (valid 10 minutes) and returns the provider's deep link that
         carries it: `https://t.me/<bot>?start=<code>` for Telegram, `https://wa.me/<number>?text=<code>` for WhatsApp. When the
         person sends the code to the organization's bot, the provider's webhook verifies the link. Asking again replaces the
         code; an already linked account stays linked until the new code is verified.
