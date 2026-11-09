@@ -360,11 +360,15 @@ func (s *apiServer) lateFeePolicyOut(ctx context.Context, orgID, siteID uuid.UUI
 	if err != nil {
 		return gen.LateFeePolicy{}, err
 	}
+	ceil, err := b.RateCeilingBPS(ctx, orgID, siteID)
+	if err != nil {
+		return gen.LateFeePolicy{}, err
+	}
 	rate, grace := 0.0, 0
 	if n := len(rows); n > 0 {
 		rate, grace = float64(rows[n-1].RateBPSPerMonth)/100, rows[n-1].GraceDays
 	}
-	return conv[gen.LateFeePolicy](map[string]any{"site_id": siteID, "rate_pct_per_month": rate, "max_rate_pct_per_month": 5, "grace_days": grace, "simple": true,
+	return conv[gen.LateFeePolicy](map[string]any{"site_id": siteID, "rate_pct_per_month": rate, "max_rate_pct_per_month": float64(ceil) / 100, "grace_days": grace, "simple": true,
 		"version": ver, "waiver_reauth_threshold": money.New(thr, cur)})
 }
 

@@ -100,6 +100,24 @@ func rateCeiling(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int, 
 	return *ceil, true, nil
 }
 
+// RateCeilingBPS is the highest monthly rate (basis points) a site may set: the
+// ceiling its legal preset gives, else the schema's bound (latefee.HardMaxBPS).
+// The late fee policy answer reports it as max_rate_pct_per_month (money.read).
+func (s *Service) RateCeilingBPS(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
+	out := latefee.HardMaxBPS
+	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, siteID); err != nil {
+			return err
+		}
+		ceil, ok, err := rateCeiling(ctx, tx, orgID, siteID)
+		if ok {
+			out = min(ceil, latefee.HardMaxBPS)
+		}
+		return err
+	})
+	return out, err
+}
+
 // PolicyVersion is the optimistic-lock counter of the schedule: it grows with every
 // appended entry and when the automatic default is replaced.
 func (s *Service) PolicyVersion(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
