@@ -68,7 +68,8 @@ func clientFromXFF(values []string, isTrusted func(netip.Addr) bool) string {
 }
 
 // webCSP is the policy of the embedded web app: no inline or remote script,
-// same-origin everything else (inline styles are needed by the UI components).
+// same-origin everything else.
+// shortcut: style-src keeps 'unsafe-inline' (shadcn/Radix set inline styles), upgrade when the UI moves to class-only styling or style nonces.
 const webCSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; " +
 	"connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 

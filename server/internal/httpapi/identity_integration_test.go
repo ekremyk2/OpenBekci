@@ -220,7 +220,7 @@ func (e *idEnv) login(identifier, password string) {
 	}
 	e.cookie = nil
 	for _, c := range rec.Result().Cookies() {
-		if c.Name == CookieName {
+		if c.Name == HostCookieName {
 			e.cookie = c
 		}
 	}
@@ -266,7 +266,7 @@ func TestIntegrationHTTPCookieSession(t *testing.T) {
 		t.Errorf("user = %+v", sess.User)
 	}
 	setCookie := rec.Header().Get("Set-Cookie")
-	for _, want := range []string{"obk_session=", "HttpOnly", "Secure", "SameSite=Lax", "Path=/"} {
+	for _, want := range []string{"__Host-obk_session=", "HttpOnly", "Secure", "SameSite=Lax", "Path=/"} {
 		if !strings.Contains(setCookie, want) {
 			t.Errorf("Set-Cookie %q lacks %s", setCookie, want)
 		}
@@ -323,7 +323,7 @@ func TestIntegrationHTTPCookieSession(t *testing.T) {
 	if rec.Code != 204 {
 		t.Fatalf("logout: %d %s", rec.Code, rec.Body)
 	}
-	if c := rec.Result().Cookies(); len(c) != 1 || c[0].Name != CookieName || c[0].MaxAge >= 0 {
+	if c := rec.Result().Cookies(); len(c) != 1 || c[0].Name != HostCookieName || c[0].MaxAge >= 0 {
 		t.Errorf("logout did not clear the cookie: %v", rec.Header().Get("Set-Cookie"))
 	}
 	e.problem(e.do("GET", "/v1/me", "", true), 401, "unauthenticated")

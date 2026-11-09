@@ -60,10 +60,10 @@ func TestSafeMethods(t *testing.T) {
 
 func TestAuthCookieFlags(t *testing.T) {
 	c := authCookie("tok", time.Now().Add(time.Hour), false)
-	if c.Name != "obk_session" || !c.HttpOnly || !c.Secure || c.SameSite != http.SameSiteLaxMode || c.Path != "/" {
+	if c.Name != HostCookieName || !c.HttpOnly || !c.Secure || c.SameSite != http.SameSiteLaxMode || c.Path != "/" {
 		t.Errorf("cookie = %+v", c)
 	}
-	if authCookie("tok", time.Now().Add(time.Hour), true).Secure {
+	if c := authCookie("tok", time.Now().Add(time.Hour), true); c.Secure || c.Name != CookieName {
 		t.Error("insecure-dev cookie is Secure")
 	}
 	if cc := clearedCookie(false); cc.MaxAge >= 0 || cc.Value != "" {

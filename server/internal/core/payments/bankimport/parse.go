@@ -24,6 +24,9 @@ const CoreCSV = "core_csv"
 // MaxFileBytes is the size cap of an uploaded statement until the files module exists.
 const MaxFileBytes = 10 << 20
 
+// MaxLines bounds the parsed lines of one statement (core and pack importers alike).
+const MaxLines = 50000
+
 // Mapping is the typed column mapping: target field to source header (or a
 // zero-based index as a string). Targets: booked_on, amount (both required),
 // counterparty, description, reference, balance.
