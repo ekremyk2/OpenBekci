@@ -1,0 +1,5 @@
+[
+  { "check": "flush", "target": "section#install", "reason": "the iris-opens moment draws its own inset panel (a 10px gutter, card corners) at the tablet widths; the section keeps its full padding" },
+  { "check": "section-gaps", "target": "hero--centred / section#money", "reason": "a phone hero ends 24px above the screen's foot by the layout spec, so the gap to the next h2 is the next section's 96px padding plus that 24px" },
+  { "check": "section-gaps", "target": "section#questions / footer#contact", "reason": "five open FAQ answers are 1,060px on a phone, past one screen, so the section takes two screens and keeps its air before the footer" }
+]
