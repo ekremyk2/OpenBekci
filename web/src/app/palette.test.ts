@@ -16,7 +16,7 @@ function tokens(dark: boolean): Record<string, string> {
 }
 
 function luminance(token: string, vars: Record<string, string>): number {
-  let v = vars[`--${token}`]!
+  const v = vars[`--${token}`]!
   const hex = /^#([0-9a-f]{6})$/i.exec(v)
   if (!hex) throw new Error(`--${token} is not a #rrggbb value: ${v}`)
   const n = parseInt(hex[1]!, 16)

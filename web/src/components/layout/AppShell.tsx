@@ -114,9 +114,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             alt="OpenBekci"
             className="hidden h-7 dark:block"
           />
-          {instanceName !== 'OpenBekci' ? (
-            <span className="truncate text-sm text-muted-foreground">{instanceName}</span>
-          ) : null}
         </div>
         <Sidebar />
       </aside>
