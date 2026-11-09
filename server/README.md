@@ -459,7 +459,7 @@ balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHook
   once per debtor and closed month, up to the end of the last closed month (`late_fee_booking` is unique per debtor and month, a top-up after a reversal in the
   same month gets a `#n` suffix); the accrued but unbooked fee is the last statement line. A reversal never exceeds the unpaid fee (the excess becomes
   prepayment credit) and no negative fee row is created without one. The schedule is append-only: the site has the statutory default (5 % a month, no grace)
-  from the day it is created (`is_default`, replaced by the site's first own entry), a new entry starts today or later and after the previous one (409 otherwise),
+  for every due date, also dues from before the site existed (`is_default`, dated 1970-01-01, replaced by the site's first own entry), a new entry starts today or later and after the previous one (409 otherwise),
   the database refuses UPDATE and DELETE of the others, and `version` of the policy (the `If-Match` of `setLateFeePolicy`) counts entries. Person debtors (carried
   debt) accrue like unit sides and honour the freezes of the unit side the debt came from. Move-out books the fee up to the move-out date first, carries unpaid
   principal and fee net of reversals (the reversal rows move with the fees) and moves the fee bookings to the person; a move-out, charge or plan posting dated on or

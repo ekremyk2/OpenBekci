@@ -2,14 +2,14 @@
 
 The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 459 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 464 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
-| tenancy | 48 |
-| people | 53 |
-| me | 9 |
-| money | 138 |
+| tenancy | 50 |
+| people | 54 |
+| me | 10 |
+| money | 140 |
 | operations | 56 |
 | audit | 4 |
 | governance | 45 |
@@ -471,7 +471,7 @@ Total: 459 new operations, plus the 15 already served (instance, auth, me) which
 | platform | `platform.getHealth` | `GET /v1/platform/health` | 0.1 | `platform.read` | - | not yet served |
 | platform | `platform.getBackupStatus` | `GET /v1/platform/backup-status` | 0.1 | `platform.read` | - | not yet served |
 | platform | `platform.listJobs` | `GET /v1/platform/jobs` | 1.0 | `platform.read` | - | not yet served |
-| me | `me.updateProfile` | `PATCH /v1/me/profile` | 0.1 | public / self | optional | not yet served |
+| me | `me.updateProfile` | `PATCH /v1/me/profile` | 0.1 | `sessions.manage_own` | optional | served |
 | me | `me.startContactChange` | `POST /v1/me/contact-changes` | 0.1 | public / self | optional | not yet served |
 | me | `me.confirmContactChange` | `POST /v1/me/contact-changes/{change_id}:confirm` | 0.1 | public / self | optional | not yet served |
 | auth | `auth.requestPasswordReset` | `POST /v1/auth/password-reset` | 0.1 | public / self | optional | not yet served |
