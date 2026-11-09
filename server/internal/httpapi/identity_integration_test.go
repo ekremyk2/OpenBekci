@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/checkout"
 	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -138,8 +139,13 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
+	chatSvc, cerr := chatcore.NewService(d, chatcore.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-chat"), BaseURL: testBase})
+	if cerr != nil {
+		t.Fatal(cerr)
+	}
 	e.deps = Deps{
-		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc, Devices: e.devices,
+		Chat: chatSvc,
+		Log:  cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc, Devices: e.devices,
 		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc, Integrations: e.integ, Privacy: e.priv,
 		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Keys: e.integ, Origins: []string{testBase}}, ValidateResponses: true,

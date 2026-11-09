@@ -72,7 +72,7 @@ func IsUnmutable(t string) bool { return slices.Contains(Unmutable, t) }
 // Known reports whether t is a vocabulary or unmutable type.
 func Known(t string) bool { return slices.Contains(Vocabulary, t) || IsUnmutable(t) }
 
-var validChannels = []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush}
+var validChannels = []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat}
 
 // ValidChannel reports whether c is a channel name.
 func ValidChannel(c string) bool { return slices.Contains(validChannels, c) }

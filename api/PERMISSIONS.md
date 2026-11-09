@@ -160,6 +160,7 @@ Account permissions are instance grants held by every signed-in caller (`me.read
 | `apikeys.manage` | Create, rotate and revoke API keys (re-authentication required; a key can never manage keys). | `org_admin` |
 | `webhooks.read` | Read webhook endpoints and their delivery log. | `org_admin` |
 | `webhooks.manage` | Create, change, delete, test and rotate the secret of webhook endpoints (never through an API key). | `org_admin` |
+| `chat.manage` | Edit the organization's chat bot credentials (Telegram, WhatsApp). | `org_admin` |
 
 ## packs
 

@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/core/announcements"
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
 	"github.com/openbekci/openbekci/server/internal/core/codes"
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/documents"
@@ -45,6 +46,9 @@ func (l *lateNotifier) Notify(ctx context.Context, tx pgx.Tx, a jobs.NotifyArgs)
 type opsServices struct {
 	late          *lateNotifier
 	notifications *notifications.Service
+	// chat is nil without OPENBEKCI_ENCRYPTION_KEY; chatPacks gets the pack host once it exists
+	chat          *chatcore.Service
+	chatPacks     *lazyChatPacks
 	tickets       *tickets.Service
 	announcements *announcements.Service
 	documents     *documents.Service
@@ -65,6 +69,8 @@ func newOps(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) (*opsServ
 	}
 	late := &lateNotifier{log: log}
 	ncfg := notifications.Config{Mail: mailer, SMS: gw, Log: log, BaseURL: cfg.BaseURL}
+	var chatSvc *chatcore.Service
+	chatPacks := &lazyChatPacks{}
 	if len(cfg.EncryptionKey) > 0 {
 		dev, err := newDevices(cfg, d)
 		if err != nil {
@@ -75,8 +81,15 @@ func newOps(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) (*opsServ
 			return nil, err
 		}
 		ncfg.Push, ncfg.Devices, ncfg.InstanceID = sender, dev, instanceIDFunc(d)
+		chatSvc, err = chatcore.NewService(d, chatcore.Config{EncryptionKey: cfg.EncryptionKey, Packs: chatPacks, BaseURL: cfg.BaseURL})
+		if err != nil {
+			return nil, err
+		}
+		ncfg.Chat = chatSvc // only when built: a nil *Service in the interface would not be nil
 	}
 	return &opsServices{
+		chat:          chatSvc,
+		chatPacks:     chatPacks,
 		late:          late,
 		notifications: notifications.NewService(d, ncfg),
 		tickets:       tickets.NewService(d, fs, late),

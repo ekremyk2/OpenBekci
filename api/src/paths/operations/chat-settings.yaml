@@ -1,0 +1,33 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listChatSettings
+  summary: Chat bot settings of the organization
+  description: |-
+    **Release 1.0.** The settings of the core chat providers (Telegram, WhatsApp): a JSON schema each (fields marked
+    `x-secret` are write-only), the stored values, which secrets are set, whether the provider is configured, and the webhook
+    URL to register with the provider (Telegram: `openbekci admin chat set-webhook`).
+
+    Permission: `chat.manage`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - chat.manage
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/ChatSettingsList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

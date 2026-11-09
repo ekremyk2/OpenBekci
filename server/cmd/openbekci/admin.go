@@ -37,6 +37,7 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newPushCmd(load),
 		newPacksCmd(load),
 		newPrivacyCmd(load),
+		newChatCmd(load),
 	)
 	return cmd
 }

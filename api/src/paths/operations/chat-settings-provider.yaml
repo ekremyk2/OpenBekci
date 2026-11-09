@@ -1,0 +1,51 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: provider
+    in: path
+    required: true
+    description: The core chat provider, `telegram` or `whatsapp`.
+    schema:
+      type: string
+put:
+  operationId: operations.updateChatSettings
+  summary: Update the chat bot settings of a provider
+  description: |-
+    **Release 1.0.** Merges `values` into the provider's settings: a field left out keeps its value, `null` clears it. Secret
+    fields (`x-secret`) are sealed and never returned. Values are checked against the schema's patterns.
+
+    Permission: `chat.manage`.
+
+    Problems: `validation_failed` (422), `not_found` (404, no such provider).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - chat.manage
+  x-idempotent: optional
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/ChatSettingsUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/ChatProviderSettings
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

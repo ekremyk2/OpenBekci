@@ -3743,6 +3743,151 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/me/chat-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My linked chats in an organization
+         * @description **Release 1.0.** The caller's links to chat accounts (Telegram, WhatsApp, providers of packs) in the organization:
+         *     `linked`, `pending` (a code was issued and not yet sent to the bot) or `unverified` (the provider reported the chat
+         *     gone). The chat account itself is never shown.
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.listChatLinks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/chat-links/{provider}:start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The chat provider, `telegram`, `whatsapp` or the id of a provider of an enabled pack. */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start linking a chat account
+         * @description **Release 1.0.** Issues a single-use linking code (valid 15 minutes) and returns the provider's deep link that
+         *     carries it: `https://t.me/<bot>?start=<code>` for Telegram, `https://wa.me/<number>?text=<code>` for WhatsApp. When the
+         *     person sends the code to the organization's bot, the provider's webhook verifies the link. Asking again replaces the
+         *     code; an already linked account stays linked until the new code is verified.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `conflict` (409, the provider is not configured for the organization).
+         */
+        post: operations["operations.startChatLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/chat-links/{link_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the chat link. */
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Unlink a chat account
+         * @description **Release 1.0.** Removes the caller's link; nothing is sent to that chat any more. A link of another user answers 404.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `not_found` (404).
+         */
+        delete: operations["operations.deleteChatLink"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/chat-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Chat bot settings of the organization
+         * @description **Release 1.0.** The settings of the core chat providers (Telegram, WhatsApp): a JSON schema each (fields marked
+         *     `x-secret` are write-only), the stored values, which secrets are set, whether the provider is configured, and the webhook
+         *     URL to register with the provider (Telegram: `openbekci admin chat set-webhook`).
+         *
+         *     Permission: `chat.manage`.
+         */
+        get: operations["operations.listChatSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/chat-settings/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The core chat provider, `telegram` or `whatsapp`. */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update the chat bot settings of a provider
+         * @description **Release 1.0.** Merges `values` into the provider's settings: a field left out keeps its value, `null` clears it. Secret
+         *     fields (`x-secret`) are sealed and never returned. Values are checked against the schema's patterns.
+         *
+         *     Permission: `chat.manage`.
+         *
+         *     Problems: `validation_failed` (422), `not_found` (404, no such provider).
+         */
+        put: operations["operations.updateChatSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/sms-usage": {
         parameters: {
             query?: never;
@@ -10022,6 +10167,8 @@ export interface components {
             /** @description The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands. */
             occupancies: components["schemas"]["MeOccupancy"][];
             policies: components["schemas"]["MePolicies"];
+            /** @description **Release 1.0.** The caller's linked chats (Telegram, WhatsApp, pack messengers) across organizations; see `operations.startChatLink`. Absent from servers that predate the chat channel. */
+            chat_links?: components["schemas"]["ChatLink"][];
         };
         /**
          * @description One open session of the caller. Mobile sessions keep their id across token rotation.
@@ -10177,7 +10324,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.export" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "chat.manage" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.export" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -13205,7 +13352,7 @@ export interface components {
             expires_at: string | null;
             pinned: boolean;
             /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms" | "push")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
             /**
              * Format: int64
              * @description Set at publish.
@@ -13255,7 +13402,7 @@ export interface components {
             /** Format: date-time */
             expires_at?: string | null;
             pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
             file_ids?: string[];
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
@@ -13268,7 +13415,7 @@ export interface components {
             /** Format: date-time */
             expires_at?: string | null;
             pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
             file_ids?: string[];
         };
         /**
@@ -13322,7 +13469,7 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             audience: components["schemas"]["AnnouncementAudience"];
-            channels: ("in_app" | "email" | "sms" | "push")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
             /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
             title?: string;
         };
@@ -13350,7 +13497,7 @@ export interface components {
         };
         AnnouncementPublish: {
             /** @description Overrides the stored channels. */
-            channels?: ("in_app" | "email" | "sms" | "push")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
         };
         /**
          * @example {
@@ -13702,7 +13849,7 @@ export interface components {
         };
         NotificationDefault: {
             type: components["schemas"]["NotificationType"];
-            channels: ("in_app" | "email" | "sms" | "push")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
             /** @description Sign-in codes and invitations always go by SMS or email and cannot be changed. */
             locked: boolean;
         };
@@ -13722,7 +13869,7 @@ export interface components {
         };
         NotificationDefaultInput: {
             type: string;
-            channels: ("in_app" | "email" | "sms" | "push")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
         };
         NotificationMutes: {
             muted_types: string[];
@@ -19354,6 +19501,24 @@ export interface components {
             /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
             code: string;
         };
+        /** @description A user's link to a chat account of one provider in one organization. The chat account itself is never shown. */
+        ChatLink: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** @description `telegram`, `whatsapp` or the id of a provider of an enabled pack. */
+            provider: string;
+            /**
+             * @description Open enum. `linked`, `pending` (a code was issued) or `unverified` (the provider reported the chat gone; link again).
+             * @enum {string}
+             */
+            status: "linked" | "pending" | "unverified";
+            /** Format: date-time */
+            linked_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
         /**
          * @description Erasure: the person row is pseudonymized ("Former person xxxxxxxx", no contact, notes or national id) and unlinked from the sign-in account, whose sessions and devices are deleted; ledger lines, ballots and attendance keep their rows pointing at the pseudonymized person. Blocked (409 `conflict`) while the person has open charges unless `override_open_balance` is set (audited as forced).
          * @example {
@@ -19434,6 +19599,42 @@ export interface components {
              * @description Bytes.
              */
             size: number;
+        };
+        ChatLinkList: {
+            items: components["schemas"]["ChatLink"][];
+        };
+        ChatLinkStarted: {
+            provider: string;
+            /** @description Open it (or show it as a QR code) on the phone that has the chat app; it carries the single-use code. */
+            deep_link: string;
+            /** Format: date-time */
+            expires_at: string;
+        };
+        ChatProviderSettings: {
+            provider: string;
+            /** @description JSON schema of the settings (`x-secret` marks write-only fields; the web SchemaForm renders it). */
+            schema: {
+                [key: string]: unknown;
+            };
+            /** @description The stored non-secret values. */
+            values: {
+                [key: string]: unknown;
+            };
+            /** @description Names of the secret fields that have a value. */
+            secrets_set: string[];
+            /** @description Every required field is set and well formed. */
+            configured: boolean;
+            /** @description The URL to register with the provider. */
+            webhook_url: string;
+        };
+        ChatSettingsList: {
+            items: components["schemas"]["ChatProviderSettings"][];
+        };
+        ChatSettingsUpdate: {
+            /** @description Fields to set; `null` clears one, a field left out keeps its value. */
+            values: {
+                [key: string]: unknown;
+            };
         };
         MySide: {
             /** Format: uuid */
@@ -27232,6 +27433,148 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listChatLinks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatLinkList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.startChatLink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The chat provider, `telegram`, `whatsapp` or the id of a provider of an enabled pack. */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatLinkStarted"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.deleteChatLink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the chat link. */
+                link_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.listChatSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSettingsList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateChatSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The core chat provider, `telegram` or `whatsapp`. */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatProviderSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

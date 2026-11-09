@@ -466,6 +466,9 @@ msgstr ""
 msgid "Admit"
 msgstr ""
 
+msgid "After saving, the operator registers the address below with <0>openbekci admin chat set-webhook</0>."
+msgstr ""
+
 msgid "Agenda"
 msgstr ""
 
@@ -1208,6 +1211,15 @@ msgstr ""
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr ""
 
+msgid "Chat"
+msgstr ""
+
+msgid "Chat (Telegram/WhatsApp)"
+msgstr ""
+
+msgid "Chat link QR code"
+msgstr ""
+
 msgid "Check"
 msgstr ""
 
@@ -1498,6 +1510,9 @@ msgid "Concerns residents (tenants can see it)"
 msgstr ""
 
 msgid "configured"
+msgstr ""
+
+msgid "Configured"
 msgstr ""
 
 msgid "Confirm"
@@ -2529,6 +2544,9 @@ msgstr ""
 msgid "Enter the account holder"
 msgstr ""
 
+msgid "Enter the address below and the verify token in the webhook settings of your Meta app."
+msgstr ""
+
 msgid "Enter the area in square metres"
 msgstr ""
 
@@ -3361,6 +3379,9 @@ msgstr ""
 msgid "Link"
 msgstr ""
 
+msgid "Link Telegram"
+msgstr ""
+
 msgid "link text"
 msgstr ""
 
@@ -3374,6 +3395,15 @@ msgid "Link to declared payment"
 msgstr ""
 
 msgid "Link to unit"
+msgstr ""
+
+msgid "Link WhatsApp"
+msgstr ""
+
+msgid "Linked"
+msgstr ""
+
+msgid "Linked chats"
 msgstr ""
 
 msgid "Linked to the declared payment."
@@ -3910,6 +3940,9 @@ msgstr ""
 msgid "No charges match"
 msgstr ""
 
+msgid "No chat is linked yet."
+msgstr ""
+
 msgid "No checkouts with this status"
 msgstr ""
 
@@ -4175,6 +4208,9 @@ msgstr ""
 msgid "not configured"
 msgstr ""
 
+msgid "Not configured"
+msgstr ""
+
 msgid "Not determined"
 msgstr ""
 
@@ -4435,6 +4471,9 @@ msgid "Open the second call"
 msgstr ""
 
 msgid "Open the settlements and client money view"
+msgstr ""
+
+msgid "Open this link on the phone that has {startedName}, or scan the code, then send the message the bot offers."
 msgstr ""
 
 msgid "Open ticket"
@@ -5086,6 +5125,9 @@ msgid "Receivables aging"
 msgstr ""
 
 msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
+msgstr ""
+
+msgid "Receive notifications in Telegram or WhatsApp."
 msgstr ""
 
 msgid "Received"
@@ -6258,6 +6300,9 @@ msgstr ""
 msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
 msgstr ""
 
+msgid "The chat could not be reached; link again"
+msgstr ""
+
 msgid "The checklist appears when the assembly has been called."
 msgstr ""
 
@@ -6632,6 +6677,9 @@ msgid "This cannot be undone from here. Type the site name to continue."
 msgstr ""
 
 msgid "This cannot be undone."
+msgstr ""
+
+msgid "This chat service is not set up by your administrator yet."
 msgstr ""
 
 msgid "This code is not known."
@@ -7020,6 +7068,12 @@ msgstr ""
 msgid "unknown permission"
 msgstr ""
 
+msgid "Unlink"
+msgstr ""
+
+msgid "Unlink {name}"
+msgstr ""
+
 msgid "Unmatch"
 msgstr ""
 
@@ -7319,6 +7373,9 @@ msgstr ""
 msgid "Waiting for the resident"
 msgstr ""
 
+msgid "Waiting for your message to the bot"
+msgstr ""
+
 msgid "Waive"
 msgstr ""
 
@@ -7350,6 +7407,9 @@ msgid "We could not find this payment"
 msgstr ""
 
 msgid "We could not send the code. Please try again."
+msgstr ""
+
+msgid "Webhook address"
 msgstr ""
 
 msgid "Webhook endpoints"

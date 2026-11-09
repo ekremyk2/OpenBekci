@@ -13,6 +13,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	chatcore "github.com/openbekci/openbekci/server/internal/core/chat"
+	"github.com/openbekci/openbekci/server/internal/platform/chat"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
@@ -130,6 +132,19 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				withDevice[p.person] = p.userID != nil && has[*p.userID]
 			}
 		}
+		// who can be reached through a linked chat (verified link, session window)
+		var reach map[uuid.UUID]chatcore.Reach
+		if s.cfg.Chat != nil && slices.Contains(channels, jobs.ChannelChat) {
+			var uids []uuid.UUID
+			for _, p := range people {
+				if p.userID != nil {
+					uids = append(uids, *p.userID)
+				}
+			}
+			if reach, err = s.cfg.Chat.Reaches(ctx, tx, a.OrgID, uids); err != nil {
+				return err
+			}
+		}
 		payload := map[string]any{}
 		for k, v := range a.Payload {
 			payload[k] = v
@@ -167,6 +182,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				if !IsUnmutable(a.Type) && slices.Contains(chs, jobs.ChannelInApp) && !slices.Contains(chs, jobs.ChannelPush) && withDevice[p.person] {
 					chs = append(slices.Clone(chs), jobs.ChannelPush)
 				}
+				var fallbacks []string
 				for _, ch := range chs {
 					status, why := "pending", ""
 					switch {
@@ -180,9 +196,26 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 						status, why = "skipped", "push_unavailable"
 					case ch == jobs.ChannelPush && !withDevice[p.person]:
 						status, why = "skipped", "no_device"
+					case ch == jobs.ChannelChat && s.cfg.Chat == nil:
+						status, why = "skipped", "chat_unavailable"
+					case ch == jobs.ChannelChat && (p.userID == nil || reach[*p.userID] == chatcore.ReachNone):
+						status, why = "skipped", "no_link"
+					case ch == jobs.ChannelChat && reach[*p.userID] == chatcore.ReachWindowClosed:
+						status, why = "skipped", "window_closed"
+						// the session window is over: fall back to the person's next channel
+						// (SMS, else email) unless the message already goes there
+						if fb := s.chatFallback(chs, p); fb != "" {
+							fallbacks = append(fallbacks, fb)
+						}
 					}
 					if _, err := tx.Exec(ctx, `INSERT INTO notification_delivery (id, org_id, notification_id, channel, status, last_error)
 						VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''))`, id.New(), a.OrgID, nid, ch, status, why); err != nil {
+						return err
+					}
+				}
+				for _, ch := range slices.Compact(fallbacks) {
+					if _, err := tx.Exec(ctx, `INSERT INTO notification_delivery (id, org_id, notification_id, channel, status)
+						VALUES ($1, $2, $3, $4, 'pending')`, id.New(), a.OrgID, nid, ch); err != nil {
 						return err
 					}
 				}
@@ -195,7 +228,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		rows, err := tx.Query(ctx, `UPDATE notification_delivery d SET status = 'sending', claimed_at = now(), updated_at = now()
 			FROM notification n
 			WHERE n.org_id = d.org_id AND n.id = d.notification_id AND n.org_id = $1 AND n.dedupe_key = $2 AND n.type = $4
-			  AND d.channel IN ('email', 'sms', 'push') AND d.attempts < $3
+			  AND d.channel IN ('email', 'sms', 'push', 'chat') AND d.attempts < $3
 			  AND (d.status IN ('pending', 'failed') OR (d.status = 'sending' AND d.claimed_at < now() - interval '10 minutes'))
 			RETURNING d.id, d.channel, d.attempts, n.person_id, n.link, n.id`, a.OrgID, a.Key, maxAttempts, a.Type)
 		if err != nil {
@@ -276,6 +309,31 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		case jobs.ChannelPush:
 			pushSends = append(pushSends, p)
 			continue
+		case jobs.ChannelChat:
+			if c.userID == nil {
+				r.skip = "no_link"
+				break
+			}
+			// content-minimal: the title (with the site) and the link, no body
+			title := p.text.Title
+			if siteName != "" {
+				title = siteName + ": " + title
+			}
+			m := chat.Message{Text: title, Label: openLabel(c.locale)}
+			if p.link != "" && s.cfg.BaseURL != "" {
+				m.Link = strings.TrimRight(s.cfg.BaseURL, "/") + p.link
+			}
+			switch err := s.cfg.Chat.Send(ctx, a.OrgID, *c.userID, m); {
+			case err == nil:
+			case errors.Is(err, chatcore.ErrNoLink):
+				r.skip = "no_link"
+			case errors.Is(err, chat.ErrWindowClosed):
+				r.skip = "window_closed"
+			case errors.Is(err, chat.ErrDead):
+				r.skip = "link_dead"
+			default:
+				r.err = err
+			}
 		case jobs.ChannelEmail:
 			body := p.text.Body
 			if p.link != "" && s.cfg.BaseURL != "" {
@@ -346,6 +404,29 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		return fmt.Errorf("%d deliveries failed", failed)
 	}
 	return nil
+}
+
+// chatFallback is the channel a message takes when the chat's session window is
+// over: SMS when the person has a number, else email, and only when the message
+// does not go there anyway. Empty means no fallback.
+func (s *Service) chatFallback(chs []string, p contact) string {
+	switch {
+	case slices.Contains(chs, jobs.ChannelSMS) || slices.Contains(chs, jobs.ChannelEmail):
+		return ""
+	case p.phone != "" && s.cfg.SMS != nil:
+		return jobs.ChannelSMS
+	case p.email != "" && s.cfg.Mail != nil:
+		return jobs.ChannelEmail
+	}
+	return ""
+}
+
+// openLabel is the text of the link button of a chat message.
+func openLabel(locale string) string {
+	if locale == "tr" {
+		return "Aç"
+	}
+	return "Open"
 }
 
 // nowTime is the service clock.

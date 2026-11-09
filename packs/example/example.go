@@ -37,6 +37,7 @@ type Pack struct {
 
 	mu   sync.Mutex
 	sent []SMS
+	chat []Chat
 	// Unhealthy makes Ready fail, to show the /readyz contribution.
 	Unhealthy bool
 }
@@ -67,6 +68,10 @@ func (p *Pack) Register(_ context.Context, r sdk.Registry) error {
 
 	r.RegisterPaymentProvider(&provider{p: p})
 	r.RegisterSMSProvider(&smsProvider{p: p})
+	// optional extension points (SDK 1.1) are found by type assertion, so the pack still loads on an older host
+	if cr, ok := r.(sdk.ChatRegistrar); ok {
+		cr.RegisterChatProvider(&chatProvider{p: p})
+	}
 	r.RegisterStatementImporter(importer{})
 
 	// one value may implement several presets; the registry keeps them apart by kind

@@ -1,0 +1,33 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listChatLinks
+  summary: My linked chats in an organization
+  description: |-
+    **Release 1.0.** The caller's links to chat accounts (Telegram, WhatsApp, providers of packs) in the organization:
+    `linked`, `pending` (a code was issued and not yet sent to the bot) or `unverified` (the provider reported the chat
+    gone). The chat account itself is never shown.
+
+    Permission: `notifications.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/ChatLinkList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

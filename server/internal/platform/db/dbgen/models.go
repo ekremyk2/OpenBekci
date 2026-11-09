@@ -512,6 +512,28 @@ type ChargePlanRate struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type ChatConfig struct {
+	OrgID     pgtype.UUID
+	Provider  string
+	Settings  []byte
+	Secrets   []byte
+	UpdatedAt pgtype.Timestamptz
+}
+
+type ChatLink struct {
+	OrgID            pgtype.UUID
+	ID               pgtype.UUID
+	UserID           pgtype.UUID
+	Provider         string
+	CodeHash         []byte
+	CodeExpiresAt    pgtype.Timestamptz
+	ExternalIDSealed []byte
+	ExternalHash     []byte
+	VerifiedAt       pgtype.Timestamptz
+	LastInboundAt    pgtype.Timestamptz
+	CreatedAt        pgtype.Timestamptz
+}
+
 type Checkout struct {
 	ID               pgtype.UUID
 	OrgID            pgtype.UUID

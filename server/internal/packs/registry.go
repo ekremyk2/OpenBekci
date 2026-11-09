@@ -38,6 +38,7 @@ type Subscription struct {
 type Contributions struct {
 	PaymentProviders []sdk.PaymentProvider
 	SMSProviders     []sdk.SMSProvider
+	ChatProviders    []sdk.ChatProvider
 	Importers        []sdk.StatementImporter
 	Quorum           []sdk.QuorumPreset
 	Thresholds       []sdk.ThresholdPreset
@@ -79,6 +80,9 @@ func (c *Contributions) Provides() []string {
 	}
 	for _, p := range c.SMSProviders {
 		add("sms_provider", p.ID())
+	}
+	for _, p := range c.ChatProviders {
+		add("chat_provider", p.ID())
 	}
 	for _, p := range c.Importers {
 		add("statement_importer", p.ID())
@@ -219,6 +223,14 @@ func (r *registry) RegisterSMSProvider(p sdk.SMSProvider) {
 	r.claim("sms provider", p.ID())
 	r.c.SMSProviders = append(r.c.SMSProviders, p)
 }
+
+// RegisterChatProvider implements sdk.ChatRegistrar (an optional extension point of SDK 1.1).
+func (r *registry) RegisterChatProvider(p sdk.ChatProvider) {
+	r.claim("chat provider", p.ID())
+	r.c.ChatProviders = append(r.c.ChatProviders, p)
+}
+
+var _ sdk.ChatRegistrar = (*registry)(nil)
 
 func (r *registry) RegisterStatementImporter(p sdk.StatementImporter) {
 	r.claim("statement importer", p.ID())

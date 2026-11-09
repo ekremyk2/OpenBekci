@@ -34,7 +34,7 @@ import { DeliveryPreviewPanel, useDeliveryPreview } from './DeliveryPreview'
 // The editor pulls in the Markdown renderer; readers of announcements never load it.
 const MarkdownEditor = lazy(() => import('./MarkdownEditor'))
 
-const CHANNELS: Channel[] = ['in_app', 'email', 'sms']
+const CHANNELS: Channel[] = ['in_app', 'email', 'sms', 'chat']
 
 function AudiencePicker({
   orgId,
@@ -140,7 +140,9 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
             block_id: z.string().optional(),
             unit_ids: z.array(z.string()).optional(),
           }),
-          channels: z.array(z.enum(['in_app', 'email', 'sms', 'push'])).min(1, t`Choose a channel`),
+          channels: z
+            .array(z.enum(['in_app', 'email', 'sms', 'push', 'chat']))
+            .min(1, t`Choose a channel`),
           pinned: z.boolean(),
           publish_at: z.string(),
           expires_at: z.string(),
@@ -354,7 +356,13 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
                     )
                   }
                 />
-                {c === 'in_app' ? t`In-app` : c === 'email' ? t`Email` : t`SMS`}
+                {c === 'in_app'
+                  ? t`In-app`
+                  : c === 'email'
+                    ? t`Email`
+                    : c === 'chat'
+                      ? t`Chat (Telegram/WhatsApp)`
+                      : t`SMS`}
               </Label>
             ))}
           </div>
