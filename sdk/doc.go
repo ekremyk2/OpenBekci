@@ -68,5 +68,6 @@
 //
 // Add behaviour only through new optional interfaces checked by type
 // assertion; never widen an existing interface. Breaking changes batch into
-// sdk/v2. Until the project's 1.0 release minor versions may break.
+// sdk/v2. From 1.0.0 the SDK is frozen: exported names, signatures and documented
+// behaviour do not change within v1 (sdk/CHANGELOG.md, docs/packs/README.md).
 package sdk

@@ -3,8 +3,8 @@ patch:
   x-openbekci-roles: [sessions.manage_own]
   summary: Update my profile
   description: |-
-    **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes go through
-    `me.startContactChange`. Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
+    **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes are not part of /v1 yet (see `docs/api/deferred.md`).
+    Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
     `version_conflict`. Returns the updated `user`, with its new `version`. The display name is the account's own: it wins over the
     name of the linked person in `GET /v1/me`; an empty string clears it. The locale is one the server has texts for: `tr` or `en`.
 

@@ -15,7 +15,7 @@ get:
   x-openbekci-roles:
     member:
       - codes.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: locale
       in: query

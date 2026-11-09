@@ -25,7 +25,7 @@ put:
   x-idempotent: optional
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

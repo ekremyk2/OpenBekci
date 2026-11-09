@@ -15,7 +15,7 @@ get:
   x-openbekci-roles:
     org_admin:
       - webhooks.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor
@@ -55,7 +55,7 @@ post:
     org_admin:
       - webhooks.manage
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

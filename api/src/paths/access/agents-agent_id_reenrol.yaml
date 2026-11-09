@@ -27,7 +27,7 @@ post:
     site_manager:
       - access.manage
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   responses:

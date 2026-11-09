@@ -30,7 +30,7 @@ delete:
     - bearerAuth: []
   x-openbekci-roles: [attendance.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   responses:
     "204":
       description: No content
