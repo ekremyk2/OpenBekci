@@ -117,6 +117,7 @@ function EnableCard({ pack, orgId, canManage }: { pack: Pack; orgId: string; can
   const keyFor = usePayloadKeys()
   const schema = schemaOf(pack, 'org')
   const enable = useMutation({
+    gcTime: 0, // the variables can hold secrets typed in the form: keep them out of the cache
     mutationFn: async (settings: Values | undefined) =>
       must(
         await draftApi.POST('/v1/orgs/{org_id}/packs/{pack_id}/enable', {
@@ -269,6 +270,7 @@ function useSaveSettings(pack: Pack, orgId: string) {
   const { t } = useLingui()
   const keyFor = usePayloadKeys()
   return useMutation({
+    gcTime: 0, // the variables hold secrets typed in the form: keep them out of the cache
     mutationFn: async (input: { scope: 'org' | 'site'; siteId?: string; values: Values }) => {
       const body = {
         scope: input.scope,
@@ -328,6 +330,7 @@ function OrgSettingsCard({
           submitLabel={<Trans>Save settings</Trans>}
           onSubmit={async (values) => {
             await save.mutateAsync({ scope: 'org', values })
+            save.reset() // drops the submitted variables, secrets included
             setVersion((n) => n + 1)
           }}
         />
@@ -400,6 +403,7 @@ function SiteSettingsCard({
               submitLabel={<Trans>Save site settings</Trans>}
               onSubmit={async (values) => {
                 await save.mutateAsync({ scope: 'site', siteId, values })
+                save.reset()
                 setVersion((n) => n + 1)
               }}
             />

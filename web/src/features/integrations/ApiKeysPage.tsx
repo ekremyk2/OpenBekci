@@ -62,6 +62,7 @@ const NOT_FOR_KEYS = new Set([
   'me.dashboard',
   'sessions.manage_own',
   'visitors.decide',
+  'reports.aggregate',
 ])
 export const keyScopeAllowed = (permission: string) =>
   !permission.startsWith('apikeys.') && !NOT_FOR_KEYS.has(permission)
@@ -93,7 +94,9 @@ export function ApiKeysPage() {
     { enabled: !!orgId && (can('apikeys.read') || canManage) },
   )
 
+  // gcTime 0: the answer holds the one-time secret, so the mutation cache must not keep it
   const rotate = useMutation({
+    gcTime: 0,
     mutationFn: (key: ApiKey) =>
       runWithReauth(async () =>
         must(
@@ -331,7 +334,10 @@ export function ApiKeysPage() {
               </Trans>
             )
           }
-          onDone={() => setRevealed(null)}
+          onDone={() => {
+            setRevealed(null)
+            rotate.reset() // the observer still holds the rotate answer, secret included
+          }}
         />
       ) : null}
     </section>
@@ -396,6 +402,7 @@ function CreateKeyDialog({
   }, [held, filter])
 
   const create = useMutation({
+    gcTime: 0, // the answer holds the one-time secret
     mutationFn: (body: Schema<'ApiKeyCreate'>) =>
       runWithReauth(async () =>
         must(

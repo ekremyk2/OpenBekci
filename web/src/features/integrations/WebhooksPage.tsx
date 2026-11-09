@@ -98,7 +98,9 @@ export function WebhooksPage({
       await qc.invalidateQueries({ queryKey: deliveriesKey(orgId, res.endpoint.id) })
     },
   })
+  // gcTime 0: the answer holds the one-time secret, so the mutation cache must not keep it
   const rotate = useMutation({
+    gcTime: 0,
     mutationFn: (endpoint: Endpoint) =>
       runWithReauth(async () =>
         must(
@@ -370,11 +372,24 @@ export function WebhooksPage({
               </p>
             ) : null
           }
-          onDone={() => setRevealed(null)}
+          onDone={() => {
+            setRevealed(null)
+            rotate.reset() // the observer still holds the rotate answer, secret included
+          }}
         />
       ) : null}
     </section>
   )
+}
+
+/** A full https address with a host (the server still refuses non-public targets). */
+export function isHttpsUrl(value: string): boolean {
+  try {
+    const u = new URL(value.trim())
+    return u.protocol === 'https:' && u.hostname !== '' && !u.username && !u.password
+  } catch {
+    return false
+  }
 }
 
 export function DeliveryStatusBadge({ status }: { status: string }) {
@@ -567,7 +582,9 @@ function EndpointDialog({
   const [active, setActive] = useState(endpoint?.active ?? true)
   const [local, setLocal] = useState<Record<string, string>>({})
 
+  const qc = useQueryClient()
   const save = useMutation({
+    gcTime: 0, // a create answer holds the one-time secret
     mutationFn: async () => {
       if (!endpoint) {
         return must(
@@ -590,6 +607,7 @@ function EndpointDialog({
       if ((description.trim() || null) !== (endpoint.description ?? null))
         body.description = description.trim() || null
       if (active !== endpoint.active) body.active = active
+      if (Object.keys(body).length === 0) return endpoint // nothing changed: no request
       return must(
         await draftApi.PATCH('/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}', {
           params: {
@@ -601,6 +619,12 @@ function EndpointDialog({
       )
     },
     onSuccess: (data) => onSaved('secret' in data ? data : undefined),
+    onError: (e) => {
+      // a 409 means the list is out of date: reload it so reopening the endpoint shows the new one
+      if (e instanceof AppError && e.isVersionConflict) {
+        void qc.invalidateQueries({ queryKey: listKey(orgId) })
+      }
+    },
   })
 
   const remote: Record<string, string> = {}
@@ -638,8 +662,7 @@ function EndpointDialog({
   function submit(e: React.FormEvent) {
     e.preventDefault()
     const errs: Record<string, string> = {}
-    if (!/^https:\/\/[^/\s]+/.test(url.trim()))
-      errs.url = t`Enter an address starting with https://`
+    if (!isHttpsUrl(url)) errs.url = t`Enter an address starting with https://`
     if (events.length === 0) errs.events = t`Choose at least one event`
     setLocal(errs)
     if (Object.keys(errs).length > 0) return

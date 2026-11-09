@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event'
 import { mountApp } from '@/test/render'
 import type { Db } from '@/test/handlers/db'
 import { state } from '@/test/handlers/integrations'
+import { keyScopeAllowed } from './ApiKeysPage'
+import { isHttpsUrl } from './WebhooksPage'
 
 /** Signed in with a recent re-authentication: sensitive calls go through at once. */
 const recent = (d: Db) => {
@@ -268,5 +270,33 @@ describe('webhooks', () => {
     expect(screen.queryByRole('button', { name: 'Add endpoint' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Send a test ping/ })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Deliveries of/ })).toBeInTheDocument()
+  })
+})
+
+describe('integration helpers', () => {
+  it('offers only https addresses with a host and no credentials', () => {
+    expect(isHttpsUrl('https://hooks.example.org/x')).toBe(true)
+    for (const bad of [
+      'http://a.example',
+      'https://',
+      'https://@',
+      'https://u:p@a.example',
+      'javascript:alert(1)',
+      '',
+    ])
+      expect(isHttpsUrl(bad)).toBe(false)
+  })
+
+  it('never offers apikeys.*, webhooks.manage or resident-only permissions as key scopes', () => {
+    for (const p of [
+      'apikeys.read',
+      'apikeys.manage',
+      'webhooks.manage',
+      'reports.aggregate',
+      'payments.declare',
+    ])
+      expect(keyScopeAllowed(p)).toBe(false)
+    expect(keyScopeAllowed('webhooks.read')).toBe(true)
+    expect(keyScopeAllowed('payments.record')).toBe(true)
   })
 })
