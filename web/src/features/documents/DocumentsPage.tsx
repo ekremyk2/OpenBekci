@@ -369,7 +369,7 @@ function DocumentRow({
         <button
           type="button"
           onClick={onPreview}
-          className="min-w-0 flex-1 truncate text-start font-medium outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="min-w-0 flex-1 truncate text-start font-medium outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {doc.title}
         </button>
@@ -599,7 +599,7 @@ export function DocumentsPage({ folderId }: { folderId?: string }) {
               <Link
                 to="/orgs/$orgId/documents/f/$folderId"
                 params={{ orgId, folderId: f.id }}
-                className="flex items-center gap-3 rounded-lg border p-3 outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+                className="flex items-center gap-3 rounded-lg border p-3 outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {f.kind === 'unit' ? (
                   <FolderLockIcon className="size-5 text-muted-foreground" aria-hidden="true" />

@@ -276,7 +276,7 @@ function PayContent({ ctx, sides }: { ctx: MoneyCtx; sides: S['MySide'][] }) {
                   <dt className="text-muted-foreground">
                     <Trans>IBAN</Trans>
                   </dt>
-                  <dd className="font-mono text-base" dir="ltr">
+                  <dd className="iban text-base" dir="ltr">
                     {bank.iban}
                   </dd>
                 </div>

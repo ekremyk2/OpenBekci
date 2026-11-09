@@ -105,7 +105,7 @@ export function SectionNav({
           params={{ orgId }}
           activeOptions={{ exact: !!tab.exact }}
           className={cn(
-            'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+            'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
             '[&.active]:bg-primary [&.active]:text-primary-foreground',
           )}
         >

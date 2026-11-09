@@ -197,7 +197,7 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
                           )
                         }
                         className={cn(
-                          'rounded-md border px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                          'rounded-md border px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                           on ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
                         )}
                       >

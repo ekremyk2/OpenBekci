@@ -156,7 +156,7 @@ function ManagerOverview() {
                     key={l.to}
                     to={`/orgs/$orgId/money/${l.to}` as '/orgs/$orgId'}
                     params={{ orgId: org?.id ?? '' }}
-                    className="rounded-lg border p-4 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+                    className="rounded-lg border p-4 outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <div className="font-medium">{l.label}</div>
                     <div className="text-sm text-muted-foreground">{l.text}</div>

@@ -296,7 +296,7 @@ export function ImportWizardPage({ search }: { search: { kind?: ImportKind; site
 
       {state.step === 'upload' && permitted ? (
         <div className="grid max-w-xl gap-3">
-          <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center focus-within:ring-[3px] focus-within:ring-ring">
+          <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed p-8 text-center focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <UploadIcon className="size-6 text-muted-foreground" aria-hidden="true" />
             <span className="text-sm font-medium">
               <Trans>Choose a CSV or XLSX file</Trans>

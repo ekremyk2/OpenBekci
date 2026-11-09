@@ -49,7 +49,7 @@ export function SettingsLayout() {
               params={{ orgId }}
               activeOptions={{ exact: 'exact' in tab }}
               className={cn(
-                '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring',
+                '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 '[&.active]:border-primary [&.active]:text-foreground',
               )}
             >

@@ -242,7 +242,7 @@ export function NotificationsPage() {
                       <button
                         type="button"
                         onClick={() => open(n)}
-                        className="flex w-full items-start gap-3 p-3 text-start outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+                        className="flex w-full items-start gap-3 p-3 text-start outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       >
                         <span
                           aria-hidden="true"

@@ -481,7 +481,7 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
             aria-label={t`Bank lines`}
             aria-activedescendant={current ? `tx-${current.id}` : undefined}
             onKeyDown={onKeyDown}
-            className="rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+            className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Table>
               <TableHeader>

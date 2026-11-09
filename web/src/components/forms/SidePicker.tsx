@@ -37,7 +37,7 @@ export function SidePicker({
         <label
           key={o.value}
           className={cn(
-            'cursor-pointer rounded px-3 py-1 text-sm has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring',
+            'cursor-pointer rounded px-3 py-1 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2',
             value === o.value ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
             disabled && 'cursor-not-allowed opacity-50',
           )}

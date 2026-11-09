@@ -11,13 +11,12 @@
 <meta property="og:image" content="share.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#eef0f3">
+<meta name="theme-color" content="#fcfaf6">
 <!-- <link rel="canonical" href="https://[the project's domain]/"> until the domain exists -->
 <meta name="site-kind" content="software">
 <meta name="page-type" content="software">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/bricolage-grotesque-all-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/system.css">
 <link rel="stylesheet" href="assets/ui/cards.css">
 <link rel="stylesheet" href="assets/motion/motion.css">
@@ -25,18 +24,27 @@
 <link rel="stylesheet" href="assets/layout/layout.css">
 <link rel="stylesheet" href="assets/icons/icon.css">
 <style>
+  @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-grotesque-all-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-grotesque-all-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-grotesque-all-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "IBM Plex Sans"; src: url("assets/fonts/IBMPlexSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "IBM Plex Sans"; src: url("assets/fonts/IBMPlexSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "IBM Plex Sans"; src: url("assets/fonts/IBMPlexSans-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 :root {
-  --p-bg: #eef0f3; --p-surface: #e2e5ea; --p-ink: #0b0c0e; --p-muted: #5d6470;
-  --p-accent: #1f2de6; --p-accent-ink: #ffffff; --p-action: #1f2de6; --p-action-ink: #ffffff;
-  --p-inv-bg: #0b0c0e; --p-inv-surface: #17181a; --p-inv-ink: #eef0f3; --p-inv-muted: #8e8f92;
-  --p-inv-accent: #eef0f3; --p-inv-accent-ink: #0b0c0e; --p-inv-action: #eef0f3; --p-inv-action-ink: #0b0c0e;
-  --font-display: "Urbanist", system-ui, sans-serif;
-  --font-text: "Urbanist", system-ui, sans-serif;
-  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --display-weight: 500;
-  --display-tracking: -0.03em;
-  --display-tracking-xl: -0.04em;
+  --p-bg: #fcfaf6; --p-surface: #f5f1ec; --p-ink: #15202d; --p-muted: #525c69;
+  --p-accent: #b75131; --p-accent-ink: #fcfaf6; --p-action: #b75131; --p-action-ink: #fcfaf6;
+  --p-inv-bg: #17273c; --p-inv-surface: #22344b; --p-inv-ink: #faf6f1; --p-inv-muted: #b4c1d0;
+  --p-inv-accent: #e78d6a; --p-inv-accent-ink: #0b1726; --p-inv-action: #e78d6a; --p-inv-action-ink: #0b1726;
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-text: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+  --display-tracking-xl: -0.02em;
 }
+html[data-ground="sky"] { --ground-bg: #fed3c0; --ground-surface: #ffe9de; --ground-ink: #15202d; --ground-muted: #525c69; --ground-accent: #b75131; }
 </style>
 <link rel="stylesheet" href="assets/ui/base.css">
 <link rel="stylesheet" href="assets/ui/terminal-run/fragment.css">
@@ -50,18 +58,19 @@
 <link rel="modulepreload" href="assets/moments/iris-opens/moment.js">
 <style>
   /* the product's own screenshots (img/): shown at their size and cut by their frame; page CSS inside a visual only */
-  .shot { position: relative; overflow: hidden; background: #fcfcfd; border: 1px solid var(--line-strong); border-radius: var(--r-md); }
+  .shot { position: relative; overflow: hidden; background: #ffffff; border: 1px solid var(--line-strong); border-radius: var(--r-md); }
   .shot > img { display: block; max-width: none; height: auto; }
   .shot--fit > img { width: 100%; }
   .shot--crop > img { position: absolute; left: calc(var(--sx, 0) * -1px); top: calc(var(--sy, 0) * -1px); width: 1440px; }
   .hero--centred .hero__window > .shot { z-index: 1; position: absolute; }
   .hero--centred .hero__lead { color: var(--ink); }
+  .hero--centred .hero__window { background: var(--ground-bg); }
   @media (min-width: 640px) and (max-width: 1279px) { .hero--centred .shot > img { margin-top: -92px; } }
   @media (max-width: 639px) { .hero--centred .shot > img { width: 900px; max-width: none; margin: -96px 0 0 -150px; } }
   /* the money window: one app window across the .wrap, cut by the frame under a short fade */
   .app { margin-top: var(--s-7); }
   @media (max-width: 639px) { .app > img { position: absolute; left: -264px; top: -190px; width: 1440px; } }
-  .app::after { content: ""; position: absolute; inset: auto 0 0 0; height: 64px; background: linear-gradient(transparent, #fcfcfd); pointer-events: none; }
+  .app::after { content: ""; position: absolute; inset: auto 0 0 0; height: 64px; background: linear-gradient(transparent, #ffffff); pointer-events: none; }
   /* three open cards with the product's own crops */
   #features .panel { --p-h: 336px; }
   #features .stage > .shot { left: var(--ax, 24px); top: var(--ay, 32px); width: calc(100% - var(--ax, 24px) + 64px); height: calc(100% - var(--ay, 32px) + 72px); }
@@ -96,6 +105,9 @@
   .install-chips { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-5); }
   .install-chips .ic-chip { min-height: 44px; }
   .install-chips .ic-chip > .ic { --ic-s: 28px; }
+  /* Bricolage is wider than the face the kit sized the closing name for */
+  .close__word { font-size: clamp(64px, 12.4vw, 190px); }
+  @media (max-width: 639px) { .close__word { font-size: clamp(56px, 16.2vw, 96px); } }
   .install-facts { display: grid; gap: var(--s-2); margin-top: var(--s-5); }
   @media (max-width: 639px) { .install-facts { display: none; } }
 </style>
@@ -103,14 +115,14 @@
 <body>
 <!-- type: software
      plan: hero centred (screenshot of the dashboard) / money (app-frame, the statement) / features (three open cards: tickets, announcements, gate) / assemblies (split, the call's delivery list) / ledger (statement moment) / turkey (hub diagram and rows) / install (surface band, iris moment, terminal) / questions / footer
-     deal: hero centred, nav nav-centre, close close-word, footer footer-columns, rhythm surface-pairs, buttons arrow, mark arc, palette cool-grey-cobalt, type urbanist, radius soft, ground sand, effect gradient-mesh (hero frame), grounds none
+     deal: hero centred, nav nav-centre, close close-word, footer footer-columns, rhythm surface-pairs, buttons arrow, mark arc, palette openbekci-brand (tile, night, paper), type bricolage-plex, radius soft, ground tile-wash, effect none (flat tile-wash hero ground), grounds none
      moments: word-highlight in #ledger (the one rule a board needs, lit word by word), iris-opens in #install (the page changes ground into the install steps)
      motion: hero entrance: the headline first, then what to do; word-highlight: the ledger rule read at the speed of scrolling; iris-opens: the install steps open from the page's ground; hover: every link and card answers -->
 
 <header class="nav nav--centre">
   <div class="wrap nav__bar">
     <a class="skip-link" href="#top">Skip to content</a>
-    <a class="nav__logo" href="#top"><span class="mark" data-mark="arc" aria-hidden="true"></span>OpenBekci</a>
+    <a class="nav__logo" href="#top" aria-label="OpenBekci"><img src="assets/brand/openbekci-wordmark.svg" width="115" height="24" alt="OpenBekci"></a>
     <nav class="nav__links" aria-label="Main">
       <div class="nav__item"><a class="nav__link" href="#money">Money</a></div>
       <div class="nav__item"><a class="nav__link" href="#assemblies">Assemblies</a></div>
@@ -135,7 +147,7 @@
         <p class="hero__lead">Dues, assemblies, tickets, announcements and gate control for managers, boards and residents. AGPL-3.0, self-hosted in one compose file.</p>
         <div class="btn-row"><a class="btn btn--primary" href="/docs/">Install OpenBekci<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="#money">See the demo</a></div>
       </div>
-      <div class="hero__window" data-fx="gradient-mesh" data-fx-seed="11" data-fx-palette='{"bg":"#c6d3df","surface":"#d6e0e9","ink":"#8da2b5","accent":"#a9c0d6"}'>
+      <div class="hero__window">
         <div class="ly-piece shot shot--fit"><img src="img/dashboard-en.webp" width="1440" height="900" alt="OpenBekci dashboard for a demo site: overdue amount, cash, bank balance, collection rate and open tickets" fetchpriority="high"></div>
       </div>
     </div></div>
@@ -285,7 +297,7 @@
     <div class="closing__links">
       <div class="grid">
         <div class="span-4 stack-4">
-          <a class="nav__logo" href="#top"><span class="mark" data-mark="arc" aria-hidden="true"></span>OpenBekci</a>
+          <a class="nav__logo" href="#top" aria-label="OpenBekci"><img src="assets/brand/openbekci-wordmark.svg" width="115" height="24" alt="OpenBekci"></a>
           <p class="footer__lede">Open-source site management.</p>
         </div>
         <div class="span-2 footer__col"><h3>Money</h3><ul><li><a href="#money">Statements</a></li></ul></div>

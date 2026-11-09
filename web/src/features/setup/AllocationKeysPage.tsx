@@ -131,7 +131,7 @@ export function AllocationKeysPage({ search }: { search: { site?: string; key?: 
                   )}
                 >
                   <button
-                    className="flex flex-1 flex-col text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+                    className="flex flex-1 flex-col text-start outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-current={selected?.id === k.id ? 'true' : undefined}
                     onClick={() =>
                       void navigate({ to: '.', search: { site: siteId, key: k.id } as never })
