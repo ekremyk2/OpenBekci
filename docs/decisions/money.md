@@ -54,6 +54,12 @@ Not chosen for now: bank dues-collection services (kurum tahsilat). Can be added
 
 **Plan changes:** receipts need a per-site gap-free sequence; cash by collector with a per-collector cash box; `payment` model gets gross/fee/net and provider identifiers before any provider is built; bank import moves into the money milestone (B2), with *manual* matching first and matching *rules* later.
 
+**Merchant of record (decided 2026-11-09, release 0.4):** **per organization, and the default is the site**: each site collects online card payments into its own account at the payment provider. A management company may switch its organization to **collect centrally**; one site may also be set differently from the organization.
+
+**Means:** with the site as merchant, the provider account (merchant id and keys) is set on the site in the pack settings, the provider pays out to the site's bank account and the books are exactly as for any card payment: the resident's debt is paid at once, the provider fee is an expense, and the net waits in the provider's clearing account until the payout arrives in the site's bank account. With the organization as merchant, the provider account is the management company's, set once on the organization; the payout arrives in the *management company's* bank account, so the money is **client money**: each site's share is recorded as money the company holds for that site and owes it until it passes it on. The manager sees, per site, what the providers have not paid out yet and what the company holds for the site. The setting is `payments.merchant_of_record` (`site` or `organization`); changing it needs the organization administrator, because it decides where the residents' money goes. A checkout remembers which account it was made on, so switching does not touch payments already made.
+
+**Plan changes:** backend §9 rule 14 and §10 (the setting, the `client_money` account per site posted at settlement, one payout split across sites); packs §3.8 (decided); backend §8 (checkout, status poll, refunds, settlements).
+
 ## M6. Expenses
 
 **Decided:** **simple entry, no approval workflow in the software.** An expense is: what, who was paid, how much, when, from which account (bank or cash), optional receipt photo. Recurring expenses (electricity, kapıcı salary, elevator maintenance) can repeat monthly. Approval of spending is something boards decide in meetings, outside the system; the system records what was spent and shows it in reports.
@@ -97,5 +103,4 @@ These have an obvious default; they are listed so nothing is hidden.
 
 - Which banks' statement formats to support first (needs real sample files, anonymized).
 - Whether to build the Apsiyon importer in the first release (needs a sample export).
-- Merchant of record for online card payments: the site or the management company? Affects accounting (client money) and which provider accounts are needed.
 - Year-end: carry surplus/deficit forward silently (default) or produce a per-unit settlement. Default: carry forward; settlement comes with the full budget feature.

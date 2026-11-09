@@ -26,7 +26,62 @@ const (
 	// SettingVisitorRetentionDays is how long the visitor logs are kept (7 to 365).
 	SettingVisitorRetentionDays = "visitor_retention_days"
 	SettingPayerDefaults        = "payer_defaults"
+	// SettingMerchantOfRecord is whose provider account collects card payments (decision M5): "site" (the
+	// default: the site collects into its own provider account) or "organization" (the management company
+	// collects centrally and holds the net as client money owed to each site). Set on the organization, with
+	// an optional override per site; under the key payments.merchant_of_record in the settings document.
+	SettingMerchantOfRecord = "payments.merchant_of_record"
+	// SettingPaymentProvider optionally names the payment provider ("<packid>" or "<packid>.<name>") that card
+	// checkout uses when several are enabled; organization setting with an optional per-site override.
+	SettingPaymentProvider = "payments.provider"
 )
+
+// Merchant of record values.
+const (
+	MerchantSite         = "site"
+	MerchantOrganization = "organization"
+)
+
+// ValidMerchantOfRecord reports whether v is a merchant of record value.
+func ValidMerchantOfRecord(v any) bool {
+	s, ok := v.(string)
+	return ok && (s == MerchantSite || s == MerchantOrganization)
+}
+
+// EffectiveMerchantOfRecord resolves the merchant of record of a site: the site's own setting, else the
+// organization's, else MerchantSite.
+func EffectiveMerchantOfRecord(orgSettings, siteSettings map[string]any) string {
+	for _, m := range []map[string]any{siteSettings, orgSettings} {
+		if v, ok := m[SettingMerchantOfRecord].(string); ok && ValidMerchantOfRecord(v) {
+			return v
+		}
+	}
+	return MerchantSite
+}
+
+// EffectivePaymentProvider is the provider the site or organization named, "" when none.
+func EffectivePaymentProvider(orgSettings, siteSettings map[string]any) string {
+	for _, m := range []map[string]any{siteSettings, orgSettings} {
+		if v, ok := m[SettingPaymentProvider].(string); ok && v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+// validatePaymentSettings checks the payments.* keys of an organization or site settings document.
+func validatePaymentSettings(settings map[string]any) []problem.Field {
+	var f []problem.Field
+	if v, ok := settings[SettingMerchantOfRecord]; ok && v != nil && !ValidMerchantOfRecord(v) {
+		f = append(f, problem.Field{Field: "settings." + SettingMerchantOfRecord, Code: "invalid_value", Params: map[string]any{"allowed": []string{MerchantSite, MerchantOrganization}}})
+	}
+	if v, ok := settings[SettingPaymentProvider]; ok && v != nil {
+		if s, isStr := v.(string); !isStr || len(s) > 64 {
+			f = append(f, problem.Field{Field: "settings." + SettingPaymentProvider, Code: "invalid_value"})
+		}
+	}
+	return f
+}
 
 // Appurtenance modes (S2).
 const (
@@ -164,6 +219,7 @@ func validateSettings(settings map[string]any) []problem.Field {
 			f = append(f, problem.Field{Field: "settings." + SettingAppurtenanceDefault, Code: "invalid_value"})
 		}
 	}
+	f = append(f, validatePaymentSettings(settings)...)
 	return f
 }
 

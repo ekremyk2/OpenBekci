@@ -1,0 +1,69 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: payment_id
+    in: path
+    required: true
+    description: Id of the payment.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.refundPayment
+  summary: Refund a card payment
+  description: |-
+    **Release 0.4.** Refunds a payment made through a payment provider in full: the provider refunds first, then the
+    reversal is posted (gross back out of the clearing account, the fee reversed, the allocations released) and the
+    payment becomes `refunded`; its checkout becomes `refunded`. Partial refunds are not supported by the ledger.
+    A payment already refunded is returned unchanged. Re-authentication is not required (backend plan section 16 lists
+    it for other operations); the refund is audited under the manager's name.
+
+    `If-Match` is required: send the payment's `version` (a stale one is 409 `version_conflict`).
+
+    Permission: `money.post`.
+
+    Problems: `conflict` (409, not a provider payment or not confirmed), `version_conflict` (409),
+    `idempotency_mismatch` (422), `pack_error` (the provider refused or failed).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/PaymentRefund
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Payment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

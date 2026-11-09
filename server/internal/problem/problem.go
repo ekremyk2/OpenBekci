@@ -63,6 +63,8 @@ const (
 	CodeAPIKeyRevoked Code = "api_key_revoked"
 	// CodeAPIKeyExpired: the API key is past its expires_at (401).
 	CodeAPIKeyExpired Code = "api_key_expired"
+	// CodePaymentProviderUnavailable: no card payment provider is enabled for the site (409).
+	CodePaymentProviderUnavailable Code = "payment_provider_unavailable"
 )
 
 // Field is one entry of the errors[] array.

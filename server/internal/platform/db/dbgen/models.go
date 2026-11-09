@@ -512,6 +512,30 @@ type ChargePlanRate struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type Checkout struct {
+	ID               pgtype.UUID
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	UnitID           pgtype.UUID
+	DebtorKind       string
+	ChargeIds        []pgtype.UUID
+	Provider         string
+	MerchantOfRecord string
+	Amount           int64
+	Currency         string
+	Status           string
+	ProviderTxnID    pgtype.Text
+	CheckoutUrl      pgtype.Text
+	ReturnUrl        string
+	FailureCode      pgtype.Text
+	PaymentID        pgtype.UUID
+	CreatedBy        pgtype.UUID
+	CreatedAt        pgtype.Timestamptz
+	ExpiresAt        pgtype.Timestamptz
+	CompletedAt      pgtype.Timestamptz
+	LastPolledAt     pgtype.Timestamptz
+}
+
 type CollectionCase struct {
 	ID             pgtype.UUID
 	OrgID          pgtype.UUID
@@ -1289,6 +1313,7 @@ type Payment struct {
 	Provider       pgtype.Text
 	ProviderTxnID  pgtype.Text
 	RefundRef      pgtype.Text
+	Version        int32
 }
 
 type PaymentAllocation struct {
@@ -1356,14 +1381,17 @@ type PollAnswer struct {
 }
 
 type ProviderSettlement struct {
-	OrgID     pgtype.UUID
-	SiteID    pgtype.UUID
-	Provider  string
-	Ref       string
-	Net       int64
-	SettledOn pgtype.Date
-	EntryID   pgtype.UUID
-	CreatedAt pgtype.Timestamptz
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	Provider         string
+	Ref              string
+	Net              int64
+	SettledOn        pgtype.Date
+	EntryID          pgtype.UUID
+	CreatedAt        pgtype.Timestamptz
+	MerchantOfRecord string
+	Gross            pgtype.Int8
+	Fee              pgtype.Int8
 }
 
 type RecurringExpense struct {

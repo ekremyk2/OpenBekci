@@ -219,6 +219,10 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		return nil, fmt.Errorf("packs: %w", err)
 	}
 	host.AttachPayments(mny.Payments)
+	chk := newCheckout(cfg, log, d, host, mny.Payments, mny.Docs)
+	host.AttachCheckouts(chk)
+	mny.Checkout = chk
+	registerCheckout, periodicCheckout := checkoutJobs(chk, log)
 	mny.BankImport.SetPacks(host.BankImporters())
 	pick.h.Store(host)
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
@@ -238,10 +242,11 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			comm.RegisterWorkers(w)
 			acc.Workers(w)
 			registerMoney(w)
+			registerCheckout(w)
 			host.RegisterWorkers(w)
 			integ.Workers(w)
 		},
-		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney, host.PeriodicJobs())})
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney, periodicCheckout, host.PeriodicJobs())})
 	if err != nil {
 		d.Close()
 		return nil, err

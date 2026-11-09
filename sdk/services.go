@@ -195,6 +195,11 @@ type ProviderSettlement struct {
 	BankAccountCode string
 	SettledOn       string
 	Net             Money
+	// ProviderTxnIDs are the transactions the payout covers. When the
+	// organization is the merchant of record one payout covers the payments of
+	// several sites; the core splits the net by these transactions' sites (the
+	// remainder, if any, goes to Site). Optional otherwise.
+	ProviderTxnIDs []string
 }
 
 // SettlementOutcome is the result of RecordSettlement.

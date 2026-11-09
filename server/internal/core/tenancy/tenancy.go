@@ -160,6 +160,7 @@ func (p Patch) validate() error {
 			fields = append(fields, problem.Field{Field: "timezone", Code: "invalid_value"})
 		}
 	}
+	fields = append(fields, validatePaymentSettings(p.Settings)...)
 	if len(fields) > 0 {
 		return problem.Validation(fields...)
 	}

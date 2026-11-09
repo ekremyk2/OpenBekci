@@ -308,6 +308,18 @@ paths:
     $ref: ./paths/money/payments-payment_id_confirm.yaml
   /v1/orgs/{org_id}/payments/{payment_id}:reject:
     $ref: ./paths/money/payments-payment_id_reject.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:refund:
+    $ref: ./paths/money/payments-payment_id_refund.yaml
+  /v1/orgs/{org_id}/checkouts:
+    $ref: ./paths/money/checkouts.yaml
+  /v1/orgs/{org_id}/checkouts/{checkout_id}:
+    $ref: ./paths/money/checkouts-checkout_id.yaml
+  /v1/orgs/{org_id}/me/checkouts:
+    $ref: ./paths/money/me-checkouts.yaml
+  /v1/orgs/{org_id}/payment-settlements:
+    $ref: ./paths/money/payment-settlements.yaml
+  /v1/orgs/{org_id}/payment-clearing:
+    $ref: ./paths/money/payment-clearing.yaml
   /v1/orgs/{org_id}/credits:
     $ref: ./paths/money/credits.yaml
   /v1/orgs/{org_id}/credits/{credit_id}:apply:
@@ -1211,6 +1223,20 @@ components:
       $ref: ./components/money.yaml#/schemas/PaymentConfirm
     PaymentReject:
       $ref: ./components/money.yaml#/schemas/PaymentReject
+    Checkout:
+      $ref: ./components/money.yaml#/schemas/Checkout
+    CheckoutList:
+      $ref: ./components/money.yaml#/schemas/CheckoutList
+    CheckoutCreate:
+      $ref: ./components/money.yaml#/schemas/CheckoutCreate
+    PaymentRefund:
+      $ref: ./components/money.yaml#/schemas/PaymentRefund
+    ProviderSettlement:
+      $ref: ./components/money.yaml#/schemas/ProviderSettlement
+    ProviderSettlementList:
+      $ref: ./components/money.yaml#/schemas/ProviderSettlementList
+    PaymentClearing:
+      $ref: ./components/money.yaml#/schemas/PaymentClearing
     Credit:
       $ref: ./components/money.yaml#/schemas/Credit
     CreditList:

@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listPaymentSettlements
+  summary: List provider settlements
+  description: |-
+    **Release 0.4.** The payouts of the payment providers posted for a site, newest first. A periodic job asks each
+    enabled provider for its payouts and posts them: with the site as merchant of record, bank against the provider's
+    clearing account; with the organization as merchant of record, each site's share against its client money account.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: provider
+      in: query
+      schema:
+        type: string
+      description: Only the payouts of this payment provider.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/ProviderSettlementList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

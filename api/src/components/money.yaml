@@ -2703,6 +2703,7 @@ schemas:
       - bank_transaction_id
       - created_at
       - updated_at
+      - version
     properties:
       id:
         type: string
@@ -2734,12 +2735,10 @@ schemas:
         nullable: true
       method:
         type: string
-        description: "`card:<provider>` values arrive in 0.4. Open enum."
-        enum:
+        description: "`cash`, `bank_transfer`, or `card:<provider>` for a payment made through a payment provider (for example `card:iyzico`). Open set: clients tolerate unknown values."
+        x-known-values:
           - cash
           - bank_transfer
-          - card
-        x-open-enum: true
       gross:
         $ref: ./common.yaml#/schemas/Money
       fee:
@@ -2802,6 +2801,10 @@ schemas:
       updated_at:
         type: string
         format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Moves whenever the payment changes status; send it as `If-Match` to refund a provider payment.
     example:
       id: 0192a3f0-1000-7000-8000-000000000003
       org_id: 0192a3f0-1000-7000-8000-000000000001
@@ -2844,6 +2847,7 @@ schemas:
       bank_transaction_id: null
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
+      version: 1
   PaymentList:
     type: object
     required:
@@ -2901,6 +2905,7 @@ schemas:
           bank_transaction_id: null
           created_at: 2026-03-01T09:00:00Z
           updated_at: 2026-03-01T09:00:00Z
+          version: 1
       next_cursor: null
   ReceiptDelivery:
     type: object
@@ -6078,3 +6083,298 @@ schemas:
       amount:
         amount: 200000
         currency: TRY
+  Checkout:
+    type: object
+    description: |-
+      **Release 0.4.** A hosted card checkout for one side of a unit. Open `checkout_url` in a browser (a Custom Tab on
+      mobile, a top-level navigation on the web); the provider returns the payer to `return_url`; poll
+      `money.getCheckout` until `status` is final.
+
+      State machine: `pending` becomes `paid` (the provider confirmed the money), `failed` (the provider declined, or
+      could not create the checkout) or `expired` (`expires_at` passed). A payment that arrives for an `expired` or
+      `failed` checkout is still recorded and the checkout becomes `paid`. A `paid` checkout becomes `refunded`
+      when the payment is refunded.
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - debtor_kind
+      - charge_ids
+      - provider
+      - merchant_of_record
+      - amount
+      - status
+      - checkout_url
+      - return_url
+      - expires_at
+      - payment_id
+      - failure_code
+      - created_by
+      - created_at
+      - completed_at
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: The checkout id (`checkout_id`).
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      debtor_kind:
+        type: string
+        description: The unit side that pays. Open enum.
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      charge_ids:
+        type: array
+        description: The charges the payment is applied to; empty means oldest first.
+        items:
+          type: string
+          format: uuid
+      provider:
+        type: string
+        description: Id of the payment provider (`<packid>` or `<packid>.<name>`).
+      merchant_of_record:
+        type: string
+        description: Whose provider account the checkout was created on (core setting `payments.merchant_of_record`). Open enum.
+        enum:
+          - site
+          - organization
+        x-open-enum: true
+      amount:
+        $ref: ./common.yaml#/schemas/Money
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - paid
+          - failed
+          - expired
+          - refunded
+        x-open-enum: true
+      checkout_url:
+        type: string
+        nullable: true
+        description: The provider's hosted page; null only when creation failed.
+      return_url:
+        type: string
+        description: Where the provider sends the payer back to, `{BASE_URL}/orgs/{org}/pay/return?checkout_id=...` or, for `client=mobile`, `openbekci://pay/return?org_id=...&checkout_id=...`.
+      expires_at:
+        type: string
+        format: date-time
+      payment_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The payment once the checkout is `paid` (or `refunded`).
+      failure_code:
+        type: string
+        nullable: true
+        description: "`provider_error` or `provider_declined` when the checkout failed."
+      created_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      completed_at:
+        type: string
+        format: date-time
+        nullable: true
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000020
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: 0192a3f0-1000-7000-8000-000000000003
+      debtor_kind: tenant
+      charge_ids: []
+      provider: example
+      merchant_of_record: site
+      amount:
+        amount: 150000
+        currency: TRY
+      status: pending
+      checkout_url: https://pay.example.test/checkout/ex_0192a3f0
+      return_url: https://app.example.test/orgs/0192a3f0-1000-7000-8000-000000000001/pay/return?checkout_id=0192a3f0-1000-7000-8000-000000000020
+      expires_at: 2026-11-09T11:00:00Z
+      payment_id: null
+      failure_code: null
+      created_by: 0192a3f0-1000-7000-8000-000000000009
+      created_at: 2026-11-09T10:00:00Z
+      completed_at: null
+  CheckoutList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Checkout"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  CheckoutCreate:
+    type: object
+    description: Start a card checkout for one side of a unit, for selected charges or an amount.
+    required:
+      - unit_id
+      - debtor_kind
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      debtor_kind:
+        type: string
+        description: The unit side that pays. A resident may pay only a side their current occupancy reaches (an owner both sides, a tenant the tenant side, a household member their own side with `may_see_money`).
+        enum:
+          - owner
+          - tenant
+      charge_ids:
+        type: array
+        description: Charges to pay (each must be open on that side). Omitted or empty means oldest first.
+        maxItems: 200
+        items:
+          type: string
+          format: uuid
+      amount:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: The gross amount to pay, in the site currency. With `charge_ids` it defaults to what is open on them; without, to everything open on the side (an amount above what is open becomes credit).
+      client:
+        type: string
+        description: "`mobile` makes `return_url` the app's `openbekci://pay/return`; the default `web` the web app's pay return page."
+        enum:
+          - web
+          - mobile
+        default: web
+  PaymentRefund:
+    type: object
+    properties:
+      reason:
+        type: string
+        maxLength: 500
+        description: Why the payment is refunded (audited and sent to the provider).
+  ProviderSettlement:
+    type: object
+    description: |-
+      **Release 0.4.** A payout of a payment provider as posted to one site. With the organization as merchant of record
+      one payout covers several sites and is listed once per site, each with its own share and entry.
+    required:
+      - provider
+      - ref
+      - site_id
+      - net
+      - gross
+      - fee
+      - settled_on
+      - entry_id
+      - merchant_of_record
+      - created_at
+    properties:
+      provider:
+        type: string
+      ref:
+        type: string
+        description: The provider's settlement id.
+      site_id:
+        type: string
+        format: uuid
+      net:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: The part of the payout posted to this site.
+      gross:
+        type: object
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        nullable: true
+        description: Gross of the payout when the provider reported it and the payout is not split.
+      fee:
+        type: object
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        nullable: true
+      settled_on:
+        type: string
+        format: date
+      entry_id:
+        type: string
+        format: uuid
+        description: The journal entry (bank against clearing, or client money against clearing).
+      merchant_of_record:
+        type: string
+        description: Open enum.
+        enum:
+          - site
+          - organization
+        x-open-enum: true
+      created_at:
+        type: string
+        format: date-time
+  ProviderSettlementList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/ProviderSettlement"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  PaymentClearing:
+    type: object
+    description: |-
+      **Release 0.4.** What a site has not yet received from its payment providers, and what the organization holds for
+      it as client money.
+    required:
+      - site_id
+      - merchant_of_record
+      - providers
+      - client_money_owed
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      merchant_of_record:
+        type: string
+        description: The effective merchant of record of the site. Open enum.
+        enum:
+          - site
+          - organization
+        x-open-enum: true
+      providers:
+        type: array
+        items:
+          type: object
+          required:
+            - provider
+            - balance
+          properties:
+            provider:
+              type: string
+            balance:
+              allOf:
+                - $ref: ./common.yaml#/schemas/Money
+              description: "The clearing balance: card payments received minus payouts posted."
+      client_money_owed:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: What the organization holds for the site and has not passed on (merchant of record `organization`); zero otherwise.

@@ -39,6 +39,12 @@ schemas:
       settings:
         type: object
         additionalProperties: true
+        description: |-
+          Organization settings, merged key by key on update (a null value removes the key). Core keys:
+          `payments.merchant_of_record` (`site`, the default: each site collects card payments into its own provider
+          account; or `organization`: the management company collects centrally and holds the net as client money owed per
+          site; a site may override it, see `tenancy.updateSiteSettings`, decision M5) and `payments.provider` (the id of
+          the payment provider card checkout uses when several are enabled).
       created_at:
         type: string
         format: date-time
@@ -63,6 +69,7 @@ schemas:
       settings:
         type: object
         additionalProperties: true
+        description: Merged key by key into the stored settings; a null value removes the key. See `Org.settings` for the `payments.*` keys.
   AccessSettings:
     type: object
     description: Gate-control settings (`site.settings.access`), release 0.3.
@@ -109,6 +116,7 @@ schemas:
       - legal_preset
       - access
       - extra
+      - payments
       - version
     properties:
       version:
@@ -161,6 +169,43 @@ schemas:
         additionalProperties: true
         nullable: true
         description: Pack-defined settings (schema-driven in 0.4).
+      payments:
+        type: object
+        description: Card payment capabilities and the merchant of record of the site (release 0.4).
+        required:
+          - card
+          - merchant_of_record
+          - merchant_of_record_override
+        properties:
+          card:
+            type: object
+            description: Whether "Pay by card" exists for the site; clients show it only when `available` is true.
+            required:
+              - available
+              - provider
+            properties:
+              available:
+                type: boolean
+                description: A payment provider of an enabled pack is available for the site.
+              provider:
+                type: string
+                nullable: true
+                description: Id of the provider checkout would use.
+          merchant_of_record:
+            type: string
+            description: The effective merchant of record (the site override, else the organization setting, else `site`). Open enum.
+            enum:
+              - site
+              - organization
+            x-open-enum: true
+          merchant_of_record_override:
+            type: string
+            nullable: true
+            description: The site's own override of the organization setting, null when it follows the organization. Open enum.
+            enum:
+              - site
+              - organization
+            x-open-enum: true
       pack_defaults:
         type: object
         description: |
@@ -227,6 +272,16 @@ schemas:
         additionalProperties: true
         nullable: true
         description: Pack-defined settings (schema-driven in 0.4).
+      merchant_of_record:
+        type: string
+        nullable: true
+        description: |-
+          Per-site override of the organization setting `payments.merchant_of_record` (decision M5): `site` (the site collects
+          into its own provider account) or `organization` (the management company collects centrally and holds the net as
+          client money). null removes the override. Changing it needs `org.manage`, not just `sites.manage`.
+        enum:
+          - site
+          - organization
   Site:
     type: object
     description: The data-owning unit.

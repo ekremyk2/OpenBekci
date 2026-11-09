@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
@@ -186,6 +187,12 @@ func (s *apiServer) TenancyUpdateSiteSettings(ctx context.Context, req gen.Tenan
 	body, err := bodyDoc(req.Body == nil, req.Body)
 	if err != nil {
 		return nil, err
+	}
+	// whose provider account collects the money is an organization decision, not a site manager's
+	if _, ok := body["merchant_of_record"]; ok {
+		if err := authz.Require(ctx, tenancy.PermOrgManage, authz.Scope{OrgID: req.OrgId}); err != nil {
+			return nil, err
+		}
 	}
 	d, err := settingsDoc(body)
 	if err != nil {

@@ -86,6 +86,8 @@ type Host struct {
 	cipher  *crypto.FieldCipher
 	now     func() time.Time
 	changed func()
+	// checkouts completes the checkouts the payment webhooks belong to (AttachCheckouts); nil: none.
+	checkouts CheckoutHooks
 }
 
 // New returns a Host for the compiled-in packs. Call Start before use.
