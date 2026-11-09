@@ -161,6 +161,22 @@ schemas:
         additionalProperties: true
         nullable: true
         description: Pack-defined settings (schema-driven in 0.4).
+      pack_defaults:
+        type: object
+        description: |
+          The settings a pack filled in (presets) that still hold the value the pack wrote, by settings key, for the
+          "pack default" marker. A setting the site edited is its own and is not listed. Absent without packs.
+        additionalProperties:
+          type: object
+          required:
+            - pack
+            - value
+          properties:
+            pack:
+              type: string
+              description: Id of the pack that wrote the value.
+            value:
+              description: The value the pack wrote.
   SiteSettingsUpdate:
     type: object
     description: Partial update of the site settings.

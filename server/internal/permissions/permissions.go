@@ -20,6 +20,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/core/tickets"
+	"github.com/openbekci/openbekci/server/internal/packs"
 )
 
 // NewRegistry builds the registry from every module's
@@ -47,6 +48,7 @@ func NewRegistry() (*authz.Registry, error) {
 		{"community", community.Permissions()},
 		{"access", access.Permissions()},
 		{"money", ledger.Permissions()},
+		{"packs", packs.Permissions()},
 		{"integrations", integrations.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {

@@ -1,0 +1,419 @@
+package packs
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"slices"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/sdk"
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+)
+
+// settingLegalPreset is the site setting that names the pack whose presets fill the site.
+const settingLegalPreset = "legal_preset"
+
+// presetValues evaluates the pack's presets for a site. A preset that fails or
+// panics is skipped and logged; it never fails site creation or enablement.
+// When a pack registers several presets of one kind the first one wins.
+func (h *Host) presetValues(ctx context.Context, p *Pack, info sdk.SiteInfo) map[string]any {
+	out := map[string]any{}
+	set := func(key, what string, fn func() (any, error)) {
+		if _, done := out[key]; done {
+			return
+		}
+		var v any
+		err := safe(p.Manifest.ID, what, func() (err error) { v, err = fn(); return err })
+		if err != nil {
+			h.log.WarnContext(ctx, "pack preset skipped", "pack", p.Manifest.ID, "preset", what, "error", err)
+			return
+		}
+		raw, err := json.Marshal(v)
+		if err != nil {
+			h.log.WarnContext(ctx, "pack preset skipped", "pack", p.Manifest.ID, "preset", what, "error", err)
+			return
+		}
+		var generic any
+		_ = json.Unmarshal(raw, &generic)
+		out[key] = generic
+	}
+	for _, x := range p.C.Quorum {
+		set(sdk.SettingQuorum, "quorum "+x.ID(), func() (any, error) { return x.Quorum(ctx, info) })
+	}
+	for _, x := range p.C.Thresholds {
+		set(sdk.SettingThresholds, "thresholds "+x.ID(), func() (any, error) { return x.Thresholds(ctx, info) })
+	}
+	for _, x := range p.C.VoteWeight {
+		set(sdk.SettingVoteWeight, "vote weight "+x.ID(), func() (any, error) { return x.VoteWeight(ctx, info) })
+	}
+	for _, x := range p.C.Schedule {
+		set(sdk.SettingSchedule, "schedule "+x.ID(), func() (any, error) { return x.Schedule(ctx, info) })
+	}
+	for _, x := range p.C.Transfer {
+		set(sdk.SettingTransferRule, "transfer rule "+x.ID(), func() (any, error) { return x.Transfer(ctx, info) })
+	}
+	for _, x := range p.C.LateFee {
+		set(sdk.SettingLateFee, "late fee "+x.ID(), func() (any, error) { return x.LateFee(ctx, info) })
+	}
+	if len(out) > 0 {
+		out[settingLegalPreset] = p.Manifest.ID
+	}
+	return out
+}
+
+func jsonEqual(a, b any) bool {
+	x, _ := json.Marshal(a)
+	y, _ := json.Marshal(b)
+	return bytes.Equal(x, y)
+}
+
+// applyPresets fills the unchanged settings of one site from the pack's
+// presets: a key is written when the site has no value for it, or when the
+// value is still the one this pack wrote earlier ("pack default"). A key the
+// site edited, or another pack filled, is left alone. Which keys are pack
+// defaults is recorded in site_pack_default.
+func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) ([]presetUndo, error) {
+	if !p.C.HasPresets() {
+		return nil, nil
+	}
+	var info sdk.SiteInfo
+	var settingsRaw []byte
+	var status string
+	err := tx.QueryRow(ctx, `SELECT s.timezone, s.currency, s.settings, s.status, o.country_code FROM site s JOIN organization o ON o.id = s.org_id
+		WHERE s.org_id = $1 AND s.id = $2 FOR UPDATE OF s`, org, site).Scan(&info.Timezone, &info.Currency, &settingsRaw, &status, &info.CountryCode)
+	if err != nil {
+		return nil, err
+	}
+	if status != "active" {
+		return nil, nil
+	}
+	info.ID, info.Org = sdk.ID(site.String()), sdk.ID(org.String())
+	values := h.presetValues(sdk.WithOrg(ctx, info.Org), p, info)
+	if len(values) == 0 {
+		return nil, nil
+	}
+	settings := map[string]any{}
+	if err := json.Unmarshal(settingsRaw, &settings); err != nil {
+		return nil, err
+	}
+	type mark struct {
+		pack  string
+		value any
+	}
+	marks := map[string]mark{}
+	rows, err := tx.Query(ctx, `SELECT key, pack_id, value FROM site_pack_default WHERE org_id = $1 AND site_id = $2`, org, site)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var k, pk string
+		var raw []byte
+		if err := rows.Scan(&k, &pk, &raw); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		var v any
+		_ = json.Unmarshal(raw, &v)
+		marks[k] = mark{pk, v}
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	keys := make([]string, 0, len(values))
+	for k := range values {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+	changed := map[string]any{}
+	var undo []presetUndo
+	for _, k := range keys {
+		cur, has := settings[k]
+		m, marked := marks[k]
+		if has && (!marked || m.pack != p.Manifest.ID || !jsonEqual(cur, m.value)) {
+			continue
+		}
+		if has && jsonEqual(cur, values[k]) && marked {
+			continue // already up to date
+		}
+		u := presetUndo{site: site, key: k, wrote: values[k], prev: cur, hadSetting: has, markPack: m.pack, markValue: m.value, hadMark: marked}
+		undo = append(undo, u)
+		settings[k] = values[k]
+		changed[k] = values[k]
+		raw, _ := json.Marshal(values[k])
+		if _, err := tx.Exec(ctx, `INSERT INTO site_pack_default (org_id, site_id, key, pack_id, value) VALUES ($1,$2,$3,$4,$5)
+			ON CONFLICT (org_id, site_id, key) DO UPDATE SET pack_id = EXCLUDED.pack_id, value = EXCLUDED.value, applied_at = now()`, org, site, k, p.Manifest.ID, raw); err != nil {
+			return nil, err
+		}
+	}
+	if len(changed) == 0 {
+		return nil, nil
+	}
+	raw, _ := json.Marshal(settings)
+	if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, raw); err != nil {
+		return nil, err
+	}
+	diff, _ := audit.Diff("site_settings", nil, changed)
+	return undo, audit.Record(ctx, tx, audit.Event{OrgID: org, SiteID: &site, Action: "pack.presets_applied", TargetType: "site", TargetID: site, Diff: diff})
+}
+
+// presetUndo records what applyPresets changed for one key of one site, so a
+// failed enablement can put the site back exactly as it was.
+type presetUndo struct {
+	site       uuid.UUID
+	key        string
+	wrote      any
+	hadSetting bool
+	prev       any
+	hadMark    bool
+	markPack   string
+	markValue  any
+}
+
+// undoPresets reverts applyPresets changes in a new transaction's tx: a key goes
+// back to its earlier value (or is removed) only while it still holds the value
+// the enablement wrote; a site edited in between keeps its edit.
+func (h *Host) undoPresets(ctx context.Context, tx pgx.Tx, org uuid.UUID, undo []presetUndo) error {
+	bySite := map[uuid.UUID][]presetUndo{}
+	var order []uuid.UUID
+	for _, u := range undo {
+		if _, ok := bySite[u.site]; !ok {
+			order = append(order, u.site)
+		}
+		bySite[u.site] = append(bySite[u.site], u)
+	}
+	for _, site := range order {
+		var raw []byte
+		if err := tx.QueryRow(ctx, `SELECT settings FROM site WHERE org_id = $1 AND id = $2 FOR UPDATE`, org, site).Scan(&raw); err != nil {
+			return err
+		}
+		settings := map[string]any{}
+		if err := json.Unmarshal(raw, &settings); err != nil {
+			return err
+		}
+		changed := false
+		for _, u := range bySite[site] {
+			if cur, ok := settings[u.key]; ok && jsonEqual(cur, u.wrote) {
+				if u.hadSetting {
+					settings[u.key] = u.prev
+				} else {
+					delete(settings, u.key)
+				}
+				changed = true
+			}
+			if u.hadMark {
+				mv, _ := json.Marshal(u.markValue)
+				if _, err := tx.Exec(ctx, `INSERT INTO site_pack_default (org_id, site_id, key, pack_id, value) VALUES ($1,$2,$3,$4,$5)
+					ON CONFLICT (org_id, site_id, key) DO UPDATE SET pack_id = EXCLUDED.pack_id, value = EXCLUDED.value`, org, site, u.key, u.markPack, mv); err != nil {
+					return err
+				}
+			} else if _, err := tx.Exec(ctx, `DELETE FROM site_pack_default WHERE org_id = $1 AND site_id = $2 AND key = $3`, org, site, u.key); err != nil {
+				return err
+			}
+		}
+		if changed {
+			out, _ := json.Marshal(settings)
+			if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, out); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// chartUndo records one account rename so a failed enablement can revert it.
+type chartUndo struct {
+	site     uuid.UUID
+	code     string
+	old, new string
+}
+
+// renameChart renames the site's system accounts by code from the pack's
+// ChartOfAccounts in the organization's default locale (packs localize names,
+// never structure). It returns what it renamed.
+func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) ([]chartUndo, error) {
+	if len(p.C.Charts) == 0 {
+		return nil, nil
+	}
+	var locale string
+	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, org).Scan(&locale); err != nil {
+		return nil, err
+	}
+	var undo []chartUndo
+	for _, c := range p.C.Charts {
+		var names map[string]string
+		if err := safe(p.Manifest.ID, "chart "+c.ID(), func() error { names = c.Names(locale); return nil }); err != nil {
+			h.log.WarnContext(ctx, "pack chart names skipped", "pack", p.Manifest.ID, "error", err)
+			continue
+		}
+		codes := make([]string, 0, len(names))
+		for code := range names {
+			codes = append(codes, code)
+		}
+		slices.Sort(codes)
+		for _, code := range codes {
+			name := names[code]
+			if name == "" {
+				continue
+			}
+			var old string
+			err := tx.QueryRow(ctx, `SELECT name FROM account WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system AND name <> $4 FOR UPDATE`, org, site, code, name).Scan(&old)
+			if errors.Is(err, pgx.ErrNoRows) {
+				continue
+			}
+			if err != nil {
+				return nil, err
+			}
+			if _, err := tx.Exec(ctx, `UPDATE account SET name = $4, updated_at = now(), version = version + 1
+				WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system`, org, site, code, name); err != nil {
+				return nil, err
+			}
+			undo = append(undo, chartUndo{site: site, code: code, old: old, new: name})
+		}
+	}
+	return undo, nil
+}
+
+func (h *Host) undoChart(ctx context.Context, tx pgx.Tx, org uuid.UUID, undo []chartUndo) error {
+	for _, u := range undo {
+		if _, err := tx.Exec(ctx, `UPDATE account SET name = $5, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system AND name = $4`, org, u.site, u.code, u.new, u.old); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// enableUndo is everything an enablement changed outside its own rows.
+type enableUndo struct {
+	presets []presetUndo
+	chart   []chartUndo
+}
+
+// applyToOrgSites applies presets and chart names of an enabled pack to every active site of the organization.
+func (h *Host) applyToOrgSites(ctx context.Context, tx pgx.Tx, org uuid.UUID, p *Pack) (enableUndo, error) {
+	var undo enableUndo
+	rows, err := tx.Query(ctx, `SELECT id FROM site WHERE org_id = $1 AND status = 'active' ORDER BY id`, org)
+	if err != nil {
+		return undo, err
+	}
+	var sites []uuid.UUID
+	for rows.Next() {
+		var s uuid.UUID
+		if err := rows.Scan(&s); err != nil {
+			rows.Close()
+			return undo, err
+		}
+		sites = append(sites, s)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return undo, err
+	}
+	for _, s := range sites {
+		pu, err := h.applyPresets(ctx, tx, org, s, p)
+		if err != nil {
+			return undo, fmt.Errorf("apply presets of pack %s to site %s: %w", p.Manifest.ID, s, err)
+		}
+		undo.presets = append(undo.presets, pu...)
+		cu, err := h.renameChart(ctx, tx, org, s, p)
+		if err != nil {
+			return undo, err
+		}
+		undo.chart = append(undo.chart, cu...)
+	}
+	return undo, nil
+}
+
+// SiteCreated implements tenancy.SiteHook: for a new site the presets of the
+// organization's enabled packs whose countries include the organization's
+// country (or that name none) are applied, the chart names are localized and
+// the site.created event is delivered to subscribers.
+func (h *Host) SiteCreated(ctx context.Context, tx pgx.Tx, org, site uuid.UUID) error {
+	if len(h.packs) == 0 {
+		return nil
+	}
+	var country string
+	if err := tx.QueryRow(ctx, `SELECT country_code FROM organization WHERE id = $1`, org).Scan(&country); err != nil {
+		return err
+	}
+	rows, err := tx.Query(ctx, `SELECT pack_id FROM pack_enablement WHERE org_id = $1 AND enabled ORDER BY pack_id`, org)
+	if err != nil {
+		return err
+	}
+	var on []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			rows.Close()
+			return err
+		}
+		on = append(on, id)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for _, id := range on {
+		p, ok := h.byID[id]
+		if !ok {
+			continue
+		}
+		if len(p.Manifest.Countries) == 0 || slices.Contains(p.Manifest.Countries, country) {
+			if _, err := h.applyPresets(ctx, tx, org, site, p); err != nil {
+				return err
+			}
+		}
+		if _, err := h.renameChart(ctx, tx, org, site, p); err != nil {
+			return err
+		}
+	}
+	return h.Emit(ctx, tx, org, sdk.Event{Type: sdk.EventSiteCreated, IDs: map[string]sdk.ID{"site": sdk.ID(site.String())}})
+}
+
+// SiteDefaults returns which settings keys of a site are still pack defaults
+// (the value equals what the pack wrote): key to pack id and value. The site
+// settings endpoints show it as the "pack default" marker.
+func (h *Host) SiteDefaults(ctx context.Context, org, site uuid.UUID) (map[string]PackDefault, error) {
+	out := map[string]PackDefault{}
+	err := h.cfg.DB.InTenantTx(ctx, org, func(tx pgx.Tx) error {
+		var raw []byte
+		if err := tx.QueryRow(ctx, `SELECT settings FROM site WHERE org_id = $1 AND id = $2`, org, site).Scan(&raw); err != nil {
+			return err
+		}
+		settings := map[string]any{}
+		if err := json.Unmarshal(raw, &settings); err != nil {
+			return err
+		}
+		rows, err := tx.Query(ctx, `SELECT key, pack_id, value FROM site_pack_default WHERE org_id = $1 AND site_id = $2 ORDER BY key`, org, site)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var k, pk string
+			var vr []byte
+			if err := rows.Scan(&k, &pk, &vr); err != nil {
+				return err
+			}
+			var v any
+			_ = json.Unmarshal(vr, &v)
+			if cur, ok := settings[k]; ok && jsonEqual(cur, v) {
+				out[k] = PackDefault{Pack: pk, Value: v}
+			}
+		}
+		return rows.Err()
+	})
+	return out, err
+}
+
+// PackDefault marks a site setting as still holding the value a pack wrote.
+type PackDefault struct {
+	Pack  string
+	Value any
+}

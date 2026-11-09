@@ -129,7 +129,7 @@ func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, asset
 			p.AssetAccountID = assetAccount
 		}
 		d := debtorOf(p)
-		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, d, chargeIDs)
+		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, d, chargeIDs, uuid.Nil)
 		if err != nil {
 			return err
 		}
@@ -194,6 +194,11 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 // Void reverses a confirmed payment (payments.record; a collector only in their own cash box): its entry is reversed dated
 // today, its allocations are voided and the charges re-derive their status.
 func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason string) (Payment, error) {
+	return s.reverse(ctx, orgID, paymentID, reason, "voided", nil)
+}
+
+// reverse is Void and the provider refund: final is the status the payment ends in (voided or refunded).
+func (s *Service) reverse(ctx context.Context, orgID, paymentID uuid.UUID, reason, final string, refundRef *string) (Payment, error) {
 	var out Payment
 	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
 		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
@@ -214,7 +219,7 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 				return problem.Forbidden("you may void payments only in your own cash box")
 			}
 		}
-		if p.Status == "voided" {
+		if p.Status == final {
 			out, err = loadPayment(ctx, tx, orgID, paymentID)
 			return err
 		}
@@ -273,7 +278,7 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 			ids = append(ids, cid)
 		}
 		rows.Close()
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status='voided', void_entry_id=$3 WHERE org_id=$1 AND id=$2`, orgID, paymentID, rid); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status=$4, void_entry_id=$3, refund_ref=$5 WHERE org_id=$1 AND id=$2`, orgID, paymentID, rid, final, refundRef); err != nil {
 			return err
 		}
 		if _, err := billing.RefreshStatus(ctx, tx, orgID, p.SiteID, ids); err != nil {
@@ -288,11 +293,17 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 		} else if credit < 0 {
 			return problem.Conflict("the surplus of this payment has already been applied to later charges; cancel those charges first")
 		}
-		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.void", "payment", paymentID, map[string]any{"status": "confirmed"}, map[string]any{"status": "voided", "reason": reason}); err != nil {
+		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment."+map[string]string{"voided": "void", "refunded": "refund"}[final], "payment", paymentID, map[string]any{"status": "confirmed"}, map[string]any{"status": final, "reason": reason}); err != nil {
 			return err
 		}
 		out, err = loadPayment(ctx, tx, orgID, paymentID)
-		return err
+		if err != nil {
+			return err
+		}
+		if final == "refunded" && s.OnRefunded != nil {
+			return s.OnRefunded(ctx, tx, out)
+		}
+		return nil
 	})
 	return out, err
 }

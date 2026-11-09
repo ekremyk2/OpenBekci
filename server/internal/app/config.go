@@ -19,7 +19,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/openbekci/openbekci/sdk"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
+	"github.com/openbekci/openbekci/server/internal/platform/sms"
 )
 
 const envPrefix = "OPENBEKCI_"
@@ -131,6 +133,11 @@ type Config struct {
 	// PushAllowPrivate lets UnifiedPush endpoints be plain http or on private
 	// addresses (OPENBEKCI_PUSH_ALLOW_PRIVATE, default false).
 	PushAllowPrivate bool
+	// Packs are the packs compiled into the binary (cmd/openbekci/packs.go); set by the command.
+	Packs []sdk.Pack
+	// SMSPicker routes an organization's messages to the SMS provider it chose from its enabled
+	// packs; set by the server wiring, not by the environment.
+	SMSPicker sms.Picker
 	// APIKeyRatePerMinute limits requests per organization API key
 	// (OPENBEKCI_API_KEY_RATE_PER_MINUTE); zero takes the default (600), a
 	// negative value removes the limit.

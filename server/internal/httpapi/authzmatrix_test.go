@@ -17,6 +17,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
+	"github.com/openbekci/openbekci/server/internal/packs"
 )
 
 // The authz matrix (backend plan sections 7 and 20): every operation of the
@@ -97,6 +98,12 @@ var authzMatrixRows = map[string]mrow{
 
 	// inside an organization
 	"audit.list": {perms: []authz.Permission{audit.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/audit")},
+
+	// packs: the matrix environment compiles no pack in, so the operations on a pack answer 404 to those who may use them
+	"packs.list":           {perms: []authz.Permission{packs.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/packs")},
+	"packs.enable":         {perms: []authz.Permission{packs.PermManage}, status: 404, build: fixed("POST", "/v1/orgs/{org_id}/packs/nopack/enable", `{}`)},
+	"packs.disable":        {perms: []authz.Permission{packs.PermManage}, status: 404, build: fixed("POST", "/v1/orgs/{org_id}/packs/nopack/disable", "")},
+	"packs.updateSettings": {perms: []authz.Permission{packs.PermManage}, status: 404, build: fixed("PUT", "/v1/orgs/{org_id}/packs/nopack/settings", `{"scope":"org","values":{}}`)},
 
 	// instance level: only platform administrators hold platform.manage
 	"platform.listAudit": {perms: []authz.Permission{audit.PermPlatformRead}, status: 200, build: mget("/v1/platform/audit"),

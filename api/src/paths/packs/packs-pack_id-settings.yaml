@@ -1,0 +1,56 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: pack_id
+    in: path
+    required: true
+    description: Id of the pack, for example `tr`.
+    schema:
+      type: string
+put:
+  operationId: packs.updateSettings
+  summary: Update the settings of a pack
+  description: |-
+    **Release 0.4.** Replace the non-secret settings of one scope (`org`, or `site` with `site_id`). Secret fields
+    (`x-secret`) keep their stored value unless named in `values`; a `null` clears one. The result never contains secret
+    values. The pack must be enabled (`conflict`, 409, otherwise).
+
+    Permission: `packs.manage`.
+
+    Problems: `validation_failed` (422), `not_found` (404), `conflict` (409), `pack_error` (500).
+  tags:
+    - packs
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - packs.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/packs.yaml#/schemas/PackSettingsUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/packs.yaml#/schemas/PackSettings
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

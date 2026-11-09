@@ -36,6 +36,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/core/treasury"
+	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/db/dbtest"
@@ -132,6 +133,14 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Keys: e.integ, Origins: []string{testBase}}, ValidateResponses: true,
 	}
+	host, herr := packs.New(packs.Config{DB: d, Log: cfg.Log}, nil)
+	if herr == nil {
+		herr = host.Start(t.Context())
+	}
+	if herr != nil {
+		t.Fatal(herr)
+	}
+	e.deps.Packs = host
 	e.h = NewRouter(e.deps, Options{})
 	return e
 }

@@ -2,7 +2,7 @@
 
 The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut`, `people.updateMembership` and `people.listMyUnitClaims` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 441 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 445 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
@@ -20,6 +20,7 @@ Total: 441 new operations, plus the 15 already served (instance, auth, me) which
 | dashboards | 4 |
 | codes | 1 |
 | platform | 9 |
+| packs | 4 |
 | auth | 3 |
 
 | Module | operationId | Method and path | Release | Permission | Idempotency | Status |
@@ -470,3 +471,7 @@ Total: 441 new operations, plus the 15 already served (instance, auth, me) which
 | me | `me.createWebLoginLink` | `POST /v1/me/web-login-link` | 0.4 | `sessions.manage_own` | none | served (not in the original draft) |
 | auth | `auth.exchangeWebLoginLink` | `POST /v1/auth/web-login-link:exchange` | 0.4 | public / self | none | served (not in the original draft) |
 | operations | `operations.getNotification` | `GET /v1/orgs/{org_id}/me/notifications/{notification_id}` | 0.1 | `notifications.read` | - | served (not in the original draft) |
+| packs | `packs.list` | `GET /v1/orgs/{org_id}/packs` | 0.4 | `packs.read` | - | served (not in the original draft) |
+| packs | `packs.enable` | `POST /v1/orgs/{org_id}/packs/{pack_id}/enable` | 0.4 | `packs.manage` | optional | served (not in the original draft) |
+| packs | `packs.updateSettings` | `PUT /v1/orgs/{org_id}/packs/{pack_id}/settings` | 0.4 | `packs.manage` | optional | served (not in the original draft) |
+| packs | `packs.disable` | `POST /v1/orgs/{org_id}/packs/{pack_id}/disable` | 0.4 | `packs.manage` | optional | served (not in the original draft) |

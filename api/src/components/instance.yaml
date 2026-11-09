@@ -111,7 +111,29 @@ schemas:
     allOf:
       - $ref: '#/schemas/DiscoveryDocument'
       - type: object
-        required: [policies]
+        required: [policies, pack_details]
         properties:
           policies:
             $ref: '#/schemas/InstancePolicies'
+          pack_details:
+            type: array
+            description: The packs compiled into this server (`packs` lists the ones enabled for at least one organization).
+            items:
+              $ref: '#/schemas/InstancePack'
+  InstancePack:
+    type: object
+    required: [id, version, min_sdk, countries, enabled]
+    properties:
+      id:
+        type: string
+      version:
+        type: string
+      min_sdk:
+        type: string
+      countries:
+        type: array
+        items:
+          type: string
+      enabled:
+        type: boolean
+        description: Enabled for at least one organization of the instance.

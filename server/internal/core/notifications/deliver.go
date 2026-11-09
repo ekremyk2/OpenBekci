@@ -15,6 +15,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
+	"github.com/openbekci/openbekci/server/internal/platform/sms"
 )
 
 // maxAttempts matches the job's MaxAttempts: after the last try a failed
@@ -281,7 +282,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 			}
 			r.err = s.cfg.Mail.Send(ctx, mail.Message{To: c.email, Subject: p.text.Subject, Body: body})
 		case jobs.ChannelSMS:
-			r.provider, r.err = s.cfg.SMS.Send(ctx, c.phone, p.text.SMS)
+			r.provider, r.err = s.cfg.SMS.Send(sms.WithOrg(ctx, a.OrgID), c.phone, p.text.SMS)
 			if r.err == nil {
 				r.segments = SMSSegments(p.text.SMS)
 			}
