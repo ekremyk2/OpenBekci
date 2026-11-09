@@ -42,44 +42,6 @@ var _ sdk.PaymentProvider = (*iyzico)(nil)
 
 func (*iyzico) ID() string { return IyzicoID }
 
-// creds finds the merchant account to use.
-//
-// TODO(PR #35): replace the site-then-organization lookup with the scope
-// sdk.AccountScope returns for the merchant-of-record setting (the site's own
-// iyzico account, or the management company's at organization level).
-func (pr *iyzico) creds(ctx context.Context, site sdk.ID) (iyzicoCreds, error) {
-	scopes := []sdk.Scope{sdk.OrgScope()}
-	if site != "" {
-		scopes = []sdk.Scope{sdk.SiteScope(site), sdk.OrgScope()}
-	}
-	for _, sc := range scopes {
-		doc, err := pr.p.svc.Settings().All(ctx, sc)
-		if err != nil {
-			return iyzicoCreds{}, err
-		}
-		key, _ := doc["tr_payments_iyzico_api_key"].(string)
-		secret, _ := doc["tr_payments_iyzico_secret_key"].(string)
-		if key == "" || secret == "" {
-			continue
-		}
-		if en, _ := doc["tr_payments_iyzico_enabled"].(bool); !en {
-			return iyzicoCreds{}, fmt.Errorf("iyzico is not enabled in the settings: %w", sdk.ErrUnsupported)
-		}
-		sandbox, _ := doc["tr_payments_iyzico_sandbox"].(bool)
-		base, _ := doc["tr_payments_iyzico_callback_base_url"].(string)
-		return iyzicoCreds{APIKey: key, SecretKey: secret, Sandbox: sandbox, CallbackBase: strings.TrimRight(base, "/")}, nil
-	}
-	return iyzicoCreds{}, fmt.Errorf("no iyzico api key and secret key are configured: %w", sdk.ErrCredentials)
-}
-
-func (pr *iyzico) client(ctx context.Context, site sdk.ID) (*iyzicoClient, error) {
-	c, err := pr.creds(ctx, site)
-	if err != nil {
-		return nil, err
-	}
-	return &iyzicoClient{http: pr.p.client(), creds: c}, nil
-}
-
 // mapErr turns an iyzico failure answer into an SDK error. The error codes of
 // iyzico are not stable enough to switch on, so the message is read instead
 // (assumption, PAYMENTS.md).
@@ -199,7 +161,8 @@ func (pr *iyzico) CreateCheckout(ctx context.Context, req sdk.CheckoutRequest) (
 	if err != nil {
 		return sdk.Checkout{}, err
 	}
-	cl, err := pr.client(ctx, req.Target.SiteID)
+	acct := account{Site: req.Target.SiteID, Merchant: merchantOf(req.MerchantOfRecord)}
+	cl, err := pr.client(ctx, acct.scope())
 	if err != nil {
 		return sdk.Checkout{}, err
 	}
@@ -214,7 +177,7 @@ func (pr *iyzico) CreateCheckout(ctx context.Context, req sdk.CheckoutRequest) (
 	if base == "" {
 		return sdk.Checkout{}, fmt.Errorf("set the public address of the server (tr_payments_iyzico_callback_base_url) or give a return url: %w", sdk.ErrRejected)
 	}
-	q := url.Values{"site": {string(req.Target.SiteID)}}
+	q := url.Values{"site": {string(req.Target.SiteID)}, "m": {acct.Merchant}}
 	if req.ReturnURL != "" {
 		q.Set("r", base64.RawURLEncoding.EncodeToString([]byte(req.ReturnURL)))
 		q.Set("s", callbackSig(cl.creds.SecretKey, string(req.Target.SiteID), req.ReturnURL))
@@ -250,6 +213,10 @@ func (pr *iyzico) CreateCheckout(ctx context.Context, req sdk.CheckoutRequest) (
 	}
 	if out.Token == "" || out.PaymentPageURL == "" {
 		return sdk.Checkout{}, fmt.Errorf("%w: iyzico answered without a token or a payment page", sdk.ErrUnavailable)
+	}
+	// Status, Refund and the webhook later find the same account again by the token
+	if err := pr.accounts().put(ctx, out.Token, acct); err != nil {
+		return sdk.Checkout{}, fmt.Errorf("remember the checkout's account: %w", err)
 	}
 	return sdk.Checkout{ProviderTxnID: out.Token, CheckoutURL: out.PaymentPageURL}, nil
 }
@@ -288,7 +255,11 @@ func settled(d cfDetailResponse) (sdk.PaymentStatus, error) {
 }
 
 func (pr *iyzico) Status(ctx context.Context, ref sdk.ProviderRef) (sdk.PaymentStatus, error) {
-	cl, err := pr.client(ctx, "")
+	acct, err := pr.accountOf(ctx, ref.ProviderTxnID)
+	if err != nil {
+		return sdk.PaymentStatus{}, err
+	}
+	cl, err := pr.client(ctx, acct.scope())
 	if err != nil {
 		return sdk.PaymentStatus{}, err
 	}
@@ -308,43 +279,56 @@ type webhookBody struct {
 }
 
 func (pr *iyzico) HandleWebhook(ctx context.Context, req sdk.WebhookRequest) (sdk.WebhookResult, error) {
-	site := sdk.ID(req.Query.Get("site"))
-	cl, err := pr.client(ctx, site)
-	if err != nil {
-		// without credentials nothing can be verified
-		return sdk.WebhookResult{}, fmt.Errorf("webhook: %w", sdk.ErrInvalidSignature)
-	}
-	var token string
-	redirect := ""
 	trimmed := strings.TrimSpace(string(req.Body))
-	if strings.HasPrefix(trimmed, "{") {
-		// the server-to-server notification: verified by its signature
-		var wb webhookBody
+	jsonHook := strings.HasPrefix(trimmed, "{")
+	var wb webhookBody
+	var token string
+	if jsonHook {
 		if err := json.Unmarshal(req.Body, &wb); err != nil {
 			return sdk.WebhookResult{}, fmt.Errorf("webhook body: %w", sdk.ErrRejected)
 		}
-		want := webhookSignature(cl.creds.SecretKey, wb.EventType, wb.IyziPaymentID, wb.Token, wb.ConversationID, wb.Status)
-		got := strings.ToLower(strings.TrimSpace(req.Header.Get(SignatureHeader)))
-		if got == "" || !hmac.Equal([]byte(want), []byte(got)) {
-			return sdk.WebhookResult{}, fmt.Errorf("webhook: %w", sdk.ErrInvalidSignature)
-		}
 		token = wb.Token
-		if token == "" {
-			return sdk.WebhookResult{Response: ok()}, nil // a notification of another kind (a plain payment): acknowledged
-		}
 	} else {
-		// the browser callback after the hosted page: only a token, authenticated by retrieving it
 		form, err := url.ParseQuery(trimmed)
 		if err != nil || form.Get("token") == "" {
 			return sdk.WebhookResult{}, fmt.Errorf("callback without a token: %w", sdk.ErrRejected)
 		}
 		token = form.Get("token")
-		if r := req.Query.Get("r"); r != "" {
-			if raw, err := base64.RawURLEncoding.DecodeString(r); err == nil {
-				ru := string(raw)
-				if s := req.Query.Get("s"); s != "" && hmac.Equal([]byte(s), []byte(callbackSig(cl.creds.SecretKey, string(site), ru))) && (strings.HasPrefix(ru, "https://") || strings.HasPrefix(ru, "http://")) {
-					redirect = ru
-				}
+	}
+	// whose account: the one the checkout was created on; else what the callback URL says; else the organization's
+	acct := account{Site: sdk.ID(req.Query.Get("site")), Merchant: merchantOf(req.Query.Get("m"))}
+	if req.Query.Get("m") == "" {
+		acct.Merchant = sdk.MerchantOrganization
+	}
+	if token != "" {
+		if a, ok, err := pr.accounts().get(ctx, token); err != nil {
+			return sdk.WebhookResult{}, err
+		} else if ok {
+			acct = a
+		}
+	}
+	cl, err := pr.client(ctx, acct.scope())
+	if err != nil {
+		// without credentials nothing can be verified
+		return sdk.WebhookResult{}, fmt.Errorf("webhook: %w", sdk.ErrInvalidSignature)
+	}
+	redirect := ""
+	if jsonHook {
+		// the server-to-server notification: verified by its signature
+		want := webhookSignature(cl.creds.SecretKey, wb.EventType, wb.IyziPaymentID, wb.Token, wb.ConversationID, wb.Status)
+		got := strings.ToLower(strings.TrimSpace(req.Header.Get(SignatureHeader)))
+		if got == "" || !hmac.Equal([]byte(want), []byte(got)) {
+			return sdk.WebhookResult{}, fmt.Errorf("webhook: %w", sdk.ErrInvalidSignature)
+		}
+		if token == "" {
+			return sdk.WebhookResult{Response: ok()}, nil // a notification of another kind (a plain payment): acknowledged
+		}
+	} else if r := req.Query.Get("r"); r != "" {
+		// the browser callback after the hosted page: only a token, authenticated by retrieving it
+		if raw, err := base64.RawURLEncoding.DecodeString(r); err == nil {
+			ru := string(raw)
+			if s := req.Query.Get("s"); s != "" && hmac.Equal([]byte(s), []byte(callbackSig(cl.creds.SecretKey, string(acct.Site), ru))) && (strings.HasPrefix(ru, "https://") || strings.HasPrefix(ru, "http://")) {
+				redirect = ru
 			}
 		}
 	}
@@ -388,7 +372,11 @@ func ok() *sdk.HTTPResponse {
 var refundedStatuses = map[string]bool{"FULL": true, "FULLY_REFUNDED": true, "REFUNDED": true, "FULL_REFUND": true}
 
 func (pr *iyzico) Refund(ctx context.Context, req sdk.RefundRequest) (sdk.RefundResult, error) {
-	cl, err := pr.client(ctx, "")
+	acct, err := pr.accountOf(ctx, req.ProviderTxnID)
+	if err != nil {
+		return sdk.RefundResult{}, err
+	}
+	cl, err := pr.client(ctx, acct.scope())
 	if err != nil {
 		return sdk.RefundResult{}, err
 	}
@@ -443,7 +431,7 @@ func (pr *iyzico) Settlements(ctx context.Context, req sdk.SettlementRequest) ([
 	if to.Sub(from) > maxSettlementDays*24*time.Hour {
 		return nil, fmt.Errorf("a settlement period is at most %d days: %w", maxSettlementDays, sdk.ErrRejected)
 	}
-	cl, err := pr.client(ctx, "")
+	cl, err := pr.client(ctx, sdk.AccountScope(req.MerchantOfRecord, req.Site))
 	if err != nil {
 		return nil, err
 	}
@@ -491,3 +479,11 @@ func (pr *iyzico) Settlements(ctx context.Context, req sdk.SettlementRequest) ([
 // provider hands it back on retrieve). Exposed for tests and tools that build
 // provider fixtures.
 func BasketID(t sdk.PaymentTarget) (string, error) { return encodeBasket(t) }
+
+// merchantOf normalizes the merchant of record of a request (empty: the site's own account).
+func merchantOf(m string) string {
+	if m == sdk.MerchantOrganization {
+		return m
+	}
+	return sdk.MerchantSite
+}

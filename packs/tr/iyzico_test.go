@@ -69,13 +69,14 @@ func newIyzico(t *testing.T, doc map[string]any) (*iyzico, *trtest.Iyzico, conte
 	t.Cleanup(fake.Close)
 	p := New(WithHTTPClient(fake.Client()))
 	p.svc = stubServices{set: stubSettings{"org": doc}}
+	p.accounts = memAccounts{}
 	return &iyzico{p: p}, fake, sdk.WithOrg(context.Background(), tOrg)
 }
 
 func checkoutReq() sdk.CheckoutRequest {
 	return sdk.CheckoutRequest{Reference: "chk-1", Gross: sdk.Money{Amount: 10000, Currency: "TRY"}, Locale: "tr",
 		Target:    sdk.PaymentTarget{SiteID: tSite, UnitID: tUnit, DebtorKind: "tenant", ChargeIDs: []sdk.ID{"44444444-4444-4444-4444-444444444444"}},
-		ReturnURL: "https://app.example.test/pay/done", Payer: sdk.Payer{Name: "Ayşe Yılmaz"}}
+		ReturnURL: "https://app.example.test/pay/done", Payer: sdk.Payer{Name: "Ayşe Yılmaz"}, MerchantOfRecord: sdk.MerchantOrganization}
 }
 
 func TestCreateCheckoutSendsTheDocumentedRequest(t *testing.T) {
@@ -172,20 +173,6 @@ func TestCredentialsAreRequiredAndNeverLeak(t *testing.T) {
 	}
 }
 
-func TestSiteCredentialsWinOverTheOrganizations(t *testing.T) {
-	fake := trtest.NewIyzico("site-key", "site-secret")
-	defer fake.Close()
-	p := New(WithHTTPClient(fake.Client()))
-	p.svc = stubServices{set: stubSettings{
-		"org":                   orgIyzico(nil),
-		"site:" + string(tSite): {"tr_payments_iyzico_enabled": true, "tr_payments_iyzico_api_key": "site-key", "tr_payments_iyzico_secret_key": "site-secret"},
-	}}
-	pr := &iyzico{p: p}
-	if _, err := pr.CreateCheckout(sdk.WithOrg(context.Background(), tOrg), checkoutReq()); err != nil {
-		t.Fatalf("a site with its own iyzico account is checked out with it: %v", err)
-	}
-}
-
 func payNow(fake *trtest.Iyzico, token string) {
 	fake.Pay(token, "2026-02-03", "0.25", "2.25")
 }
@@ -243,6 +230,7 @@ func TestWebhookSignatureIsVerified(t *testing.T) {
 	// no credentials at all: nothing can be verified
 	p2 := New()
 	p2.svc = stubServices{set: stubSettings{"org": {}}}
+	p2.accounts = memAccounts{}
 	if _, err := (&iyzico{p: p2}).HandleWebhook(ctx, good); !errors.Is(err, sdk.ErrInvalidSignature) {
 		t.Errorf("without credentials: %v", err)
 	}

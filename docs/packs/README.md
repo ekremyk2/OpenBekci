@@ -200,6 +200,8 @@ per `(organization, provider, provider_txn_id)`. The webhook URL the provider is
 401, `ErrNotFound` 404, `ErrRejected`/`ErrUnsupported`/`ErrCredentials` 422, `ErrUnavailable` 503; anything else is
 `pack_error` 500). Partial refunds are unsupported in 0.4.
 
+Whose account a call uses follows the core setting `payments.merchant_of_record`: pass `CheckoutRequest.MerchantOfRecord` or `SettlementRequest.MerchantOfRecord` and the site to `sdk.AccountScope` and read the credentials at that scope. `Status` and `Refund` get only the transaction id, so remember the account per checkout in a pack table. Return `Settlement.ProviderTxnIDs` when the provider can name them: in organization mode the core splits a payout over sites by them.
+
 Practical notes from the first real provider (`packs/tr`, iyzico, `packs/tr/PAYMENTS.md`):
 
 - Give the provider client an injectable `*http.Client` (a pack option) so that tests put an in-process fake behind it and
@@ -227,6 +229,9 @@ and is deleted after 90 days. Lift a reference code (`<unit>-<period>`, see `pac
 so that a new bank is a format file and a fixture. Fixtures must be anonymized or synthetic and say so in a README.
 `ConformStatementImporter` takes `ImporterSample.Text` for fixtures whose bytes are not the text (a workbook, a
 windows-1254 file): the raw rows are checked against it.
+
+A pack with a transfer reference scheme also implements the optional `sdk.ReferenceHinter` (`SuggestedReference(ctx, door,
+period)`): the core's bank details response returns it as `suggested_reference` when the pack is enabled.
 
 An **SMS provider** (`SMSProvider`) is selected for an organization by its `sms_provider` setting (the provider id), through
 `sms.Routed` and the host's `SMSPicker`; with no setting the instance gateway (Netgsm or log) sends. The provider reads

@@ -3,8 +3,11 @@
 package tr
 
 import (
+	"context"
 	"regexp"
 	"strings"
+
+	"github.com/openbekci/openbekci/sdk"
 )
 
 // The reference-code scheme of bank transfers: "<unit>-<period>", for example
@@ -41,4 +44,11 @@ func ParseRefCode(s string) (unit, period string, ok bool) {
 
 func foldASCII(s string) string {
 	return strings.NewReplacer("İ", "I", "ı", "i", "ş", "s", "Ş", "S", "ğ", "g", "Ğ", "G", "ü", "u", "Ü", "U", "ö", "o", "Ö", "O", "ç", "c", "Ç", "C").Replace(s)
+}
+
+var _ sdk.ReferenceHinter = (*Pack)(nil)
+
+// SuggestedReference implements sdk.ReferenceHinter: the text a resident writes on the transfer for a unit and period.
+func (*Pack) SuggestedReference(_ context.Context, door, period string) (string, error) {
+	return RefCode(door, period), nil
 }

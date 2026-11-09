@@ -90,13 +90,27 @@ notification**; the browser callback does not need it.
 
 ### Merchant of record
 
-Decision M5: the merchant is per organization (the management company's iyzico account) with the site's own account as
-the alternative; the money is the client's and goes through the clearing account either way. The pack reads the keys at
-site scope first and falls back to the organization's. **TODO(PR #35):** when `sdk.AccountScope` lands, replace that lookup
-with the scope it returns for the core's merchant-of-record setting, and make `Status`, `Refund` and `Settlements` (which
-today know no site and read the organization scope) resolve the same account as the checkout did. Until then a site that
-keeps its own iyzico account works for checkout and webhooks (the callback URL carries `site=`) but not for `Status`,
-`Refund` and `Settlements`.
+Decision M5 and the core setting `payments.merchant_of_record`: the core says per call whose account it is.
+`CheckoutRequest.MerchantOfRecord` and `SettlementRequest.MerchantOfRecord` go through `sdk.AccountScope`: **site** mode
+reads the keys at the site's scope (the site's own iyzico account), **organization** mode at the organization's scope (the
+management company's account, the net is client money owed to the sites). There is no fallback from one scope to the
+other: a site-mode checkout on a site without keys fails with `ErrCredentials` instead of silently paying into the
+organization's account.
+
+`Status` and `Refund` are given only the transaction id, and a webhook has no session, so the pack remembers the account
+of every checkout it creates (pack table `pack_tr_iyzico_checkout`: token, site, merchant) and resolves the same account
+from the token later; a JSON webhook is verified with the secret of the account its token belongs to. A payment the pack
+has no checkout row for (a conformance webhook, a payment made outside OpenBekci) is looked up in the organization's
+account. The browser callback URL also carries `site=` and `m=` as a fallback.
+
+`Settlements` is asked per site in site mode and once for the organization in organization mode. **Limitation in
+organization mode:** the daily report carries iyzico's `paymentId`, the core keys payments by checkout token, so the
+pack returns `ProviderTxnIDs` empty. The core then cannot split the organization's payout by the sites of the payments and
+posts the whole net (as client money) to the site the sync reports for: the books balance and a replay posts nothing, but
+the per-site split is wrong, a site's clearing account can go negative and another's stay positive, and only the
+organization-wide total is right. A later release should keep `paymentId` next to the token (it is known when the
+payment is retrieved) and return the tokens. In site mode the payout belongs to one site and nothing is lost.
+
 
 ## Tests, and switching the fake for a recording
 

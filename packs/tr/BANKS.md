@@ -60,6 +60,8 @@ becomes a hyphen, Turkish letters are folded to ASCII, upper case); the code is 
 builds it and `tr.ParseRefCode(text)` splits it; the core builds the same text (`bankimport.BuildReference`).
 A bank's own dekont number in the reference column is kept as the reference when the description holds no code.
 
-**Not done:** the core has no hook for the "bank details" response (the site's IBAN and the text to write on the transfer),
-so the suggested reference text is not exposed there. The residents' clients can build `<door>-<period>` themselves; the
-core should return it next to the site's IBAN (open question in the PR).
+**Where residents see it:** the pack implements the optional `sdk.ReferenceHinter`, and the core's bank details response
+(`GET /v1/orgs/{org}/sites/{site}/bank-details?unit_id=...`) returns `suggested_reference` (`<door>-<current month at
+the site>`, for example `A-12-2026-03`) for organizations that have the pack enabled, null otherwise. The seam is
+`tenancy.BankReferenceHint`, implemented by the packs host.
+

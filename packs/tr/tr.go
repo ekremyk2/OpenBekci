@@ -33,6 +33,7 @@ type Pack struct {
 	svc        sdk.Services
 	http       *http.Client
 	smsTestURL string
+	accounts   accountStore // tests; nil means the pack table
 }
 
 // New returns the Turkish pack.
@@ -63,6 +64,11 @@ func (p *Pack) Register(_ context.Context, r sdk.Registry) error {
 	for _, f := range formats {
 		r.RegisterStatementImporter(&bankImporter{p: p, def: f})
 	}
+	migs, err := migrations()
+	if err != nil {
+		return err
+	}
+	r.RegisterMigrations(migs)
 	rules := Rules{}
 	r.RegisterQuorumPreset(rules)
 	r.RegisterThresholdPreset(rules)
