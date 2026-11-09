@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { Trans } from '@lingui/react/macro'
 import { LayoutDashboardIcon } from 'lucide-react'
 import { useSession } from '@/app/session'
@@ -11,6 +11,9 @@ export const Route = createFileRoute('/orgs/$orgId/')({
     const { org, can } = useSession()
     if (can('dashboard.site')) return <SiteDashboardView />
     if (can('dashboard.staff')) return <StaffDashboardView />
+    // the gate guard has no dashboard: land on the console
+    if (can('gate.operate') && org)
+      return <Navigate to="/orgs/$orgId/visitors/gate" params={{ orgId: org.id }} replace />
     return (
       <div className="flex flex-col gap-6">
         <h1 className="text-2xl font-semibold">{org?.name}</h1>

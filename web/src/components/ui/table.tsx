@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
-    <div className="relative w-full overflow-x-auto">
+    <div className="relative max-h-[75vh] w-full overflow-auto">
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   )
@@ -25,7 +25,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
   return (
     <th
       className={cn(
-        'h-10 px-2 text-start align-middle font-medium whitespace-nowrap text-muted-foreground',
+        'sticky top-0 z-10 h-11 bg-background px-2 text-start align-middle font-medium whitespace-nowrap text-muted-foreground',
         className,
       )}
       {...props}

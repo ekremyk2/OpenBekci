@@ -1,7 +1,10 @@
 import { useSyncExternalStore } from 'react'
 
 export type ThemePreference = 'system' | 'light' | 'dark'
+export const ACCENTS = ['brand', 'slate', 'forest', 'terracotta', 'navy'] as const
+export type Accent = (typeof ACCENTS)[number]
 const KEY = 'ob.theme' // keep in sync with public/theme-init.js
+const ACCENT_KEY = 'ob.accent'
 
 const listeners = new Set<() => void>()
 const media =
@@ -16,7 +19,17 @@ function readPreference(): ThemePreference {
   }
 }
 
+function readAccent(): Accent {
+  try {
+    const v = localStorage.getItem(ACCENT_KEY) as Accent | null
+    return v && ACCENTS.includes(v) ? v : 'brand'
+  } catch {
+    return 'brand'
+  }
+}
+
 let preference: ThemePreference = readPreference()
+let accent: Accent = readAccent()
 
 function resolve(p: ThemePreference): 'light' | 'dark' {
   return p === 'system' ? (media?.matches ? 'dark' : 'light') : p
@@ -24,6 +37,20 @@ function resolve(p: ThemePreference): 'light' | 'dark' {
 
 function apply() {
   document.documentElement.classList.toggle('dark', resolve(preference) === 'dark')
+  if (accent === 'brand') document.documentElement.removeAttribute('data-accent')
+  else document.documentElement.setAttribute('data-accent', accent)
+}
+
+export function setAccent(next: Accent) {
+  accent = next
+  try {
+    if (next === 'brand') localStorage.removeItem(ACCENT_KEY)
+    else localStorage.setItem(ACCENT_KEY, next)
+  } catch {
+    /* storage blocked: lasts for this page load */
+  }
+  apply()
+  listeners.forEach((l) => l())
 }
 
 export function setThemePreference(next: ThemePreference) {
@@ -44,12 +71,12 @@ media?.addEventListener('change', () => {
 })
 
 let snapshotKey = ''
-let snapshot = { preference, resolved: resolve(preference) }
+let snapshot = { preference, resolved: resolve(preference), accent }
 function getSnapshot() {
-  const key = `${preference}:${resolve(preference)}`
+  const key = `${preference}:${resolve(preference)}:${accent}`
   if (key !== snapshotKey) {
     snapshotKey = key
-    snapshot = { preference, resolved: resolve(preference) }
+    snapshot = { preference, resolved: resolve(preference), accent }
   }
   return snapshot
 }
@@ -63,7 +90,7 @@ export function useTheme() {
     getSnapshot,
     getSnapshot,
   )
-  return { ...s, setPreference: setThemePreference }
+  return { ...s, setPreference: setThemePreference, setAccent }
 }
 
 /** Relative luminance of #rgb / #rrggbb, or null when the string is not a hex color. */

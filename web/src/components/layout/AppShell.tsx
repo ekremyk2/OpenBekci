@@ -18,6 +18,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { BackLink } from './BackLink'
 import { OrgSwitcher } from './OrgSwitcher'
 import { NotificationBell } from '@/features/notifications/NotificationBell'
 import { LocaleToggle, ThemeToggle } from './Toggles'
@@ -37,7 +38,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           activeOptions={{ exact: item.to === '/orgs/$orgId' }}
           onClick={onNavigate}
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+            'flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
             '[&.active]:bg-accent [&.active]:text-accent-foreground',
           )}
         >
@@ -123,6 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenu={() => setOpen(true)} />
         <main id="main" tabIndex={-1} className="flex-1 p-4 outline-none md:p-6">
+          <BackLink />
           {children}
         </main>
       </div>
