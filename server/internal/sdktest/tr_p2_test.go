@@ -43,6 +43,15 @@ func TestTRIyzicoConformsToThePaymentProviderSuite(t *testing.T) {
 	sdktest.ConformPaymentProvider(t, func() sdk.Pack { return tr.New(tr.WithHTTPClient(fake.Client())) }, sdktest.PaymentFixture{
 		Provider: tr.IyzicoID,
 		Settings: iyzicoSettings(),
+		// the pack only honours checkouts it created: the row a CreateCheckout would have left
+		Prepare: func(h *sdktest.Harness, e sdktest.PaidEvent) {
+			basket, err := tr.BasketID(sdk.PaymentTarget{SiteID: e.Site, UnitID: e.Unit, DebtorKind: e.DebtorKind})
+			if err != nil {
+				t.Fatal(err)
+			}
+			h.Exec(`INSERT INTO pack_tr_iyzico_checkout (org_id, token, site_id, merchant, basket_id) VALUES ($1, $2, $3, 'organization', $4)
+				ON CONFLICT DO NOTHING`, h.Env.OrgID, e.Txn, e.Site, basket)
+		},
 		Paid: func(e sdktest.PaidEvent) sdk.WebhookRequest {
 			basket, err := tr.BasketID(sdk.PaymentTarget{SiteID: e.Site, UnitID: e.Unit, DebtorKind: e.DebtorKind})
 			if err != nil {

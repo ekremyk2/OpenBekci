@@ -48,6 +48,9 @@ type PaymentFixture struct {
 	// Refunded builds a correctly signed webhook reporting a refund started at
 	// the provider's side. Optional: the refund-webhook case is skipped without it.
 	Refunded func(txn, refundID string) sdk.WebhookRequest
+	// Prepare runs before Paid builds a webhook, for providers that only honour transactions they created
+	// (it stands in for the checkout that would have made the transaction). Optional.
+	Prepare func(h *Harness, e PaidEvent)
 }
 
 func post(h *Harness, provider string, req sdk.WebhookRequest) int {
@@ -74,7 +77,11 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		return h, unit
 	}
 	paid := func(h *Harness, unit sdk.ID, txn string) sdk.WebhookRequest {
-		return fx.Paid(PaidEvent{Txn: txn, Site: h.Site, Unit: unit, DebtorKind: "owner", Gross: 10000, Fee: 250, Currency: "TRY", Reference: "ref-" + txn})
+		ev := PaidEvent{Txn: txn, Site: h.Site, Unit: unit, DebtorKind: "owner", Gross: 10000, Fee: 250, Currency: "TRY", Reference: "ref-" + txn}
+		if fx.Prepare != nil {
+			fx.Prepare(h, ev)
+		}
+		return fx.Paid(ev)
 	}
 	count := func(h *Harness, where string, args ...any) int64 {
 		return h.Int(`SELECT count(*) FROM payment WHERE org_id = '`+string(h.Org)+`' AND `+where, args...)
