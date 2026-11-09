@@ -8,8 +8,6 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/riverqueue/river"
-
-	"github.com/openbekci/openbekci/server/internal/platform/db"
 )
 
 const (
@@ -33,7 +31,7 @@ func (SweepPendingArgs) Kind() string { return "identity.sweep_pending_signups" 
 // that an operator already attached a person or a claim to, is left alone.
 // The delete states the status itself, so it cannot race a verification that
 // activates the account. It returns how many accounts went.
-func SweepPendingSignUps(ctx context.Context, d *db.DB, now time.Time, maxAge time.Duration) (int64, error) {
+func SweepPendingSignUps(ctx context.Context, d TxRunner, now time.Time, maxAge time.Duration) (int64, error) {
 	var n int64
 	err := d.InPlatformTx(ctx, func(tx pgx.Tx) error {
 		tag, err := tx.Exec(ctx, `
@@ -52,7 +50,7 @@ func SweepPendingSignUps(ctx context.Context, d *db.DB, now time.Time, maxAge ti
 
 type sweepPendingWorker struct {
 	river.WorkerDefaults[SweepPendingArgs]
-	d   *db.DB
+	d   TxRunner
 	log *slog.Logger
 }
 
@@ -65,7 +63,7 @@ func (w *sweepPendingWorker) Work(ctx context.Context, _ *river.Job[SweepPending
 }
 
 // RegisterWorkers adds the module's River workers (jobs.Options.Register).
-func RegisterWorkers(ws *river.Workers, d *db.DB, log *slog.Logger) {
+func RegisterWorkers(ws *river.Workers, d TxRunner, log *slog.Logger) {
 	river.AddWorker(ws, &sweepPendingWorker{d: d, log: log})
 }
 

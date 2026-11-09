@@ -39,7 +39,7 @@ func TestNormalizeEmail(t *testing.T) {
 			t.Errorf("NormalizeEmail(%q) = %q, %v", in, got, ok)
 		}
 	}
-	for _, bad := range []string{"a​@x.org", "a\u0085@x.org", "a b@x.org", "", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
+	for _, bad := range []string{"a" + string(rune(0x200b)) + "@x.org", "a\u0085@x.org", "a" + string(rune(0xa0)) + "b@x.org", "", "plain", "@x.org", "a@", "a@b", "a@@b.org", "a b@x.org", "a@b.org,c@d.org"} {
 		if _, ok := NormalizeEmail(bad); ok {
 			t.Errorf("NormalizeEmail(%q) accepted", bad)
 		}

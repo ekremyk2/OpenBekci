@@ -22,10 +22,10 @@ func TestCleanName(t *testing.T) {
 	bad := []string{
 		strings.Repeat("a", 201),
 		"a\x00b", "a\x07b", "a\x1bb", "a\u007fb", // NUL, BEL, ESC, DEL
-		"a\u0080b",         // C1 control
-		"evil‮gnp.exe",     // right-to-left override
-		"zero​width",       // zero-width space
-		"", "bad\xffutf8", // private use, invalid UTF-8
+		"a\u0080b", // C1 control
+		"evil" + string(rune(0x202e)) + "gnp.exe", // right-to-left override
+		"zero" + string(rune(0x200b)) + "width",   // zero-width space
+		"", "bad\xffutf8",                        // private use, invalid UTF-8
 	}
 	for _, in := range bad {
 		if got, ok := cleanName(in); ok {
