@@ -187,7 +187,7 @@ func isXLSX(filename string, data []byte) bool {
 }
 
 func readXLSX(data []byte, sheet *string) ([][]string, error) {
-	f, err := excelize.OpenReader(bytes.NewReader(data))
+	f, err := excelize.OpenReader(bytes.NewReader(data), excelize.Options{UnzipSizeLimit: 64 << 20, UnzipXMLSizeLimit: 32 << 20}) // zip-bomb caps
 	if err != nil {
 		return nil, errors.New("the spreadsheet cannot be read")
 	}
