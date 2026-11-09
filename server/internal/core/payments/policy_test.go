@@ -27,7 +27,7 @@ func TestIntegrationLateFeePolicyIsAppendOnly(t *testing.T) {
 	}
 	v0, _ := w.bill.PolicyVersion(ctx, e.OrgID, e.SiteID)
 	e.Clock.Set("2026-03-10")
-	// a site that adds its own entry replaces the automatic default; the schedule then keeps every row
+	// a site that adds its own entry keeps the automatic default as the period before it
 	if _, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-03-10", RateBPSPerMonth: 300, GraceDays: 5}); err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestIntegrationLateFeePolicyIsAppendOnly(t *testing.T) {
 		t.Errorf("above the ceiling of the preset: %v", err)
 	}
 	e.Clock.Set("2026-04-01")
-	if rows, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-04-01", RateBPSPerMonth: 200}); err != nil || len(rows) != 2 {
+	if rows, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-04-01", RateBPSPerMonth: 200}); err != nil || len(rows) != 3 {
 		t.Fatalf("a later entry %v %v", rows, err)
 	}
 	// the database refuses to rewrite or remove a row that is not the automatic default

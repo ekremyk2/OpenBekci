@@ -68,13 +68,13 @@ func (m Figures) MySides(ctx context.Context, tx pgx.Tx, orgID, personID uuid.UU
 	rows, err := tx.Query(ctx, `SELECT DISTINCT ON (u.door_number, o.unit_id, v.side) o.unit_id, u.door_number, v.side, s.currency, s.bank_details, o.site_id
 		FROM occupancy o JOIN unit u ON u.org_id = o.org_id AND u.id = o.unit_id JOIN site s ON s.org_id = o.org_id AND s.id = o.site_id
 		CROSS JOIN (VALUES ('owner'), ('tenant')) v(side)
-		WHERE o.org_id = $1 AND o.person_id = $2 AND o.valid_from <= CURRENT_DATE AND (o.valid_to IS NULL OR o.valid_to > CURRENT_DATE)
+		WHERE o.org_id = $1 AND o.person_id = $2 AND o.valid_from <= ($4::timestamptz AT TIME ZONE s.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > ($4::timestamptz AT TIME ZONE s.timezone)::date)
 		  AND (o.kind <> 'household' OR o.may_see_money) AND ($3::uuid IS NULL OR o.site_id = $3)
 		  AND (v.side = o.side OR (o.kind = 'owner' AND v.side = 'tenant' AND (
 		        EXISTS (SELECT 1 FROM occupancy t WHERE t.org_id = o.org_id AND t.unit_id = o.unit_id AND t.kind = 'tenant'
-		                AND t.valid_from <= CURRENT_DATE AND (t.valid_to IS NULL OR t.valid_to > CURRENT_DATE))
+		                AND t.valid_from <= ($4::timestamptz AT TIME ZONE s.timezone)::date AND (t.valid_to IS NULL OR t.valid_to > ($4::timestamptz AT TIME ZONE s.timezone)::date))
 		        OR EXISTS (SELECT 1 FROM charge c WHERE c.org_id = o.org_id AND c.unit_id = o.unit_id AND c.debtor_kind = 'tenant' AND c.cancel_entry_id IS NULL))))
-		ORDER BY u.door_number, o.unit_id, v.side`, orgID, personID, siteID)
+		ORDER BY u.door_number, o.unit_id, v.side`, orgID, personID, siteID, m.reports.Now())
 	if err != nil {
 		return nil, err
 	}
