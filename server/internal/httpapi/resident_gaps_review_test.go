@@ -39,9 +39,6 @@ func TestIntegrationStatementFallbackLimits(t *testing.T) {
 		p.must(w.statement("owner", q, w.tenantTok), 403)
 		// ... and reads the tenant side only inside the period
 		r := p.call("GET", p.base()+"/units/"+w.f.Unit.String()+"/statements/tenant"+q, "", w.tenantTok)
-		if r.Code == 403 {
-			continue // statements.read_own is not granted to former occupants (review note): no data at all
-		}
 		if r.Code != 200 {
 			t.Fatalf("former tenant, format %q: %d %s", q, r.Code, r.Raw)
 		}
