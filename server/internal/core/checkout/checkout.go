@@ -144,24 +144,33 @@ type Checkout struct {
 	CreatedBy        *uuid.UUID  `json:"created_by"`
 	CreatedAt        time.Time   `json:"created_at"`
 	CompletedAt      *time.Time  `json:"completed_at"`
+	// AmountMismatch is set when the provider confirmed another gross than the checkout asked for; the payment
+	// holds ConfirmedAmount (what the provider confirmed), not Amount.
+	AmountMismatch  bool         `json:"amount_mismatch"`
+	ConfirmedAmount *money.Money `json:"confirmed_amount"`
 
 	providerTxn *string
 	lastPolled  *time.Time
 }
 
 const cols = `id, org_id, site_id, unit_id, debtor_kind, charge_ids, provider, merchant_of_record, amount, currency, status, checkout_url, return_url,
-	expires_at, payment_id, failure_code, created_by, created_at, completed_at, provider_txn_id, last_polled_at`
+	expires_at, payment_id, failure_code, created_by, created_at, completed_at, provider_txn_id, last_polled_at, amount_mismatch, confirmed_amount`
 
 func scan(r pgx.Row) (Checkout, error) {
 	var c Checkout
 	var amount int64
 	var cur string
+	var confirmed *int64
 	err := r.Scan(&c.ID, &c.OrgID, &c.SiteID, &c.UnitID, &c.DebtorKind, &c.ChargeIDs, &c.Provider, &c.MerchantOfRecord, &amount, &cur, &c.Status, &c.CheckoutURL, &c.ReturnURL,
-		&c.ExpiresAt, &c.PaymentID, &c.FailureCode, &c.CreatedBy, &c.CreatedAt, &c.CompletedAt, &c.providerTxn, &c.lastPolled)
+		&c.ExpiresAt, &c.PaymentID, &c.FailureCode, &c.CreatedBy, &c.CreatedAt, &c.CompletedAt, &c.providerTxn, &c.lastPolled, &c.AmountMismatch, &confirmed)
 	if err != nil {
 		return c, err
 	}
 	c.Amount = money.New(amount, money.Code(cur))
+	if confirmed != nil {
+		m := money.New(*confirmed, money.Code(cur))
+		c.ConfirmedAmount = &m
+	}
 	c.CreatedAt, c.ExpiresAt = c.CreatedAt.UTC(), c.ExpiresAt.UTC()
 	if c.CompletedAt != nil {
 		t := c.CompletedAt.UTC()
@@ -770,13 +779,13 @@ func (s *Service) OnPaid(ctx context.Context, org uuid.UUID, provider string, ev
 		return false, err
 	}
 	cur := string(c.Amount.Currency)
-	gross := money.New(ev.Gross.Amount, money.Code(cur))
-	fee := money.Zero(money.Code(cur))
-	if ev.Gross.Amount <= 0 {
-		gross = c.Amount
-	} else if ev.Gross.Currency != "" && ev.Gross.Currency != cur {
+	// the payment holds what the provider confirmed: an event that confirms no amount is not recorded (the
+	// checkout's own amount is what was asked for, not what was paid)
+	if ev.Gross.Amount <= 0 || (ev.Gross.Currency != "" && ev.Gross.Currency != cur) {
 		return true, problem.Validation(problem.Field{Field: "gross", Code: "invalid_value"})
 	}
+	gross := money.New(ev.Gross.Amount, money.Code(cur))
+	fee := money.Zero(money.Code(cur))
 	if ev.Fee.Amount > 0 {
 		fee = money.New(ev.Fee.Amount, money.Code(cur))
 	}
@@ -789,13 +798,34 @@ func (s *Service) OnPaid(ctx context.Context, org uuid.UUID, provider string, ev
 	}
 	sys := ledger.SystemContext(ctx, org)
 	res, err := s.cfg.Payments.RecordProvider(sys, org, in)
+	if s.chargesNoLongerOpen(err) {
+		// the charges this checkout was for were paid by something else while the payer was at the provider;
+		// the money has moved all the same, so it is recorded oldest first (any surplus becomes credit) instead
+		// of bouncing the webhook for the provider to retry for ever
+		s.cfg.Log.WarnContext(ctx, "checkout paid after its charges were settled; recording the payment oldest first", "checkout_id", c.ID)
+		in.ChargeIDs = nil
+		res, err = s.cfg.Payments.RecordProvider(sys, org, in)
+	}
 	if err != nil {
 		return true, err
 	}
+	confirmed := res.Payment.Gross.Amount
 	err = s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, `UPDATE checkout SET status = 'paid', payment_id = $3, failure_code = NULL, completed_at = COALESCE(completed_at, now())
-			WHERE org_id = $1 AND id = $2 AND status IN ('pending', 'expired', 'failed')`, org, c.ID, res.Payment.ID)
-		return err
+		if _, err := tx.Exec(ctx, `UPDATE checkout SET status = 'paid', payment_id = $3, failure_code = NULL, completed_at = now()
+			WHERE org_id = $1 AND id = $2 AND status IN ('pending', 'expired', 'failed')`, org, c.ID, res.Payment.ID); err != nil {
+			return err
+		}
+		if confirmed == c.Amount.Amount {
+			return nil
+		}
+		// the provider confirmed another amount than the checkout asked for: the payment holds the confirmed one,
+		// the checkout says so, once, and the audit trail names both amounts
+		tag, err := tx.Exec(ctx, `UPDATE checkout SET amount_mismatch = true, confirmed_amount = $3 WHERE org_id = $1 AND id = $2 AND NOT amount_mismatch`, org, c.ID, confirmed)
+		if err != nil || tag.RowsAffected() == 0 {
+			return err
+		}
+		return ledger.Audit(ctx, tx, org, c.SiteID, "checkout.amount_mismatch", "checkout", c.ID, nil, map[string]any{
+			"expected": c.Amount.Amount, "confirmed": confirmed, "payment_id": res.Payment.ID.String(), "provider_txn_id": ev.ProviderTxnID})
 	})
 	if err != nil {
 		return true, err
@@ -807,6 +837,21 @@ func (s *Service) OnPaid(ctx context.Context, org uuid.UUID, provider string, ev
 		}
 	}
 	return true, nil
+}
+
+// chargesNoLongerOpen reports whether err is the payments module refusing the selected charges because they are
+// not open any more.
+func (s *Service) chargesNoLongerOpen(err error) bool {
+	var pe *problem.Error
+	if !errors.As(err, &pe) {
+		return false
+	}
+	for _, f := range pe.Fields {
+		if f.Field == "charge_ids" && f.Code == "not_open" {
+			return true
+		}
+	}
+	return false
 }
 
 // OnFailed marks the pending checkout of a provider transaction failed.

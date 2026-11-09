@@ -15390,6 +15390,14 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             completed_at: string | null;
+            /**
+             * @description True when the provider confirmed another gross amount than `amount` (a partial capture, an adjustment at the
+             *     provider). The payment holds `confirmed_amount`, never `amount`; the difference is audited
+             *     (`checkout.amount_mismatch`). Absent or false otherwise.
+             */
+            amount_mismatch?: boolean;
+            /** @description The gross amount the provider confirmed, set only when it differs from `amount`. */
+            confirmed_amount?: components["schemas"]["Money"] | null;
         };
         CheckoutList: {
             items: components["schemas"]["Checkout"][];

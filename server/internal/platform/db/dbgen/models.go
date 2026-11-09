@@ -534,6 +534,10 @@ type Checkout struct {
 	ExpiresAt        pgtype.Timestamptz
 	CompletedAt      pgtype.Timestamptz
 	LastPolledAt     pgtype.Timestamptz
+	IdempotencyKey   pgtype.Text
+	RequestHash      pgtype.Text
+	AmountMismatch   bool
+	ConfirmedAmount  pgtype.Int8
 }
 
 type CollectionCase struct {

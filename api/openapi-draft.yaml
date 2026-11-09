@@ -33093,6 +33093,18 @@ components:
           type: string
           format: date-time
           nullable: true
+        amount_mismatch:
+          type: boolean
+          description: |-
+            True when the provider confirmed another gross amount than `amount` (a partial capture, an adjustment at the
+            provider). The payment holds `confirmed_amount`, never `amount`; the difference is audited
+            (`checkout.amount_mismatch`). Absent or false otherwise.
+        confirmed_amount:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+          description: The gross amount the provider confirmed, set only when it differs from `amount`.
       example:
         id: 0192a3f0-1000-7000-8000-000000000020
         org_id: 0192a3f0-1000-7000-8000-000000000001

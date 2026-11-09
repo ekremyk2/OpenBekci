@@ -92,8 +92,16 @@ func (s *Service) RecordProvider(ctx context.Context, orgID uuid.UUID, in Provid
 		if _, err := ledger.ParseDate(in.ReceivedOn); err != nil {
 			return bad("received_on", "invalid_format")
 		}
+		// The provider's date is what it says, not what we can post: the money has moved, so a confirmation dated
+		// ahead of our clock (a provider in another timezone, or a skewed clock) is booked today, and so is one
+		// for a period that has been locked since (a late webhook after the books were closed) - the lock date is
+		// never breached, and a lock that covers today too is the stable 409 locked_period of the ledger.
+		requested := in.ReceivedOn
 		if in.ReceivedOn > today {
-			return bad("received_on", "in_the_future")
+			in.ReceivedOn = today
+		}
+		if site.LockDate != nil && in.ReceivedOn <= *site.LockDate {
+			in.ReceivedOn = today
 		}
 		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
 		if err != nil {
@@ -128,7 +136,7 @@ func (s *Service) RecordProvider(ctx context.Context, orgID uuid.UUID, in Provid
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "payment.record", "payment", p.ID, nil, map[string]any{
-			"amount": in.Gross.Amount, "fee": in.Fee.Amount, "method": p.Method, "provider_txn_id": in.ProviderTxnID, "receipt_no": *p.ReceiptNo, "received_on": in.ReceivedOn}); err != nil {
+			"amount": in.Gross.Amount, "fee": in.Fee.Amount, "method": p.Method, "provider_txn_id": in.ProviderTxnID, "receipt_no": *p.ReceiptNo, "received_on": in.ReceivedOn, "provider_date": requested}); err != nil {
 			return err
 		}
 		// the provider confirmed the money: the webhook event payment.confirmed follows the audit action
