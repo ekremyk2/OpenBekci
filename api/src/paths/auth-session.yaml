@@ -7,7 +7,7 @@ post:
     `code` this verifies the credentials and sets the session cookie `obk_session`
     (httpOnly, SameSite=Lax, Secure except in development). `sms_otp` without
     `code` sends a code by SMS and `magic_link` emails a link (`client`
-    selects the web or `openbekci://` link); both answer 202 whether or not
+    selects the web or `openbekci://<host>/…` link); both answer 202 whether or not
     the account exists. Wrong credentials
     of any kind answer 401 `invalid_grant`; repeated failures lock the
     identifier out (429 `rate_limited` with `Retry-After`).

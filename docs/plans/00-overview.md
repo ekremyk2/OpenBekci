@@ -209,6 +209,7 @@ OpenBekci/
 - Web SPA (same origin): httpOnly session cookie holding an **opaque** token.
 - Mobile and integrations: **opaque** bearer access token (short-lived) + rotating refresh token. Same `session` table, instant revocation, one code path.
 - Sign-in methods in 0.1: password, magic link (email), **SMS OTP** (D5), invitations. Passkeys, TOTP, OIDC: later.
+- Links to the mobile app carry the instance: `openbekci://<host>/…` with the host of `BASE_URL` (backend §6 defines every format, including the `server=` fallback for web-only links).
 
 ### 6.4 Permissions
 

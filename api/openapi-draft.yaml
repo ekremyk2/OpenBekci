@@ -93,7 +93,7 @@ paths:
         `code` this verifies the credentials and sets the session cookie `obk_session`
         (httpOnly, SameSite=Lax, Secure except in development). `sms_otp` without
         `code` sends a code by SMS and `magic_link` emails a link (`client`
-        selects the web or `openbekci://` link); both answer 202 whether or not
+        selects the web or `openbekci://<host>/…` link); both answer 202 whether or not
         the account exists. Wrong credentials
         of any kind answer 401 `invalid_grant`; repeated failures lock the
         identifier out (429 `rate_limited` with `Retry-After`).
@@ -244,7 +244,7 @@ paths:
       description: |
         Emails a link valid for 15 minutes when an account has this address. The
         answer is the same whether or not it does. The link is
-        `{BASE_URL}/login/magic?token=...`, or `openbekci://login/magic?token=...`
+        `{BASE_URL}/login/magic?token=...`, or `openbekci://<host>/login/magic?token=...` (`<host>` is the instance's BASE_URL host)
         for `client=mobile`. 503 `mail_unavailable` when the instance has no email
         configuration. Limited per address and per client address.
       tags:
@@ -5179,6 +5179,55 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/join/{code}:sign-up:
+    parameters:
+      - name: code
+        in: path
+        required: true
+        description: Id of the code.
+        schema:
+          type: string
+    post:
+      operationId: people.joinSignUp
+      summary: Sign up through a site's join code
+      description: |-
+        **Release 0.1.** Public. A resident who scanned the site's QR code creates an account here (setup-people S4,
+        path 2): give a phone number or an email address (and optionally a name). The server sends a six-digit SMS code
+        (phone) or a sign-in link (email, `client=mobile` makes it an `openbekci://<host>/…` link). Completing it through
+        `auth.createToken` (`sms_otp` with the code, or `magic_link`) or `auth.createSession` opens a session with no
+        organization yet; the unit claim (`people.createUnitClaim`) then uses the same join code, and the manager approves.
+
+        The answer is 202 whether the contact is new or already has an account: an existing account simply gets the
+        ordinary sign-in code or link, and no second account is created. A new contact gets a pending account that becomes
+        active only when the code or link is used. An unknown, expired, disabled, rotated or used-up join code answers the
+        same 404 as `people.getJoinInfo`. Limited per join code, per contact and per client address.
+
+        Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429), `sms_unavailable` or
+        `mail_unavailable` (503).
+      tags:
+        - people
+      security: []
+      x-idempotent: optional
+      x-stability: stable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinSignUpRequest'
+      responses:
+        '202':
+          description: Accepted; a code or link was sent to the contact.
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/join/{code}/claims:
     parameters:
       - name: code
@@ -5448,12 +5497,19 @@ paths:
     get:
       operationId: people.listMyUnitClaims
       summary: List my unit claims across organizations
-      description: '**Release 0.1.** Lets a freshly signed-up resident see "waiting for approval".'
+      description: |-
+        **Release 0.1.** Lets a freshly signed-up resident see "waiting for approval": every claim of the caller, in any
+        organization, newest last, with the organization, site, block and unit labels. Served by the platform pool; only
+        the caller's own claims are returned.
+
+        Problems: `unauthenticated` (401), `validation_failed` (422).
       tags:
         - people
       security:
         - cookieAuth: []
         - bearerAuth: []
+      x-openbekci-roles:
+        - me.read
       x-stability: stable
       parameters:
         - name: status
@@ -25390,7 +25446,7 @@ components:
             - web
             - mobile
           default: web
-          description: '`mobile` makes an emailed link use the `openbekci://` scheme.'
+          description: '`mobile` makes an emailed link use the `openbekci://<host>/…` form (the instance host first).'
         device_name:
           type: string
           maxLength: 128
@@ -25514,7 +25570,7 @@ components:
             - web
             - mobile
           default: web
-          description: '`mobile` makes the link use the `openbekci://` scheme instead of the web URL.'
+          description: '`mobile` makes the link use the `openbekci://<host>/…` form (the instance host first) instead of the web URL.'
     MagicLinkConsumeRequest:
       type: object
       required:
@@ -29007,6 +29063,19 @@ components:
         updated_at:
           type: string
           format: date-time
+        org_name:
+          type: string
+          description: Organization label; filled by `people.listMyUnitClaims`.
+        site_id:
+          type: string
+          format: uuid
+          description: Filled by `people.listMyUnitClaims`.
+        site_name:
+          type: string
+          description: Filled by `people.listMyUnitClaims`.
+        block_name:
+          type: string
+          description: Filled by `people.listMyUnitClaims`.
       example:
         id: 0192a3f0-1000-7000-8000-000000000002
         org_id: 0192a3f0-1000-7000-8000-000000000003
@@ -29384,7 +29453,7 @@ components:
           enum:
             - web
             - mobile
-          description: '`mobile` makes the emailed link use the `openbekci://` scheme.'
+          description: '`mobile` makes the emailed link use the `openbekci://<host>/…` form (the instance host first).'
     PasswordResetConsume:
       type: object
       required:
@@ -43680,6 +43749,35 @@ components:
         - visitors.read
         - webhooks.manage
         - webhooks.read
+    JoinSignUpRequest:
+      type: object
+      description: Exactly one of `phone` and `email`.
+      properties:
+        phone:
+          type: string
+          maxLength: 32
+          description: E.164 or national format. A six-digit code is sent by SMS.
+        email:
+          type: string
+          maxLength: 254
+          description: A sign-in link is sent by email.
+        name:
+          type: string
+          maxLength: 200
+          description: What the resident goes by; used for their person when they claim a unit.
+        locale:
+          type: string
+          enum:
+            - tr
+            - en
+          default: tr
+        client:
+          type: string
+          enum:
+            - web
+            - mobile
+          default: web
+          description: '`mobile` makes an emailed link use the `openbekci://<host>/…` form.'
     DebtorRefUnitSide:
       type: object
       required:

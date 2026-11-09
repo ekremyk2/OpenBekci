@@ -473,7 +473,7 @@ func TestIntegrationHTTPOTPAndMagicLink(t *testing.T) {
 	}
 	mm, _ = e.mail.Last()
 	link = regexp.MustCompile(`openbekci://\S+`).FindString(mm.Body)
-	if !strings.HasPrefix(link, "openbekci://login/magic?token=") {
+	if !strings.HasPrefix(link, "openbekci://bekci.example.org/login/magic?token=") {
 		t.Fatalf("mobile link = %q", link)
 	}
 	token = link[strings.Index(link, "token=")+6:]

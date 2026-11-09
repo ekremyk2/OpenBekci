@@ -181,8 +181,12 @@ paths:
     $ref: ./paths/people/join-code.yaml
   /v1/join/{code}/units:
     $ref: ./paths/people/join-code-units.yaml
+  /v1/join/{code}:sign-up:
+    $ref: ./paths/people/join-code-sign-up.yaml
   /v1/join/{code}/claims:
     $ref: ./paths/people/join-code-claims.yaml
+  /v1/me/unit-claims:
+    $ref: ./paths/people/me-unit-claims.yaml
   /v1/orgs/{org_id}/unit-claims:
     $ref: ./paths/people/unit-claims.yaml
   /v1/orgs/{org_id}/unit-claims/{claim_id}:

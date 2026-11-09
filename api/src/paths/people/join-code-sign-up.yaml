@@ -1,0 +1,48 @@
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Id of the code.
+    schema:
+      type: string
+post:
+  operationId: people.joinSignUp
+  summary: Sign up through a site's join code
+  description: |-
+    **Release 0.1.** Public. A resident who scanned the site's QR code creates an account here (setup-people S4,
+    path 2): give a phone number or an email address (and optionally a name). The server sends a six-digit SMS code
+    (phone) or a sign-in link (email, `client=mobile` makes it an `openbekci://<host>/…` link). Completing it through
+    `auth.createToken` (`sms_otp` with the code, or `magic_link`) or `auth.createSession` opens a session with no
+    organization yet; the unit claim (`people.createUnitClaim`) then uses the same join code, and the manager approves.
+
+    The answer is 202 whether the contact is new or already has an account: an existing account simply gets the
+    ordinary sign-in code or link, and no second account is created. A new contact gets a pending account that becomes
+    active only when the code or link is used. An unknown, expired, disabled, rotated or used-up join code answers the
+    same 404 as `people.getJoinInfo`. Limited per join code, per contact and per client address.
+
+    Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429), `sms_unavailable` or
+    `mail_unavailable` (503).
+  tags:
+    - people
+  security: []
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/JoinSignUpRequest
+  responses:
+    "202":
+      description: Accepted; a code or link was sent to the contact.
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "503":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
