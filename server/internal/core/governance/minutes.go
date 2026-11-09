@@ -9,6 +9,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -123,7 +124,7 @@ func (s *Service) GenerateMinutes(ctx context.Context, orgID, meetingID uuid.UUI
 		if err != nil {
 			return err
 		}
-		pdf, err := Minutes(data).PDF()
+		pdf, err := s.minutesModel(ctx, orgID, data).PDF()
 		if err != nil {
 			return err
 		}
@@ -136,6 +137,10 @@ func (s *Service) GenerateMinutes(ctx context.Context, orgID, meetingID uuid.UUI
 			return err
 		}
 		out = MinutesResult{MeetingID: meetingID, DocumentID: filed.DocumentID, FileID: filed.FileID}
+		// the karar defteri draft goes to the meeting's documents with the minutes (only a pack provides it)
+		if err := s.filePackDocuments(ctx, tx, orgID, m, doctpl.KindDecisionBookDraft); err != nil {
+			return err
+		}
 		diff, err := audit.Diff("meeting", nil, map[string]any{"minutes_document_id": filed.DocumentID})
 		if err != nil {
 			return err

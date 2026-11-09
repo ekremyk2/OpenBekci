@@ -35,13 +35,14 @@ type PolicyRow struct {
 // SetLateFeePolicy appends a schedule entry taking effect on from (money.manage).
 // The schedule is append-only: from must be today or later (and after the lock
 // date), later than every existing row (409 otherwise), and the rate is capped at
-// 500 bps a month, the statutory maximum. The automatic default row of a new
+// the ceiling the site's legal preset sets (site setting late_fee_policy.monthly_rate_ceiling_bps; none without a
+// pack, then only the schema's 10000 bps). The automatic default row of a new
 // site is replaced by the site's first own entry.
 func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID, row PolicyRow) ([]PolicyRow, error) {
 	if _, err := ledger.ParseDate(row.From); err != nil {
 		return nil, bad("from", "invalid_format")
 	}
-	if row.RateBPSPerMonth < 0 || row.RateBPSPerMonth > latefee.MaxRateBPS {
+	if row.RateBPSPerMonth < 0 || row.RateBPSPerMonth > latefee.HardMaxBPS {
 		return nil, bad("rate_bps_per_month", "invalid_value")
 	}
 	if row.GraceDays < 0 {
@@ -55,6 +56,11 @@ func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID,
 		}
 		if row.From < ledger.Today(site.Timezone, s.Now()) || (site.LockDate != nil && row.From <= *site.LockDate) {
 			return bad("from", "must_not_be_in_the_past")
+		}
+		if ceil, ok, err := rateCeiling(ctx, tx, orgID, siteID); err != nil {
+			return err
+		} else if ok && row.RateBPSPerMonth > ceil {
+			return problem.Validation(problem.Field{Field: "rate_bps_per_month", Code: "too_large", Params: map[string]any{"max": ceil}})
 		}
 		if _, err := tx.Exec(ctx, `DELETE FROM late_fee_policy WHERE org_id=$1 AND site_id=$2 AND is_default`, orgID, siteID); err != nil {
 			return err
@@ -74,6 +80,39 @@ func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID,
 			return err
 		}
 		out, err = listPolicy(ctx, tx, orgID, siteID)
+		return err
+	})
+	return out, err
+}
+
+// rateCeiling is the highest monthly rate (basis points) the site's legal
+// preset allows: the site setting late_fee_policy.monthly_rate_ceiling_bps, which
+// a pack fills (a site without a pack has none, ok is false).
+func rateCeiling(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int, bool, error) {
+	var ceil *int
+	err := tx.QueryRow(ctx, `SELECT NULLIF(settings #>> '{late_fee_policy,monthly_rate_ceiling_bps}', '')::int FROM site WHERE org_id = $1 AND id = $2`, orgID, siteID).Scan(&ceil)
+	if err != nil {
+		return 0, false, err
+	}
+	if ceil == nil {
+		return 0, false, nil
+	}
+	return *ceil, true, nil
+}
+
+// RateCeilingBPS is the highest monthly rate (basis points) a site may set: the
+// ceiling its legal preset gives, else the schema's bound (latefee.HardMaxBPS).
+// The late fee policy answer reports it as max_rate_pct_per_month (money.read).
+func (s *Service) RateCeilingBPS(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
+	out := latefee.HardMaxBPS
+	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, siteID); err != nil {
+			return err
+		}
+		ceil, ok, err := rateCeiling(ctx, tx, orgID, siteID)
+		if ok {
+			out = min(ceil, latefee.HardMaxBPS)
+		}
 		return err
 	})
 	return out, err

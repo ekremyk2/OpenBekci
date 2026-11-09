@@ -84,7 +84,7 @@ func TestAttendanceSheetGolden(t *testing.T) {
 			{Name: "Zeynep Kaya", Units: []string{"B-4"}, ProxyFor: "Can Öz", Votes: 1, Share: 11.5},
 		},
 		Eligible: Weight{Votes: 6, Share: 60}, Present: Weight{Votes: 4, Share: 47.5}}
-	d.Quorum = EvalQuorum(TurkishPreset().Quorum, callFirst, d.Eligible, d.Present)
+	d.Quorum = EvalQuorum(law634().Quorum, callFirst, d.Eligible, d.Present)
 	golden(t, "attendance_sheet_tr.golden", AttendanceSheet(d).Text())
 	pdf, err := AttendanceSheet(d).PDF()
 	if err != nil || !bytes.HasPrefix(pdf, []byte("%PDF-")) {
@@ -103,7 +103,7 @@ func TestMinutesGolden(t *testing.T) {
 				HasVotes: true, Yes: 3, No: 1, Dissents: []MinutesDissent{{Name: "Zeynep Kaya", Text: "Aidat artışına karşıyım."}}}},
 			{Position: 3, Title: "Yönetici seçimi", WillBeVoted: true, Decision: &MinutesDecision{Year: 2026, Seq: 2, Text: "Ayşe Yılmaz bir yıl için yönetici seçildi.", Outcome: "accepted", HasVotes: true, Yes: 4}},
 		}}
-	d.Quorum = EvalQuorum(TurkishPreset().Quorum, callFirst, d.Eligible, d.Present)
+	d.Quorum = EvalQuorum(law634().Quorum, callFirst, d.Eligible, d.Present)
 	golden(t, "minutes_tr.golden", Minutes(d).Text())
 	en := d
 	en.Locale, en.SiteName = "en", "Rose Court"

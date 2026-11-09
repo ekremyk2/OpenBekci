@@ -34,26 +34,51 @@ type Preset struct {
 	Notes       []PresetNote `json:"notes"`
 }
 
-// Presets returns the built-in presets. The Turkish one is the default of
-// every site; other countries arrive with their packs.
-func Presets() []Preset {
-	return []Preset{{ID: PresetTR634, CountryCode: "TR", Name: "Turkiye, Kat Mulkiyeti Kanunu (634)", Settings: TurkishPreset(), Notes: TurkishPresetNotes()}}
+// Presets returns the built-in country presets: none. A country's rules arrive
+// with its pack as site settings (see FromSiteSettings); a site without a pack
+// starts from GenericPreset and can set the same values by hand.
+func Presets() []Preset { return nil }
+
+// siteBase returns the settings a site starts from and the id of the pack that
+// filled them ("" for the generic defaults): the site settings written by a
+// legal preset over GenericPreset.
+func siteBase(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (Settings, string, error) {
+	var raw []byte
+	err := tx.QueryRow(ctx, `SELECT settings FROM site WHERE org_id = $1 AND id = $2`, orgID, siteID).Scan(&raw)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return GenericPreset(), "", nil
+	}
+	if err != nil {
+		return Settings{}, "", err
+	}
+	site := map[string]any{}
+	if err := json.Unmarshal(raw, &site); err != nil {
+		return Settings{}, "", err
+	}
+	return FromSiteSettings(site), LegalPreset(site), nil
 }
 
 // loadSettings reads a site's settings; a site without a row follows the
-// Turkish preset at version 1. Stored JSON missing a newer field takes the
-// preset's value for it.
+// defaults its legal preset (or the generic one) gave it, at version 1. Stored
+// JSON missing a newer field takes the default's value for it.
 func loadSettings(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, forUpdate bool) (SettingsView, error) {
 	q := `SELECT preset, settings, version FROM governance_settings WHERE org_id = $1 AND site_id = $2`
 	if forUpdate {
 		q += ` FOR UPDATE`
 	}
-	v := SettingsView{SiteID: siteID, Settings: TurkishPreset(), PresetNotes: TurkishPresetNotes()}
+	base, pack, err := siteBase(ctx, tx, orgID, siteID)
+	if err != nil {
+		return SettingsView{}, err
+	}
+	v := SettingsView{SiteID: siteID, Settings: base, PresetNotes: GenericPresetNotes()}
 	var raw []byte
-	err := tx.QueryRow(ctx, q, orgID, siteID).Scan(&v.Preset, &raw, &v.Version)
+	err = tx.QueryRow(ctx, q, orgID, siteID).Scan(&v.Preset, &raw, &v.Version)
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-		v.Preset, v.Version = ptr(PresetTR634), 1
+		v.Version = 1
+		if pack != "" {
+			v.Preset = ptr(pack)
+		}
 		return v, nil
 	case err != nil:
 		return v, err
@@ -84,7 +109,7 @@ func (s *Service) GetSettings(ctx context.Context, orgID, siteID uuid.UUID) (Set
 }
 
 // PutSettings replaces a site's governance settings if they are still at
-// expectedVersion (If-Match). Law 634 numbers are defaults, not limits: the
+// expectedVersion (If-Match). A legal preset's numbers are defaults, not limits: the
 // site may deviate where its yonetim plani allows, so only sanity is checked.
 // It needs meetings.manage.
 func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expectedVersion int, in Settings, deviationReason string) (SettingsView, error) {
@@ -95,22 +120,18 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 		in.VoteWeight = VoteWeightPerUnit
 	}
 	if in.OrdinaryAssemblyMonth == 0 {
-		in.OrdinaryAssemblyMonth = TurkishPreset().OrdinaryAssemblyMonth
+		in.OrdinaryAssemblyMonth = GenericPreset().OrdinaryAssemblyMonth
 	}
 	if in.DissentWindowDays == 0 {
-		in.DissentWindowDays = TurkishPreset().DissentWindowDays
+		in.DissentWindowDays = GenericPreset().DissentWindowDays
 	}
 	if in.DefaultTermMonths == 0 {
-		in.DefaultTermMonths = TurkishPreset().DefaultTermMonths
+		in.DefaultTermMonths = GenericPreset().DefaultTermMonths
 	}
 	if perr := in.Validate(); perr != nil {
 		return SettingsView{}, perr
 	}
-	deviations := belowLegalDefaults(in)
 	deviationReason = strings.TrimSpace(deviationReason)
-	if len(deviations) > 0 && deviationReason == "" {
-		return SettingsView{}, problem.Validation(problem.Field{Field: "deviation_reason", Code: "required", Params: map[string]any{"deviations": deviations}})
-	}
 	var out SettingsView
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		sc, err := requireSite(ctx, tx, PermMeetingsManage, siteID)
@@ -127,11 +148,18 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 		if before.Version != expectedVersion {
 			return errVersion
 		}
+		// the defaults of the site: a legal preset's values, else the generic ones
+		base, pack, err := siteBase(ctx, tx, orgID, siteID)
+		if err != nil {
+			return err
+		}
+		deviations := belowLegalDefaults(in, base)
+		if len(deviations) > 0 && deviationReason == "" {
+			return problem.Validation(problem.Field{Field: "deviation_reason", Code: "required", Params: map[string]any{"deviations": deviations}})
+		}
 		var preset *string
-		for _, p := range Presets() {
-			if reflect.DeepEqual(p.Settings, in) {
-				preset = ptr(p.ID)
-			}
+		if pack != "" && reflect.DeepEqual(base, in) {
+			preset = ptr(pack)
 		}
 		raw := mustJSON(in)
 		if _, err := tx.Exec(ctx, `INSERT INTO governance_settings (org_id, site_id, preset, settings, version) VALUES ($1, $2, $3, $4, $5)
@@ -144,7 +172,7 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 		}
 		after := settingsAudit(in)
 		if len(deviations) > 0 {
-			after["deviations_from_the_law_default"] = deviations
+			after["deviations_from_the_default"] = deviations
 			after["deviation_reason"] = deviationReason
 		}
 		diff, err := audit.Diff("governance_settings", settingsAudit(before.Settings), after)
@@ -158,12 +186,11 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 
 var ruleStrength = map[string]int{RuleSimpleMajorityPresent: 1, RuleMajorityCountAndShare: 2, RuleFourFifths: 3, RuleUnanimity: 4}
 
-// belowLegalDefaults lists the settings that are more permissive than the Law
-// 634 preset: a lower quorum or notice time, higher proxy or per-person caps,
+// belowLegalDefaults lists the settings that are more permissive than the site's defaults (the legal preset of
+// its pack, or the generic ones): a lower quorum or notice time, higher proxy or per-person caps,
 // a weaker threshold for a topic the preset knows. The site may deviate where
 // its yonetim plani allows, but a deviation needs a reason on record.
-func belowLegalDefaults(in Settings) []string {
-	p := TurkishPreset()
+func belowLegalDefaults(in, p Settings) []string {
 	var out []string
 	add := func(cond bool, name string) {
 		if cond {
@@ -174,7 +201,7 @@ func belowLegalDefaults(in Settings) []string {
 	add(in.Quorum.FirstCallBySharePct < p.Quorum.FirstCallBySharePct, "quorum.first_call_by_share_pct")
 	add(in.MaxVotesPerPersonPct > p.MaxVotesPerPersonPct+epsilon, "max_votes_per_person_pct")
 	add(in.ProxyCapPct > p.ProxyCapPct, "proxy_cap_pct")
-	add(in.ProxyCapSmallBuildingMax > p.ProxyCapSmallBuildingMax, "proxy_cap_small_building_max")
+	add(p.SmallBuildingUnitLimit > 0 && p.ProxyCapSmallBuildingMax > 0 && in.ProxyCapSmallBuildingMax > p.ProxyCapSmallBuildingMax, "proxy_cap_small_building_max")
 	add(in.CallMinDays < p.CallMinDays, "call_min_days")
 	add(in.SecondCallMinDays < p.SecondCallMinDays, "second_call_min_days")
 	for _, pt := range p.Thresholds {

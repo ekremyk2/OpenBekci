@@ -1,6 +1,6 @@
 # Writing an OpenBekci pack
 
-Status: skeleton for release 0.4 (milestone P0). The structure follows [plan 04-packs.md](../plans/04-packs.md) section 4;
+Status: skeleton for release 0.4 (milestones P0 and P1). The structure follows [plan 04-packs.md](../plans/04-packs.md) section 4;
 sections marked *to be written* are filled in as the Turkish pack (P1, P2) exercises them. Everything described here
 exists in the code today: the SDK (`sdk/`), the pack runtime (`server/internal/packs`), the test harness
 (`server/internal/sdktest`) and the example pack (`packs/example`).
@@ -77,7 +77,7 @@ Every interface in `sdk/` is documented with the core call sites that use it. Th
 
 | Phase | What happens |
 |---|---|
-| Compile | `server/cmd/openbekci/packs.go` lists the packs in `Official`. A fork adds its pack to the slice. `-tags nopacks` leaves it empty; `-tags examplepack` adds `packs/example` (tests) |
+| Compile | `server/cmd/openbekci/packs.go` lists the packs in `Official`. A fork adds its pack to the slice. the default build lists the Turkish pack (`packs_default.go`); `-tags nopacks` leaves it empty; `-tags examplepack` adds `packs/example` (tests) |
 | Startup | The registry reads `Manifest()`, checks `MinSDK`, calls `Register`, runs `StartupCheck`, validates namespacing and collisions, then **freezes**. Any violation is a named error (`errors.Is(err, packs.ErrNamespace)` and friends) and the server does not start; a panic in pack code is recovered |
 | `migrate` | Core migrations, then each pack's migrations in pack-id order, each with its own goose table `pack_<id>_goose_version`. They run even when no organization has the pack enabled: schema is global, data is per organization |
 | Enable (per organization) | An org admin enables the pack with settings: validated against the schema and `ValidateSettings`, stored (secrets encrypted), presets applied to sites' unchanged settings, chart names localized, `OnEnable` called; if it fails the enablement is withdrawn completely: preset values and chart names the enablement wrote go back to what the sites had (a key a site edited meanwhile keeps its edit), and the stored settings return to their earlier state |
@@ -145,17 +145,49 @@ organization whose country is one of the pack's `Countries`, and when the pack i
 has not changed**. `GET .../sites/{site}/settings` returns `pack_defaults` (key to pack and value) for the keys that
 still hold what the pack wrote: the "pack default" marker. A failing or panicking preset is skipped and logged.
 
-## 8. Localization (*to be written*)
+How the core uses the values (wired in P1): governance reads `quorum`, `thresholds`, `vote_weight` and `schedule` from
+the site settings and falls back to its **generic defaults** (a majority of the units present on the first call, no
+quorum on the second, a simple majority of those present for every topic, one vote per unit without caps, 15 days'
+notice, a second meeting 7 to 15 days later, January) for a site without them; settings that are more permissive than
+the site's defaults need a deviation reason. Billing enforces `late_fee_policy.monthly_rate_ceiling_bps` when a site
+sets its own rate (none without a pack) and the site's automatic default fee row follows the preset's default rate and
+grace days until the site sets its own. Two fields beyond the first SDK sketch exist for rules the Turkish law has:
+`QuorumRule.Basis` may be `units_and_share`, and `VoteWeightDefaults` has an exact per-person cap fraction and a
+small-building proxy limit.
 
-Catalogs per locale on the core fallback chain, pluralization, templates per locale, labels for pack-provided codes
-through `Catalog` (merged into `GET /v1/orgs/{org}/codes`). The example pack shows `Catalog`, `ChartOfAccounts` and
-`ConsentTexts` with `en` and `tr`.
+## 8. Localization
 
-## 9. Legal content (*to be written*)
+- **Labels** for pack-provided codes (template names, preset names, validator codes, address field labels, consent
+  names) come from `Catalog.Labels(locale)`, keys `<id>.<key>`. The core merges the catalogs of the organization's
+  enabled packs into the `pack_labels` section of `GET /v1/orgs/{org}/codes?locale=`; the answer's locale is laid over
+  English, so an untranslated key falls back to English and then to the raw code.
+- **Documents**: a `DocumentTemplate` declares its `Locales()` and returns `text/markdown` (a small subset, see
+  `sdk.Document`) that the core typesets with its own fonts; the core asks for a template of a `Kind` in the
+  organization's (or the site's) locale and renders its generic document when no enabled pack has one, or when the
+  template fails. The data each template receives is listed per kind in the pack's README (`packs/tr/README.md`,
+  "Document data"). Kinds without a generic equivalent (`delivery_checklist`, `proxy_form`, `decision_book_draft`) are
+  served by `GET .../meetings/{meeting}/documents/{kind}` only when a pack provides them.
+- **Consent texts**: `ConsentTexts.Text(locale)` returns Markdown with a version, per locale; clients show it and
+  record the version. `GET /v1/orgs/{org}/privacy/consents` serves the enabled packs' texts, else a generic notice.
+- **Reference data** (`GET /v1/orgs/{org}/reference/{kind}?parent=`): administrative areas, holidays; `address_format`
+  returns the field list. Names are in the language of the data; labels of fields are catalog keys.
+- **Chart of accounts**: `ChartOfAccounts.Names(locale)` renames the site's system accounts by code in the
+  organization's default locale (the chart is created when the pack is enabled or the site is created, so the names
+  apply from the start); names only, never structure.
+- **Validators** report failures with a code (`Code() string`, a catalog key such as `tr.validator.tax_id.checksum`);
+  the core returns `invalid_format` with `params.validator` set to it, and the client labels it through the codes
+  endpoint. The core validates vendor tax ids, vehicle plates (also in the unit import) and the IBAN of the site's
+  bank details through the organization's enabled packs after its own checks.
+
+## 9. Legal content
 
 A pack that encodes law has a `LEGAL.md`: each rule with the article, the date of the law text consulted, known
 ambiguities, and which settings the management plan may override; it opens with the disclaimer (not legal advice,
-organizations remain responsible). Scenario tests double as documentation. See plan 04-packs.md section 5.
+organizations remain responsible) and says what the software does **not** do (the Turkish pack lists tax and employer
+obligations). Values the author could not confirm stay marked **(verify)** until the legal maintainer signs them off,
+and the text says so rather than implying a check. Scenario tests double as documentation: name them like cases ("24
+units, 18 owners present holding 55 % of shares, first call: quorum met") and evaluate the preset values the way the
+core does. `packs/tr/LEGAL.md` and `packs/tr/presets_test.go` are the reference. See plan 04-packs.md section 5 and 6.4.
 
 ## 10. Payment providers
 

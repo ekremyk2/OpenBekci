@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -26,6 +27,8 @@ type Service struct {
 	bill     *billing.Service
 	Notifier ledger.Notifier
 	Now      func() time.Time
+	// Templates renders the ihtarname with a template of an enabled pack when there is one (nil: the generic letter).
+	PackDocs doctpl.Resolver
 }
 
 // NewService returns a Service; now nil means time.Now, notifier nil drops notifications.

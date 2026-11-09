@@ -16,6 +16,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -47,6 +48,7 @@ type Service struct {
 	db         TxRunner
 	archiveKey []byte // signs site archives; see WithArchiveKey
 	siteHook   SiteHook
+	validators extval.Validators
 }
 
 // NewService returns a Service.
@@ -58,6 +60,13 @@ func NewService(db TxRunner) *Service { return &Service{db: db} }
 // site creation.
 type SiteHook interface {
 	SiteCreated(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) error
+}
+
+// WithValidators sets the validators of the packs enabled for an organization
+// (vehicle plates, the IBAN of the bank details) and returns s.
+func (s *Service) WithValidators(v extval.Validators) *Service {
+	s.validators = v
+	return s
 }
 
 // WithSiteHook sets the hook called when a site is created and returns s.

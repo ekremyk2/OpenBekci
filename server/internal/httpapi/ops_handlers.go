@@ -1003,7 +1003,7 @@ func (s *apiServer) CodesListCodes(ctx context.Context, req gen.CodesListCodesRe
 	if err != nil {
 		return nil, err
 	}
-	out, err := conv[gen.Codes](v)
+	out, err := conv[gen.Codes](s.withPackLabels(ctx, req.OrgId, v))
 	return gen.CodesListCodes200JSONResponse(out), err
 }
 
