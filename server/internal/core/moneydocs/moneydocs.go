@@ -54,9 +54,9 @@ type Service struct {
 	// Docs files the generated documents into the unit's folder (nil: files of their own scope).
 	Docs documents.Filer
 	// Templates renders documents with a template of an enabled pack when there is one (nil: generic documents).
-	Templates doctpl.Resolver
-	Now       func() time.Time
-	Log       *slog.Logger
+	PackDocs doctpl.Resolver
+	Now      func() time.Time
+	Log      *slog.Logger
 }
 
 // NewService returns a Service. notifier may be nil (nothing is announced).
@@ -171,7 +171,7 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 		}
 		packLines = append(packLines, map[string]any{"desc": desc, "amount": l.amt, "advance": l.advance})
 	}
-	if b, ok := packdocs.Render(ctx, s.Templates, s.Log, orgID, doctpl.KindReceipt, locale, map[string]any{
+	if b, ok := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindReceipt, locale, map[string]any{
 		"site_name": site.Name, "receipt_no": *p.ReceiptNo, "date": p.ReceivedOn, "payer": who, "unit": door, "method": p.Method, "kind": deref(p.DebtorKind),
 		"reference": deref(p.Reference), "lines": packLines, "total": amount(p.Net), "balance": balanceLine}); ok {
 		return b, *p.ReceiptNo, nil
@@ -491,7 +491,7 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 	}
 	if j.needCert {
 		cur := money.Code(j.currency)
-		certPDF, packed := packdocs.Render(ctx, s.Templates, s.Log, orgID, doctpl.KindDebtCertificate, locale, map[string]any{
+		certPDF, packed := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindDebtCertificate, locale, map[string]any{
 			"site_name": siteName, "person": who, "unit": door + " (" + j.side + ")", "as_of": j.asOf, "move_out_date": j.asOf,
 			"has_debt": j.carried != 0, "balance": amount(money.New(j.carried, cur)), "open_charges": j.openCharges})
 		doc := pdf.New("Debt status certificate")

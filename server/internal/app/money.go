@@ -116,7 +116,7 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 		rep := reports.NewService(w.d, nil)
 		rep.SetTemplates(w.tpl)
 		docs := moneydocs.NewService(w.d, w.fs, payments.NewService(w.d, nil, nil), rep, nil, w.log)
-		docs.Templates = w.tpl
+		docs.PackDocs = w.tpl
 		seen := map[uuid.UUID]bool{}
 		for _, s := range sites {
 			if seen[s.org] {

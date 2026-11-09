@@ -158,6 +158,8 @@ func init() {
 		"governance.getCallLetter":      onMeeting("called", "GET", "/call-letter", perms(read), 200, ""),
 		"governance.getAttendanceSheet": onMeeting("in_session", "GET", "/attendance-sheet", perms(attend), 200, ""),
 		"governance.getMyMeeting":       onMeeting("called", "GET", "/me", perms(read), 200, ""),
+		// no pack is enabled in the matrix organizations: a permitted caller gets a 404
+		"governance.getMeetingDocument": onMeeting("called", "GET", "/documents/proxy_form", perms(manage), 404, ""),
 		"governance.generateMinutes":    onMeeting("in_session", "POST", "/minutes:generate", perms(manage), 200, ``),
 		"governance.getMinutes":         onMeeting("closed", "GET", "/minutes", perms(read), 200, ""),
 		"governance.listMeetingNotices": onMeeting("called", "GET", "/notices", perms(manage), 200, ""),

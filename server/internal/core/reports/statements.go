@@ -32,7 +32,7 @@ type Service struct {
 	db  ledger.TxRunner
 	Now func() time.Time
 	// templates renders statements with a pack template when one is enabled (nil: generic only).
-	templates doctpl.Resolver
+	docResolver doctpl.Resolver
 }
 
 // NewService returns a Service; now nil means time.Now.

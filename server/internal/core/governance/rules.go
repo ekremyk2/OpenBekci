@@ -74,7 +74,6 @@ type PresetNote struct {
 	Verify bool   `json:"verify"`
 }
 
-func strp(s string) *string { return &s }
 
 // GenericPreset is the default rule set of a site without a legal preset (a
 // country pack): a majority of the units present on the first call and no

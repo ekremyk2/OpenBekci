@@ -40,8 +40,9 @@ func TestIntegrationLateFeePolicyIsAppendOnly(t *testing.T) {
 	if _, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-03-01", RateBPSPerMonth: 100}); problem.From(err).Status != 422 {
 		t.Errorf("an entry in the past: %v", err)
 	}
+	e.Exec(`UPDATE site SET settings = settings || '{"late_fee_policy": {"monthly_rate_ceiling_bps": 500}}'::jsonb WHERE org_id = $1 AND id = $2`, e.OrgID, e.SiteID) // no ceiling without a legal preset; the Turkish pack sets 5 %
 	if _, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-04-01", RateBPSPerMonth: 501}); problem.From(err).Status != 422 {
-		t.Errorf("above the statutory maximum: %v", err)
+		t.Errorf("above the ceiling of the preset: %v", err)
 	}
 	e.Clock.Set("2026-04-01")
 	if rows, err := w.bill.SetLateFeePolicy(ctx, e.OrgID, e.SiteID, billing.PolicyRow{From: "2026-04-01", RateBPSPerMonth: 200}); err != nil || len(rows) != 2 {

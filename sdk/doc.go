@@ -52,13 +52,17 @@
 // gateway for messages sent for an organization), statement importers (the bank
 // import module), the six presets and the chart of accounts (site creation and
 // enablement), settings and their secrets, migrations, routes, jobs and event
-// subscribers. Allocation policies, payment orders, document templates, address
-// formats, validators, reference data, consent texts and label catalogs are
-// registered and selectable (Host.Template, Host.Validators, Host.Labels, ...)
-// but their consuming core modules (billing generation, the documents render
-// job, the privacy and reference-data endpoints, the codes endpoint) call them
-// as the Turkish pack (P1) needs them; the call sites documented on each
-// interface are the intended ones.
+// subscribers. Milestone P1 (the Turkish pack) wires the content contributions:
+// document templates (governance call letter, attendance list and minutes, the
+// receipt, statements, the ihtarname and the pack-only documents), validators
+// (vendor tax ids, vehicle plates, the IBAN of the bank details, the unit
+// import), reference data and address formats (GET .../reference/{kind}),
+// consent texts (GET .../privacy/consents) and label catalogs (the codes
+// endpoint), and the presets are read by governance and billing from the site
+// settings. Allocation policies and payment orders are registered and
+// selectable but their consuming
+// modules (billing generation, payment allocation) call them as a pack needs
+// them; the call sites documented on each interface are the intended ones.
 //
 // # Evolution
 //

@@ -28,8 +28,8 @@ const (
 	KindClosingStatement  = "closing_statement"
 	KindDebtCertificate   = "debt_certificate"
 	KindDemandLetter      = "demand_letter"
-	KindDeliveryChecklist = "delivery_checklist" // pack-only
-	KindProxyForm         = "proxy_form"         // pack-only
+	KindDeliveryChecklist = "delivery_checklist"  // pack-only
+	KindProxyForm         = "proxy_form"          // pack-only
 	KindDecisionBookDraft = "decision_book_draft" // pack-only
 )
 

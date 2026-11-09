@@ -275,6 +275,9 @@ func init() {
 		"dashboards.getPortfolioDashboard": {perms: perms(dashboards.PermPortfolio), status: 200, build: mget("/v1/orgs/{org_id}/dashboard/portfolio")},
 		"dashboards.getMyDashboard":        {perms: perms(dashboards.PermMe), status: 200, build: mget("/v1/orgs/{org_id}/me/dashboard")},
 		"codes.listCodes":                  {perms: perms(codes.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/codes?locale=tr")},
+		"codes.listConsents":               {perms: perms(codes.PermRead), status: 200, build: mget("/v1/orgs/{org_id}/privacy/consents?locale=tr")},
+		// no pack is enabled in the matrix organizations: the permitted caller gets a 404, the denied one a 403
+		"codes.listReference": {perms: perms(codes.PermRead), status: 404, build: mget("/v1/orgs/{org_id}/reference/province")},
 	}
 	for k, v := range rows {
 		authzMatrixRows[k] = v

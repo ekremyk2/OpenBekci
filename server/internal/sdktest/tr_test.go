@@ -325,7 +325,7 @@ func TestTRGoldenSiteRendersEveryTemplate(t *testing.T) {
 	rep := reports.NewService(h.Env.DB, h.Env.Clock.Now)
 	rep.SetTemplates(sp)
 	mdocs := moneydocs.NewService(h.Env.DB, nil, h.Payments, rep, nil, nil)
-	mdocs.Templates = sp
+	mdocs.PackDocs = sp
 	payID, _ := uuid.Parse(string(pay))
 	if pdf, _, err := mdocs.ReceiptPDF(ctx, org, payID); err != nil || !isPDF(pdf) {
 		t.Fatalf("receipt: %v", err)
@@ -346,7 +346,7 @@ func TestTRGoldenSiteRendersEveryTemplate(t *testing.T) {
 
 	// the ihtarname for the debtor
 	col := collections.NewService(h.Env.DB, h.Billing, h.Env.Clock.Now, nil)
-	col.Templates = sp
+	col.PackDocs = sp
 	if pdf, err := col.Letter(ctx, org, collections.LetterInput{SiteID: site, Debtor: &billing.Debtor{UnitID: &u1, Kind: "owner"}}); err != nil || !isPDF(pdf) {
 		t.Fatalf("ihtarname: %v", err)
 	}

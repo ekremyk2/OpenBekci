@@ -12,18 +12,18 @@ import (
 )
 
 // SetTemplates gives the service the resolver of pack document templates.
-func (s *Service) SetTemplates(r doctpl.Resolver) { s.templates = r }
+func (s *Service) SetTemplates(r doctpl.Resolver) { s.docResolver = r }
 
 // StatementPDF renders a statement as a PDF: with the template of kind
 // ("statement", or "closing_statement" for a move-out) of a pack enabled for
 // the organization when there is one for its locale, else the generic PDF.
 func (s *Service) StatementPDF(ctx context.Context, org uuid.UUID, st Statement, kind string) []byte {
-	if s.templates == nil {
+	if s.docResolver == nil {
 		return st.PDF()
 	}
 	var locale string
 	_ = s.db.InTenantTx(ctx, org, func(tx pgx.Tx) error { locale = packdocs.OrgLocale(ctx, tx, org); return nil })
-	if b, ok := packdocs.Render(ctx, s.templates, nil, org, kind, locale, st.packData()); ok {
+	if b, ok := packdocs.Render(ctx, s.docResolver, nil, org, kind, locale, st.packData()); ok {
 		return b
 	}
 	return st.PDF()

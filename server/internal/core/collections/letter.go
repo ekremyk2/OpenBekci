@@ -83,7 +83,7 @@ func (s *Service) letterTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site
 		}
 		breakdown = append(breakdown, map[string]any{"period": p, "due": l.DueDate, "principal": FormatTL(l.Principal.Amount), "late_fee": FormatTL(l.LateFee.Amount)})
 	}
-	if out, ok := packdocs.Render(ctx, s.Templates, nil, orgID, doctpl.KindDemandLetter, "tr", map[string]any{
+	if out, ok := packdocs.Render(ctx, s.PackDocs, nil, orgID, doctpl.KindDemandLetter, "tr", map[string]any{
 		"site_name": data.SiteName, "date": data.Date, "debtor_name": data.DebtorName, "door": data.Door, "side_label": data.SideLabel, "as_of": data.AsOf,
 		"total": data.Total, "principal": data.Principal, "late_fee": data.LateFee, "days": data.Days, "breakdown": breakdown}); ok {
 		return out, nil

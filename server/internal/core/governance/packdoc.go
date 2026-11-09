@@ -17,17 +17,17 @@ import (
 // SetTemplates gives the service the resolver of pack document templates. Without
 // one (or when no enabled pack has a template of a kind) the generic documents
 // of this package are rendered.
-func (s *Service) SetTemplates(r doctpl.Resolver) { s.templates = r }
+func (s *Service) SetTemplates(r doctpl.Resolver) { s.docResolver = r }
 
 // packModel renders a document with a pack template. ok is false when the
 // organization has none for the kind and locale; a template that fails is
 // logged and treated as absent: a broken template never blocks calling a
 // meeting or writing the minutes.
 func (s *Service) packModel(ctx context.Context, org uuid.UUID, kind, locale string, data map[string]any, qr []byte) (DocModel, bool) {
-	if s.templates == nil {
+	if s.docResolver == nil {
 		return DocModel{}, false
 	}
-	doc, ok, err := s.templates.Render(ctx, org, kind, locale, data)
+	doc, ok, err := s.docResolver.Render(ctx, org, kind, locale, data)
 	if err != nil {
 		s.log.WarnContext(ctx, "pack document template failed; the generic document is used", "kind", kind, "error", err)
 		return DocModel{}, false

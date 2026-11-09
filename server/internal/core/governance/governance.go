@@ -132,16 +132,16 @@ type Config struct {
 
 // Service is the governance module.
 type Service struct {
-	db        TxRunner
-	platform  PlatformTx
-	cfg       Config
-	effects   DecisionEffects
-	filer     DocumentFiler
-	files     FileChecker
-	notifier  Notifier
-	templates doctpl.Resolver
-	log       *slog.Logger
-	now       func() time.Time
+	db          TxRunner
+	platform    PlatformTx
+	cfg         Config
+	effects     DecisionEffects
+	filer       DocumentFiler
+	files       FileChecker
+	notifier    Notifier
+	docResolver doctpl.Resolver
+	log         *slog.Logger
+	now         func() time.Time
 }
 
 // NewService returns a Service. platform may be nil (the jobs then do nothing).

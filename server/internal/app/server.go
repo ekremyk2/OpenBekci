@@ -215,8 +215,8 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	// pack document templates replace the generic documents of enabled organizations
 	gov.SetTemplates(host)
 	mny.Reports.SetTemplates(host)
-	mny.Docs.Templates = host
-	mny.Collections.Templates = host
+	mny.Docs.PackDocs = host
+	mny.Collections.PackDocs = host
 	pick.h.Store(host)
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs, host)
 	acc, err := newAccess(cfg, log, d, comm)
