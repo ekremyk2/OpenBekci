@@ -150,6 +150,15 @@ Account permissions are instance grants held by every signed-in caller (`me.read
 | `access.open` | Open an access point manually. | `org_admin`, `site_manager`, `guard` |
 | `access.view_events` | Read the access event log. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 
+## integrations
+
+| Permission | Meaning | Roles |
+|---|---|---|
+| `apikeys.read` | List the organization's API keys (prefix and metadata, never a secret). | `org_admin` |
+| `apikeys.manage` | Create, rotate and revoke API keys (re-authentication required; a key can never manage keys). | `org_admin` |
+| `webhooks.read` | Read webhook endpoints and their delivery log. | `org_admin` |
+| `webhooks.manage` | Create, change, delete, test and rotate the secret of webhook endpoints (never through an API key). | `org_admin` |
+
 ## platform
 
 | Permission | Meaning | Roles |

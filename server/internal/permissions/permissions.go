@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -46,6 +47,7 @@ func NewRegistry() (*authz.Registry, error) {
 		{"community", community.Permissions()},
 		{"access", access.Permissions()},
 		{"money", ledger.Permissions()},
+		{"integrations", integrations.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err

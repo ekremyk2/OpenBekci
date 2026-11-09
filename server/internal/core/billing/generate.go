@@ -158,6 +158,7 @@ func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.U
 			if err != nil {
 				return err
 			}
+			made := 0
 			for _, sh := range shares {
 				_, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: siteID, UnitID: sh.UnitID, FundID: p.FundID, PlanID: &planID, Period: per.Key,
 					Kind: "principal", ChargeType: p.ChargeType, DebtorKind: sh.Side, PersonID: sh.PersonID, Amount: sh.Amount, DueDate: due,
@@ -166,17 +167,22 @@ func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.U
 					return err
 				}
 				created++
+				made++
 				uid := sh.UnitID
 				touched[uid.String()+sh.Side] = Debtor{UnitID: &uid, Kind: sh.Side}
+			}
+			if made > 0 {
+				// one audit event per billed period: the webhook module turns it into
+				// charges.generated (plan, period, the charge ids) in this transaction
+				if err := ledger.Audit(ctx, tx, orgID, siteID, "charge.generate", "charge_plan", planID, nil, map[string]any{"created": made, "period": per.Key}); err != nil {
+					return err
+				}
 			}
 		}
 		for _, d := range touched {
 			if _, err := ApplyCredit(ctx, tx, orgID, site, ch, d, today); err != nil {
 				return err
 			}
-		}
-		if created > 0 {
-			return ledger.Audit(ctx, tx, orgID, siteID, "charge.generate", "charge_plan", planID, nil, map[string]any{"created": created})
 		}
 		return nil
 	})
