@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -124,6 +125,14 @@ type Config struct {
 	SMSHourlyBudget  int
 	MailHourlyBudget int
 
+	// PushRelays are the relays devices may register with
+	// (OPENBEKCI_PUSH_RELAYS, comma separated `relay_id=url;server_id;secret_file;app_id`);
+	// the id `official` is just a name. `relay_id=log` is the development
+	// driver that logs the payload. Empty: no push through a relay.
+	PushRelays []PushRelayEntry
+	// PushAllowPrivate lets UnifiedPush endpoints be plain http or on private
+	// addresses (OPENBEKCI_PUSH_ALLOW_PRIVATE, default false).
+	PushAllowPrivate bool
 	// Packs are the packs compiled into the binary (cmd/openbekci/packs.go); set by the command.
 	Packs []sdk.Pack
 	// SMSPicker routes an organization's messages to the SMS provider it chose from its enabled
@@ -143,6 +152,50 @@ type Config struct {
 
 	// ServerVersion is the build version; set by the command, not by the environment.
 	ServerVersion string
+}
+
+// PushRelayEntry is one parsed OPENBEKCI_PUSH_RELAYS entry. The secret file is
+// read when the server starts.
+type PushRelayEntry struct {
+	ID, URL, ServerID, SecretFile, AppID string
+}
+
+var pushRelayIDRe = regexp.MustCompile(`^[A-Za-z0-9_.-]{1,64}$`)
+
+// ParsePushRelays parses the OPENBEKCI_PUSH_RELAYS list.
+func ParsePushRelays(items []string) ([]PushRelayEntry, error) {
+	var out []PushRelayEntry
+	seen := map[string]bool{}
+	for _, item := range items {
+		id, rest, ok := strings.Cut(item, "=")
+		id = strings.TrimSpace(id)
+		if !ok || !pushRelayIDRe.MatchString(id) {
+			return nil, fmt.Errorf("%sPUSH_RELAYS: %q is not relay_id=url;server_id;secret_file;app_id", envPrefix, item)
+		}
+		if seen[id] {
+			return nil, fmt.Errorf("%sPUSH_RELAYS: relay id %q is listed twice", envPrefix, id)
+		}
+		seen[id] = true
+		parts := strings.Split(rest, ";")
+		e := PushRelayEntry{ID: id, URL: strings.TrimSpace(parts[0])}
+		if e.URL == "log" {
+			out = append(out, e)
+			continue
+		}
+		u, err := url.Parse(e.URL)
+		if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") {
+			return nil, fmt.Errorf("%sPUSH_RELAYS: relay %q needs an http(s) URL (or log)", envPrefix, id)
+		}
+		if len(parts) < 3 || strings.TrimSpace(parts[1]) == "" || strings.TrimSpace(parts[2]) == "" || len(parts) > 4 {
+			return nil, fmt.Errorf("%sPUSH_RELAYS: relay %q needs url;server_id;secret_file[;app_id]", envPrefix, id)
+		}
+		e.ServerID, e.SecretFile = strings.TrimSpace(parts[1]), strings.TrimSpace(parts[2])
+		if len(parts) == 4 {
+			e.AppID = strings.TrimSpace(parts[3])
+		}
+		out = append(out, e)
+	}
+	return out, nil
 }
 
 // secretNames are the variables that accept a _FILE variant.
@@ -432,6 +485,12 @@ func (c *Config) loadMessaging(l lookup) error {
 	if c.MailProvider == "smtp" && (c.SMTPHost == "" || c.SMTPFrom == "") {
 		return fmt.Errorf("%sMAIL_PROVIDER=smtp needs SMTP_HOST and SMTP_FROM", envPrefix)
 	}
+	if c.PushRelays, err = ParsePushRelays(splitList(l.must("PUSH_RELAYS"))); err != nil {
+		return err
+	}
+	if c.PushAllowPrivate, err = parseBool(l.must("PUSH_ALLOW_PRIVATE")); err != nil {
+		return fmt.Errorf("%sPUSH_ALLOW_PRIVATE: %w", envPrefix, err)
+	}
 	return nil
 }
 
@@ -457,6 +516,14 @@ func (c Config) ValidateServe() error {
 	// The log drivers write sign-in codes and links to the log.
 	if (c.SMSProvider == "log" || c.MailProvider == "log") && !c.InsecureDev {
 		errs = append(errs, fmt.Errorf("%sSMS_PROVIDER=log and %sMAIL_PROVIDER=log are for development only; set %sINSECURE_DEV=true to use them", envPrefix, envPrefix, envPrefix))
+	}
+	for _, r := range c.PushRelays {
+		if r.URL == "log" && !c.InsecureDev {
+			errs = append(errs, fmt.Errorf("%sPUSH_RELAYS: relay %q uses the log driver, which is for development only; set %sINSECURE_DEV=true to use it", envPrefix, r.ID, envPrefix))
+		}
+		if strings.HasPrefix(r.URL, "http://") && !c.InsecureDev {
+			errs = append(errs, fmt.Errorf("%sPUSH_RELAYS: relay %q must be https (http is for development with INSECURE_DEV)", envPrefix, r.ID))
+		}
 	}
 	if len(c.SecretKey) > 0 && strings.TrimSpace(string(c.SecretKey)) == strings.TrimSpace(string(c.EncryptionKey)) {
 		errs = append(errs, fmt.Errorf("%sSECRET_KEY and %sENCRYPTION_KEY must be different keys", envPrefix, envPrefix))

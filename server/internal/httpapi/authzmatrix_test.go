@@ -73,13 +73,14 @@ func fixed(method, path, body string) func(*authztest.World, authztest.Org, *tes
 // authzMatrixRows is keyed by operationId. Add one row per new operation.
 var authzMatrixRows = map[string]mrow{
 	// public: the same answer for everybody; an empty body is rejected by validation (422) without side effects
-	"instance.getDiscovery": {status: 200, build: mget("/.well-known/openbekci.json")},
-	"auth.createSession":    {status: 422, build: fixed("POST", "/v1/auth/session", `{}`)},
-	"auth.createToken":      {status: 422, build: fixed("POST", "/v1/auth/token", `{}`)},
-	"auth.refreshToken":     {status: 422, build: fixed("POST", "/v1/auth/token/refresh", `{}`)},
-	"auth.requestOtp":       {status: 422, build: fixed("POST", "/v1/auth/otp", `{}`)},
-	"auth.requestMagicLink": {status: 422, build: fixed("POST", "/v1/auth/magic-link", `{}`)},
-	"auth.consumeMagicLink": {status: 422, build: fixed("POST", "/v1/auth/magic-link/consume", `{}`)},
+	"instance.getDiscovery":     {status: 200, build: mget("/.well-known/openbekci.json")},
+	"auth.createSession":        {status: 422, build: fixed("POST", "/v1/auth/session", `{}`)},
+	"auth.createToken":          {status: 422, build: fixed("POST", "/v1/auth/token", `{}`)},
+	"auth.refreshToken":         {status: 422, build: fixed("POST", "/v1/auth/token/refresh", `{}`)},
+	"auth.requestOtp":           {status: 422, build: fixed("POST", "/v1/auth/otp", `{}`)},
+	"auth.requestMagicLink":     {status: 422, build: fixed("POST", "/v1/auth/magic-link", `{}`)},
+	"auth.consumeMagicLink":     {status: 422, build: fixed("POST", "/v1/auth/magic-link/consume", `{}`)},
+	"auth.exchangeWebLoginLink": {status: 422, build: fixed("POST", "/v1/auth/web-login-link:exchange", `{}`)},
 
 	// signed-in callers, no organization involved: every kind of user gets the same answer
 	"instance.getInstance":        {status: 200, build: mget("/v1/instance")},
@@ -87,6 +88,9 @@ var authzMatrixRows = map[string]mrow{
 	"me.listSessions":             {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 200, build: mget("/v1/me/sessions")},
 	"me.revokeSession":            {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions/current", "")},
 	"me.revokeAllSessions":        {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions", "")},
+	"me.registerDevice":           {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 422, build: fixed("POST", "/v1/me/devices", `{}`)},
+	"me.deleteDevice":             {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 404, build: fixed("DELETE", "/v1/me/devices/0192a3f0-1000-7000-8000-0000000000aa", "")},
+	"me.createWebLoginLink":       {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 201, build: fixed("POST", "/v1/me/web-login-link", `{}`)},
 	"auth.deleteSession":          {status: 204, build: fixed("DELETE", "/v1/auth/session", "")},
 	"auth.reauth":                 {status: 422, build: fixed("POST", "/v1/auth/reauth", `{}`)},
 	"auth.requestReauthEmailCode": {status: 503 /* no mailer in the matrix environment */, build: fixed("POST", "/v1/auth/reauth/email-code", `{}`)},

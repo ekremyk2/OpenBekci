@@ -82,8 +82,18 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `documents.upload_own` | Upload documents into the private folder of the caller's own unit. | `owner`, `tenant` |
 | `files.upload` | Upload files. | `member` |
 | `files.read` | Download files (the owning resource decides visibility). | `member` |
-| `notifications.read` | Read the caller's own notifications, mutes and preferences. | `member` |
+| `notifications.read` | Read the caller's own notifications (list, one by id for a push handler, unread count, mark read), mutes and preferences. | `member` |
 | `notifications.manage` | Edit the site defaults for automatic messages; read the SMS counter. | `org_admin`, `site_manager` |
+
+## account (no organization)
+
+Account permissions are instance grants held by every signed-in caller (`me.read`, `sessions.manage_own`); they belong to no organization and are checked with an empty scope. 0.4 adds no permission: the mobile operations reuse `sessions.manage_own`.
+
+| Operation | Permission | Meaning |
+|---|---|---|
+| `me.registerDevice`, `me.deleteDevice` | `sessions.manage_own` | Register, update and remove the caller's push devices (the token is stored encrypted and never returned; signing out the registering session removes the device). |
+| `me.createWebLoginLink` | `sessions.manage_own` | Issue a one-time, session-bound link that signs the caller's browser in (`/login/link/{token}`). |
+| `auth.exchangeWebLoginLink` | public / self | Exchange that token for a cookie session; the token itself is the credential. |
 
 ## audit
 

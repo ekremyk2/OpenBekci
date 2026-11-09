@@ -1,0 +1,33 @@
+post:
+  operationId: auth.exchangeWebLoginLink
+  summary: Exchange a web-login link token for a browser session
+  description: |-
+    **Release 0.4.** The web route `/login/link/{token}` posts the token here and receives the session cookie. Single use; an unknown, used or expired token, or one whose issuing session was signed out, is 401 `invalid_grant`. The response is never replayed from the idempotency store.
+
+    Problems: `invalid_grant` (401), `rate_limited` (429).
+  tags:
+    - auth
+  security: []
+  x-idempotent: none
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/auth.yaml#/schemas/WebLoginLinkExchange
+  responses:
+    "200":
+      description: Signed in; the session cookie is set.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/auth.yaml#/schemas/AuthResult
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

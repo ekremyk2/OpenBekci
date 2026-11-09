@@ -1,0 +1,39 @@
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: Id of the device (from `me.registerDevice`).
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: me.deleteDevice
+  summary: Unregister a push device
+  description: |-
+    **Release 0.4.** Deletes one of the caller's devices (sign-out of the app does this, then revokes the session). A device of another user is 404.
+
+    Permission: any signed-in caller (`sessions.manage_own`).
+
+    Problems: `not_found` (404).
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - sessions.manage_own
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "204":
+      description: The device was deleted.
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

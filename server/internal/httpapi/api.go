@@ -14,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/devices"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -61,7 +62,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
+	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, devices: deps.Devices, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -109,6 +110,7 @@ func isAPIPath(path string) bool {
 type apiServer struct {
 	instance   *instance.Service
 	identity   *identity.Service
+	devices    *devices.Service
 	tenancy    *tenancy.Service
 	people     *people.Service
 	governance *governance.Service
