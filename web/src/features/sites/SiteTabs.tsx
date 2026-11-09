@@ -20,6 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { PackDefaultBadge, packDefaultEntries } from '@/features/packs/PackDefaultBadge'
+import { SiteMerchantCard } from '@/features/settings/MerchantOfRecord'
 import { siteQueries } from './queries'
 
 /* ───────────────────────────── settings ───────────────────────────── */
@@ -36,7 +37,17 @@ export function SiteSettingsTab({
   const query = useQuery(siteQueries.settings(orgId, siteId))
   if (query.isLoading) return <PageSkeleton />
   if (query.error) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
-  return <SettingsForm orgId={orgId} siteId={siteId} settings={query.data!} canEdit={canEdit} />
+  return (
+    <div className="flex flex-col gap-8">
+      <SettingsForm orgId={orgId} siteId={siteId} settings={query.data!} canEdit={canEdit} />
+      <SiteMerchantCard
+        key={query.data!.version}
+        orgId={orgId}
+        siteId={siteId}
+        settings={query.data!}
+      />
+    </div>
+  )
 }
 
 const settingsSchema = z.object({

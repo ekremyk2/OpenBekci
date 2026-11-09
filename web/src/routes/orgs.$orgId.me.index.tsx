@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { occupancyKindLabel } from '@/lib/labels'
 import { useSession } from '@/app/session'
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { HouseholdPanel } from '@/features/people/HouseholdPanel'
 
-export const Route = createFileRoute('/orgs/$orgId/me')({
+export const Route = createFileRoute('/orgs/$orgId/me/')({
   component: function MyAccount() {
     const { me, org } = useSession()
     const { i18n } = useLingui()
@@ -50,6 +50,22 @@ export const Route = createFileRoute('/orgs/$orgId/me')({
           </CardContent>
         </Card>
         <HouseholdPanel />
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans>Privacy</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            <Link
+              to="/orgs/$orgId/me/consents"
+              params={{ orgId: org?.id ?? '' }}
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              <Trans>Privacy notice and consent texts</Trans>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     )
   },
