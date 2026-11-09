@@ -117,11 +117,18 @@ func amount(locale string, m money.Money) string {
 
 // ReceiptPDF writes the receipt (makbuz) of a confirmed payment. The caller has read access to the payment.
 func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([]byte, string, error) {
+	return s.receiptPDF(ctx, orgID, paymentID, "")
+}
+
+// receiptPDF is ReceiptPDF and, with creditNo set, the credit note of a voided or refunded payment
+// (the same data and template kind, flagged credit_note); it returns the number of the document.
+func (s *Service) receiptPDF(ctx context.Context, orgID, paymentID uuid.UUID, creditNo string) ([]byte, string, error) {
 	p, err := s.Payments.GetForReceipt(ctx, orgID, paymentID)
 	if err != nil {
 		return nil, "", err
 	}
-	if p.Status != "confirmed" || p.ReceiptNo == nil {
+	credit := creditNo != ""
+	if p.ReceiptNo == nil || (!credit && p.Status != "confirmed") || (credit && p.Status != "voided" && p.Status != "refunded") {
 		return nil, "", problem.Conflict("only a confirmed payment has a receipt")
 	}
 	var site tenancy.Site
@@ -177,21 +184,35 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 		}
 		packLines = append(packLines, map[string]any{"desc": desc, "amount": l.amt, "advance": l.advance})
 	}
-	if b, ok := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindReceipt, locale, map[string]any{
-		"site_name": site.Name, "receipt_no": *p.ReceiptNo, "date": p.ReceivedOn, "payer": who, "unit": door, "method": p.Method, "kind": deref(p.DebtorKind),
-		"reference": deref(p.Reference), "lines": packLines, "total": amount(locale, p.Net), "balance": balanceLine}); ok {
-		return b, *p.ReceiptNo, nil
+	no := *p.ReceiptNo
+	date := p.ReceivedOn
+	data := map[string]any{
+		"site_name": site.Name, "receipt_no": no, "date": date, "payer": who, "unit": door, "method": p.Method, "kind": deref(p.DebtorKind),
+		"reference": deref(p.Reference), "lines": packLines, "total": amount(locale, p.Net), "balance": balanceLine}
+	if credit {
+		no, date = creditNo, s.Now().UTC().Format(time.DateOnly)
+		data["credit_note"], data["credit_note_no"], data["date"] = true, creditNo, date
 	}
-	doc := pdf.New("Receipt " + *p.ReceiptNo)
+	if b, ok := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindReceipt, locale, data); ok {
+		return b, no, nil
+	}
+	title, totalLabel := "Makbuz / Receipt  ", "Total received / Toplam tahsilat"
+	if credit {
+		title, totalLabel = "Iade makbuzu / Credit note  ", "Total refunded / Toplam iade"
+	}
+	doc := pdf.New(strings.TrimSpace(title) + " " + no)
 	doc.Line(site.Name, 14, true)
-	doc.Line("Makbuz / Receipt  "+*p.ReceiptNo, 12, true)
+	doc.Line(title+no, 12, true)
+	if credit {
+		doc.Line("Receipt / Makbuz  "+*p.ReceiptNo, 10, false)
+	}
 	doc.Skip(6)
 	row := func(k, v string) {
 		doc.Text(pdf.MarginX, k, 10, true)
 		doc.Text(pdf.MarginX+130, v, 10, false)
 		doc.Skip(15)
 	}
-	row("Date / Tarih", p.ReceivedOn)
+	row("Date / Tarih", date)
 	if door != "" {
 		row("Unit / Daire", door+" ("+strings.ToLower(deref(p.DebtorKind))+")")
 	}
@@ -214,12 +235,12 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 	}
 	doc.Rule()
 	doc.Skip(6)
-	doc.Text(pdf.MarginX, "Total received / Toplam tahsilat", 11, true)
+	doc.Text(pdf.MarginX, totalLabel, 11, true)
 	doc.Right(pdf.PageW-pdf.MarginX, amount(locale, p.Net), 11, true)
 	doc.Skip(16)
 	doc.Text(pdf.MarginX, "Balance still due / Kalan borc", 10, false)
 	doc.Right(pdf.PageW-pdf.MarginX, balanceLine, 10, false)
-	return doc.Bytes(), *p.ReceiptNo, nil
+	return doc.Bytes(), no, nil
 }
 
 func deref(s *string) string {
@@ -594,4 +615,64 @@ func siteResolver(query string) files.VisibilityResolver {
 		}
 		return ledger.HasSite(ctx, tx, ledger.PermStatementsRead, site), nil
 	}}
+}
+
+// FileCreditNote makes the credit note of a voided or refunded payment (a cash, bank or provider refund)
+// and files it next to the receipt in the unit's documents, once: the number (CN-<year>-<n>, gap-free per
+// site) is taken the first time and the filed document is linked as payment.credit_note_document_id.
+// Failing to file never undoes the refund: callers log the error.
+func (s *Service) FileCreditNote(ctx context.Context, orgID, paymentID uuid.UUID) (files.File, error) {
+	if s.Files == nil || s.Docs == nil {
+		return files.File{}, errors.New("moneydocs: no file or document service")
+	}
+	var no string
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
+		var status string
+		var site uuid.UUID
+		var cn *string
+		if err := tx.QueryRow(ctx, `SELECT status, site_id, credit_note_no FROM payment WHERE org_id=$1 AND id=$2 FOR UPDATE`, orgID, paymentID).Scan(&status, &site, &cn); err != nil {
+			return err
+		}
+		if status != "voided" && status != "refunded" {
+			return problem.Conflict("only a voided or refunded payment has a credit note")
+		}
+		if cn != nil {
+			no = *cn
+			return nil
+		}
+		year := s.Now().UTC().Year()
+		n, err := ledger.NextNumber(ctx, tx, orgID, site, "credit_note", year)
+		if err != nil {
+			return err
+		}
+		no = fmt.Sprintf("CN-%d-%06d", year, n)
+		_, err = tx.Exec(ctx, `UPDATE payment SET credit_note_no=$3 WHERE org_id=$1 AND id=$2`, orgID, paymentID, no)
+		return err
+	})
+	if err != nil {
+		return files.File{}, err
+	}
+	b, _, err := s.receiptPDF(ctx, orgID, paymentID, no)
+	if err != nil {
+		return files.File{}, err
+	}
+	p, err := s.Payments.GetForReceipt(ctx, orgID, paymentID)
+	if err != nil {
+		return files.File{}, err
+	}
+	var out files.File
+	err = s.run(ctx, orgID, "document", func(tx pgx.Tx) error {
+		d, err := s.Docs.FileGenerated(ctx, tx, documents.GeneratedParams{
+			OrgID: orgID, SiteID: p.SiteID, Title: "Credit note " + no, FileName: "credit-note-" + no + ".pdf", Content: bytes.NewReader(b),
+			UnitID: p.UnitID, SystemKey: "money", FolderName: "Money", FolderVisibility: documents.Visibility{Level: documents.LevelBoard},
+			GeneratedType: "payment_credit_note", GeneratedID: paymentID, RecipientPersonID: p.PersonID,
+		})
+		if err != nil {
+			return err
+		}
+		out = files.File{ID: d.FileID}
+		_, err = tx.Exec(ctx, `UPDATE payment SET credit_note_document_id=$3 WHERE org_id=$1 AND id=$2`, orgID, paymentID, d.ID)
+		return err
+	})
+	return out, err
 }

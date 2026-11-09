@@ -1310,30 +1310,32 @@ type PackEnablementSite struct {
 }
 
 type Payment struct {
-	ID             pgtype.UUID
-	OrgID          pgtype.UUID
-	SiteID         pgtype.UUID
-	UnitID         pgtype.UUID
-	DebtorKind     pgtype.Text
-	DebtorPersonID pgtype.UUID
-	PayerPersonID  pgtype.UUID
-	Method         string
-	Gross          int64
-	Fee            int64
-	Net            int64
-	ReceivedOn     pgtype.Date
-	RecordedBy     pgtype.UUID
-	AssetAccountID pgtype.UUID
-	Reference      pgtype.Text
-	Status         string
-	ReceiptNo      pgtype.Text
-	JournalEntryID pgtype.UUID
-	VoidEntryID    pgtype.UUID
-	CreatedAt      pgtype.Timestamptz
-	Provider       pgtype.Text
-	ProviderTxnID  pgtype.Text
-	RefundRef      pgtype.Text
-	Version        int32
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	UnitID               pgtype.UUID
+	DebtorKind           pgtype.Text
+	DebtorPersonID       pgtype.UUID
+	PayerPersonID        pgtype.UUID
+	Method               string
+	Gross                int64
+	Fee                  int64
+	Net                  int64
+	ReceivedOn           pgtype.Date
+	RecordedBy           pgtype.UUID
+	AssetAccountID       pgtype.UUID
+	Reference            pgtype.Text
+	Status               string
+	ReceiptNo            pgtype.Text
+	JournalEntryID       pgtype.UUID
+	VoidEntryID          pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	Provider             pgtype.Text
+	ProviderTxnID        pgtype.Text
+	RefundRef            pgtype.Text
+	Version              int32
+	CreditNoteNo         pgtype.Text
+	CreditNoteDocumentID pgtype.UUID
 }
 
 type PaymentAllocation struct {
