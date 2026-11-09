@@ -536,6 +536,7 @@ export const governanceHandlers = [
           answered_units: db.pollAnswers
             .filter((p) => p.agenda_item_id === a.id && p.answered_by === me.personId)
             .map((p) => p.unit_id),
+          answers: [],
         })),
     }
     return HttpResponse.json(res)
