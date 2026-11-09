@@ -207,6 +207,7 @@ var sections = map[string]map[string]pair{
 		"api_key_revoked":              {"This API key was revoked", "Bu API anahtarı iptal edildi"},
 		"api_key_expired":              {"This API key has expired", "Bu API anahtarının süresi doldu"},
 		"payment_provider_unavailable": {"Card payment is not available for this site", "Bu site için kartla ödeme kullanılamıyor"},
+		"merchant_change_blocked":      {"The merchant of record cannot change while provider or client money is outstanding", "Sağlayıcıda veya müşteri parasında bakiye varken tahsilatçı değiştirilemez"},
 	},
 	"field_error_codes": {
 		"required":       {"Required", "Zorunlu"},

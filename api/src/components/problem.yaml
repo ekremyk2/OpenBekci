@@ -56,6 +56,7 @@ schemas:
           - api_key_revoked
           - api_key_expired
           - payment_provider_unavailable
+          - merchant_change_blocked
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.

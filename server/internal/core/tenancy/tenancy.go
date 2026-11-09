@@ -213,6 +213,9 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 				}
 			}
 			next.Settings = merged
+			if err := guardOrgMerchantChange(ctx, tx, orgID, before.Settings, merged); err != nil {
+				return err
+			}
 		}
 		diff, err := audit.Diff("organization", before.auditView(), next.auditView())
 		if err != nil {
@@ -238,6 +241,10 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 	case errors.Is(err, pgx.ErrNoRows):
 		return Org{}, problem.NotFound("no such organization")
 	case err != nil:
+		var pe *problem.Error
+		if errors.As(err, &pe) {
+			return Org{}, err
+		}
 		return Org{}, problem.Internal(fmt.Errorf("update organization: %w", err))
 	}
 	return out, nil

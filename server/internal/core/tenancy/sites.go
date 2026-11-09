@@ -487,6 +487,16 @@ func (s *Service) UpdateSite(ctx context.Context, orgID, siteID uuid.UUID, expec
 			out = before
 			return nil
 		}
+		if merchantOverride(before.Settings) != merchantOverride(next.Settings) {
+			// whose provider account collects the money is the organization's decision, not a site manager's,
+			// and it cannot move while money is on its way
+			if err := authz.Require(ctx, PermOrgManage, authz.Scope{OrgID: orgID}); err != nil {
+				return err
+			}
+			if err := guardSiteMerchantChange(ctx, tx, orgID, siteID, before.Settings, next.Settings); err != nil {
+				return err
+			}
+		}
 		if _, changed := diff["lock_date"]; changed {
 			// changing the lock date is sensitive (backend plan 16): needs a recent re-authentication
 			if err := authz.PrincipalFromContext(ctx).RequireReauth(time.Now()); err != nil {
