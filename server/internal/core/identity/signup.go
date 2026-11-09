@@ -7,6 +7,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/text/unicode/norm"
 
@@ -73,6 +74,21 @@ func (su *signUp) insert(ctx context.Context, tx pgx.Tx, kind contactKind, value
 		INSERT INTO "user" (id, email, phone, locale, status, display_name)
 		VALUES ($1, $2, $3, $4, 'pending', $5)
 		RETURNING `+userColumns, id.New(), email, phone, su.locale, name))
+}
+
+// refresh overwrites the name and locale of a still pending account with the
+// latest request's, so that the person who finally proves the contact gets
+// the name they typed and not one a stranger gave earlier. An empty name
+// clears the earlier one.
+func (su *signUp) refresh(ctx context.Context, tx pgx.Tx, userID uuid.UUID) (User, error) {
+	var name *string
+	if su.name != "" {
+		name = &su.name
+	}
+	return scanUser(tx.QueryRow(ctx, `
+		UPDATE "user" SET display_name = $2, locale = $3, updated_at = now(), version = version + 1
+		WHERE id = $1 AND status = 'pending'
+		RETURNING `+userColumns, userID, name, su.locale))
 }
 
 // RequestSignUp starts a sign-up: it sends the code (SMS) or the link (e-mail)

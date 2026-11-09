@@ -229,6 +229,10 @@ func (s *Service) sendOTP(ctx context.Context, phone string, su *signUp) {
 				return err
 			}
 			found = true
+		} else if found && su != nil && u.Status == "pending" {
+			if u, err = su.refresh(ctx, tx, u.ID); err != nil {
+				return err
+			}
 		}
 		if !found || (u.Status != "active" && u.Status != "pending") {
 			found = false
@@ -296,6 +300,10 @@ func (s *Service) sendMagicLink(ctx context.Context, email string, client Client
 				return err
 			}
 			found = true
+		} else if found && su != nil && u.Status == "pending" {
+			if u, err = su.refresh(ctx, tx, u.ID); err != nil {
+				return err
+			}
 		}
 		if !found || (u.Status != "active" && u.Status != "pending") {
 			found = false
