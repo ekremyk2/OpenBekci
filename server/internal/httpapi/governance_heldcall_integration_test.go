@@ -10,6 +10,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/authztest"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/governance/govtest"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
 
@@ -42,7 +43,7 @@ func seedHeld(t *testing.T, w *authztest.World, org authztest.Org) heldFix {
 			Units: []governance.SnapUnit{{UnitID: u, DoorNumber: fmt.Sprint(i), Share: 1}}})
 	}
 	sb, _ := json.Marshal(snap)
-	rb, _ := json.Marshal(governance.TurkishPreset())
+	rb, _ := json.Marshal(govtest.Law634())
 	now := time.Now().UTC()
 	w.Exec(t, `INSERT INTO meeting (id, org_id, site_id, kind, scope, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot, called_at, held_call)
 		VALUES ($1, $2, $3, 'general_assembly', 'site', $4, $5, 'Hall', 'in_session', $6::jsonb, $7::jsonb, $8, 'first')`,

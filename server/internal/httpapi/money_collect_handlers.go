@@ -618,7 +618,13 @@ func (s *apiServer) MoneyGetDebtBreakdown(ctx context.Context, req gen.MoneyGetD
 			}
 			return gen.MoneyGetDebtBreakdown200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse{Body: bytes.NewReader(raw), ContentLength: int64(len(raw))}, nil
 		case gen.MoneyGetDebtBreakdownParamsFormatPdf:
-			if raw, err = bd.PDF("Borç dökümü"); err != nil {
+			locale := ""
+			if t, terr := s.tn(); terr == nil {
+				if org, oerr := t.Get(ctx, req.OrgId); oerr == nil {
+					locale = org.DefaultLocale
+				}
+			}
+			if raw, err = bd.PDFFor(locale); err != nil {
 				return nil, problem.Internal(err)
 			}
 			return gen.MoneyGetDebtBreakdown200ApplicationpdfResponse{Body: bytes.NewReader(raw), ContentLength: int64(len(raw))}, nil

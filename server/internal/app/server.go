@@ -222,8 +222,13 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	host.AttachPayments(mny.Payments)
 	mny.BankImport.SetPacks(host.BankImporters())
+	// pack document templates replace the generic documents of enabled organizations
+	gov.SetTemplates(host)
+	mny.Reports.SetTemplates(host)
+	mny.Docs.PackDocs = host
+	mny.Collections.PackDocs = host
 	pick.h.Store(host)
-	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
+	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs, host)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
 		d.Close()

@@ -219,6 +219,10 @@ paths:
     $ref: ./paths/people/me-household-invitations-invitation_id.yaml
   /v1/orgs/{org_id}/me/household-occupancies/{occupancy_id}:
     $ref: ./paths/people/me-household-occupancies-occupancy_id.yaml
+  /v1/orgs/{org_id}/reference/{kind}:
+    $ref: ./paths/codes/reference-kind.yaml
+  /v1/orgs/{org_id}/privacy/consents:
+    $ref: ./paths/codes/privacy-consents.yaml
   /v1/orgs/{org_id}/codes:
     $ref: ./paths/codes/codes.yaml
   /v1/orgs/{org_id}/ticket-workflow:
@@ -319,6 +323,8 @@ paths:
     $ref: ./paths/governance/meetings-meeting_id_cancel.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}/quorum:
     $ref: ./paths/governance/meetings-meeting_id-quorum.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/documents/{kind}:
+    $ref: ./paths/governance/meetings-meeting_id-documents-kind.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter:
     $ref: ./paths/governance/meetings-meeting_id-call-letter.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet:
@@ -821,6 +827,16 @@ components:
       $ref: ./components/people.yaml#/schemas/CarriedCharge
     CodeLabel:
       $ref: ./components/codes.yaml#/schemas/CodeLabel
+    ReferenceItem:
+      $ref: ./components/codes.yaml#/schemas/ReferenceItem
+    ReferenceList:
+      $ref: ./components/codes.yaml#/schemas/ReferenceList
+    AddressField:
+      $ref: ./components/codes.yaml#/schemas/AddressField
+    Consent:
+      $ref: ./components/codes.yaml#/schemas/Consent
+    ConsentList:
+      $ref: ./components/codes.yaml#/schemas/ConsentList
     Codes:
       $ref: ./components/codes.yaml#/schemas/Codes
     DirectoryConsent:

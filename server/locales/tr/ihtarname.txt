@@ -7,7 +7,7 @@ Sayın {{.DebtorName}},
 
 {{.SiteName}} sitesinin {{.Door}} numaralı bağımsız bölümüne ilişkin {{.SideLabel}} sıfatıyla yükümlü olduğunuz aidat ve ilgili giderler {{.AsOf}} tarihi itibarıyla ödenmemiştir. Toplam borcunuz {{.Total}} tutarındadır (anapara {{.Principal}}, gecikme tazminatı {{.LateFee}}). Dönemlere göre döküm aşağıda yer almaktadır.
 
-İşbu ihtarname tarafınıza ulaştığı tarihten itibaren {{.Days}} gün içinde borcunuzun ödenmesini, ödenmediği takdirde 634 sayılı Kat Mülkiyeti Kanunu ve ilgili mevzuat uyarınca gecikme tazminatı ve yargılama giderleriyle birlikte yasal yollara başvurulacağını ihtar ederiz.
+İşbu ihtarname tarafınıza ulaştığı tarihten itibaren {{.Days}} gün içinde borcunuzun ödenmesini, ödenmediği takdirde ilgili mevzuat ve yönetim planı uyarınca gecikme tazminatı ve yargılama giderleriyle birlikte yasal yollara başvurulacağını ihtar ederiz.
 
 Ödeme yaptıysanız bu yazıyı dikkate almayınız ve ödeme belgenizi yönetime iletiniz.
 

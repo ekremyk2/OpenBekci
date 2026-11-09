@@ -280,22 +280,71 @@ func (b Breakdown) XLSX() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// PDF renders the breakdown as a table.
-func (b Breakdown) PDF(title string) ([]byte, error) {
+// DocLang maps a locale ("tr", "tr-TR", "en-GB") to the language of the core's
+// documents: "tr" for Turkish, "en" for everything else.
+func DocLang(locale string) string {
+	l := strings.ToLower(locale)
+	if l == "tr" || strings.HasPrefix(l, "tr-") || strings.HasPrefix(l, "tr_") {
+		return "tr"
+	}
+	return "en"
+}
+
+// FormatAmount renders minor units of a currency for a document in a language
+// ("tr" or "en", see DocLang). The Turkish lira in Turkish keeps the form of
+// FormatTL (1.234,50 ₺); other combinations use the number format of the
+// language with the sign of the currency (en: $1,234.50; tr: €1.234,50).
+func FormatAmount(minor int64, cur money.Code, lang string) string {
+	if lang == "tr" && (cur == money.TRY || cur == "") {
+		return FormatTL(minor)
+	}
+	tag := "en-US"
+	if lang == "tr" {
+		tag = "tr-TR"
+	}
+	m := money.New(minor, cur)
+	if s, err := m.Format(tag); err == nil {
+		return s
+	}
+	return m.String()
+}
+
+// tableLabels are the words of the breakdown table.
+type tableLabels struct{ title, date, period, due, principal, late, total string }
+
+func labelsFor(lang string) tableLabels {
+	if lang == "tr" {
+		return tableLabels{"Borç dökümü", "Tarih", "Dönem", "Vade", "Anapara", "Gecikme", "Toplam"}
+	}
+	return tableLabels{"Debt breakdown", "Date", "Period", "Due", "Principal", "Late fee", "Total"}
+}
+
+// PDF renders the breakdown as a table with the given title, in Turkish.
+func (b Breakdown) PDF(title string) ([]byte, error) { return b.pdfIn(title, "tr") }
+
+// PDFFor renders the breakdown as a table in the language of a locale (see DocLang).
+func (b Breakdown) PDFFor(locale string) ([]byte, error) {
+	lang := DocLang(locale)
+	return b.pdfIn(labelsFor(lang).title, lang)
+}
+
+func (b Breakdown) pdfIn(title, lang string) ([]byte, error) {
 	d, err := pdf.NewUnicode(title)
 	if err != nil {
 		return nil, err
 	}
-	b.drawTable(d, title)
+	b.drawTable(d, title, lang)
 	return d.Bytes(), nil
 }
 
-func (b Breakdown) drawTable(d *pdf.UDoc, title string) {
+func (b Breakdown) drawTable(d *pdf.UDoc, title, lang string) {
+	lab := labelsFor(lang)
+	fmtAmt := func(minor int64) string { return FormatAmount(minor, b.TotalPrincipal.Currency, lang) }
 	d.Line(title, 14, true)
-	d.Line(fmt.Sprintf("%s: %s", "Tarih", b.AsOf), 10, false)
+	d.Line(fmt.Sprintf("%s: %s", lab.date, b.AsOf), 10, false)
 	d.Advance(6)
 	x := []float64{pdf.MarginX, 130, 290, 410, 530}
-	head := []string{"Dönem", "Vade", "Anapara", "Gecikme", "Toplam"}
+	head := []string{lab.period, lab.due, lab.principal, lab.late, lab.total}
 	for i, h := range head {
 		if i < 2 {
 			d.Text(x[i], h, 10, true)
@@ -307,9 +356,9 @@ func (b Breakdown) drawTable(d *pdf.UDoc, title string) {
 	row := func(period, due string, pr, fee int64, bold bool) {
 		d.Text(x[0], period, 10, bold)
 		d.Text(x[1], due, 10, bold)
-		d.Right(x[2], FormatTL(pr), 10, bold)
-		d.Right(x[3], FormatTL(fee), 10, bold)
-		d.Right(x[4], FormatTL(pr+fee), 10, bold)
+		d.Right(x[2], fmtAmt(pr), 10, bold)
+		d.Right(x[3], fmtAmt(fee), 10, bold)
+		d.Right(x[4], fmtAmt(pr+fee), 10, bold)
 		d.Advance(14)
 	}
 	for _, l := range b.Lines {
@@ -319,5 +368,5 @@ func (b Breakdown) drawTable(d *pdf.UDoc, title string) {
 		}
 		row(p, l.DueDate, l.Principal.Amount, l.LateFee.Amount, false)
 	}
-	row("Toplam", "", b.TotalPrincipal.Amount, b.TotalLateFee.Amount, true)
+	row(lab.total, "", b.TotalPrincipal.Amount, b.TotalLateFee.Amount, true)
 }

@@ -13,6 +13,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/extval"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -156,6 +157,10 @@ func (s *Service) CreateVehicle(ctx context.Context, orgID, unitID uuid.UUID, d 
 		}
 		if _, err := LoadSite(ctx, tx, orgID, u.SiteID, false, false); err != nil {
 			return err
+		}
+		// the plate format of the packs enabled for the organization (Turkish plates)
+		if f := extval.Check(ctx, s.validators, tx, orgID, extval.KindPlate, "plate", plate); f != nil {
+			return problem.Validation(*f)
 		}
 		vid := id.New()
 		if _, err := tx.Exec(ctx, `INSERT INTO vehicle (id, org_id, site_id, unit_id, plate, label) VALUES ($1, $2, $3, $4, $5, $6)`, vid, orgID, u.SiteID, unitID, plate, label); err != nil {

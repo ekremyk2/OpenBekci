@@ -1,0 +1,37 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: codes.listConsents
+  summary: Privacy notice and consent texts
+  description: |-
+    **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown.
+
+    Permission: `codes.read`.
+  tags:
+    - codes
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - codes.read
+  x-stability: preview
+  parameters:
+    - name: locale
+      in: query
+      description: The locale of the texts (`tr`, `en`); default the organization's locale.
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/codes.yaml#/schemas/ConsentList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

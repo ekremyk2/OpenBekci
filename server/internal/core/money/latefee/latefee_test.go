@@ -138,7 +138,7 @@ func TestPolicyValidate(t *testing.T) {
 		p    latefee.Policy
 		want error
 	}{
-		{latefee.Policy{Currency: money.TRY, RateBPSPerMonth: 501, Simple: true}, latefee.ErrRateTooHigh},
+		{latefee.Policy{Currency: money.TRY, RateBPSPerMonth: 501, CeilingBPS: 500, Simple: true}, latefee.ErrRateTooHigh},
 		{latefee.Policy{Currency: money.TRY, RateBPSPerMonth: -1, Simple: true}, latefee.ErrBadPolicy},
 		{latefee.Policy{Currency: money.TRY, GraceDays: -1, Simple: true}, latefee.ErrBadPolicy},
 		{latefee.Policy{Currency: money.TRY, RateBPSPerMonth: 500}, latefee.ErrBadPolicy},
@@ -164,7 +164,7 @@ func TestScheduleValidateAndAt(t *testing.T) {
 	eur.Currency = money.EUR
 	bad := map[string]latefee.PolicySchedule{
 		"empty":         {},
-		"bad policy":    {Policies: []latefee.PolicyPeriod{{From: d(2026, 1, 1), Policy: latefee.Policy{Currency: money.TRY, RateBPSPerMonth: 900, Simple: true}}}},
+		"bad policy":    {Policies: []latefee.PolicyPeriod{{From: d(2026, 1, 1), Policy: latefee.Policy{Currency: money.TRY, RateBPSPerMonth: 900, CeilingBPS: 500, Simple: true}}}},
 		"mixed":         {Policies: []latefee.PolicyPeriod{{From: d(2026, 1, 1), To: dp(2026, 1, 31), Policy: pol}, {From: d(2026, 2, 1), Policy: eur}}},
 		"to<from":       {Policies: []latefee.PolicyPeriod{{From: d(2026, 2, 1), To: dp(2026, 1, 1), Policy: pol}}},
 		"overlap":       {Policies: []latefee.PolicyPeriod{{From: d(2026, 1, 1), To: dp(2026, 2, 1), Policy: pol}, {From: d(2026, 2, 1), Policy: low}}},
@@ -476,7 +476,7 @@ func TestPropMonthlyCap(t *testing.T) {
 		c := charge(principal, due)
 		// fee accrued by the end of the month minus the fee accrued by its start
 		inMonth := feeS(t, sch(pol), c, next) - feeS(t, sch(pol), c, first)
-		limit := principal * latefee.MaxRateBPS / 10000
+		limit := principal * latefee.DefaultRateBPS / 10000
 		if inMonth > limit+1 { // +1: the two roundings of the difference
 			t.Fatalf("fee in %s %d = %d exceeds 5 %% of %d (%d)", month, year, inMonth, principal, limit)
 		}

@@ -47,7 +47,9 @@ type QuorumDefaults struct {
 }
 
 // QuorumRule is a quorum: Basis is "units" (share of units present), "share"
-// (share of the land share present) or "none"; the fraction is Numerator/Denominator.
+// (share of the land share present), "units_and_share" (both must be met) or
+// "none". The quorum is met when the part present is more than
+// Numerator/Denominator of the whole (1/2 is a majority).
 type QuorumRule struct {
 	Basis       string `json:"basis"`
 	Numerator   int    `json:"numerator"`
@@ -88,10 +90,19 @@ type VoteWeightDefaults struct {
 	Weight string `json:"weight"`
 	// PerPersonCapPercent caps one person's weight; zero means no cap.
 	PerPersonCapPercent int `json:"per_person_cap_percent"`
+	// PerPersonCapNumerator and PerPersonCapDenominator give the same cap as an exact fraction of all votes (1 and 3 are
+	// one third); when both are non-zero they take precedence over PerPersonCapPercent.
+	PerPersonCapNumerator   int `json:"per_person_cap_numerator,omitempty"`
+	PerPersonCapDenominator int `json:"per_person_cap_denominator,omitempty"`
 	// CoOwnerRepresentation is "single_representative" or "each_by_share".
 	CoOwnerRepresentation string `json:"co_owner_representation"`
-	// ProxyCapPerPerson is how many proxies one person may hold; zero means no cap.
+	// ProxyCapPerPerson is how many other owners one person may represent;
+	// zero means no cap. It applies in buildings of at most
+	// ProxySmallBuildingUnitLimit units (in every building when that is zero).
 	ProxyCapPerPerson int `json:"proxy_cap_per_person"`
+	// ProxySmallBuildingUnitLimit is the size up to which ProxyCapPerPerson
+	// applies; larger buildings use ProxyCapPercent. Zero means no such split.
+	ProxySmallBuildingUnitLimit int `json:"proxy_small_building_unit_limit,omitempty"`
 	// ProxyCapPercent caps the weight one person may hold as a proxy; zero means no cap.
 	ProxyCapPercent int `json:"proxy_cap_percent"`
 }

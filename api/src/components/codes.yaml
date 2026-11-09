@@ -38,3 +38,88 @@ schemas:
         items:
           $ref: "#/schemas/CodeLabel"
         description: Site-defined ticket statuses when `site_id` is given.
+  ReferenceItem:
+    type: object
+    required:
+      - code
+      - name
+    properties:
+      code:
+        type: string
+        description: Stable code of the item (a plate code, an ISO date for a holiday).
+      name:
+        type: string
+      parent:
+        type: string
+        description: The code of the item above this one (the province of a district, the year of a holiday).
+  AddressField:
+    type: object
+    required:
+      - key
+      - label_key
+      - required
+    properties:
+      key:
+        type: string
+        description: "`line1`, `province`, `district`, `postal_code`, ..."
+      label_key:
+        type: string
+        description: Catalog key of the label (see the codes endpoint).
+      required:
+        type: boolean
+      pattern:
+        type: string
+        description: RE2 regular expression the value must match.
+      reference:
+        type: string
+        description: The reference data kind that offers the options.
+  ReferenceList:
+    type: object
+    required:
+      - kind
+      - items
+    properties:
+      kind:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/ReferenceItem"
+      address_format:
+        type: array
+        description: For kind `address_format`, the address fields of the organization's country.
+        items:
+          $ref: "#/schemas/AddressField"
+  Consent:
+    type: object
+    required:
+      - id
+      - version
+      - locale
+      - markdown
+    properties:
+      id:
+        type: string
+        description: "`core.privacy_notice`, or the id of a pack's text (`tr.privacy_notice`, `tr.consent_identity`, ...); labelled by the codes endpoint."
+      pack:
+        type: string
+        description: The pack that supplies the text; absent for the core's notice.
+      version:
+        type: string
+        description: Clients record acceptance of this version.
+      locale:
+        type: string
+      markdown:
+        type: string
+  ConsentList:
+    type: object
+    required:
+      - locale
+      - items
+    properties:
+      locale:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Consent"

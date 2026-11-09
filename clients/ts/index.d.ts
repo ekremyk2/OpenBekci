@@ -2553,6 +2553,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/reference/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The kind of reference data (open; for example `province`, `district`, `holiday`, `bank`). The kinds an organization has are those of its enabled packs. */
+                kind: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List reference data of a kind
+         * @description **Release 0.4.** Reference data served by the packs enabled for the organization: administrative areas for cascading address selects (`province`, then `district` with `parent` = the province code), public holidays (`holiday`, `parent` = a year) and similar. `address_format` returns the address fields of the organization's country as data. 404 when no enabled pack serves the kind.
+         *
+         *     Permission: `codes.read`.
+         */
+        get: operations["codes.listReference"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/privacy/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Privacy notice and consent texts
+         * @description **Release 0.4.** The privacy notice and the consent texts of the organization in a locale, with the version clients record acceptance of. A pack enabled for the organization supplies its own (the Turkish pack: the KVKK aydınlatma metni and one açık rıza text per processing purpose); without a pack the generic privacy notice is returned. Markdown.
+         *
+         *     Permission: `codes.read`.
+         */
+        get: operations["codes.listConsents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/codes": {
         parameters: {
             query?: never;
@@ -4137,6 +4189,35 @@ export interface paths {
          *     Permission (any one of): `meetings.manage`, `attendance.manage`.
          */
         get: operations["governance.getMeetingQuorum"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/documents/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description The document a pack provides (open; known: `delivery_checklist`, `proxy_form`, `decision_book_draft`). */
+                kind: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download a document only a pack provides
+         * @description **Release 0.4.** Documents of a meeting that have no generic equivalent and exist only when a pack enabled for the organization has a template for the site's locale: the per-owner call delivery checklist, the proxy form (blank, or filled for `person_id`) and the numbered karar defteri page draft. 404 when no enabled pack provides the document.
+         *
+         *     Permission: `meetings.manage`.
+         */
+        get: operations["governance.getMeetingDocument"];
         put?: never;
         post?: never;
         delete?: never;
@@ -10035,6 +10116,44 @@ export interface components {
             code: string;
             label: string;
             description?: string;
+        };
+        ReferenceItem: {
+            /** @description Stable code of the item (a plate code, an ISO date for a holiday). */
+            code: string;
+            name: string;
+            /** @description The code of the item above this one (the province of a district, the year of a holiday). */
+            parent?: string;
+        };
+        ReferenceList: {
+            kind: string;
+            items: components["schemas"]["ReferenceItem"][];
+            /** @description For kind `address_format`, the address fields of the organization's country. */
+            address_format?: components["schemas"]["AddressField"][];
+        };
+        AddressField: {
+            /** @description `line1`, `province`, `district`, `postal_code`, ... */
+            key: string;
+            /** @description Catalog key of the label (see the codes endpoint). */
+            label_key: string;
+            required: boolean;
+            /** @description RE2 regular expression the value must match. */
+            pattern?: string;
+            /** @description The reference data kind that offers the options. */
+            reference?: string;
+        };
+        Consent: {
+            /** @description `core.privacy_notice`, or the id of a pack's text (`tr.privacy_notice`, `tr.consent_identity`, ...); labelled by the codes endpoint. */
+            id: string;
+            /** @description The pack that supplies the text; absent for the core's notice. */
+            pack?: string;
+            /** @description Clients record acceptance of this version. */
+            version: string;
+            locale: string;
+            markdown: string;
+        };
+        ConsentList: {
+            locale: string;
+            items: components["schemas"]["Consent"][];
         };
         Codes: {
             locale: string;
@@ -24443,6 +24562,67 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "codes.listReference": {
+        parameters: {
+            query?: {
+                /** @description Only the items below this parent code (a province code for districts, a year for holidays). */
+                parent?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The kind of reference data (open; for example `province`, `district`, `holiday`, `bank`). The kinds an organization has are those of its enabled packs. */
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "codes.listConsents": {
+        parameters: {
+            query?: {
+                /** @description The locale of the texts (`tr`, `en`); default the organization's locale. */
+                locale?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "codes.listCodes": {
         parameters: {
             query?: {
@@ -26983,6 +27163,41 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getMeetingDocument": {
+        parameters: {
+            query?: {
+                /** @description The owner a proxy form is filled for. */
+                person_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description The document a pack provides (open; known: `delivery_checklist`, `proxy_form`, `decision_book_draft`). */
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
