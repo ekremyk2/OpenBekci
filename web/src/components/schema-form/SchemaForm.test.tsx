@@ -5,7 +5,14 @@ import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
 import { AppError } from '@/api/errors'
 import { SchemaForm, type SchemaFormProps } from './SchemaForm'
-import { buildValues, fieldsOf, groupsOf, mapServerIssues, type JsonSchema } from './schema'
+import {
+  buildValues,
+  fieldsOf,
+  groupsOf,
+  mapServerIssues,
+  withDefaults,
+  type JsonSchema,
+} from './schema'
 
 const schema: JsonSchema = {
   type: 'object',
@@ -267,5 +274,65 @@ describe('schema helpers', () => {
     })
     expect(Object.keys(out.fields).sort()).toEqual(['ex_hosts.1', 'ex_mode'])
     expect(out.general).toHaveLength(1)
+  })
+  it('does not test a server pattern against huge input, and survives an invalid pattern', () => {
+    const sch: JsonSchema = {
+      type: 'object',
+      properties: {
+        a: { type: 'string', pattern: '^(a+)+$' },
+        b: { type: 'string', pattern: '([' },
+      },
+    }
+    const t0 = Date.now()
+    const r = buildValues({
+      schema: sch,
+      raw: { a: 'a'.repeat(100_000) + '!', b: 'x' },
+      secrets: {},
+      secretsSet: new Set(),
+    })
+    expect(Date.now() - t0).toBeLessThan(500)
+    expect(r.issues).toEqual({})
+    const short = buildValues({ schema: sch, raw: { a: 'ab' }, secrets: {}, secretsSet: new Set() })
+    expect(short.issues).toEqual({ a: { code: 'pattern' } })
+  })
+
+  it('hidden fields are neither required, defaulted nor validated; stored values pass through', () => {
+    const sch: JsonSchema = {
+      type: 'object',
+      required: ['h', 'v'],
+      properties: {
+        h: { type: 'string', default: 'stale', 'x-ui': { hidden: true } },
+        k: { type: 'integer', minimum: 5, 'x-ui': { hidden: true } },
+        v: { type: 'string' },
+      },
+    }
+    const empty = withDefaults(sch, undefined)
+    expect(empty).toEqual({})
+    const r = buildValues({
+      schema: sch,
+      raw: { ...empty, v: 'x' },
+      secrets: {},
+      secretsSet: new Set(),
+    })
+    expect(r.issues).toEqual({})
+    expect(r.values).toEqual({ v: 'x' })
+    const stored = withDefaults(sch, { k: 1 })
+    const r2 = buildValues({
+      schema: sch,
+      raw: { ...stored, v: 'x' },
+      secrets: {},
+      secretsSet: new Set(),
+    })
+    expect(r2.values).toEqual({ k: 1, v: 'x' })
+  })
+
+  it('parses decimal text only', () => {
+    const sch: JsonSchema = { type: 'object', properties: { n: { type: 'number' } } }
+    const run = (n: string) =>
+      buildValues({ schema: sch, raw: { n }, secrets: {}, secretsSet: new Set() })
+    expect(run('1,5').values).toEqual({ n: 1.5 })
+    expect(run(' 2.25 ').values).toEqual({ n: 2.25 })
+    for (const bad of ['0x10', '1e999', 'Infinity', '1,2,3', '--1'])
+      expect(run(bad).issues).toEqual({ n: { code: 'invalid_number' } })
   })
 })

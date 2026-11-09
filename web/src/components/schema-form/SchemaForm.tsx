@@ -17,6 +17,7 @@ import {
   humanize,
   isObjectSchema,
   isSecret,
+  MAX_ARRAY_ROWS,
   mapServerIssues,
   omit,
   setAt,
@@ -405,7 +406,8 @@ export function SchemaForm({
             variant="outline"
             size="sm"
             disabled={
-              disabled || (f.schema.maxItems !== undefined && list.length >= f.schema.maxItems)
+              disabled ||
+              list.length >= Math.min(f.schema.maxItems ?? MAX_ARRAY_ROWS, MAX_ARRAY_ROWS)
             }
             onClick={() => setValue(f.path, [...list, ''])}
           >

@@ -204,6 +204,10 @@ export function withDefaults(schema: JsonSchema, values: Values | undefined): Va
   for (const [name, s] of Object.entries(schema.properties ?? {})) {
     if (isSecret(s)) continue // secrets are never prefilled, not even with a default
     const stored = values?.[name]
+    if (uiOf(s).hidden) {
+      if (stored !== undefined && stored !== null) out[name] = stored // no schema default
+      continue
+    }
     if (isObjectSchema(s)) {
       out[name] = withDefaults(s, (stored as Values | undefined) ?? undefined)
     } else if (stored !== undefined && stored !== null) {
@@ -234,6 +238,13 @@ export interface BuildResult {
   issues: Record<string, Issue>
 }
 
+/** Longest input a server-supplied `pattern` is tested against in the browser. */
+export const MAX_PATTERN_INPUT = 512
+/** Rows an array field offers when the schema sets no `maxItems`. */
+export const MAX_ARRAY_ROWS = 100
+
+const NUMBER_TEXT = /^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i
+
 const isBlank = (v: unknown) =>
   v === undefined || v === null || (typeof v === 'string' && v.trim() === '')
 
@@ -246,7 +257,9 @@ export function buildValues({ schema, raw, secrets, secretsSet }: BuildInput): B
       issues[path] = { code: 'min_length', params: { min: s.minLength } }
     } else if (s.maxLength !== undefined && v.length > s.maxLength) {
       issues[path] = { code: 'max_length', params: { max: s.maxLength } }
-    } else if (s.pattern) {
+    } else if (s.pattern && v.length <= MAX_PATTERN_INPUT) {
+      // the pattern comes from the server: input beyond the bound is not tested here (the server
+      // judges it), so a badly written pattern cannot freeze the tab on a pasted megabyte
       try {
         if (!new RegExp(s.pattern, 'u').test(v)) issues[path] = { code: 'pattern' }
       } catch {
@@ -266,7 +279,10 @@ export function buildValues({ schema, raw, secrets, secretsSet }: BuildInput): B
   }
 
   function coerceNumber(s: JsonSchema, v: unknown, path: string): number | undefined {
-    const n = typeof v === 'number' ? v : Number(String(v).trim().replace(',', '.'))
+    // decimal text only (comma or dot): `Number()` alone would accept `0x10` and `1e999`
+    const text = typeof v === 'number' ? '' : String(v).trim()
+    const n =
+      typeof v === 'number' ? v : NUMBER_TEXT.test(text) ? Number(text.replace(',', '.')) : NaN
     if (!Number.isFinite(n)) {
       issues[path] = { code: 'invalid_number' }
       return undefined
@@ -320,6 +336,11 @@ export function buildValues({ schema, raw, secrets, secretsSet }: BuildInput): B
     for (const [name, ps] of Object.entries(s.properties ?? {})) {
       const path = base ? `${base}.${name}` : name
       const v = (value as Values | undefined)?.[name]
+      if (uiOf(ps).hidden && !isSecret(ps)) {
+        // never shown, so never validated or defaulted: the stored value passes through as it is
+        if (v !== undefined && v !== null) out[name] = v
+        continue
+      }
       if (isSecret(ps)) {
         const typed = secrets[path]
         if (typed === null) out[name] = null
