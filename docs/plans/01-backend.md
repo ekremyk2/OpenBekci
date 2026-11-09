@@ -366,6 +366,7 @@ Until 0.4, everything Turkish is **core**: `tr` locale, Law 634 presets as defau
 | `people.move_out_documents` | on demand | people |
 | `tenancy.export_site` / `import_site` | on demand | tenancy |
 | `privacy.export` / `privacy.erase` / `maintenance.prune` (retention) | on demand / daily | privacy / platform |
+| `identity.sweep_pending_signups` | hourly; deletes `pending` accounts (join-code sign-ups) older than 24 h that never proved their contact, with their codes and links; fixed, no configuration | identity |
 | `governance.term_reminders`, `governance.notify_absentees` (0.2) | daily / on demand | governance |
 | `community.visitor_request_expiry`, `community.booking_fees` (0.3) | on demand | community |
 | `webhooks.deliver` (0.4) | one job per (event, endpoint), unique on both; exponential backoff, bounded attempts | integrations |

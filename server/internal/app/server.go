@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
@@ -221,8 +222,9 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			acc.Workers(w)
 			registerMoney(w)
 			integ.Workers(w)
+			identity.RegisterWorkers(w, d, log)
 		},
-		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney)})
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), identity.PeriodicJobs(), periodicMoney)})
 	if err != nil {
 		d.Close()
 		return nil, err
