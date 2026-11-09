@@ -4,6 +4,7 @@ import { peopleHandlers } from './handlers/people'
 import { tenancyHandlers } from './handlers/tenancy'
 import { operationsHandlers } from './handlers/operations'
 import { moneyHandlers, moneyScopedHandlers } from './handlers/money'
+import { checkoutHandlers } from './handlers/checkout'
 import { accessHandlers } from './handlers/access'
 import { integrationsHandlers } from './handlers/integrations'
 import { communityHandlers } from './handlers/community'
@@ -36,6 +37,7 @@ export const meFixture: Me = {
     phone: '+905551112233',
     locale: 'tr',
     is_platform_admin: false,
+    version: 1,
   },
   organizations: [
     {
@@ -71,6 +73,7 @@ export const handlers = [
   // models that seed their own site answer first, but only while one of their screens is on display
   ...directoryHandlers,
   ...moneyScopedHandlers,
+  ...checkoutHandlers,
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),

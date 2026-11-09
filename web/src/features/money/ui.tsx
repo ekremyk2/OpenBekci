@@ -210,6 +210,8 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'destructive' | 'in
     draft: 'secondary',
     failed: 'destructive',
     parsing: 'info',
+    pending: 'warning',
+    expired: 'secondary',
   }
 
 export function StatusBadge({ status }: { status: string }) {
@@ -240,6 +242,8 @@ export function StatusBadge({ status }: { status: string }) {
     draft: t`Draft`,
     failed: t`Failed`,
     parsing: t`Parsing`,
+    pending: t`Pending`,
+    expired: t`Expired`,
   }
   return <Badge variant={STATUS_VARIANT[status] ?? 'secondary'}>{label[status] ?? status}</Badge>
 }

@@ -3,6 +3,8 @@
 export interface FieldIssue {
   code: string
   message?: string
+  /** Details of the issue for the screen to explain (the balances of 409 `merchant_change_blocked`). */
+  params?: Record<string, unknown>
 }
 
 interface ProblemBody {
@@ -11,7 +13,7 @@ interface ProblemBody {
   status?: number
   detail?: string
   code?: string
-  errors?: { field?: string; code?: string; message?: string }[]
+  errors?: { field?: string; code?: string; message?: string; params?: Record<string, unknown> }[]
   request_id?: string
 }
 
@@ -90,7 +92,11 @@ export function appErrorFromResponse(response: Response, body: unknown): AppErro
   const fieldErrors: Record<string, FieldIssue[]> = {}
   for (const e of problem.errors ?? []) {
     if (!e.field) continue
-    ;(fieldErrors[e.field] ??= []).push({ code: e.code ?? 'invalid', message: e.message })
+    ;(fieldErrors[e.field] ??= []).push({
+      code: e.code ?? 'invalid',
+      message: e.message,
+      ...(e.params ? { params: e.params } : {}),
+    })
   }
   return new AppError({
     status,

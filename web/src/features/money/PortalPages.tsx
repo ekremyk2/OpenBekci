@@ -24,6 +24,7 @@ import {
   unitSideRef,
 } from './api'
 import { isoDate, MoneyFormField, positiveMinor, useZodMessages, minorToMoney } from './forms'
+import { PayByCardButton, PayByCardSection } from './PayByCard'
 import { StatementView } from './StatementsPage'
 import {
   applyServerErrors,
@@ -97,7 +98,7 @@ export function PortalHome() {
                       </Trans>
                     </p>
                   ) : null}
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     <Link
                       to="/orgs/$orgId/money/pay"
                       params={{ orgId: ctx.orgId }}
@@ -105,6 +106,7 @@ export function PortalHome() {
                     >
                       <Trans>Pay</Trans>
                     </Link>
+                    <PayByCardButton ctx={ctx} sides={d.sides} side={s} variant="outline" />
                     <Link
                       to="/orgs/$orgId/money/statements"
                       params={{ orgId: ctx.orgId }}
@@ -258,137 +260,140 @@ function PayContent({ ctx, sides }: { ctx: MoneyCtx; sides: S['MySide'][] }) {
   })
   const err = form.formState.errors
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <Card className="self-start">
-        <CardHeader>
-          <CardTitle>
-            <Trans>Bank details</Trans>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {bank ? (
-            <dl className="grid gap-3 text-sm">
-              <div>
-                <dt className="text-muted-foreground">
-                  <Trans>IBAN</Trans>
-                </dt>
-                <dd className="font-mono text-base" dir="ltr">
-                  {bank.iban}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">
-                  <Trans>Account holder</Trans>
-                </dt>
-                <dd>{bank.holder}</dd>
-              </div>
-              {bank.bank_name ? (
+    <div className="flex flex-col gap-6">
+      <PayByCardSection ctx={ctx} sides={sides} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="self-start">
+          <CardHeader>
+            <CardTitle>
+              <Trans>Bank details</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {bank ? (
+              <dl className="grid gap-3 text-sm">
                 <div>
                   <dt className="text-muted-foreground">
-                    <Trans>Bank</Trans>
+                    <Trans>IBAN</Trans>
                   </dt>
-                  <dd>{bank.bank_name}</dd>
+                  <dd className="font-mono text-base" dir="ltr">
+                    {bank.iban}
+                  </dd>
                 </div>
-              ) : null}
-              <div>
-                <dt className="text-muted-foreground">
-                  <Trans>Reference to write</Trans>
-                </dt>
-                <dd>{bank.suggested_reference ?? bank.reference_hint}</dd>
-              </div>
-            </dl>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              <Trans>
-                The site has not published bank details yet. Ask your manager how to pay.
-              </Trans>
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <Trans>I've paid by transfer</Trans>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {done ? (
-            <div role="status" className="flex flex-col gap-3">
-              <p>
+                <div>
+                  <dt className="text-muted-foreground">
+                    <Trans>Account holder</Trans>
+                  </dt>
+                  <dd>{bank.holder}</dd>
+                </div>
+                {bank.bank_name ? (
+                  <div>
+                    <dt className="text-muted-foreground">
+                      <Trans>Bank</Trans>
+                    </dt>
+                    <dd>{bank.bank_name}</dd>
+                  </div>
+                ) : null}
+                <div>
+                  <dt className="text-muted-foreground">
+                    <Trans>Reference to write</Trans>
+                  </dt>
+                  <dd>{bank.suggested_reference ?? bank.reference_hint}</dd>
+                </div>
+              </dl>
+            ) : (
+              <p className="text-sm text-muted-foreground">
                 <Trans>
-                  Thank you. Your manager will confirm the payment when it shows up in the bank.
+                  The site has not published bank details yet. Ask your manager how to pay.
                 </Trans>
               </p>
-              <div>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setDone(false)
-                    form.reset()
-                  }}
-                >
-                  <Trans>Tell us about another payment</Trans>
-                </Button>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans>I've paid by transfer</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {done ? (
+              <div role="status" className="flex flex-col gap-3">
+                <p>
+                  <Trans>
+                    Thank you. Your manager will confirm the payment when it shows up in the bank.
+                  </Trans>
+                </p>
+                <div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setDone(false)
+                      form.reset()
+                    }}
+                  >
+                    <Trans>Tell us about another payment</Trans>
+                  </Button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <form
-              className="flex flex-col gap-4"
-              noValidate
-              onSubmit={(e) =>
-                void form.handleSubmit(async (v) => {
-                  try {
-                    await declare.mutateAsync(v)
-                    idem.renew()
-                    setDone(true)
-                  } catch (er) {
-                    applyServerErrors(form, er, t`Could not send your declaration.`)
-                  }
-                })(e)
-              }
-            >
-              {sides.length > 1 ? (
-                <Field label={t`Paying for`} htmlFor="pd-side">
-                  <Select id="pd-side" {...form.register('side')}>
-                    {sides.map((s) => (
-                      <option
-                        key={`${s.unit_id}:${s.debtor_kind}`}
-                        value={`${s.unit_id}:${s.debtor_kind}`}
-                      >
-                        {s.unit_door_number} – {s.debtor_kind === 'tenant' ? t`Tenant` : t`Owner`}
-                      </option>
-                    ))}
-                  </Select>
+            ) : (
+              <form
+                className="flex flex-col gap-4"
+                noValidate
+                onSubmit={(e) =>
+                  void form.handleSubmit(async (v) => {
+                    try {
+                      await declare.mutateAsync(v)
+                      idem.renew()
+                      setDone(true)
+                    } catch (er) {
+                      applyServerErrors(form, er, t`Could not send your declaration.`)
+                    }
+                  })(e)
+                }
+              >
+                {sides.length > 1 ? (
+                  <Field label={t`Paying for`} htmlFor="pd-side">
+                    <Select id="pd-side" {...form.register('side')}>
+                      {sides.map((s) => (
+                        <option
+                          key={`${s.unit_id}:${s.debtor_kind}`}
+                          value={`${s.unit_id}:${s.debtor_kind}`}
+                        >
+                          {s.unit_door_number} – {s.debtor_kind === 'tenant' ? t`Tenant` : t`Owner`}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                ) : null}
+                <MoneyFormField
+                  id="pd-amount"
+                  control={form.control}
+                  name="amount"
+                  label={t`Amount you paid`}
+                  currency={ctx.currency}
+                  error={err.amount?.message}
+                />
+                <Field label={t`Date you paid`} htmlFor="pd-date" error={err.paid_on?.message}>
+                  <Input id="pd-date" type="date" dir="ltr" {...form.register('paid_on')} />
                 </Field>
-              ) : null}
-              <MoneyFormField
-                id="pd-amount"
-                control={form.control}
-                name="amount"
-                label={t`Amount you paid`}
-                currency={ctx.currency}
-                error={err.amount?.message}
-              />
-              <Field label={t`Date you paid`} htmlFor="pd-date" error={err.paid_on?.message}>
-                <Input id="pd-date" type="date" dir="ltr" {...form.register('paid_on')} />
-              </Field>
-              <Field label={t`Reference you wrote (optional)`} htmlFor="pd-ref">
-                <Input id="pd-ref" {...form.register('reference')} />
-              </Field>
-              <Field label={t`Note (optional)`} htmlFor="pd-note">
-                <Textarea id="pd-note" {...form.register('note')} />
-              </Field>
-              <FormRootError message={err.root?.message} />
-              <div>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  <Trans>I've paid</Trans>
-                </Button>
-              </div>
-            </form>
-          )}
-        </CardContent>
-      </Card>
+                <Field label={t`Reference you wrote (optional)`} htmlFor="pd-ref">
+                  <Input id="pd-ref" {...form.register('reference')} />
+                </Field>
+                <Field label={t`Note (optional)`} htmlFor="pd-note">
+                  <Textarea id="pd-note" {...form.register('note')} />
+                </Field>
+                <FormRootError message={err.root?.message} />
+                <div>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    <Trans>I've paid</Trans>
+                  </Button>
+                </div>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

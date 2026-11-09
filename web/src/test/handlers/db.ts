@@ -206,6 +206,11 @@ export function seed(): Db {
           maintenance_hour: null,
         },
         extra: null,
+        payments: {
+          card: { available: true, provider: 'iyzico' },
+          merchant_of_record: 'site',
+          merchant_of_record_override: null,
+        },
       },
     },
     bank: {
