@@ -29,7 +29,7 @@ post:
     org_admin:
       - apikeys.manage
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK

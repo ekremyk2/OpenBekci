@@ -22,7 +22,7 @@ get:
   x-openbekci-roles:
     org_admin:
       - webhooks.read
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -57,7 +57,7 @@ patch:
     org_admin:
       - webhooks.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
@@ -101,7 +101,7 @@ delete:
     org_admin:
       - webhooks.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   responses:

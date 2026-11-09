@@ -23,7 +23,7 @@ post:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     - $ref: ../../components/draft-common.yaml#/parameters/DryRun

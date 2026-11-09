@@ -21,7 +21,7 @@ get:
       - access.read
     auditor:
       - access.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: agent_id
@@ -72,7 +72,7 @@ post:
     site_manager:
       - access.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

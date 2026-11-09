@@ -25,7 +25,7 @@ get:
       - bookings.read
     household:
       - bookings.read
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: facility_id
@@ -110,7 +110,7 @@ post:
     household:
       - bookings.create
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:

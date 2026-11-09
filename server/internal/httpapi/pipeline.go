@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
@@ -89,10 +90,13 @@ const (
 type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
-	auth       authMode
-	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
-	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
-	query      map[string]bool    // declared query parameter names
+	// deprecation and sunset are the Deprecation and Sunset header values of a `deprecated: true` operation
+	// (x-deprecated-since and x-sunset, both YYYY-MM-DD; docs/api/versioning.md).
+	deprecation, sunset string
+	auth                authMode
+	orgScoped           bool               // path under /v1/orgs/{org_id}: membership is resolved first
+	perms               []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
+	query               map[string]bool    // declared query parameter names
 	// stream is x-openbekci-stream: the operation streams a request body
 	// (multipart upload) or a binary response (download). Its request body is
 	// not buffered for validation or hashed for idempotency, and a binary
@@ -142,6 +146,15 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				hasBody:      op.RequestBody != nil,
 				bodyOptional: op.RequestBody != nil && op.RequestBody.Value != nil && !op.RequestBody.Value.Required,
 				perms:        extPermissions(op.Extensions),
+			}
+			if op.Deprecated {
+				info.deprecation, info.sunset = "true", ""
+				if d, err := time.Parse(time.DateOnly, extString(op.Extensions, "x-deprecated-since")); err == nil {
+					info.deprecation = fmt.Sprintf("@%d", d.Unix())
+				}
+				if d, err := time.Parse(time.DateOnly, extString(op.Extensions, "x-sunset")); err == nil {
+					info.sunset = d.UTC().Format(http.TimeFormat)
+				}
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -296,11 +309,19 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 	return chain
 }
 
-// stability adds X-OpenBekci-Stability: preview to preview operations.
+// stability adds X-OpenBekci-Stability: preview to preview operations and the
+// Deprecation and Sunset headers to deprecated ones.
 func (p *pipeline) stability(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if p.op(r).preview {
+		op := p.op(r)
+		if op.preview {
 			w.Header().Set(headerStability, "preview")
+		}
+		if op.deprecation != "" {
+			w.Header().Set("Deprecation", op.deprecation)
+		}
+		if op.sunset != "" {
+			w.Header().Set("Sunset", op.sunset)
 		}
 		next.ServeHTTP(w, r)
 	})

@@ -20,7 +20,7 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles: [meetings.read]
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -54,7 +54,7 @@ put:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

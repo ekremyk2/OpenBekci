@@ -30,7 +30,7 @@ get:
       - visitors.manage
     household:
       - visitors.manage
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: unit_id
@@ -93,7 +93,7 @@ post:
     household:
       - visitors.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

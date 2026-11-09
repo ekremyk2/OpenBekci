@@ -19,7 +19,7 @@ get:
       - visitors.decide
     household:
       - visitors.decide
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: status
       in: query

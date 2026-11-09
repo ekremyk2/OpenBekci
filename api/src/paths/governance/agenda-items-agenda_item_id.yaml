@@ -23,7 +23,7 @@ patch:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
@@ -67,7 +67,7 @@ delete:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:
