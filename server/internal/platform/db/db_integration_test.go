@@ -28,7 +28,7 @@ const defaultSuperuserURL = "postgres://postgres:postgres@localhost:5432/postgre
 // platform_audit_event holds instance-level audit events (no organization; append-only for the app roles).
 // user, session, otp_code, login_attempt and delivery_log are instance-wide identity tables (backend plan 4.2, section 5):
 // a user belongs to no organization; organizations reach it through person.user_id.
-var rlsExempt = []string{"instance_setting", "goose_db_version", "idempotency_key", "user", "session", "otp_code", "login_attempt", "delivery_log", "platform_audit_event"}
+var rlsExempt = []string{"instance_setting", "goose_db_version", "idempotency_key", "user", "session", "otp_code", "login_attempt", "delivery_log", "platform_audit_event", "device", "web_login_link", "relay_enrollment"}
 
 func isRLSExempt(table string) bool {
 	return slices.Contains(rlsExempt, table) || strings.HasPrefix(table, "river_")

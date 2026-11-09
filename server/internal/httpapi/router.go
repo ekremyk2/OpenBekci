@@ -14,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/devices"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -45,6 +46,9 @@ type Deps struct {
 	Instance *instance.Service
 	// Identity serves /v1/auth and /v1/me.
 	Identity *identity.Service
+	// Devices serves /v1/me/devices (push registration). Nil answers with an
+	// internal error (unit tests only).
+	Devices *devices.Service
 	// Authz resolves effective permissions; with Tenancy and Audit it serves
 	// the /v1/orgs/{org_id} operations. Nil leaves those operations unresolved
 	// (unit tests only).

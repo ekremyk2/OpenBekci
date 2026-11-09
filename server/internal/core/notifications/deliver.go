@@ -24,17 +24,19 @@ const maxAttempts = 8
 
 type contact struct {
 	person       uuid.UUID
+	userID       *uuid.UUID
 	email, phone string
 	locale       string
 }
 
 type pendingSend struct {
-	deliveryID uuid.UUID
-	channel    string
-	attempts   int
-	person     uuid.UUID
-	text       Rendered
-	link       string
+	deliveryID     uuid.UUID
+	notificationID uuid.UUID
+	channel        string
+	attempts       int
+	person         uuid.UUID
+	text           Rendered
+	link           string
 }
 
 // Deliver runs one notifications.deliver job: it resolves the recipients,
@@ -95,6 +97,38 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				return err
 			}
 		}
+		// who has an enabled push device: read straight from the (instance-wide)
+		// device table on this connection; the tokens are opened later, outside
+		// this transaction
+		withDevice := map[uuid.UUID]bool{}
+		if s.pushEnabled() {
+			var uids []uuid.UUID
+			for _, p := range people {
+				if p.userID != nil {
+					uids = append(uids, *p.userID)
+				}
+			}
+			rows, err := tx.Query(ctx, `SELECT DISTINCT user_id FROM device WHERE user_id = ANY($1) AND disabled_at IS NULL`, uids)
+			if err != nil {
+				return err
+			}
+			has := map[uuid.UUID]bool{}
+			for rows.Next() {
+				var u uuid.UUID
+				if err := rows.Scan(&u); err != nil {
+					rows.Close()
+					return err
+				}
+				has[u] = true
+			}
+			rows.Close()
+			if err := rows.Err(); err != nil {
+				return err
+			}
+			for _, p := range people {
+				withDevice[p.person] = p.userID != nil && has[*p.userID]
+			}
+		}
 		payload := map[string]any{}
 		for k, v := range a.Payload {
 			payload[k] = v
@@ -126,6 +160,12 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				if IsUnmutable(a.Type) && len(NormalizeChannels(a.Channels)) == 0 {
 					chs = []string{UnmutableChannel(p.phone != "")} // sign-in codes and invitations: one address, never both
 				}
+				// push accompanies the in-app copy of every automatic message for a
+				// person with a device (the app then fetches the notification);
+				// it is also a channel a sender or site can ask for explicitly
+				if !IsUnmutable(a.Type) && slices.Contains(chs, jobs.ChannelInApp) && !slices.Contains(chs, jobs.ChannelPush) && withDevice[p.person] {
+					chs = append(slices.Clone(chs), jobs.ChannelPush)
+				}
 				for _, ch := range chs {
 					status, why := "pending", ""
 					switch {
@@ -135,8 +175,10 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 						status, why = "skipped", skipReason(p.email == "", "no_address", "mail_unavailable")
 					case ch == jobs.ChannelSMS && (p.phone == "" || s.cfg.SMS == nil):
 						status, why = "skipped", skipReason(p.phone == "", "no_address", "sms_unavailable")
-					case ch == jobs.ChannelPush:
+					case ch == jobs.ChannelPush && !s.pushEnabled():
 						status, why = "skipped", "push_unavailable"
+					case ch == jobs.ChannelPush && !withDevice[p.person]:
+						status, why = "skipped", "no_device"
 					}
 					if _, err := tx.Exec(ctx, `INSERT INTO notification_delivery (id, org_id, notification_id, channel, status, last_error)
 						VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''))`, id.New(), a.OrgID, nid, ch, status, why); err != nil {
@@ -152,9 +194,9 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		rows, err := tx.Query(ctx, `UPDATE notification_delivery d SET status = 'sending', claimed_at = now(), updated_at = now()
 			FROM notification n
 			WHERE n.org_id = d.org_id AND n.id = d.notification_id AND n.org_id = $1 AND n.dedupe_key = $2 AND n.type = $4
-			  AND d.channel IN ('email', 'sms') AND d.attempts < $3
+			  AND d.channel IN ('email', 'sms', 'push') AND d.attempts < $3
 			  AND (d.status IN ('pending', 'failed') OR (d.status = 'sending' AND d.claimed_at < now() - interval '10 minutes'))
-			RETURNING d.id, d.channel, d.attempts, n.person_id, n.link`, a.OrgID, a.Key, maxAttempts, a.Type)
+			RETURNING d.id, d.channel, d.attempts, n.person_id, n.link, n.id`, a.OrgID, a.Key, maxAttempts, a.Type)
 		if err != nil {
 			return err
 		}
@@ -167,7 +209,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		for rows.Next() {
 			var ps pendingSend
 			var link *string
-			if err := rows.Scan(&ps.deliveryID, &ps.channel, &ps.attempts, &ps.person, &link); err != nil {
+			if err := rows.Scan(&ps.deliveryID, &ps.channel, &ps.attempts, &ps.person, &link, &ps.notificationID); err != nil {
 				return err
 			}
 			c, ok := byPerson[ps.person]
@@ -220,14 +262,19 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 	type result struct {
 		p        pendingSend
 		err      error
+		skip     string // set: the delivery is recorded as skipped for this reason
 		provider string
 		segments int
 	}
 	var results []result
+	var pushSends []pendingSend
 	for _, p := range sends {
 		c := contacts[p.person]
 		r := result{p: p}
 		switch p.channel {
+		case jobs.ChannelPush:
+			pushSends = append(pushSends, p)
+			continue
 		case jobs.ChannelEmail:
 			body := p.text.Body
 			if p.link != "" && s.cfg.BaseURL != "" {
@@ -242,10 +289,22 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		}
 		results = append(results, r)
 	}
+	if len(pushSends) > 0 {
+		for _, x := range s.deliverPush(ctx, a, pushSends, contacts) {
+			results = append(results, result{p: x.p, err: x.err, skip: x.skip})
+		}
+	}
 	var failed int
 	err = s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
 		var msgs, segs int
 		for _, r := range results {
+			if r.skip != "" {
+				if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'skipped', attempts = attempts + 1, last_error = $3, updated_at = now() WHERE org_id = $1 AND id = $2`,
+					a.OrgID, r.p.deliveryID, truncate(r.skip, 300)); err != nil {
+					return err
+				}
+				continue
+			}
 			if r.err != nil {
 				failed++
 				if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'failed', attempts = attempts + 1, last_error = $3, updated_at = now() WHERE org_id = $1 AND id = $2`,
@@ -323,12 +382,12 @@ func truncate(s string, n int) string {
 	return s[:n]
 }
 
-const personQuery = `SELECT p.id, coalesce(p.contact->>'email', u.email::text, ''), coalesce(p.contact->>'phone', u.phone, ''), coalesce(u.locale, '')
+const personQuery = `SELECT p.id, p.user_id, coalesce(p.contact->>'email', u.email::text, ''), coalesce(p.contact->>'phone', u.phone, ''), coalesce(u.locale, '')
 	FROM person p LEFT JOIN "user" u ON u.id = p.user_id`
 
 func scanContact(row pgx.Row) (contact, error) {
 	var c contact
-	err := row.Scan(&c.person, &c.email, &c.phone, &c.locale)
+	err := row.Scan(&c.person, &c.userID, &c.email, &c.phone, &c.locale)
 	return c, err
 }
 

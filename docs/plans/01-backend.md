@@ -447,7 +447,8 @@ All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the
 | `API_KEY_RATE_PER_MINUTE` (0.4) | no | requests per minute per organization API key (default 600, with a burst of ten seconds' worth); negative removes the limit |
 | `WEBHOOK_MAX_ATTEMPTS` (0.4) | no | delivery attempts per (event, endpoint) before the endpoint is marked failing (default 8, 1 to 20); backoff doubles from 30 s up to 4 h |
 | `WEBHOOK_ALLOWED_CIDRS` (0.4) | no | comma separated CIDRs or IPs outbound webhooks may reach although private, loopback or link-local (self-hosted receivers on the LAN); empty keeps the SSRF guard strict. Webhook secrets are sealed with `ENCRYPTION_KEY` |
-| `PUSH_RELAYS` (0.4) | no | list of `relay_id=url;server_id;secret_file;app_id` |
+| `PUSH_RELAYS` (0.4) | no | comma separated list of `relay_id=url;server_id;secret_file[;app_id]` (app id default `org.openbekci.app`); `official` is just an id; `relay_id=log` is the development driver that logs the payload (refused without `INSECURE_DEV`); relays other than `log` must be https; the ids are announced in the discovery document (`push.relay_ids`) |
+| `PUSH_ALLOW_PRIVATE` (0.4) | no | default false: UnifiedPush endpoints must be public https URLs (the server refuses loopback, private and link-local addresses at connect time); `true` also allows plain http and LAN distributors |
 | `TRUSTED_PROXIES` | yes behind a proxy | CIDRs; also what lets the agent enrol rate limit (10/min) count per real client IP: without it behind a proxy every enrolment shares one budget |
 | `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | |
 | `WORKER` | no | `embedded` (default) / `off` |
