@@ -1,0 +1,76 @@
+{{- $keys := include "openbekci.appKeys" . | fromJsonArray -}}
+{{- $sel := dict "root" . "component" "worker" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openbekci.name" . }}-worker
+  labels: {{- include "openbekci.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels: {{- include "openbekci.selector" $sel | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "openbekci.selector" $sel | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.worker.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds }}
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: openbekci
+          image: {{ include "openbekci.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["worker"]
+          ports:
+            - {name: metrics, containerPort: {{ .Values.worker.metricsPort }}}
+          envFrom: {{- include "openbekci.envFrom" . | nindent 12 }}
+          env:
+            {{- include "openbekci.env" (dict "root" . "keys" $keys) | nindent 12 }}
+            - name: OPENBEKCI_METRICS_ADDR
+              value: ":{{ .Values.worker.metricsPort }}"
+          readinessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 20
+            failureThreshold: 3
+          resources: {{- toYaml .Values.worker.resources | nindent 12 }}
+          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            - {name: data, mountPath: {{ .Values.config.DATA_DIR | quote }}}
+            - {name: secrets, mountPath: /secrets, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        {{- include "openbekci.dataVolume" . | nindent 8 }}
+        {{- include "openbekci.secretVolume" (dict "root" . "keys" $keys) | nindent 8 }}
+        - {name: tmp, emptyDir: {}}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.worker.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- if .Values.worker.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "openbekci.name" . }}-worker
+  labels: {{- include "openbekci.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.worker.pdb.minAvailable }}
+  selector:
+    matchLabels: {{- include "openbekci.selector" $sel | nindent 6 }}
+{{- end }}

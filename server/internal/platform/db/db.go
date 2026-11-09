@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"log/slog"
 	"sync"
 	"time"
@@ -170,6 +171,8 @@ func (d *DB) InPlatformTx(ctx context.Context, fn func(pgx.Tx) error) error {
 }
 
 func inTx(ctx context.Context, pool *pgxpool.Pool, orgID string, fn func(pgx.Tx) error) (err error) {
+	ctx, span := obs.Start(ctx, "db.tx")
+	defer func() { obs.End(span, err) }()
 	if pool == nil {
 		return errors.New("db: pool not open")
 	}
@@ -203,6 +206,11 @@ func inTx(ctx context.Context, pool *pgxpool.Pool, orgID string, fn func(pgx.Tx)
 		return fmt.Errorf("commit tx: %w", err)
 	}
 	return nil
+}
+
+// Pools are the open pools by name, for metrics.
+func (d *DB) Pools() map[string]*pgxpool.Pool {
+	return map[string]*pgxpool.Pool{"app": d.app, "side": d.side, "platform": d.platform}
 }
 
 // Migrator returns the migrator pool. For cmd and app wiring only.
