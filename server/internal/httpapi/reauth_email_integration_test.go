@@ -40,7 +40,7 @@ func TestIntegrationHTTPEmailOnlyUserReauthsAndSetsPassword(t *testing.T) {
 	rec := e.do("POST", "/v1/auth/magic-link/consume", `{"token":"`+token+`"}`, false)
 	e.mustJSON(rec, 200, nil)
 	for _, c := range rec.Result().Cookies() {
-		if c.Name == CookieName {
+		if c.Name == HostCookieName {
 			e.cookie = c
 		}
 	}

@@ -24,6 +24,9 @@ const CoreCSV = "core_csv"
 // MaxFileBytes is the size cap of an uploaded statement until the files module exists.
 const MaxFileBytes = 10 << 20
 
+// MaxLines bounds the parsed lines of one statement (core and pack importers alike).
+const MaxLines = 50000
+
 // Mapping is the typed column mapping: target field to source header (or a
 // zero-based index as a string). Targets: booked_on, amount (both required),
 // counterparty, description, reference, balance.
@@ -187,7 +190,7 @@ func isXLSX(filename string, data []byte) bool {
 }
 
 func readXLSX(data []byte, sheet *string) ([][]string, error) {
-	f, err := excelize.OpenReader(bytes.NewReader(data))
+	f, err := excelize.OpenReader(bytes.NewReader(data), excelize.Options{UnzipSizeLimit: 64 << 20, UnzipXMLSizeLimit: 32 << 20}) // zip-bomb caps
 	if err != nil {
 		return nil, errors.New("the spreadsheet cannot be read")
 	}
