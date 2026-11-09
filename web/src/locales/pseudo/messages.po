@@ -162,6 +162,12 @@ msgstr ""
 msgid "<0>{name}</0>: the payment provider has not paid out <1/> yet (clearing account {account}). Wait until the payout is posted."
 msgstr ""
 
+msgid "1. Add @{bot} to your group as an administrator."
+msgstr ""
+
+msgid "2. Send this message in the group. The code works for 10 minutes."
+msgstr ""
+
 msgid "A block that still has units cannot be deleted."
 msgstr ""
 
@@ -605,6 +611,9 @@ msgid "Announcement scheduled."
 msgstr ""
 
 msgid "Announcements"
+msgstr ""
+
+msgid "Announcements and meeting calls can be posted to the site's group."
 msgstr ""
 
 msgid "Answer a data-subject request: export everything held about this person, or erase them. Erasing cannot be undone; ledger entries and votes stay, under a neutral name."
@@ -1221,6 +1230,9 @@ msgid "Chat (Telegram/WhatsApp)"
 msgstr ""
 
 msgid "Chat link QR code"
+msgstr ""
+
+msgid "Chat settings"
 msgstr ""
 
 msgid "Check"
@@ -2965,6 +2977,9 @@ msgstr ""
 msgid "Generated: statement"
 msgstr ""
 
+msgid "Get link code"
+msgstr ""
+
 msgid "Give a role"
 msgstr ""
 
@@ -3234,6 +3249,9 @@ msgstr ""
 msgid "Jobs"
 msgstr ""
 
+msgid "Join the site's WhatsApp group"
+msgstr ""
+
 msgid "Join your building"
 msgstr ""
 
@@ -3410,6 +3428,14 @@ msgid "Linked"
 msgstr ""
 
 msgid "Linked chats"
+msgstr ""
+
+#. placeholder {0}: g.title
+msgid "Linked to channel “{0}”"
+msgstr ""
+
+#. placeholder {0}: g.title
+msgid "Linked to group “{0}”"
 msgstr ""
 
 msgid "Linked to the declared payment."
@@ -3679,6 +3705,9 @@ msgstr ""
 msgid "Must be at most {0}"
 msgstr ""
 
+msgid "Must look like https://chat.whatsapp.com/…"
+msgstr ""
+
 msgid "Mute notifications"
 msgstr ""
 
@@ -3820,6 +3849,9 @@ msgid "New folder"
 msgstr ""
 
 msgid "New gate agent"
+msgstr ""
+
+msgid "New link code"
 msgstr ""
 
 msgid "New manual credential"
@@ -4136,6 +4168,12 @@ msgstr ""
 msgid "No suggestion"
 msgstr ""
 
+msgid "No Telegram group is linked"
+msgstr ""
+
+msgid "No Telegram group is linked to this site"
+msgstr ""
+
 msgid "No terms end soon."
 msgstr ""
 
@@ -4239,6 +4277,9 @@ msgid "Not listed"
 msgstr ""
 
 msgid "not met"
+msgstr ""
+
+msgid "Not posted to the group: the audience is narrower than the whole site"
 msgstr ""
 
 msgid "Not read"
@@ -5405,6 +5446,9 @@ msgstr ""
 msgid "Residents see these details when they pay by bank transfer."
 msgstr ""
 
+msgid "Residents see this link on their Home screen."
+msgstr ""
+
 msgid "Residents who joined with the site QR code and say they live in a unit. A claim takes effect only when you approve it."
 msgstr ""
 
@@ -6185,6 +6229,12 @@ msgstr ""
 msgid "Tax id"
 msgstr ""
 
+msgid "Telegram group"
+msgstr ""
+
+msgid "Telegram is not configured for this organization"
+msgstr ""
+
 msgid "Tell the absent owners"
 msgstr ""
 
@@ -6291,6 +6341,9 @@ msgid "The booking breaks a rule of this facility."
 msgstr ""
 
 msgid "The booking was cancelled."
+msgstr ""
+
+msgid "The bot leaves the group and nothing is posted there any more."
 msgstr ""
 
 msgid "The box does not hold that much."
@@ -7092,6 +7145,9 @@ msgstr ""
 msgid "Unlink {name}"
 msgstr ""
 
+msgid "Unlink the Telegram group?"
+msgstr ""
+
 msgid "Unmatch"
 msgstr ""
 
@@ -7379,6 +7435,9 @@ msgstr ""
 msgid "Waiting for {0} to answer. This checks every few seconds."
 msgstr ""
 
+msgid "Waiting for /link"
+msgstr ""
+
 msgid "Waiting for a decision"
 msgstr ""
 
@@ -7502,6 +7561,9 @@ msgstr ""
 msgid "WhatsApp"
 msgstr ""
 
+msgid "WhatsApp group invite link"
+msgstr ""
+
 msgid "When"
 msgstr ""
 
@@ -7560,6 +7622,14 @@ msgid "Will be voted"
 msgstr ""
 
 msgid "Will be voted on"
+msgstr ""
+
+#. placeholder {0}: query.data.telegram_group.title
+msgid "Will post to {0}"
+msgstr ""
+
+#. placeholder {0}: group.data.title
+msgid "Will post to {0} and pin the call"
 msgstr ""
 
 msgid "Window"

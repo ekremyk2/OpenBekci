@@ -162,6 +162,12 @@ msgstr "<0>{name}</0>: kuruluş site adına <1/> müşteri parası olarak tutuyo
 msgid "<0>{name}</0>: the payment provider has not paid out <1/> yet (clearing account {account}). Wait until the payout is posted."
 msgstr "<0>{name}</0>: ödeme sağlayıcı henüz <1/> ödemedi (takas hesabı {account}). Ödeme kaydedilene kadar bekleyin."
 
+msgid "1. Add @{bot} to your group as an administrator."
+msgstr "1. @{bot} botunu grubunuza yönetici olarak ekleyin."
+
+msgid "2. Send this message in the group. The code works for 10 minutes."
+msgstr "2. Bu mesajı grupta gönderin. Kod 10 dakika geçerlidir."
+
 msgid "A block that still has units cannot be deleted."
 msgstr "Hâlâ birimi olan bir blok silinemez."
 
@@ -606,6 +612,9 @@ msgstr "Duyuru zamanlandı."
 
 msgid "Announcements"
 msgstr "Duyurular"
+
+msgid "Announcements and meeting calls can be posted to the site's group."
+msgstr "Duyurular ve toplantı çağrıları sitenin grubuna gönderilebilir."
 
 msgid "Answer a data-subject request: export everything held about this person, or erase them. Erasing cannot be undone; ledger entries and votes stay, under a neutral name."
 msgstr "Bir veri sahibi talebini yanıtlayın: bu kişi hakkında tutulan her şeyi dışa aktarın veya kişiyi silin. Silme geri alınamaz; defter kayıtları ve oylar tarafsız bir adla kalır."
@@ -1222,6 +1231,9 @@ msgstr "Sohbet (Telegram/WhatsApp)"
 
 msgid "Chat link QR code"
 msgstr "Sohbet bağlantısı QR kodu"
+
+msgid "Chat settings"
+msgstr "Sohbet ayarları"
 
 msgid "Check"
 msgstr "Kontrol"
@@ -2965,6 +2977,9 @@ msgstr "Otomatik: makbuz"
 msgid "Generated: statement"
 msgstr "Otomatik: ekstre"
 
+msgid "Get link code"
+msgstr "Bağlantı kodu al"
+
 msgid "Give a role"
 msgstr "Rol ver"
 
@@ -3234,6 +3249,9 @@ msgstr "İş"
 msgid "Jobs"
 msgstr "İşler"
 
+msgid "Join the site's WhatsApp group"
+msgstr "Sitenin WhatsApp grubuna katıl"
+
 msgid "Join your building"
 msgstr "Binanıza katılın"
 
@@ -3411,6 +3429,14 @@ msgstr "Bağlı"
 
 msgid "Linked chats"
 msgstr "Bağlı sohbetler"
+
+#. placeholder {0}: g.title
+msgid "Linked to channel “{0}”"
+msgstr "“{0}” kanalına bağlı"
+
+#. placeholder {0}: g.title
+msgid "Linked to group “{0}”"
+msgstr "“{0}” grubuna bağlı"
 
 msgid "Linked to the declared payment."
 msgstr "Bildirilen ödemeye bağlandı."
@@ -3679,6 +3705,9 @@ msgstr "En az {0} olmalı"
 msgid "Must be at most {0}"
 msgstr "En fazla {0} olmalı"
 
+msgid "Must look like https://chat.whatsapp.com/…"
+msgstr "https://chat.whatsapp.com/… biçiminde olmalı"
+
 msgid "Mute notifications"
 msgstr "Bildirimleri sessize al"
 
@@ -3821,6 +3850,9 @@ msgstr "Yeni klasör"
 
 msgid "New gate agent"
 msgstr "Yeni kapı ajanı"
+
+msgid "New link code"
+msgstr "Yeni bağlantı kodu"
 
 msgid "New manual credential"
 msgstr "Yeni elle kimlik bilgisi"
@@ -4136,6 +4168,12 @@ msgstr "Aşama yok"
 msgid "No suggestion"
 msgstr "Öneri yok"
 
+msgid "No Telegram group is linked"
+msgstr "Bağlı bir Telegram grubu yok"
+
+msgid "No Telegram group is linked to this site"
+msgstr "Bu siteye bağlı bir Telegram grubu yok"
+
 msgid "No terms end soon."
 msgstr "Yakında biten görev süresi yok."
 
@@ -4240,6 +4278,9 @@ msgstr "Listede değil"
 
 msgid "not met"
 msgstr "sağlanmadı"
+
+msgid "Not posted to the group: the audience is narrower than the whole site"
+msgstr "Gruba gönderilmeyecek: hedef kitle sitenin tamamından dar"
 
 msgid "Not read"
 msgstr "Okunmadı"
@@ -5405,6 +5446,9 @@ msgstr "Sakinler engellenen bir dönemi rezerve edemez (bakım, özel etkinlikle
 msgid "Residents see these details when they pay by bank transfer."
 msgstr "Sakinler banka havalesiyle ödeme yaparken bu bilgileri görür."
 
+msgid "Residents see this link on their Home screen."
+msgstr "Sakinler bu bağlantıyı ana ekranlarında görür."
+
 msgid "Residents who joined with the site QR code and say they live in a unit. A claim takes effect only when you approve it."
 msgstr "Site QR koduyla katılıp bir birimde oturduğunu söyleyen sakinler. Talep, siz onaylayınca geçerli olur."
 
@@ -6185,6 +6229,12 @@ msgstr "Hedef türü"
 msgid "Tax id"
 msgstr "Vergi numarası"
 
+msgid "Telegram group"
+msgstr "Telegram grubu"
+
+msgid "Telegram is not configured for this organization"
+msgstr "Telegram bu kuruluş için yapılandırılmamış"
+
 msgid "Tell the absent owners"
 msgstr "Devamsız maliklere bildirin"
 
@@ -6292,6 +6342,9 @@ msgstr "Rezervasyon bu tesisin bir kuralını ihlal ediyor."
 
 msgid "The booking was cancelled."
 msgstr "Rezervasyon iptal edildi."
+
+msgid "The bot leaves the group and nothing is posted there any more."
+msgstr "Bot gruptan ayrılır ve orada artık hiçbir şey paylaşılmaz."
 
 msgid "The box does not hold that much."
 msgstr "Kasada o kadar para yok."
@@ -7092,6 +7145,9 @@ msgstr "Bağlantıyı kaldır"
 msgid "Unlink {name}"
 msgstr "{name} bağlantısını kaldır"
 
+msgid "Unlink the Telegram group?"
+msgstr "Telegram grubunun bağlantısı kaldırılsın mı?"
+
 msgid "Unmatch"
 msgstr "Eşleşmeyi kaldır"
 
@@ -7379,6 +7435,9 @@ msgstr "Bekleyen teslimatlar: {0}"
 msgid "Waiting for {0} to answer. This checks every few seconds."
 msgstr "{0} bağımsız bölümünün yanıtı bekleniyor. Bu birkaç saniyede bir kontrol edilir."
 
+msgid "Waiting for /link"
+msgstr "/link bekleniyor"
+
 msgid "Waiting for a decision"
 msgstr "Karar bekleyen"
 
@@ -7502,6 +7561,9 @@ msgstr "Bugün borcunuz, şimdiye kadar tahakkuk eden gecikme tazminatı dahil."
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
+msgid "WhatsApp group invite link"
+msgstr "WhatsApp grubu davet bağlantısı"
+
 msgid "When"
 msgstr "Ne zaman"
 
@@ -7561,6 +7623,14 @@ msgstr "Oylanacak"
 
 msgid "Will be voted on"
 msgstr "Oylanacak"
+
+#. placeholder {0}: query.data.telegram_group.title
+msgid "Will post to {0}"
+msgstr "Gruba gönderilecek: {0}"
+
+#. placeholder {0}: group.data.title
+msgid "Will post to {0} and pin the call"
+msgstr "{0} grubuna gönderilecek ve çağrı sabitlenecek"
 
 msgid "Window"
 msgstr "Aralık"

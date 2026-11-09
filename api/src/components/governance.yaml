@@ -565,7 +565,8 @@ schemas:
             - in_app
             - email
             - sms
-        description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices.
+            - telegram_group
+        description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices. `telegram_group` posts (and pins) the call once in the site's linked Telegram group; without a linked group the call answers 409.
   MeetingCancel:
     type: object
     required:

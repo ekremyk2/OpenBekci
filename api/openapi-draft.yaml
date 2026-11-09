@@ -17262,6 +17262,223 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/chat-group:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getSiteChatGroup
+      summary: The site's Telegram group and WhatsApp invite link
+      description: |-
+        **Release 1.0.** Whether the site's Telegram group is `linked`, `pending` (a link code was issued and not yet sent in the
+        group) or `none`, its title and kind, and the WhatsApp group invite link the site maintains.
+
+        Permission: `chatgroups.manage`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - chatgroups.manage
+        site_manager:
+          - chatgroups.manage
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteChatGroup'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: operations.updateSiteChatGroup
+      summary: Set the WhatsApp group invite link
+      description: |-
+        **Release 1.0.** Sets (`https://chat.whatsapp.com/<code>`) or clears (`null`) the WhatsApp group invite link residents see
+        on Home as "Join the site's WhatsApp group".
+
+        Permission: `chatgroups.manage`.
+
+        Problems: `validation_failed` (422).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - chatgroups.manage
+        site_manager:
+          - chatgroups.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteChatGroupUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteChatGroup'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.unlinkSiteChatGroup
+      summary: Unlink the site's Telegram group
+      description: |-
+        **Release 1.0.** Removes the link and has the bot leave the group. Nothing is posted there any more.
+
+        Permission: `chatgroups.manage`.
+
+        Problems: `not_found` (404, the site has no Telegram group).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - chatgroups.manage
+        site_manager:
+          - chatgroups.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/chat-group:start:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: operations.startSiteChatGroupLink
+      summary: Start linking the site's Telegram group
+      description: |-
+        **Release 1.0.** Issues a single-use code (valid 10 minutes). The manager adds the organization's bot to the group as an
+        administrator and sends `/link <code>` in the group; the webhook then verifies the link and stores the group. Asking again
+        replaces the code; a linked group stays linked until the new code is verified.
+
+        Permission: `chatgroups.manage`.
+
+        Problems: `conflict` (409, Telegram is not configured for the organization).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - chatgroups.manage
+        site_manager:
+          - chatgroups.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteChatGroupStarted'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/chat-info:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: operations.getSiteChatInfo
+      summary: The chat groups residents may join
+      description: |-
+        **Release 1.0.** What the site tells its residents about its chat groups: the WhatsApp group invite link (`null` when the site
+        has none). Shown on Home as "Join the site's WhatsApp group".
+
+        Permission: `notifications.read`.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        member:
+          - notifications.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteChatInfo'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/sms-usage:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -35391,7 +35608,8 @@ components:
               - email
               - sms
               - letter
-          description: Chosen by the sender (O5).
+              - telegram_group
+          description: Chosen by the sender (O5). `telegram_group` posts one generic "dues reminder sent, check your statement" in the site's Telegram group, never a name or an amount (409 without a linked group).
     DunningRunPreview:
       type: object
       required:
@@ -37609,6 +37827,7 @@ components:
               - sms
               - push
               - chat
+              - telegram_group
             x-open-enum: true
           description: Chosen by the sender (O5).
         recipient_count:
@@ -37724,6 +37943,7 @@ components:
               - sms
               - push
               - chat
+              - telegram_group
             x-open-enum: true
         file_ids:
           type: array
@@ -37761,6 +37981,7 @@ components:
               - sms
               - push
               - chat
+              - telegram_group
             x-open-enum: true
         file_ids:
           type: array
@@ -37834,6 +38055,7 @@ components:
               - sms
               - push
               - chat
+              - telegram_group
         title:
           type: string
           maxLength: 200
@@ -37866,6 +38088,24 @@ components:
         in_app_count:
           type: integer
           format: int64
+        telegram_group:
+          type: object
+          description: Present when `telegram_group` was chosen. The group sees the whole site, so a notice for a narrower audience (a block, some units) is not posted there.
+          required:
+            - title
+            - will_post
+          properties:
+            title:
+              type: string
+              description: The linked group's title; empty when none is linked.
+            will_post:
+              type: boolean
+            reason:
+              type: string
+              enum:
+                - not_linked
+                - audience_narrower
+              description: Why it will not post.
     AnnouncementPublish:
       type: object
       properties:
@@ -37879,6 +38119,7 @@ components:
               - sms
               - push
               - chat
+              - telegram_group
           description: Overrides the stored channels.
     AnnouncementRead:
       type: object
@@ -39232,7 +39473,8 @@ components:
               - in_app
               - email
               - sms
-          description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices.
+              - telegram_group
+          description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices. `telegram_group` posts (and pins) the call once in the site's linked Telegram group; without a linked group the call answers 409.
     MeetingCancel:
       type: object
       required:
@@ -44823,6 +45065,7 @@ components:
         - bookings.manage
         - bookings.read
         - chat.manage
+        - chatgroups.manage
         - claims.decide
         - codes.read
         - collections.manage
@@ -45156,6 +45399,86 @@ components:
           type: object
           additionalProperties: true
           description: Fields to set; `null` clears one, a field left out keeps its value.
+    SiteChatGroup:
+      type: object
+      description: The site's Telegram group (the bot posts there like a member) and the WhatsApp invite link the site maintains.
+      required:
+        - status
+        - title
+        - kind
+        - linked_at
+        - code_expires_at
+        - bot_username
+        - whatsapp_invite_url
+      properties:
+        status:
+          type: string
+          enum:
+            - none
+            - pending
+            - linked
+          description: '`pending`: a link code was issued and `/link <code>` was not yet sent in the group.'
+        title:
+          type: string
+          nullable: true
+          description: The group's title as Telegram reports it; null until linked.
+        kind:
+          type: string
+          nullable: true
+          enum:
+            - group
+            - channel
+        linked_at:
+          type: string
+          format: date-time
+          nullable: true
+        code_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the issued link code stops working; null when no code is pending.
+        bot_username:
+          type: string
+          nullable: true
+          description: The bot to add to the group (without @); null when Telegram is not configured.
+        whatsapp_invite_url:
+          type: string
+          nullable: true
+    SiteChatGroupUpdate:
+      type: object
+      required:
+        - whatsapp_invite_url
+      properties:
+        whatsapp_invite_url:
+          type: string
+          nullable: true
+          pattern: ^https://chat\.whatsapp\.com/[A-Za-z0-9]{10,64}$
+          description: '`https://chat.whatsapp.com/<code>`; null clears it.'
+    SiteChatGroupStarted:
+      type: object
+      required:
+        - code
+        - expires_at
+        - bot_username
+      properties:
+        code:
+          type: string
+          description: Send `/link <code>` in the group after adding the bot as an administrator. Shown once.
+        expires_at:
+          type: string
+          format: date-time
+        bot_username:
+          type: string
+          nullable: true
+    SiteChatInfo:
+      type: object
+      required:
+        - whatsapp_invite_url
+      properties:
+        whatsapp_invite_url:
+          type: string
+          nullable: true
+          description: Invite link to the site's WhatsApp group, if the site keeps one.
     AuditChange:
       type: object
       description: |

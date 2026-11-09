@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { LayoutDashboardIcon } from 'lucide-react'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
+import { WhatsAppInviteCard } from '@/features/chat/WhatsAppInviteCard'
 import { SiteDashboardView } from '@/features/dashboard/SiteDashboardView'
 import { StaffDashboardView } from '@/features/dashboard/StaffDashboardView'
 
@@ -22,6 +23,7 @@ export const Route = createFileRoute('/orgs/$orgId/')({
           title={<Trans>Your dashboard is on its way</Trans>}
           description={<Trans>Balances, open requests and announcements will appear here.</Trans>}
         />
+        <WhatsAppInviteCard />
       </div>
     )
   },

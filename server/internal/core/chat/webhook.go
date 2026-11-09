@@ -64,6 +64,12 @@ func (s *Service) webhook(w http.ResponseWriter, r *http.Request) {
 		problem.Write(w, r, problem.Internal(err)) // the provider retries
 		return
 	}
+	if gb, ok := p.(chat.GroupBot); ok { // group links, bot commands and poll votes
+		if err := s.Update(r.Context(), org, gb, body); err != nil {
+			problem.Write(w, r, problem.Internal(err))
+			return
+		}
+	}
 	w.WriteHeader(http.StatusOK)
 }
 

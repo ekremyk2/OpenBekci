@@ -148,7 +148,7 @@ func (t *telegram) ParseInbound(body []byte) ([]Inbound, error) {
 
 // SetWebhook registers webhookURL with the secret token header.
 func (t *telegram) SetWebhook(ctx context.Context, webhookURL string) error {
-	status, raw, err := t.call(ctx, "setWebhook", map[string]any{"url": webhookURL, "secret_token": t.secret, "allowed_updates": []string{"message"}})
+	status, raw, err := t.call(ctx, "setWebhook", map[string]any{"url": webhookURL, "secret_token": t.secret, "allowed_updates": []string{"message", "channel_post", "poll_answer"}})
 	if err != nil {
 		return err
 	}

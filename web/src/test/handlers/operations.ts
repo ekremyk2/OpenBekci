@@ -37,6 +37,7 @@ const PERMS: Record<MockRole, string[]> = {
     'files.read',
     'notifications.read',
     'notifications.manage',
+    'chatgroups.manage',
     'audit.read',
     'dashboard.site',
     'codes.read',

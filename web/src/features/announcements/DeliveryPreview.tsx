@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { LoaderCircleIcon } from 'lucide-react'
-import { draftApi, type AnnouncementAudience, type Channel } from '@/api/draft'
+import { draftApi, type AnnouncementAudience, type AnnouncementChannel } from '@/api/draft'
 import { must } from '@/lib/pagination'
 
 /**
@@ -19,7 +19,7 @@ export function useDeliveryPreview({
   orgId: string
   siteId: string | undefined
   audience: AnnouncementAudience
-  channels: readonly Channel[]
+  channels: readonly AnnouncementChannel[]
   enabled?: boolean
 }) {
   const ready =
@@ -58,7 +58,7 @@ export function DeliveryPreviewPanel({
   channels,
 }: {
   preview: DeliveryPreviewState
-  channels: readonly Channel[]
+  channels: readonly AnnouncementChannel[]
 }) {
   const { t } = useLingui()
   const { query, ready } = preview
@@ -100,6 +100,17 @@ export function DeliveryPreviewPanel({
           {channels.includes('sms') ? (
             <li className="font-medium">
               <Trans>SMS messages: {query.data.sms_count} (billed to the site)</Trans>
+            </li>
+          ) : null}
+          {channels.includes('telegram_group') && query.data.telegram_group ? (
+            <li>
+              {query.data.telegram_group.will_post ? (
+                <Trans>Will post to {query.data.telegram_group.title}</Trans>
+              ) : query.data.telegram_group.reason === 'audience_narrower' ? (
+                <Trans>Not posted to the group: the audience is narrower than the whole site</Trans>
+              ) : (
+                <Trans>No Telegram group is linked to this site</Trans>
+              )}
             </li>
           ) : null}
         </ul>

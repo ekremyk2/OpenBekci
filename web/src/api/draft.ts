@@ -42,6 +42,8 @@ export type PlatformSettings = S['PlatformSettings']
 export type Job = S['Job']
 export type ApiFile = S['File']
 export type Channel = 'in_app' | 'email' | 'sms' | 'push' | 'chat'
+/** Announcement channels: the notification channels plus the site's Telegram group. */
+export type AnnouncementChannel = Channel | 'telegram_group'
 
 /** Client typed with the draft paths (same middleware as `api`). */
 export const draftApi = createApiClient<paths>()
