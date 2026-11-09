@@ -57,7 +57,7 @@ export interface paths {
          *     `code` this verifies the credentials and sets the session cookie `obk_session`
          *     (httpOnly, SameSite=Lax, Secure except in development). `sms_otp` without
          *     `code` sends a code by SMS and `magic_link` emails a link (`client`
-         *     selects the web or `openbekci://` link); both answer 202 whether or not
+         *     selects the web or `openbekci://<host>/…` link); both answer 202 whether or not
          *     the account exists. Wrong credentials
          *     of any kind answer 401 `invalid_grant`; repeated failures lock the
          *     identifier out (429 `rate_limited` with `Retry-After`).
@@ -153,7 +153,7 @@ export interface paths {
          * Email a single-use sign-in link
          * @description Emails a link valid for 15 minutes when an account has this address. The
          *     answer is the same whether or not it does. The link is
-         *     `{BASE_URL}/login/magic?token=...`, or `openbekci://login/magic?token=...`
+         *     `{BASE_URL}/login/magic?token=...`, or `openbekci://<host>/login/magic?token=...` (`<host>` is the instance's BASE_URL host)
          *     for `client=mobile`. 503 `mail_unavailable` when the instance has no email
          *     configuration. Limited per address and per client address.
          */
@@ -1796,6 +1796,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/join/{code}:sign-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign up through a site's join code
+         * @description **Release 0.1.** Public. A resident who scanned the site's QR code creates an account here (setup-people S4,
+         *     path 2): give a phone number or an email address (and optionally a name). The server sends a six-digit SMS code
+         *     (phone) or a sign-in link (email, `client=mobile` makes it an `openbekci://<host>/…` link). Completing it through
+         *     `auth.createToken` (`sms_otp` with the code, or `magic_link`) or `auth.createSession` opens a session with no
+         *     organization yet; the unit claim (`people.createUnitClaim`) then uses the same join code, and the manager approves.
+         *
+         *     The answer is 202 whether the contact is new or already has an account: an existing account simply gets the
+         *     ordinary sign-in code or link, and no second account is created. A new contact gets a pending account that becomes
+         *     active only when the code or link is used. An unknown, expired, disabled, rotated or used-up join code answers the
+         *     same 404 as `people.getJoinInfo`. Limited per join code, per contact and per client address.
+         *
+         *     Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429), `sms_unavailable` or
+         *     `mail_unavailable` (503).
+         */
+        post: operations["people.joinSignUp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/join/{code}/claims": {
         parameters: {
             query?: never;
@@ -1815,6 +1850,30 @@ export interface paths {
          *     Problems: `not_found` (404), `conflict` (409), `rate_limited` (429).
          */
         post: operations["people.createUnitClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/unit-claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List my unit claims across organizations
+         * @description **Release 0.1.** Lets a freshly signed-up resident see "waiting for approval": every claim of the caller, in any
+         *     organization, newest last, with the organization, site, block and unit labels. Served by the platform pool; only
+         *     the caller's own claims are returned.
+         *
+         *     Problems: `unauthenticated` (401), `validation_failed` (422).
+         */
+        get: operations["people.listMyUnitClaims"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -8771,7 +8830,7 @@ export interface components {
             /** @description The code sent by SMS. */
             code?: string;
             /**
-             * @description `mobile` makes an emailed link use the `openbekci://` scheme.
+             * @description `mobile` makes an emailed link use the `openbekci://<host>/…` form (the instance host first).
              * @default web
              * @enum {string}
              */
@@ -8845,7 +8904,7 @@ export interface components {
         MagicLinkRequest: {
             email: string;
             /**
-             * @description `mobile` makes the link use the `openbekci://` scheme instead of the web URL.
+             * @description `mobile` makes the link use the `openbekci://<host>/…` form (the instance host first) instead of the web URL.
              * @default web
              * @enum {string}
              */
@@ -10727,6 +10786,17 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description Organization label; filled by `people.listMyUnitClaims`. */
+            org_name?: string;
+            /**
+             * Format: uuid
+             * @description Filled by `people.listMyUnitClaims`.
+             */
+            site_id?: string;
+            /** @description Filled by `people.listMyUnitClaims`. */
+            site_name?: string;
+            /** @description Filled by `people.listMyUnitClaims`. */
+            block_name?: string;
         };
         UnitClaimApprove: {
             share_pct?: number;
@@ -17809,6 +17879,26 @@ export interface components {
             /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
             code: string;
         };
+        /** @description Exactly one of `phone` and `email`. */
+        JoinSignUpRequest: {
+            /** @description E.164 or national format. A six-digit code is sent by SMS. */
+            phone?: string;
+            /** @description A sign-in link is sent by email. */
+            email?: string;
+            /** @description What the resident goes by; used for their person when they claim a unit. */
+            name?: string;
+            /**
+             * @default tr
+             * @enum {string}
+             */
+            locale: "tr" | "en";
+            /**
+             * @description `mobile` makes an emailed link use the `openbekci://<host>/…` form.
+             * @default web
+             * @enum {string}
+             */
+            client: "web" | "mobile";
+        };
         /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
         TicketWorkflowRestore: {
             /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
@@ -22430,6 +22520,36 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "people.joinSignUp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the code. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinSignUpRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted; a code or link was sent to the contact. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "people.createUnitClaim": {
         parameters: {
             query?: never;
@@ -22464,6 +22584,37 @@ export interface operations {
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listMyUnitClaims": {
+        parameters: {
+            query?: {
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaimList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

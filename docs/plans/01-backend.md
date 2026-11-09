@@ -257,7 +257,7 @@ Invariants: Σ debit = Σ credit per entry (service + deferred constraint trigge
 | Magic link (email) | 0.1 | 15-minute single-use |
 | **SMS one-time code** | 0.1 | 6 digits, 5 minutes, 5 attempts; via the core `sms.Gateway` (Netgsm) (D5) |
 | Invitation | 0.1 | kinds per S4; accepting links a `user` to the `person` |
-| Site QR + unit claim | 0.1 | sign-up then claim; manager approves |
+| Site QR + unit claim | 0.1 | `POST /v1/join/{code}:sign-up` (phone or email, optional name; public, 202 whether or not the contact has an account; limited per code, contact and address) sends the SMS code or link; verifying it (`auth.createToken` / `createSession`) activates the pending account and opens a session with no organization; then `POST /v1/join/{code}/claims` with the same code; the manager approves; `GET /v1/me/unit-claims` lists the caller's claims with status and labels |
 | Passkeys, TOTP, OIDC | later | |
 
 Sessions (overview §6.3): one `session` table, **opaque tokens everywhere**.
@@ -266,7 +266,7 @@ Sessions (overview §6.3): one `session` table, **opaque tokens everywhere**.
 - **Mobile / integrations:** `POST /v1/auth/token` returns an access token (15 min, opaque, hash stored, checked on every request — instant revocation) and a rotating refresh token (60 days; reuse detection revokes the family). `DELETE /v1/me/sessions/{id|current}`.
 - **Re-authentication:** sensitive operations (§16) answer `403 reauth_required`; `POST /v1/auth/reauth` with password or OTP marks the session for 10 minutes.
 - `GET /v1/me` lists the user's organizations, roles, effective permissions, occupancies (units), policies; served through the platform pool for the cross-org part, then per-org.
-- Link URL formats are defined here and reused by both clients: magic link `{BASE_URL}/login/magic?token=…`, invitation `{BASE_URL}/invite/{token}`, reset `{BASE_URL}/reset/{token}`, site QR join `{BASE_URL}/join/{code}` (the QR encodes this URL), web-login link `{BASE_URL}/login/link/{token}` (0.4); requests carry `client=web|mobile` so the server can emit the mobile scheme `openbekci://…` instead.
+- Link URL formats are defined here and reused by both clients: magic link `{BASE_URL}/login/magic?token=…`, invitation `{BASE_URL}/invite/{token}`, reset `{BASE_URL}/reset/{token}`, site QR join `{BASE_URL}/join/{code}` (the QR encodes this URL), web-login link `{BASE_URL}/login/link/{token}` (0.4); requests carry `client=web|mobile` so the server can emit the mobile form instead. **The mobile form names the instance**: `openbekci://<host>/<same path and query>`, where `<host>` is the host (with port, if any) of `BASE_URL` (`openbekci://bekci.example.org/invite/{token}`, `openbekci://bekci.example.org/login/magic?token=…`, `openbekci://bekci.example.org/join/{code}`). The app takes the server from the host and assumes `https`; a development instance served over plain `http` adds `scheme=http` to the query. Tokens and join codes are `<org>.<secret>` and contain dots, so the host is always the first segment and the token is the whole last path segment (or the whole `token` value), never split on a dot. A link that is only available in the web form (a manager-created invitation is sent as `{BASE_URL}/invite/{token}`) hands off to the app as `openbekci://invite/{token}?server=https%3A%2F%2F<host>`; the app accepts this `server=` form as a fallback next to the host form.
 
 ---
 

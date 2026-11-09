@@ -402,7 +402,7 @@ func TestIntegrationMagicLink(t *testing.T) {
 	}
 	m, _ = e.mail.Last()
 	old := linkIn(t, m.Body)
-	if !strings.HasPrefix(old, "openbekci://login/magic?token=") {
+	if !strings.HasPrefix(old, "openbekci://bekci.example.org/login/magic?token=") {
 		t.Errorf("mobile link = %q", old)
 	}
 	if err := e.requestLink(ctx, "link@example.org", identity.ClientWeb, meta); err != nil {

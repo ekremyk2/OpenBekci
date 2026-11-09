@@ -9,6 +9,7 @@ package identity
 import (
 	"context"
 	"log/slog"
+	"net/url"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -106,6 +107,11 @@ type Limits struct {
 	// AuthIP limits credential checks (password, code verification, link
 	// consumption, refresh) per client address.
 	AuthIP *ratelimit.Limiter
+	// SignUpCode limits sign-ups through one join code, whoever asks: a
+	// published code must not become a way to mass-create accounts or to
+	// spend the SMS budget. Per-contact and per-address limits apply on top
+	// (they are the OTPSend* and LinkSend* buckets, shared with sign-in).
+	SignUpCode *ratelimit.Limiter
 	// SendDaily is the daily send budget per identifier (a phone number or
 	// an address, whatever the purpose), on top of the short-term buckets.
 	SendDaily *ratelimit.Limiter
@@ -151,6 +157,7 @@ func newLimits(cfg Config, now func() time.Time) *Limits {
 		LinkSendIP:     ratelimit.NewWithClock(10, time.Minute, now),
 		LinkSendTarget: ratelimit.NewWithClock(3, 2*time.Minute, now),
 		AuthIP:         ratelimit.NewWithClock(30, 2*time.Second, now),
+		SignUpCode:     ratelimit.NewWithClock(20, 30*time.Second, now),
 		SendDaily:      per(daily, 24*time.Hour),
 		SMSHourly:      per(sms, time.Hour),
 		MailHourly:     per(mailB, time.Hour),
@@ -285,24 +292,58 @@ const (
 	LinkMagic  LinkKind = "magic"  // {BASE_URL}/login/magic?token=...
 	LinkInvite LinkKind = "invite" // {BASE_URL}/invite/{token}
 	LinkReset  LinkKind = "reset"  // {BASE_URL}/reset/{token}
+	LinkJoin   LinkKind = "join"   // {BASE_URL}/join/{code}
 )
 
-// LinkURL builds a link for token. The web form is under baseURL; the mobile
-// form is the same path under the openbekci:// scheme.
+// LinkURL builds a link for token. The web form is under baseURL. The mobile
+// form carries the instance: the same path under openbekci://<host>, where
+// host is the host (and port) of baseURL, so the app knows which server the
+// link belongs to without any other state. A plain-http base (development)
+// adds scheme=http as a query parameter; https is the default and is left out.
+// Tokens and join codes may contain dots; the host is always the first
+// segment, so a dot in the token cannot be mistaken for it.
 func LinkURL(baseURL string, client Client, kind LinkKind, token string) string {
-	var path string
+	var path, query string
 	switch kind {
 	case LinkInvite:
 		path = "invite/" + token
 	case LinkReset:
 		path = "reset/" + token
+	case LinkJoin:
+		path = "join/" + token
 	default:
-		path = "login/magic?token=" + token
+		path, query = "login/magic", "token="+token
 	}
-	if client == ClientMobile {
-		return "openbekci://" + path
+	if client != ClientMobile {
+		u := strings.TrimRight(baseURL, "/") + "/" + path
+		if query != "" {
+			u += "?" + query
+		}
+		return u
 	}
-	return strings.TrimRight(baseURL, "/") + "/" + path
+	host, plain := instanceHost(baseURL)
+	if plain {
+		if query != "" {
+			query += "&"
+		}
+		query += "scheme=http"
+	}
+	u := "openbekci://" + host + "/" + path
+	if query != "" {
+		u += "?" + query
+	}
+	return u
+}
+
+// instanceHost returns the host (with port) of the public base URL, and
+// whether the instance is served over plain http.
+func instanceHost(baseURL string) (host string, plainHTTP bool) {
+	u, err := url.Parse(strings.TrimSpace(baseURL))
+	if err != nil || u.Host == "" {
+		// a bare "host:port" or "host"
+		return strings.Trim(strings.TrimSpace(baseURL), "/"), false
+	}
+	return u.Host, u.Scheme == "http"
 }
 
 // NormalizeEmail trims and lower-cases an address and rejects anything that

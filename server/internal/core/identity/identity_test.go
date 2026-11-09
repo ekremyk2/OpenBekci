@@ -1,6 +1,8 @@
 package identity
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNormalizePhone(t *testing.T) {
 	for in, want := range map[string]string{
@@ -43,11 +45,13 @@ func TestLinkURL(t *testing.T) {
 		want   string
 	}{
 		{ClientWeb, LinkMagic, "https://bekci.example.org/login/magic?token=T"},
-		{ClientMobile, LinkMagic, "openbekci://login/magic?token=T"},
+		{ClientMobile, LinkMagic, "openbekci://bekci.example.org/login/magic?token=T"},
 		{ClientWeb, LinkInvite, "https://bekci.example.org/invite/T"},
-		{ClientMobile, LinkInvite, "openbekci://invite/T"},
+		{ClientMobile, LinkInvite, "openbekci://bekci.example.org/invite/T"},
 		{ClientWeb, LinkReset, "https://bekci.example.org/reset/T"},
-		{ClientMobile, LinkReset, "openbekci://reset/T"},
+		{ClientMobile, LinkReset, "openbekci://bekci.example.org/reset/T"},
+		{ClientWeb, LinkJoin, "https://bekci.example.org/join/T"},
+		{ClientMobile, LinkJoin, "openbekci://bekci.example.org/join/T"},
 	} {
 		if got := LinkURL(base, c.client, c.kind, "T"); got != c.want {
 			t.Errorf("LinkURL(%s, %s) = %q, want %q", c.client, c.kind, got, c.want)
