@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"slices"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"github.com/riverqueue/river"
 )
 
@@ -34,6 +36,11 @@ const shutdownTimeout = 20 * time.Second
 // until ctx is cancelled. Config.Worker is the caller's concern: pass
 // cfg.Worker && !noWorker.
 func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) error {
+	stopTrace, err := obs.SetupTracing(ctx, os.Getenv, cfg.ServerVersion)
+	if err != nil {
+		return fmt.Errorf("tracing: %w", err)
+	}
+	defer func() { _ = stopTrace(context.Background()) }()
 	rt, err := start(ctx, cfg, log, withWorker)
 	if err != nil {
 		return err
@@ -62,11 +69,11 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Access = rt.access
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs), MetricsToken: cfg.MetricsToken},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
-		Handler:           router,
+		Handler:           obs.WrapHTTP(router),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       2 * time.Minute,
 		BaseContext:       func(net.Listener) context.Context { return context.WithoutCancel(ctx) },
@@ -110,12 +117,20 @@ func uploadBodyLimit(cfg Config) int64 {
 
 // RunWorker runs only the job worker until ctx is cancelled.
 func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
+	stopTrace, err := obs.SetupTracing(ctx, os.Getenv, "")
+	if err != nil {
+		return fmt.Errorf("tracing: %w", err)
+	}
+	defer func() { _ = stopTrace(context.Background()) }()
 	rt, err := start(ctx, cfg, log, true)
 	if err != nil {
 		return err
 	}
 	defer rt.db.Close()
 	defer rt.restoreSink()
+	if cfg.MetricsAddr != "" {
+		defer serveWorkerEndpoints(cfg, log)()
+	}
 	log.Info("worker running")
 	<-ctx.Done()
 	log.Info("shutting down")
@@ -187,6 +202,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		return nil, err
 	}
 	d.WarnIfPlatformSuperuser(ctx, log)
+	obs.SetPools(d.Pools())
 
 	pick := &lazySMSPicker{}
 	cfg.SMSPicker = pick

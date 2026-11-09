@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"slices"
 	"strings"
 	"time"
@@ -299,6 +300,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 		var msgs, segs int
 		for _, r := range results {
 			if r.skip != "" {
+				obs.Notification(r.p.channel, "skipped")
 				if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'skipped', attempts = attempts + 1, last_error = $3, updated_at = now() WHERE org_id = $1 AND id = $2`,
 					a.OrgID, r.p.deliveryID, truncate(r.skip, 300)); err != nil {
 					return err
@@ -307,6 +309,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 			}
 			if r.err != nil {
 				failed++
+				obs.Notification(r.p.channel, "failed")
 				if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'failed', attempts = attempts + 1, last_error = $3, updated_at = now() WHERE org_id = $1 AND id = $2`,
 					a.OrgID, r.p.deliveryID, truncate(r.err.Error(), 300)); err != nil {
 					return err
@@ -317,6 +320,7 @@ func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) e
 				a.OrgID, r.p.deliveryID, r.provider, r.segments); err != nil {
 				return err
 			}
+			obs.Notification(r.p.channel, "sent")
 			if r.p.channel == jobs.ChannelSMS {
 				msgs++
 				segs += r.segments

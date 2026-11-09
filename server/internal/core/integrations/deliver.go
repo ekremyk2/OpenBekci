@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
+	"go.opentelemetry.io/otel/attribute"
 	"io"
 	"net/http"
 	neturl "net/url"
@@ -144,6 +146,7 @@ func (s *Service) Deliver(ctx context.Context, a DeliverArgs, attempt, maxAttemp
 	err = s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
 		now := s.now()
 		if res.err == "" {
+			obs.Webhook("succeeded")
 			if _, err := tx.Exec(ctx, `UPDATE webhook_delivery SET status = 'succeeded', attempts = $3, response_code = $4, last_error = NULL,
 					next_retry_at = NULL, delivered_at = $5, updated_at = $5 WHERE org_id = $1 AND id = $2`, a.OrgID, a.DeliveryID, attempt, res.code, now); err != nil {
 				return err
@@ -158,11 +161,13 @@ func (s *Service) Deliver(ctx context.Context, a DeliverArgs, attempt, maxAttemp
 			code = &res.code
 		}
 		if attempt < maxAttempts {
+			obs.Webhook("retry")
 			retry := now.Add(s.backoff(attempt))
 			_, err := tx.Exec(ctx, `UPDATE webhook_delivery SET attempts = $3, response_code = $4, last_error = $5, next_retry_at = $6, updated_at = $7
 				WHERE org_id = $1 AND id = $2`, a.OrgID, a.DeliveryID, attempt, code, res.err, retry, now)
 			return err
 		}
+		obs.Webhook("failed")
 		if _, err := tx.Exec(ctx, `UPDATE webhook_delivery SET status = 'failed', attempts = $3, response_code = $4, last_error = $5, next_retry_at = NULL, updated_at = $6
 			WHERE org_id = $1 AND id = $2`, a.OrgID, a.DeliveryID, attempt, code, res.err, now); err != nil {
 			return err
@@ -226,7 +231,15 @@ func (s *Service) markFailing(ctx context.Context, tx pgx.Tx, a DeliverArgs, url
 
 // post sends one signed request and classifies the outcome. It never returns
 // the response body: at most MaxResponseBytes are read and dropped.
-func (s *Service) post(ctx context.Context, url string, secrets []string, deliveryID uuid.UUID, event string, body []byte) attemptResult {
+func (s *Service) post(ctx context.Context, url string, secrets []string, deliveryID uuid.UUID, event string, body []byte) (res attemptResult) {
+	ctx, span := obs.Start(ctx, "webhook.deliver", attribute.String("webhook.event", event))
+	defer func() {
+		var err error
+		if res.err != "" {
+			err = errors.New(res.err)
+		}
+		obs.End(span, err)
+	}()
 	ctx, cancel := context.WithTimeout(ctx, DeliveryTimeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))

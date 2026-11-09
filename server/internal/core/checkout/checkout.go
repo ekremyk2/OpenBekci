@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"log/slog"
 	"net/url"
 	"sort"
@@ -830,6 +831,9 @@ func (s *Service) OnPaid(ctx context.Context, org uuid.UUID, provider string, ev
 	if err != nil {
 		return true, err
 	}
+	if !res.Duplicate {
+		obs.Checkout(StatusPaid, 1)
+	}
 	if !res.Duplicate && s.cfg.Receipts != nil {
 		if err := s.cfg.Receipts.FileReceipt(sys, org, res.Payment.ID); err != nil {
 			// the payment stands; the receipt can be generated again on demand
@@ -856,6 +860,7 @@ func (s *Service) chargesNoLongerOpen(err error) bool {
 
 // OnFailed marks the pending checkout of a provider transaction failed.
 func (s *Service) OnFailed(ctx context.Context, org uuid.UUID, provider, txn, code string) error {
+	defer obs.Checkout(StatusFailed, 1)
 	return s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `UPDATE checkout SET status = 'failed', failure_code = $4, completed_at = now() WHERE org_id = $1 AND provider = $2 AND provider_txn_id = $3 AND status = 'pending'`,
 			org, provider, txn, code)
@@ -865,6 +870,7 @@ func (s *Service) OnFailed(ctx context.Context, org uuid.UUID, provider, txn, co
 
 // OnRefunded marks the paid checkout of a provider transaction refunded.
 func (s *Service) OnRefunded(ctx context.Context, org uuid.UUID, provider, txn string) error {
+	defer obs.Checkout(StatusRefunded, 1)
 	return s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `UPDATE checkout SET status = 'refunded' WHERE org_id = $1 AND provider = $2 AND provider_txn_id = $3 AND status = 'paid'`, org, provider, txn)
 		return err
@@ -934,6 +940,7 @@ func (s *Service) Refund(ctx context.Context, org, paymentID uuid.UUID, version 
 	if err != nil {
 		return payments.Payment{}, err
 	}
+	obs.Checkout(StatusRefunded, 1)
 	return s.cfg.Payments.Get(ctx, org, paymentID)
 }
 
@@ -947,6 +954,7 @@ func (s *Service) ExpireStale(ctx context.Context) (int64, error) {
 		n = tag.RowsAffected()
 		return err
 	})
+	obs.Checkout(StatusExpired, n)
 	return n, err
 }
 
