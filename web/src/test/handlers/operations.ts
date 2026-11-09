@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import type { Me } from '@/api/schema'
 import { registerReset } from '../reset'
+import { packLabels } from './integrations'
 
 /*
  * MSW handlers for the DRAFT operations contract (api/openapi-draft.yaml, modules operations, audit,
@@ -1531,6 +1532,7 @@ route('GET', `${O}/codes`, ({ url }) =>
         { code: 'tenant', label: 'Tenant' },
       ],
       notification_type: DEFAULT_TYPES.map(([code]) => ({ code, label: code })),
+      pack_labels: packLabels(url.searchParams.get('locale') ?? 'en'),
     },
     errors: [
       { code: 'insufficient_permission', label: 'You do not have permission to do this.' },

@@ -11,6 +11,11 @@ msgstr ""
 msgid "\"{0}\" will be removed. This cannot be undone."
 msgstr ""
 
+#. placeholder {0}: labelOf(f)
+#. placeholder {1}: i + 1
+msgid "{0} {1}"
+msgstr ""
+
 #. placeholder {0}: v.name
 msgid "{0} admitted."
 msgstr ""
@@ -114,6 +119,10 @@ msgstr ""
 msgid "{0} rows are fine, {1} have errors."
 msgstr ""
 
+#. placeholder {0}: scopes.length
+msgid "{0} selected"
+msgstr ""
+
 #. placeholder {0}: query.data.overdue_units
 #. placeholder {0}: s.overdue_units
 msgid "{0} units"
@@ -138,6 +147,9 @@ msgstr ""
 msgid "{n} requests waiting"
 msgstr ""
 
+msgid "+{rest} more"
+msgstr ""
+
 msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
 msgstr ""
 
@@ -151,7 +163,16 @@ msgstr ""
 msgid "A booking inside these rules is confirmed at once; there is no approval queue."
 msgstr ""
 
+msgid "A charge plan billed a period"
+msgstr ""
+
+msgid "A decision is applied"
+msgstr ""
+
 msgid "A decision without an agenda item."
+msgstr ""
+
+msgid "A declared payment is confirmed"
 msgstr ""
 
 msgid "A fixed amount per unit"
@@ -160,7 +181,37 @@ msgstr ""
 msgid "A gate or door an agent can open. Driver details are configured on the agent computer."
 msgstr ""
 
+msgid "a key cannot have this permission"
+msgstr ""
+
+msgid "A key lets a script call the API without a person signing in. It never has more rights than the administrator who created it."
+msgstr ""
+
+msgid "A meeting is called"
+msgstr ""
+
 msgid "A name is required."
+msgstr ""
+
+msgid "A new key is issued for the same name and scopes. The old key stops working immediately, so everything that uses it must be updated at once."
+msgstr ""
+
+msgid "A new secret is issued and shown once. The old one keeps signing for 24 hours next to the new one, so your receiver can switch without a gap."
+msgstr ""
+
+msgid "A one-off charge is created"
+msgstr ""
+
+msgid "A pack adds the rules, providers and texts of a country to OpenBekci. Enable the ones you need and fill in their settings."
+msgstr ""
+
+msgid "A pack filled these in. Change one in its own settings and it becomes this site's own."
+msgstr ""
+
+msgid "A parcel is logged at the gate"
+msgstr ""
+
+msgid "A payment is recorded"
 msgstr ""
 
 msgid "A person"
@@ -172,6 +223,10 @@ msgstr ""
 msgid "A PIN is 4 to 8 digits."
 msgstr ""
 
+#. placeholder {0}: tested.endpoint.url
+msgid "A ping event was queued for <0>{0}</0>."
+msgstr ""
+
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 msgstr ""
 
@@ -179,6 +234,12 @@ msgid "A reason is required."
 msgstr ""
 
 msgid "A site is a building or a complex you manage. Create the first one to start."
+msgstr ""
+
+msgid "A ticket changes status"
+msgstr ""
+
+msgid "A ticket is opened"
 msgstr ""
 
 msgid "A total split between units"
@@ -191,6 +252,9 @@ msgid "A unit is named by unit_id, or by block together with door_number: door n
 msgstr ""
 
 msgid "A unit side"
+msgstr ""
+
+msgid "A visitor request is approved"
 msgstr ""
 
 msgid "Absent"
@@ -224,6 +288,12 @@ msgid "Account status"
 msgstr ""
 
 msgid "Accountant"
+msgstr ""
+
+msgid "Accounting"
+msgstr ""
+
+msgid "Accounting export"
 msgstr ""
 
 msgid "Accrual, monthly bookings, waivers, freezes"
@@ -268,10 +338,21 @@ msgstr ""
 msgid "Add a rate"
 msgstr ""
 
+msgid "Add an endpoint to be called when events happen."
+msgstr ""
+
 msgid "Add an exception"
 msgstr ""
 
 msgid "Add an item"
+msgstr ""
+
+#. placeholder {0}: p.min
+msgid "Add at least {0} values"
+msgstr ""
+
+#. placeholder {0}: p.max
+msgid "Add at most {0} values"
 msgstr ""
 
 msgid "Add block"
@@ -284,6 +365,9 @@ msgid "Add category"
 msgstr ""
 
 msgid "Add dissent"
+msgstr ""
+
+msgid "Add endpoint"
 msgstr ""
 
 msgid "Add hours"
@@ -338,6 +422,9 @@ msgid "Add to this folder"
 msgstr ""
 
 msgid "Add units one by one or import them from a spreadsheet."
+msgstr ""
+
+msgid "Add value"
 msgstr ""
 
 msgid "Add vehicle"
@@ -409,6 +496,9 @@ msgstr ""
 msgid "All kinds"
 msgstr ""
 
+msgid "All packs"
+msgstr ""
+
 msgid "All points"
 msgstr ""
 
@@ -472,6 +562,12 @@ msgstr ""
 msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
 msgstr ""
 
+msgid "An announcement is published"
+msgstr ""
+
+msgid "An inactive endpoint receives no new events."
+msgstr ""
+
 msgid "Announcement published."
 msgstr ""
 
@@ -515,6 +611,9 @@ msgid "Any year"
 msgstr ""
 
 msgid "Anyone"
+msgstr ""
+
+msgid "API keys"
 msgstr ""
 
 msgid "App and email"
@@ -598,6 +697,9 @@ msgid "Ask your building manager to invite you."
 msgstr ""
 
 msgid "Ask your manager if you think you should."
+msgstr ""
+
+msgid "Ask your organization admin if you think you should."
 msgstr ""
 
 msgid "Asked"
@@ -1136,6 +1238,12 @@ msgstr ""
 msgid "Choose at least one day."
 msgstr ""
 
+msgid "Choose at least one event"
+msgstr ""
+
+msgid "Choose at least one scope"
+msgstr ""
+
 msgid "Choose at least one unit"
 msgstr ""
 
@@ -1188,6 +1296,9 @@ msgstr ""
 msgid "Choose who to invite"
 msgstr ""
 
+msgid "Choose…"
+msgstr ""
+
 msgid "Chosen units"
 msgstr ""
 
@@ -1203,6 +1314,9 @@ msgid "Claims to be"
 msgstr ""
 
 msgid "Clear"
+msgstr ""
+
+msgid "Clear {group}"
 msgstr ""
 
 msgid "Clear selection"
@@ -1346,6 +1460,9 @@ msgid "Confirmed. Receipt {0}"
 msgstr ""
 
 msgid "Copied"
+msgstr ""
+
+msgid "Copy"
 msgstr ""
 
 msgid "Copy the message"
@@ -1621,6 +1738,11 @@ msgstr ""
 msgid "Counting recipients"
 msgstr ""
 
+#. placeholder {0}: pack.countries.map((c) => countryName(c, i18n.locale)).join(', ')
+#. placeholder {0}: pack.countries.map((c) => countryName(c, locale)).join(', ')
+msgid "Countries: {0}"
+msgstr ""
+
 msgid "Country"
 msgstr ""
 
@@ -1639,10 +1761,16 @@ msgstr ""
 msgid "Create a folder to start filing documents."
 msgstr ""
 
+msgid "Create a key to connect a script or another tool."
+msgstr ""
+
 msgid "Create a site"
 msgstr ""
 
 msgid "Create an agent to connect a gate or door."
+msgstr ""
+
+msgid "Create API key"
 msgstr ""
 
 msgid "Create assembly"
@@ -1654,7 +1782,13 @@ msgstr ""
 msgid "Create charges"
 msgstr ""
 
+msgid "Create endpoint"
+msgstr ""
+
 msgid "Create folder"
+msgstr ""
+
+msgid "Create key"
 msgstr ""
 
 msgid "Create site"
@@ -1829,11 +1963,15 @@ msgid "Delete"
 msgstr ""
 
 #. placeholder {0}: doc.title
+#. placeholder {0}: e.url
 #. placeholder {0}: k.name
 msgid "Delete {0}"
 msgstr ""
 
 msgid "Delete a digit"
+msgstr ""
+
+msgid "Delete endpoint"
 msgstr ""
 
 msgid "Delete rate"
@@ -1848,10 +1986,24 @@ msgstr ""
 msgid "Delete this document?"
 msgstr ""
 
+msgid "Delete this endpoint?"
+msgstr ""
+
 msgid "Delete this facility?"
 msgstr ""
 
 msgid "Delete unit"
+msgstr ""
+
+msgid "Deliveries"
+msgstr ""
+
+#. placeholder {0}: e.url
+msgid "Deliveries of {0}"
+msgstr ""
+
+#. placeholder {0}: endpoint.url
+msgid "Deliveries of <0>{0}</0>"
 msgstr ""
 
 msgid "Deliveries recorded."
@@ -1913,6 +2065,16 @@ msgid "Direction"
 msgstr ""
 
 msgid "Directory"
+msgstr ""
+
+#. placeholder {0}: pack.id
+msgid "Disable {0}?"
+msgstr ""
+
+msgid "Disable pack"
+msgstr ""
+
+msgid "Disable this pack"
 msgstr ""
 
 msgid "Disabled"
@@ -2041,6 +2203,10 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+#. placeholder {0}: e.url
+msgid "Edit {0}"
+msgstr ""
+
 msgid "Edit access point"
 msgstr ""
 
@@ -2048,6 +2214,9 @@ msgid "Edit announcement"
 msgstr ""
 
 msgid "Edit bank details"
+msgstr ""
+
+msgid "Edit endpoint"
 msgstr ""
 
 msgid "Edit facility"
@@ -2105,7 +2274,27 @@ msgstr ""
 msgid "Empty: no limit"
 msgstr ""
 
+msgid "Empty: the key does not expire."
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Enable pack"
+msgstr ""
+
+msgid "Enable this pack"
+msgstr ""
+
 msgid "Enabled"
+msgstr ""
+
+#. placeholder {0}: formatInstant(pack.enabled_at, i18n.locale)
+#. placeholder {0}: formatInstant(pack.enabled_at, locale)
+msgid "Enabled {0}"
+msgstr ""
+
+msgid "Enabling checks the settings, fills the default values of your sites that you have not changed yourself, and switches on what the pack provides. You can disable it again later; its data is kept."
 msgstr ""
 
 msgid "End membership"
@@ -2127,13 +2316,22 @@ msgstr ""
 msgid "Enter a date."
 msgstr ""
 
+msgid "Enter a full web address, for example https://example.org"
+msgstr ""
+
 msgid "Enter a name"
 msgstr ""
 
 msgid "Enter a name and the days after the due date."
 msgstr ""
 
+msgid "Enter a name for the key"
+msgstr ""
+
 msgid "Enter a name."
+msgstr ""
+
+msgid "Enter a number"
 msgstr ""
 
 msgid "Enter a number."
@@ -2178,10 +2376,16 @@ msgstr ""
 msgid "Enter a weight for each unit, or upload a table with one row per unit."
 msgstr ""
 
+msgid "Enter a whole number"
+msgstr ""
+
 msgid "Enter a whole number from {min} to {max}."
 msgstr ""
 
 msgid "Enter a whole number."
+msgstr ""
+
+msgid "Enter an address starting with https://"
 msgstr ""
 
 msgid "Enter an amount greater than zero."
@@ -2194,6 +2398,9 @@ msgid "Enter an amount up to the open balance and the account."
 msgstr ""
 
 msgid "Enter an amount."
+msgstr ""
+
+msgid "Enter an email address"
 msgstr ""
 
 msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
@@ -2302,6 +2509,12 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
+msgid "Event"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
 msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 msgstr ""
 
@@ -2321,6 +2534,9 @@ msgid "Everyone"
 msgstr ""
 
 msgid "Everything is matched"
+msgstr ""
+
+msgid "Everything this pack provides stops working for your organization until you enable it again. Your settings are kept."
 msgstr ""
 
 msgid "Existing bookings stay in the history."
@@ -2359,6 +2575,9 @@ msgstr ""
 msgid "Expires at (optional)"
 msgstr ""
 
+msgid "Expires on (optional)"
+msgstr ""
+
 msgid "Export and offboard"
 msgstr ""
 
@@ -2387,6 +2606,10 @@ msgid "Facility saved."
 msgstr ""
 
 msgid "Failed"
+msgstr ""
+
+#. placeholder {0}: formatInstant(e.failing_since, i18n.locale)
+msgid "Failing since {0}"
 msgstr ""
 
 msgid "Fee"
@@ -2427,6 +2650,12 @@ msgid "Fill in the vendor, category and amount."
 msgstr ""
 
 msgid "Fill the form with this preset"
+msgstr ""
+
+msgid "Filled in by the {pack} pack; edit it to make it your own"
+msgstr ""
+
+msgid "Filter permissions"
 msgstr ""
 
 msgid "Final"
@@ -2649,6 +2878,9 @@ msgstr ""
 msgid "I have saved it"
 msgstr ""
 
+msgid "I have stored this secret in a safe place."
+msgstr ""
+
 msgid "I've paid"
 msgstr ""
 
@@ -2727,6 +2959,9 @@ msgstr ""
 
 #. placeholder {0}: query.data.in_app_count
 msgid "In-app notifications: {0}"
+msgstr ""
+
+msgid "Inactive"
 msgstr ""
 
 msgid "Inbox"
@@ -2809,6 +3044,9 @@ msgstr ""
 msgid "Its gates stop opening from the app and it can no longer connect."
 msgstr ""
 
+msgid "Its providers and importers stop being offered. Its data and settings are kept, and the values its defaults filled stay as your sites' own."
+msgstr ""
+
 msgid "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
 msgstr ""
 
@@ -2825,6 +3063,9 @@ msgid "Joined"
 msgstr ""
 
 msgid "Joined?"
+msgstr ""
+
+msgid "Keep"
 msgstr ""
 
 msgid "Keep at least one closed-like status."
@@ -2857,6 +3098,9 @@ msgstr ""
 msgid "kept on the unit"
 msgstr ""
 
+msgid "Key"
+msgstr ""
+
 msgid "Kind"
 msgstr ""
 
@@ -2876,6 +3120,9 @@ msgid "Last backup"
 msgstr ""
 
 msgid "Last seen"
+msgstr ""
+
+msgid "Last used"
 msgstr ""
 
 msgid "late fee"
@@ -2912,6 +3159,9 @@ msgid "Leave"
 msgstr ""
 
 msgid "Leave empty for problems in shared areas."
+msgstr ""
+
+msgid "Leave empty to keep the current value"
 msgstr ""
 
 msgid "Leave empty to open it as yourself."
@@ -3222,6 +3472,14 @@ msgstr ""
 msgid "Moves out on"
 msgstr ""
 
+#. placeholder {0}: p.min
+msgid "Must be at least {0}"
+msgstr ""
+
+#. placeholder {0}: p.max
+msgid "Must be at most {0}"
+msgstr ""
+
 msgid "Mute notifications"
 msgstr ""
 
@@ -3285,6 +3543,9 @@ msgid "Needs attention"
 msgstr ""
 
 msgid "Net: <0/>"
+msgstr ""
+
+msgid "Never"
 msgstr ""
 
 msgid "New"
@@ -3362,6 +3623,13 @@ msgstr ""
 msgid "New recurring visitor"
 msgstr ""
 
+#. placeholder {0}: revealed.name
+msgid "New secret for {0}"
+msgstr ""
+
+msgid "New signing secret"
+msgstr ""
+
 msgid "New site"
 msgstr ""
 
@@ -3395,6 +3663,9 @@ msgstr ""
 msgid "Next photo"
 msgstr ""
 
+msgid "Next retry"
+msgstr ""
+
 msgid "Next: choose the split"
 msgstr ""
 
@@ -3426,6 +3697,9 @@ msgid "No announcements"
 msgstr ""
 
 msgid "No answer in time. Call the resident."
+msgstr ""
+
+msgid "No API keys yet"
 msgstr ""
 
 msgid "No assemblies yet"
@@ -3561,6 +3835,9 @@ msgstr ""
 msgid "No owners found"
 msgstr ""
 
+msgid "No packs on this server"
+msgstr ""
+
 msgid "No parcels are waiting."
 msgstr ""
 
@@ -3574,6 +3851,9 @@ msgid "No payments yet"
 msgstr ""
 
 msgid "No people yet"
+msgstr ""
+
+msgid "No permission matches."
 msgstr ""
 
 msgid "No poll"
@@ -3660,6 +3940,9 @@ msgstr ""
 msgid "No waivers"
 msgstr ""
 
+msgid "No webhook endpoints yet"
+msgstr ""
+
 msgid "No, match to a unit instead"
 msgstr ""
 
@@ -3699,6 +3982,9 @@ msgstr ""
 msgid "Not determined"
 msgstr ""
 
+msgid "Not enabled"
+msgstr ""
+
 msgid "Not in my file"
 msgstr ""
 
@@ -3718,6 +4004,12 @@ msgid "Not read"
 msgstr ""
 
 msgid "Not set"
+msgstr ""
+
+msgid "Not tied to a country"
+msgstr ""
+
+msgid "not valid"
 msgstr ""
 
 msgid "Not voted"
@@ -3751,6 +4043,9 @@ msgid "Nothing dated on or before the lock date can be posted or changed. Moving
 msgstr ""
 
 msgid "Nothing has been scheduled."
+msgstr ""
+
+msgid "Nothing has been sent to this endpoint yet."
 msgstr ""
 
 msgid "Nothing here yet"
@@ -3865,6 +4160,9 @@ msgstr ""
 msgid "Online"
 msgstr ""
 
+msgid "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
+msgstr ""
+
 msgid "Only owners attend and answer polls. You can read the decisions below."
 msgstr ""
 
@@ -3943,6 +4241,9 @@ msgstr ""
 msgid "Open-like statuses count as open tickets in reports; closed-like statuses count as closed."
 msgstr ""
 
+msgid "OpenBekci calls your https address when something happens. Each call is signed with the endpoint's secret and carries ids only."
+msgstr ""
+
 msgid "Opened"
 msgstr ""
 
@@ -4015,6 +4316,9 @@ msgstr ""
 msgid "Organization saved."
 msgstr ""
 
+msgid "Organization settings"
+msgstr ""
+
 msgid "Organizations"
 msgstr ""
 
@@ -4082,6 +4386,27 @@ msgid "Owners who were called are not notified automatically; record the cancell
 msgstr ""
 
 msgid "Ownership share (%)"
+msgstr ""
+
+msgid "Pack default"
+msgstr ""
+
+msgid "Pack defaults on your sites"
+msgstr ""
+
+msgid "Pack disabled."
+msgstr ""
+
+msgid "Pack enabled."
+msgstr ""
+
+msgid "Pack not found"
+msgstr ""
+
+msgid "Packs"
+msgstr ""
+
+msgid "Packs are compiled into the server by its operator."
 msgstr ""
 
 #. placeholder {0}: pager.page
@@ -4392,6 +4717,9 @@ msgstr ""
 msgid "Proof attached"
 msgstr ""
 
+msgid "Provides"
+msgstr ""
+
 msgid "Proxy"
 msgstr ""
 
@@ -4673,6 +5001,11 @@ msgstr ""
 msgid "Remove {0}"
 msgstr ""
 
+#. placeholder {0}: labelOf(f)
+#. placeholder {1}: i + 1
+msgid "Remove {0} {1}"
+msgstr ""
+
 msgid "Remove dissent"
 msgstr ""
 
@@ -4711,6 +5044,9 @@ msgid "Request {0}{1}"
 msgstr ""
 
 msgid "Requests waiting"
+msgstr ""
+
+msgid "required"
 msgstr ""
 
 msgid "Resend"
@@ -4753,6 +5089,9 @@ msgstr ""
 msgid "Residents who opt in appear in a directory. Managers and the board always see everyone."
 msgstr ""
 
+msgid "Response"
+msgstr ""
+
 msgid "Restore"
 msgstr ""
 
@@ -4763,6 +5102,9 @@ msgid "Restore default workflow"
 msgstr ""
 
 msgid "Restore the default workflow?"
+msgstr ""
+
+msgid "Restrict to a site (optional)"
 msgstr ""
 
 msgid "Result"
@@ -4779,6 +5121,17 @@ msgid "Review"
 msgstr ""
 
 msgid "Revoke"
+msgstr ""
+
+#. placeholder {0}: k.name
+msgid "Revoke {0}"
+msgstr ""
+
+#. placeholder {0}: revoking?.name
+msgid "Revoke {0}?"
+msgstr ""
+
+msgid "Revoke key"
 msgstr ""
 
 msgid "Revoke this agent?"
@@ -4799,11 +5152,35 @@ msgstr ""
 msgid "Roles"
 msgstr ""
 
+msgid "Rotate"
+msgstr ""
+
+#. placeholder {0}: k.name
+msgid "Rotate {0}"
+msgstr ""
+
+#. placeholder {0}: rotating?.name
+msgid "Rotate {0}?"
+msgstr ""
+
+msgid "Rotate key"
+msgstr ""
+
 msgid "Rotate QR"
+msgstr ""
+
+msgid "Rotate secret"
 msgstr ""
 
 #. placeholder {0}: e.name
 msgid "Rotate the QR code of {0}"
+msgstr ""
+
+#. placeholder {0}: e.url
+msgid "Rotate the secret of {0}"
+msgstr ""
+
+msgid "Rotate the secret?"
 msgstr ""
 
 msgid "Rotate token"
@@ -4859,6 +5236,9 @@ msgstr ""
 msgid "Save draft"
 msgstr ""
 
+msgid "Save endpoint"
+msgstr ""
+
 msgid "Save expense"
 msgstr ""
 
@@ -4875,6 +5255,9 @@ msgid "Save policy"
 msgstr ""
 
 msgid "Save settings"
+msgstr ""
+
+msgid "Save site settings"
 msgstr ""
 
 msgid "Save values"
@@ -4911,6 +5294,9 @@ msgid "Scheduled"
 msgstr ""
 
 msgid "Scope"
+msgstr ""
+
+msgid "Scopes"
 msgstr ""
 
 msgid "Search"
@@ -5004,7 +5390,14 @@ msgstr ""
 msgid "Select {0}"
 msgstr ""
 
+msgid "Select all {group}"
+msgstr ""
+
 msgid "Send"
+msgstr ""
+
+#. placeholder {0}: e.url
+msgid "Send a test ping to {0}"
 msgstr ""
 
 msgid "Send by"
@@ -5023,6 +5416,9 @@ msgid "Send receipt"
 msgstr ""
 
 msgid "Send reminders"
+msgstr ""
+
+msgid "Send test"
 msgstr ""
 
 msgid "Send the call"
@@ -5072,6 +5468,9 @@ msgstr ""
 msgid "Server evaluation:"
 msgstr ""
 
+msgid "Set"
+msgstr ""
+
 msgid "Set a category budget below to compare it with what was spent."
 msgstr ""
 
@@ -5088,6 +5487,9 @@ msgid "Set up a site first; money is kept per site."
 msgstr ""
 
 msgid "Set up a site first; this area works per site."
+msgstr ""
+
+msgid "Set up and enable"
 msgstr ""
 
 msgid "Settings"
@@ -5135,6 +5537,9 @@ msgstr ""
 msgid "Show archived"
 msgstr ""
 
+msgid "Show deliveries"
+msgstr ""
+
 msgid "Show income and expenses to owners"
 msgstr ""
 
@@ -5176,6 +5581,9 @@ msgid "Sign-in codes"
 msgstr ""
 
 msgid "Signed by hand"
+msgstr ""
+
+msgid "Signing secret"
 msgstr ""
 
 msgid "Signing you in"
@@ -5238,6 +5646,9 @@ msgid "SMS this month: {0} sent, {1} delivered, {2} failed{3}"
 msgstr ""
 
 msgid "Some periods are still being generated."
+msgstr ""
+
+msgid "Someone else changed this endpoint. Close this and open it again."
 msgstr ""
 
 msgid "Someone else changed this record. Reload to see the latest version."
@@ -5359,7 +5770,13 @@ msgstr ""
 msgid "Street address"
 msgstr ""
 
+msgid "Succeeded"
+msgstr ""
+
 msgid "Suggested"
+msgstr ""
+
+msgid "Suggested for your country"
 msgstr ""
 
 msgid "Suggestion"
@@ -5441,6 +5858,9 @@ msgid "Term starts"
 msgstr ""
 
 msgid "Terms ending soon"
+msgstr ""
+
+msgid "Test ping sent"
 msgstr ""
 
 msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
@@ -5555,6 +5975,9 @@ msgstr ""
 msgid "The end must be after the start."
 msgstr ""
 
+msgid "The endpoint and its delivery log are removed and nothing is sent to it any more."
+msgstr ""
+
 msgid "The entry stays visible as voided. You will be asked to confirm your password."
 msgstr ""
 
@@ -5608,6 +6031,9 @@ msgstr ""
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr ""
 
+msgid "The key stops working immediately and cannot be switched on again."
+msgstr ""
+
 msgid "The last day must not be before the first."
 msgstr ""
 
@@ -5641,10 +6067,22 @@ msgstr ""
 msgid "The number guards may call when a visitor arrives. Leave empty to use the phone above."
 msgstr ""
 
+msgid "The old key no longer works. Use this one from now on."
+msgstr ""
+
 msgid "The opening balances were imported."
 msgstr ""
 
 msgid "The opening log is not available."
+msgstr ""
+
+msgid "The organization has no sites yet."
+msgstr ""
+
+msgid "The organization has reached its limit of 20 endpoints."
+msgstr ""
+
+msgid "The pack could not apply these settings."
 msgstr ""
 
 msgid "The page you are looking for does not exist or has moved."
@@ -5672,6 +6110,10 @@ msgid "The poll is open."
 msgstr ""
 
 msgid "The preview is not available for these settings yet."
+msgstr ""
+
+#. placeholder {0}: formatInstant(revealed.previousExpiresAt, i18n.locale)
+msgid "The previous secret keeps signing until <0>{0}</0>. Every call carries both signatures until then."
 msgstr ""
 
 msgid "The QR code could not be rotated."
@@ -5719,6 +6161,12 @@ msgstr ""
 msgid "The second meeting should be {0} to {1} days after the first."
 msgstr ""
 
+msgid "The secret"
+msgstr ""
+
+msgid "The settings were refused. Check the values and try again."
+msgstr ""
+
 msgid "The side's person"
 msgstr ""
 
@@ -5761,6 +6209,12 @@ msgstr ""
 msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
 msgstr ""
 
+msgid "These apply to one site, for example a provider account per site."
+msgstr ""
+
+msgid "These apply to the whole organization."
+msgstr ""
+
 #. placeholder {0}: badMoney.join(', ')
 msgid "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
 msgstr ""
@@ -5775,6 +6229,9 @@ msgid "This accounting period is closed and can no longer be changed."
 msgstr ""
 
 msgid "This action is sensitive. Enter your password or a code to continue."
+msgstr ""
+
+msgid "This address is not reachable from the internet"
 msgstr ""
 
 msgid "This assembly was cancelled."
@@ -5804,6 +6261,9 @@ msgstr ""
 msgid "This facility is not open to your kind of occupant."
 msgstr ""
 
+msgid "This field is required"
+msgstr ""
+
 msgid "This field is required."
 msgstr ""
 
@@ -5828,7 +6288,16 @@ msgstr ""
 msgid "This gate is switched off."
 msgstr ""
 
+msgid "This is the only time the secret is shown. It cannot be read back later."
+msgstr ""
+
 msgid "This number is not valid. Check the digits."
+msgstr ""
+
+msgid "This pack has no settings."
+msgstr ""
+
+msgid "This pack has not filled in any site setting, or the sites changed them."
 msgstr ""
 
 msgid "This pass is for another site."
@@ -5870,7 +6339,13 @@ msgstr ""
 msgid "This role belongs to the site, so you will be asked to confirm it is you."
 msgstr ""
 
+msgid "This server has no pack with this id."
+msgstr ""
+
 msgid "This server offers no sign-in method this app can use."
+msgstr ""
+
+msgid "This setting is not known to the pack"
 msgstr ""
 
 msgid "This side has no open charges; the payment becomes credit."
@@ -5901,6 +6376,9 @@ msgid "This ticket was merged into another one."
 msgstr ""
 
 msgid "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+msgstr ""
+
+msgid "This value does not have the expected format"
 msgstr ""
 
 msgid "This value is not valid"
@@ -6130,6 +6608,9 @@ msgstr ""
 msgid "Units with a tag"
 msgstr ""
 
+msgid "unknown permission"
+msgstr ""
+
 msgid "Unmatch"
 msgstr ""
 
@@ -6200,6 +6681,9 @@ msgstr ""
 msgid "Uploaded"
 msgstr ""
 
+msgid "URL"
+msgstr ""
+
 msgid "Use 2 to 40 lowercase letters, digits or dashes"
 msgstr ""
 
@@ -6210,6 +6694,21 @@ msgid "Use a three-letter currency code, for example TRY"
 msgstr ""
 
 msgid "Use a two-letter country code, for example TR"
+msgstr ""
+
+#. placeholder {0}: p.min
+msgid "Use at least {0} characters"
+msgstr ""
+
+#. placeholder {0}: p.max
+msgid "Use at most {0} characters"
+msgstr ""
+
+msgid "Use it as a bearer token: <0>Authorization: Bearer …</0>. Only a hash is stored on the server."
+msgstr ""
+
+#. placeholder {0}: revealed.url
+msgid "Use it to verify the <0>OpenBekci-Signature</0> header of calls to <1>{0}</1>. It is kept sealed on the server."
 msgstr ""
 
 msgid "Use lowercase letters, digits and underscores, for example heating"
@@ -6259,7 +6758,13 @@ msgstr ""
 msgid "Values for {0}"
 msgstr ""
 
+msgid "Values from a pack"
+msgstr ""
+
 msgid "Values saved."
+msgstr ""
+
+msgid "Values this pack filled into the site settings. Change one on the site and it becomes the site's own."
 msgstr ""
 
 msgid "Variance"
@@ -6425,6 +6930,12 @@ msgstr ""
 msgid "We could not send the code. Please try again."
 msgstr ""
 
+msgid "Webhook endpoints"
+msgstr ""
+
+msgid "Webhooks"
+msgstr ""
+
 msgid "week"
 msgstr ""
 
@@ -6533,6 +7044,9 @@ msgstr ""
 msgid "Whole site"
 msgstr ""
 
+msgid "Will be cleared"
+msgstr ""
+
 msgid "Will be voted"
 msgstr ""
 
@@ -6612,6 +7126,12 @@ msgstr ""
 msgid "You can book at most {0} days ahead."
 msgstr ""
 
+msgid "You can look at the packs but not change them."
+msgstr ""
+
+msgid "You can only give permissions you hold yourself. A key never gets the rights to manage keys or webhooks."
+msgstr ""
+
 msgid "You do not have access to announcements"
 msgstr ""
 
@@ -6639,6 +7159,9 @@ msgstr ""
 msgid "You do not have permission to import this."
 msgstr ""
 
+msgid "you do not hold this permission"
+msgstr ""
+
 msgid "You get a QR code to send to your guest. The guard scans it at the gate."
 msgstr ""
 
@@ -6657,6 +7180,9 @@ msgstr ""
 msgid "You will be able to create or link your account here."
 msgstr ""
 
+msgid "You will be asked to confirm your password. The key is shown once after you create it."
+msgstr ""
+
 msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
 msgstr ""
 
@@ -6664,6 +7190,9 @@ msgid "Your answer was saved."
 msgstr ""
 
 msgid "Your dashboard is on its way"
+msgstr ""
+
+msgid "Your new API key"
 msgstr ""
 
 msgid "Your sign-in link will be completed here."

@@ -123,9 +123,16 @@ export const NAV_ITEMS: NavItem[] = [
     to: '/orgs/$orgId/settings',
     icon: SettingsIcon,
     visible: ({ me, orgId }) =>
-      ['org.read', 'org.manage', 'audit.read', 'tickets.manage', 'notifications.manage'].some((p) =>
-        can(me, orgId, p),
-      ),
+      [
+        'org.read',
+        'org.manage',
+        'audit.read',
+        'tickets.manage',
+        'notifications.manage',
+        'packs.read',
+        'apikeys.read',
+        'webhooks.read',
+      ].some((p) => can(me, orgId, p)),
   },
   {
     id: 'meetings',
