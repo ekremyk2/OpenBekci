@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/jackc/pgx/v5"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -25,6 +27,30 @@ type SignUpInput struct {
 	Locale string
 	// Client selects the web or the mobile form of the e-mailed link.
 	Client Client
+}
+
+// maxSignUpName is the longest display name a sign-up may carry, in characters.
+const maxSignUpName = 200
+
+// cleanName normalizes the name given at sign-up (NFC, surrounding and doubled
+// white space removed) and refuses one that is too long or holds control,
+// format (zero-width, bidirectional override) or private-use characters: the
+// name ends up on a manager's screen next to the person it names, and in
+// exports, so it must be plain text. An empty name is fine.
+func cleanName(raw string) (string, bool) {
+	if !utf8.ValidString(raw) {
+		return "", false
+	}
+	name := strings.Join(strings.Fields(norm.NFC.String(raw)), " ")
+	if utf8.RuneCountInString(name) > maxSignUpName {
+		return "", false
+	}
+	for _, r := range name {
+		if unicode.IsControl(r) || unicode.Is(unicode.Cf, r) || unicode.Is(unicode.Co, r) || unicode.Is(unicode.Cs, r) || r == utf8.RuneError || r == ' ' || r == ' ' {
+			return "", false
+		}
+	}
+	return name, true
 }
 
 // signUp is the validated, normalized sign-up the background send creates an
@@ -68,9 +94,9 @@ func (s *Service) RequestSignUp(ctx context.Context, in SignUpInput, m Meta) err
 	case phoneRaw != "" && emailRaw != "":
 		fields = append(fields, problem.Field{Field: "email", Code: "invalid_value"})
 	}
-	name := strings.TrimSpace(in.Name)
-	if name != "" && (utf8.RuneCountInString(name) > 200 || strings.ContainsAny(name, "\x00\r\n\t")) {
-		fields = append(fields, problem.Field{Field: "name", Code: "invalid_value", Params: map[string]any{"max": 200}})
+	name, nameOK := cleanName(in.Name)
+	if !nameOK {
+		fields = append(fields, problem.Field{Field: "name", Code: "invalid_value", Params: map[string]any{"max": maxSignUpName}})
 	}
 	locale := in.Locale
 	switch locale {
