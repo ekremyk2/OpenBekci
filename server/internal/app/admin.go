@@ -26,6 +26,7 @@ type Admin struct {
 	Tenancy  *tenancy.Service
 	db       *db.DB
 	encKey   []byte
+	cfg      Config
 	packs    *packs.Host
 }
 
@@ -53,7 +54,7 @@ func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error
 		return nil, fmt.Errorf("packs: %w", err)
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
-	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d, encKey: cfg.EncryptionKey, packs: host}, nil
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d, encKey: cfg.EncryptionKey, packs: host, cfg: cfg}, nil
 }
 
 // PurgePack deletes a pack's rows for an organization (see packs.Host.Purge).

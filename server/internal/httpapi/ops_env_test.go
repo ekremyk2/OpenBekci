@@ -57,9 +57,10 @@ type opsTest struct {
 	dashboards    *dashboards.Service
 }
 
-func newOpsTest(d *db.DB, fs *files.Service) *opsTest {
+func newOpsTest(d *db.DB, fs *files.Service, ncfg notifications.Config) *opsTest {
 	o := &opsTest{notes: &captureNotifier{}, mail: &mail.Recorder{}, sms: &sms.Recorder{}}
-	o.notifications = notifications.NewService(d, notifications.Config{Mail: o.mail, SMS: o.sms, BaseURL: "https://example.test"})
+	ncfg.Mail, ncfg.SMS, ncfg.BaseURL = o.mail, o.sms, "https://example.test"
+	o.notifications = notifications.NewService(d, ncfg)
 	o.tickets = tickets.NewService(d, fs, o.notes)
 	o.announcements = announcements.NewService(d, fs, o.notes, announcements.Config{SMS: true, Mail: true})
 	o.documents = documents.NewService(d, fs)

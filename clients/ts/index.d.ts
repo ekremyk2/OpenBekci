@@ -322,6 +322,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register or update a push device
+         * @description **Release 0.4.** Registers the caller's push token (FCM, APNs or a UnifiedPush endpoint), or updates the existing row of the same token and enables it again. The token is stored encrypted and never returned. The device is tied to the calling session: signing that session out unregisters it.
+         *
+         *     Permission: any signed-in caller (`sessions.manage_own`).
+         *
+         *     Problems: `validation_failed` (422), `rate_limited` (429).
+         */
+        post: operations["me.registerDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/devices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Id of the device (from `me.registerDevice`). */
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Unregister a push device
+         * @description **Release 0.4.** Deletes one of the caller's devices (sign-out of the app does this, then revokes the session). A device of another user is 404.
+         *
+         *     Permission: any signed-in caller (`sessions.manage_own`).
+         *
+         *     Problems: `not_found` (404).
+         */
+        delete: operations["me.deleteDevice"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/web-login-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get a one-time link that signs the browser in
+         * @description **Release 0.4.** The mobile app asks for a one-time token and opens `{BASE_URL}/login/link/{token}?next=/orgs/{org_id}/...` in the browser for anything deeper than the app offers (mobile section 7.2). The token is single use, valid for a few minutes, bound to the calling session (it stops working when that session is signed out) and stored hashed. A new link voids the session's earlier open ones.
+         *
+         *     Permission: any signed-in caller (`sessions.manage_own`).
+         *
+         *     Problems: `validation_failed` (422, `next` is not an in-app `/orgs/{org_id}/...` path), `rate_limited` (429).
+         */
+        post: operations["me.createWebLoginLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/web-login-link:exchange": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange a web-login link token for a browser session
+         * @description **Release 0.4.** The web route `/login/link/{token}` posts the token here and receives the session cookie. Single use; an unknown, used or expired token, or one whose issuing session was signed out, is 401 `invalid_grant`. The response is never replayed from the idempotency store.
+         *
+         *     Problems: `invalid_grant` (401), `rate_limited` (429).
+         */
+        post: operations["auth.exchangeWebLoginLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/audit": {
         parameters: {
             query?: never;
@@ -3290,6 +3387,35 @@ export interface paths {
          *     Permission: `notifications.read`.
          */
         get: operations["operations.getUnreadCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/notifications/{notification_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the notification. */
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Read one notification
+         * @description **Release 0.1.** One of the caller's notifications, a single-row read cheap enough for a push handler (`notification_id` of the push payload). Another person's notification is 404.
+         *
+         *     Permission: `notifications.read`.
+         *
+         *     Problems: `not_found` (404).
+         */
+        get: operations["operations.getNotification"];
         put?: never;
         post?: never;
         delete?: never;
@@ -9425,6 +9551,63 @@ export interface components {
             expires_at: string;
             /** @description True for the session that made this request. */
             current: boolean;
+        };
+        /**
+         * @description A push registration of the signed-in app (backend section 4.12, mobile section 9).
+         *     One row per (user, token): registering a token again updates the row and
+         *     enables it. The token is stored encrypted and is never returned.
+         * @example {
+         *       "push_kind": "fcm",
+         *       "token": "fcm-device-token",
+         *       "relay_id": "official",
+         *       "app_version": "1.0.0",
+         *       "locale": "tr"
+         *     }
+         */
+        DeviceRegister: {
+            /** @description `fcm` and `apns` go through the relay named by `relay_id`; `unifiedpush` posts to the endpoint URL held in `token`. Open on input; the known values are listed here. */
+            push_kind: string;
+            /** @description The FCM or APNs device token, or the https endpoint URL of the UnifiedPush distributor. */
+            token: string;
+            /** @description The relay of the app build (`app_config.json`; `official` in the store build). Required for `fcm` and `apns`, ignored for `unifiedpush`. */
+            relay_id?: string;
+            app_version?: string;
+            /** @example tr */
+            locale?: string;
+        };
+        /** @description A registered push device. The token is never returned. */
+        Device: {
+            /** Format: uuid */
+            id: string;
+            push_kind: string;
+            relay_id: string | null;
+            app_version: string | null;
+            locale: string | null;
+            /** @description False after the relay reported the token invalid; registering the token again enables the device. */
+            enabled: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        WebLoginLinkCreate: {
+            /**
+             * @description An in-app path under `/orgs/{org_id}/...` the web app opens after signing in; any other value (another host, a scheme, a path outside `/orgs/`) is 422.
+             * @example /orgs/0192a3f0-1000-7000-8000-000000000001/tickets
+             */
+            next?: string;
+        };
+        /** @description A one-time link that signs the caller's browser in. Single use, bound to the issuing session, valid for a few minutes. Shown once. */
+        WebLoginLink: {
+            token: string;
+            /** @description `{BASE_URL}/login/link/{token}`, with `?next=` when `next` was given. */
+            url: string;
+            /** Format: date-time */
+            expires_at: string;
+        };
+        WebLoginLinkExchange: {
+            token: string;
+            device_name?: string;
         };
         /**
          * @example {
@@ -20533,6 +20716,122 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "me.registerDevice": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceRegister"];
+            };
+        };
+        responses: {
+            /** @description The device, created or updated. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Device"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.deleteDevice": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Id of the device (from `me.registerDevice`). */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The device was deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.createWebLoginLink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["WebLoginLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description The link; shown once. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebLoginLink"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "auth.exchangeWebLoginLink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebLoginLinkExchange"];
+            };
+        };
+        responses: {
+            /** @description Signed in; the session cookie is set. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "audit.list": {
         parameters: {
             query?: {
@@ -25564,6 +25863,35 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getNotification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the notification. */
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notification"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
