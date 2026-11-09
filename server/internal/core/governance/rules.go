@@ -74,7 +74,6 @@ type PresetNote struct {
 	Verify bool   `json:"verify"`
 }
 
-
 // GenericPreset is the default rule set of a site without a legal preset (a
 // country pack): a majority of the units present on the first call and no
 // quorum on the second, a simple majority of those present for every topic,
