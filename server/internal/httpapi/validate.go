@@ -68,7 +68,7 @@ func dropNullBody(r *http.Request) {
 	if r.Body == nil || r.Body == http.NoBody {
 		return
 	}
-	const peek = 64
+	const peek = 4096 // shortcut: null behind more than 4 KiB of white space reaches the validator as is, if a client ever does that read to EOF
 	buf := make([]byte, peek)
 	n, err := io.ReadFull(r.Body, buf)
 	buf = buf[:n]
