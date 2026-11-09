@@ -11,6 +11,7 @@ import { InvitationsPanel } from './InvitationsPanel'
 import { joinStatusLabel, joinStatusVariant } from './labels'
 import { MembershipsTab } from './MembershipsTab'
 import { NationalIdPanel } from './NationalIdPanel'
+import { PrivacyPanel } from './PrivacyPanel'
 import { OccupanciesTab } from './OccupanciesTab'
 import type { PersonTab } from './tabs'
 import { PersonForm } from './PersonForm'
@@ -54,6 +55,14 @@ export function PersonDetailPage({ personId, tab }: { personId: string; tab: Per
         <TabsContent value="profile" className="grid gap-8 pt-4">
           <PersonForm orgId={orgId} person={person} readOnly={!can('people.manage')} />
           {can('people.national_id') ? <NationalIdPanel orgId={orgId} person={person} /> : null}
+          {can('people.export') || can('people.erase') ? (
+            <PrivacyPanel
+              orgId={orgId}
+              person={person}
+              canExport={can('people.export')}
+              canErase={can('people.erase')}
+            />
+          ) : null}
           <section className="grid max-w-2xl gap-2" aria-labelledby="dir-h">
             <h2 id="dir-h" className="text-base font-semibold">
               <Trans>Directory</Trans>

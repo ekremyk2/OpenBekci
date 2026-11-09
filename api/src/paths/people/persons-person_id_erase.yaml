@@ -27,7 +27,7 @@ post:
     org_admin:
       - people.erase
   x-idempotent: required
-  x-stability: stable
+  x-stability: preview
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:

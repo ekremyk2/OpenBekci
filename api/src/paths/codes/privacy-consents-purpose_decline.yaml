@@ -24,7 +24,7 @@ post:
     member:
       - me.manage
   x-idempotent: optional
-  x-stability: stable
+  x-stability: preview
   requestBody:
     required: true
     content:

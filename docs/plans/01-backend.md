@@ -422,10 +422,10 @@ As overview §6.6. Server catalogs for emails, SMS, PDFs and notification bodies
 **Privacy (KVKK/GDPR-ready):**
 
 - **Audit diffs are PII-safe**: fields registered as PII (names, contacts, national ids, plates, free-text notes) are stored as hashes before/after; non-PII fields as values.
-- **Erasure** = `privacy_erase(person_id)` — a `SECURITY DEFINER` function owned by the migrator, the only path that rewrites PII columns in append-only tables (`journal_line.person_id` → null, `ballot`/`attendance` names → "Former owner #n", audit hashes untouched). The `person` row is anonymized; the `user` unlinked; occupancies keep unit and dates. Blocked while the person has an open balance unless an admin overrides (re-auth, audited). Backups age out per the retention policy page.
+- **Erasure** (1.0, as built) pseudonymizes instead of rewriting append-only tables: the `person` row keeps its id and loses name, contact, notes and national id (`erased_at` is the marker), so `journal_line`, `ballot` and `attendance` rows stay untouched and point at "Former person xxxxxxxx"; audit hashes are never touched. The `user` is unlinked (scrubbed when no person of any organization remains), sessions and devices deleted; occupancies keep unit and dates. Blocked while the person has open charges unless an admin overrides (re-auth, audited as forced); `openbekci admin privacy erase` does the same for the operator. No `privacy_erase` SQL function was needed. Backups age out per the retention policy page.
 - **Retention**: `bank_transaction.raw` and `payment.provider_payload` stripped after reconciliation (default 90 days); sessions, login attempts, visitor logs (default 90 days, C) per `retention_setting`; `maintenance.prune` enforces.
-- **Export**: per-person JSON + files archive by job.
-- **Consent**: `consent` records with versioned texts (generic core texts; Turkish texts in 0.4 pack).
+- **Export**: per-person JSON + PDF bundle by job, filed as private documents (1.0: `POST …/persons/{id}/data-export`).
+- **Consent**: `consent` records (per user and organization) with versioned texts; accept or decline the current version, audited; `GET /v1/me` flags required texts not accepted (1.0).
 - Secrets (`SECRET_KEY`, `ENCRYPTION_KEY`) are state and part of the backup set (infra plan).
 
 ---

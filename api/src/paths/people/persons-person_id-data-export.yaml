@@ -29,7 +29,7 @@ post:
     member:
       - me.manage
   x-idempotent: optional
-  x-stability: stable
+  x-stability: preview
   responses:
     "202":
       description: Accepted; the export continues as a job.

@@ -484,6 +484,25 @@ balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHook
 - **Hand-over.** A site export carries every money table (`tenancy/export_money.go`, parents first); the import leaves the lock date off while the journal goes in and
   sets it afterwards; files are not carried yet (`file_id` columns are cleared).
 
+## Privacy (1.0)
+
+`internal/core/privacy`: consents, person data export, erase and the delivery retention job.
+
+- **Consents.** `GET …/privacy/consents` returns the texts (a pack's, else the generic notice) with `required` (the privacy notice) and the caller's `state`; `POST …/privacy/consents/{purpose}:accept|:decline` records a decision on the *current* version (409 otherwise) in `consent` (one row per organization, user and purpose) and in the audit trail. `GET /v1/me` lists `pending_consents` per organization.
+- **Export.** `POST …/persons/{id}/data-export` (`people.export` for the person, or the person with `me.manage`) queues `privacy.data_export`; the job files `personal-data-<date>.json` and `.pdf` in the site's "Privacy" folder (documents folder level `board`, addressed to the person so they can read them) and sends `privacy.export_ready`. The national id is not included.
+- **Erase.** `POST …/persons/{id}:erase` (`people.erase`, re-authentication) or `openbekci admin privacy erase --org --person [--reason] [--force]`. The person row is pseudonymized and marked `erased_at`, the account is unlinked (and scrubbed when no person of any organization is left on it), sessions, devices and consents go, invitations and claims lose their free text, roles end. Ledger, ballots, attendance and audit rows keep pointing at the person id. Refused (409) while the person has open charges unless forced (`override_open_balance` / `--force`, audited as forced).
+- **Retention.** All windows are fixed or per site; there is no instance setting.
+
+  | Data | Kept | Job |
+  |---|---|---|
+  | Sessions (expired or revoked), OTP codes, web-login links | 7 days / 1 day after expiry | identity prune, hourly |
+  | Login attempts, sign-in delivery log | 90 days | identity prune, hourly |
+  | Visitor entries, recurring visitors, parcels, PIN attempts | site setting `visitor_retention_days` (default 90) | community retention, 6-hourly |
+  | Finished notification and webhook delivery rows | 90 days | `privacy.retention`, daily |
+  | Bank raw payloads | 90 days after reconciliation | money prune, daily |
+
+  Backups are not purged by an erase; they age out with the backup policy.
+
 ## Tests
 
 ```powershell
