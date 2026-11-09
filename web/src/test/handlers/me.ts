@@ -46,6 +46,7 @@ export const ALL_PERMISSIONS = [
   'announcements.read',
   'announcements.publish',
   'documents.read',
+  'notifications.read',
   'documents.manage',
   'files.upload',
   'files.read',
@@ -135,21 +136,32 @@ const RESIDENT_PERMISSIONS = [
   'visitors.manage',
   'visitors.decide',
   'deliveries.read',
+  'tickets.open',
+  'announcements.read',
+  'documents.read',
+  'notifications.read',
 ]
 /** The guard of the booth: the gate console only. */
 const GUARD_PERMISSIONS = ['gate.operate', 'access.open']
 
 /** A resident (`?mockRole=resident`) or a guard (`?mockRole=guard`), for the portal and gate views. */
-export function roleMe(role: 'resident' | 'guard'): Me {
+export function roleMe(role: 'resident' | 'household' | 'guard'): Me {
   const org = adminMe().organizations[0]!
-  const permissions = role === 'resident' ? RESIDENT_PERMISSIONS : GUARD_PERMISSIONS
+  const permissions =
+    role === 'guard'
+      ? GUARD_PERMISSIONS
+      : role === 'household' // a household member takes no part in assemblies
+        ? RESIDENT_PERMISSIONS.filter((p) => p !== 'meetings.read' && p !== 'polls.answer')
+        : RESIDENT_PERMISSIONS
   return {
     ...meFixture,
     organizations: [
       {
         ...org,
         roles: [],
-        permissions: permissions.map((permission) => ({ permission })),
+        permissions: role === 'guard' ? permissions.map((permission) => ({ permission })) : [],
+        occupant_permissions:
+          role === 'guard' ? [] : permissions.map((permission) => ({ permission })),
       },
     ],
     // the guard of the booth lives nowhere: no unit, so no Money
@@ -163,8 +175,8 @@ export function roleMe(role: 'resident' | 'guard'): Me {
               site_id: 'site-a',
               unit_id: 'u-a1',
               unit_label: 'A1',
-              kind: 'owner',
-              may_see_money: true,
+              kind: role === 'household' ? 'household' : 'owner',
+              may_see_money: role !== 'household',
             },
           ],
   }

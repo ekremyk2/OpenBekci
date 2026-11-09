@@ -84,13 +84,20 @@ export function meForRole(role: MockRole): Me {
               slug: 'gunes',
               name: 'Güneş Sitesi Yönetimi',
               default_locale: 'en',
-              roles: [
-                {
-                  role: role === 'manager' ? 'site_manager' : role === 'staff' ? 'staff' : 'guard',
-                  scope_type: 'org',
-                },
-              ],
-              permissions: PERMS[role].map((permission) => ({ permission })),
+              // a resident holds no role: rights come through the occupancy (`occupant_permissions`)
+              roles:
+                role === 'resident'
+                  ? []
+                  : [
+                      {
+                        role: role === 'manager' ? 'site_manager' : 'staff',
+                        scope_type: 'org',
+                      },
+                    ],
+              permissions:
+                role === 'resident' ? [] : PERMS[role].map((permission) => ({ permission })),
+              occupant_permissions:
+                role === 'resident' ? PERMS[role].map((permission) => ({ permission })) : [],
               sites: [
                 { id: SITE, name: 'Güneş Sitesi', timezone: 'Europe/Istanbul', currency: 'TRY' },
               ],

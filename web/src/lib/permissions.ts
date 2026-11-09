@@ -24,7 +24,8 @@ export function can(
 ): boolean {
   const org = findOrg(me, orgId)
   if (!org) return false
-  return org.permissions.some((g) => {
+  // residents hold no role: their rights come from occupancies (`occupant_permissions`)
+  return [...org.permissions, ...(org.occupant_permissions ?? [])].some((g) => {
     if (g.permission !== permission) return false
     const scoped = (g.site_ids?.length ?? 0) > 0 || (g.block_ids?.length ?? 0) > 0
     if (!scoped || !scope) return true

@@ -22,14 +22,27 @@ describe('filterNav', () => {
   it('shows money to occupants who may see money, even without ledger rights', () => {
     const resident: Me = {
       ...meFixture,
-      organizations: [{ ...meFixture.organizations[0]!, permissions: [], roles: [] }],
+      organizations: [
+        {
+          ...meFixture.organizations[0]!,
+          permissions: [],
+          roles: [],
+          occupant_permissions: [{ permission: 'tickets.open' }, { permission: 'documents.read' }],
+        },
+      ],
     }
     expect(
       ids(filterNav(NAV_ITEMS, { me: resident, orgId: 'org-1' }, { includePlanned: true })),
     ).toContain('money')
+    const all = ids(filterNav(NAV_ITEMS, { me: resident, orgId: 'org-1' }))
+    expect(all).toEqual(expect.arrayContaining(['tickets', 'documents']))
     const household: Me = {
       ...resident,
-      occupancies: resident.occupancies.map((o) => ({ ...o, may_see_money: false })),
+      occupancies: resident.occupancies.map((o) => ({
+        ...o,
+        kind: 'household' as const,
+        may_see_money: false,
+      })),
     }
     expect(
       ids(filterNav(NAV_ITEMS, { me: household, orgId: 'org-1' }, { includePlanned: true })),
