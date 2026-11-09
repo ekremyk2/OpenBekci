@@ -16,10 +16,14 @@ package checkout
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -204,6 +208,30 @@ type CreateInput struct {
 	Amount *money.Money
 	// Client is ClientWeb (default) or ClientMobile.
 	Client string
+	// IdempotencyKey is the Idempotency-Key of the request. A retry with the same key and the same request returns
+	// the same checkout (and never asks the provider for a second hosted checkout), even when the first attempt
+	// failed at the provider; the same key with another request is 422 idempotency_mismatch.
+	IdempotencyKey string
+}
+
+// requestHash identifies the request of a checkout create for the idempotency check: what the caller sent, not
+// what the server derived from it.
+func (in CreateInput) requestHash() string {
+	ids := make([]string, 0, len(in.ChargeIDs))
+	for _, c := range in.ChargeIDs {
+		ids = append(ids, c.String())
+	}
+	sort.Strings(ids)
+	amount := "-"
+	if in.Amount != nil {
+		amount = fmt.Sprintf("%d %s", in.Amount.Amount, in.Amount.Currency)
+	}
+	client := in.Client
+	if client == "" {
+		client = ClientWeb
+	}
+	sum := sha256.Sum256([]byte(strings.Join([]string{in.UnitID.String(), in.DebtorKind, strings.Join(ids, ","), amount, client}, "|")))
+	return hex.EncodeToString(sum[:])
 }
 
 type plan struct {
@@ -344,21 +372,61 @@ func (s *Service) Create(ctx context.Context, org uuid.UUID, in CreateInput) (Ch
 	if client == "" {
 		client = ClientWeb
 	}
-	returnURL := s.ReturnURL(client, org, cid)
 	expires := now.Add(s.cfg.DefaultTTL)
 	chargeIDs := in.ChargeIDs
 	if chargeIDs == nil {
 		chargeIDs = []uuid.UUID{}
 	}
+	actor := ledger.Actor(ctx)
+	hash := in.requestHash()
+	var replay *Checkout
 	err = s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, `INSERT INTO checkout (id, org_id, site_id, unit_id, debtor_kind, charge_ids, provider, merchant_of_record, amount, currency, return_url, created_by, created_at, expires_at)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
-			cid, org, p.site.ID, in.UnitID, in.DebtorKind, chargeIDs, info.Provider, p.mor, p.amount.Amount, string(p.amount.Currency), returnURL, ledger.Actor(ctx), now, expires)
+		replay = nil
+		keyed := in.IdempotencyKey != "" && actor != nil
+		if keyed {
+			// serialize the attempts of one key, then look for an earlier one
+			if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 12))`, fmt.Sprintf("checkout|%s|%s|%s", org, *actor, in.IdempotencyKey)); err != nil {
+				return err
+			}
+			prev, err := scan(tx.QueryRow(ctx, `SELECT `+cols+` FROM checkout WHERE org_id = $1 AND created_by = $2 AND idempotency_key = $3`, org, *actor, in.IdempotencyKey))
+			switch {
+			case err == nil:
+				var storedHash *string
+				if err := tx.QueryRow(ctx, `SELECT request_hash FROM checkout WHERE org_id = $1 AND id = $2`, org, prev.ID).Scan(&storedHash); err != nil {
+					return err
+				}
+				if storedHash == nil || *storedHash != hash {
+					return problem.New(422, problem.CodeIdempotencyMismatch, "this Idempotency-Key was already used with a different request")
+				}
+				if prev.providerTxn != nil || (prev.Status != StatusPending && prev.Status != StatusFailed) {
+					replay = &prev
+					return nil
+				}
+				// the provider never answered: ask again under the same reference, so that a checkout the provider
+				// did create is the one we get back
+				cid = prev.ID
+				_, err = tx.Exec(ctx, `UPDATE checkout SET status = 'pending', failure_code = NULL, completed_at = NULL, expires_at = $3 WHERE org_id = $1 AND id = $2`, org, cid, expires)
+				return err
+			case !errors.Is(err, pgx.ErrNoRows):
+				return err
+			}
+		}
+		var key, h *string
+		if keyed {
+			key, h = &in.IdempotencyKey, &hash
+		}
+		_, err := tx.Exec(ctx, `INSERT INTO checkout (id, org_id, site_id, unit_id, debtor_kind, charge_ids, provider, merchant_of_record, amount, currency, return_url, created_by, created_at, expires_at, idempotency_key, request_hash)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+			cid, org, p.site.ID, in.UnitID, in.DebtorKind, chargeIDs, info.Provider, p.mor, p.amount.Amount, string(p.amount.Currency), s.ReturnURL(client, org, cid), actor, now, expires, key, h)
 		return err
 	})
 	if err != nil {
 		return Checkout{}, err
 	}
+	if replay != nil {
+		return *replay, nil
+	}
+	returnURL := s.ReturnURL(client, org, cid)
 	target := sdk.PaymentTarget{SiteID: sdk.ID(p.site.ID.String()), UnitID: sdk.ID(in.UnitID.String()), DebtorKind: in.DebtorKind}
 	for _, c := range in.ChargeIDs {
 		target.ChargeIDs = append(target.ChargeIDs, sdk.ID(c.String()))
@@ -375,7 +443,7 @@ func (s *Service) Create(ctx context.Context, org uuid.UUID, in CreateInput) (Ch
 			_, err := tx.Exec(ctx, `UPDATE checkout SET status = 'failed', failure_code = 'provider_error', completed_at = now() WHERE org_id = $1 AND id = $2 AND status = 'pending'`, org, cid)
 			return err
 		})
-		return Checkout{}, perr
+		return Checkout{}, providerProblem(perr)
 	}
 	if res.ExpiresAt != nil && res.ExpiresAt.After(now) {
 		expires = res.ExpiresAt.UTC()
@@ -404,6 +472,32 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+// providerProblem turns an error of a provider call into a problem with a stable code and a fixed message. What
+// the provider (or the pack) said is kept as the cause for the log and never reaches the client: a provider's
+// words can name its account, its credentials or its internals. Problems the core raised itself (a reversal that
+// the ledger refused) pass through.
+func providerProblem(err error) error {
+	switch {
+	case err == nil:
+		return nil
+	case errors.Is(err, context.DeadlineExceeded):
+		return problem.Wrap(504, problem.CodeTimeout, "the payment provider took too long", err)
+	case errors.Is(err, sdk.ErrUnavailable):
+		return problem.Wrap(503, problem.CodePackError, "the payment provider is temporarily unavailable", err)
+	case errors.Is(err, sdk.ErrCredentials):
+		return problem.Wrap(409, problem.CodePaymentProviderUnavailable, "card payment is not available for this site", err)
+	case errors.Is(err, sdk.ErrRejected), errors.Is(err, sdk.ErrUnsupported):
+		return problem.Wrap(422, problem.CodeValidationFailed, "the payment provider did not accept the request", err)
+	}
+	var pe *problem.Error
+	if errors.As(err, &pe) && pe.Status < 500 && !isPackError(pe) {
+		return err
+	}
+	return problem.Wrap(502, problem.CodePackError, "the payment provider failed", err)
+}
+
+func isPackError(pe *problem.Error) bool { return pe.Code == problem.CodePackError }
 
 func unavailable() error {
 	return problem.New(409, problem.CodePaymentProviderUnavailable, "no card payment provider is enabled for this site")
@@ -771,7 +865,8 @@ func (s *Service) Refund(ctx context.Context, org, paymentID uuid.UUID, version 
 		reason = "refunded by a manager"
 	}
 	if _, err := s.cfg.Providers.RefundPayment(ctx, org, pack, pr.provider, sdk.RefundRequest{ProviderTxnID: pr.txn, RefundRef: "refund-" + paymentID.String(), Reason: reason}); err != nil {
-		return payments.Payment{}, err
+		s.cfg.Log.WarnContext(ctx, "refunding a provider payment", "payment_id", paymentID, "provider", pr.provider, "error", err)
+		return payments.Payment{}, providerProblem(err)
 	}
 	err = s.run(ctx, org, "payment", func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx, `UPDATE checkout SET status = 'refunded' WHERE org_id = $1 AND payment_id = $2 AND status = 'paid'`, org, paymentID); err != nil {
