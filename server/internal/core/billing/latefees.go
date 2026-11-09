@@ -37,7 +37,8 @@ type PolicyRow struct {
 // date), later than every existing row (409 otherwise), and the rate is capped at
 // the ceiling the site's legal preset sets (site setting late_fee_policy.monthly_rate_ceiling_bps; none without a
 // pack, then only the schema's 10000 bps). The automatic default row of a new
-// site is replaced by the site's first own entry.
+// site stays as the period before the first own entry, so dues overdue before it
+// keep accruing under the policy in force in each period.
 func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID, row PolicyRow) ([]PolicyRow, error) {
 	if _, err := ledger.ParseDate(row.From); err != nil {
 		return nil, bad("from", "invalid_format")
@@ -61,9 +62,6 @@ func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID,
 			return err
 		} else if ok && row.RateBPSPerMonth > ceil {
 			return problem.Validation(problem.Field{Field: "rate_bps_per_month", Code: "too_large", Params: map[string]any{"max": ceil}})
-		}
-		if _, err := tx.Exec(ctx, `DELETE FROM late_fee_policy WHERE org_id=$1 AND site_id=$2 AND is_default`, orgID, siteID); err != nil {
-			return err
 		}
 		var last *string
 		if err := tx.QueryRow(ctx, `SELECT max(from_on)::text FROM late_fee_policy WHERE org_id=$1 AND site_id=$2`, orgID, siteID).Scan(&last); err != nil {
@@ -119,14 +117,14 @@ func (s *Service) RateCeilingBPS(ctx context.Context, orgID, siteID uuid.UUID) (
 }
 
 // PolicyVersion is the optimistic-lock counter of the schedule: it grows with every
-// appended entry and when the automatic default is replaced.
+// appended entry (the automatic default counts as the first).
 func (s *Service) PolicyVersion(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
 	n := 0
 	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
 		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, siteID); err != nil {
 			return err
 		}
-		return tx.QueryRow(ctx, `SELECT COALESCE(2 * count(*) - count(*) FILTER (WHERE is_default), 0)::int FROM late_fee_policy WHERE org_id=$1 AND site_id=$2`, orgID, siteID).Scan(&n)
+		return tx.QueryRow(ctx, `SELECT count(*)::int FROM late_fee_policy WHERE org_id=$1 AND site_id=$2`, orgID, siteID).Scan(&n)
 	})
 	return n, err
 }

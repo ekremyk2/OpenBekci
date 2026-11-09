@@ -1,9 +1,40 @@
 package httpapi
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
+
+// A manager's own late fee policy starts a new period and keeps the default one before it: a due that is
+// already overdue keeps the fee the default earned up to the new policy's start.
+func TestIntegrationOwnLateFeePolicyKeepsOverdueDuesAccruing(t *testing.T) {
+	w := newResidentWorld(t)
+	p := w.p
+	w.charge("owner", 100000, w.date(39))
+	before := p.must(w.statement("owner", "", w.ownerTok), 200)
+	fee := amountOf(before.Body, "accrued_late_fee")
+	if fee <= 0 {
+		t.Fatalf("no fee on a due 39 days late: %s", before.Raw)
+	}
+	url := p.base() + "/late-fee-policy?site_id=" + w.f.Site.String()
+	pol := p.must(p.call("GET", url, "", p.adm), 200)
+	// a much lower rate from today: the 39 overdue days stay at the default's rate
+	p.must(p.call("PUT", url, `{"grace_days":0,"rate_pct_per_month":1}`, p.adm, "If-Match", fmt.Sprintf(`"%d"`, num(pol.Body, "version"))), 200)
+	after := p.must(w.statement("owner", "", w.ownerTok), 200)
+	if got := amountOf(after.Body, "accrued_late_fee"); got != fee {
+		t.Fatalf("the fee of the overdue days changed from %d to %d when the policy was replaced", fee, got)
+	}
+	if n := p.qInt(`SELECT count(*) FROM late_fee_policy WHERE site_id = $1`, w.f.Site); n != 2 {
+		t.Fatalf("%d policy rows, want the default and the new one", n)
+	}
+	if n := p.qInt(`SELECT count(*) FROM late_fee_policy WHERE site_id = $1 AND is_default`, w.f.Site); n != 1 {
+		t.Fatalf("the default row is gone")
+	}
+	// the ceiling still applies: a rate above the schema's bound is refused
+	pol = p.must(p.call("GET", url, "", p.adm), 200)
+	p.must(p.call("PUT", url, `{"grace_days":0,"rate_pct_per_month":150}`, p.adm, "If-Match", fmt.Sprintf(`"%d"`, num(pol.Body, "version"))), 422)
+}
 
 // A former occupant (S7) reads the statement of their own side for the period of their occupancy
 // and nothing dated after valid_to, in JSON, CSV and PDF; the other resident reads stay closed.
