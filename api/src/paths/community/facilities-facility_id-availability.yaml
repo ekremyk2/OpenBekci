@@ -32,7 +32,7 @@ get:
       - bookings.create
     household:
       - bookings.create
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: from
       in: query

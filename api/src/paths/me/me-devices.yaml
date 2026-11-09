@@ -15,7 +15,7 @@ post:
   x-openbekci-roles:
     - sessions.manage_own
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

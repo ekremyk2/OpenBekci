@@ -6382,6 +6382,9 @@ msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
 msgid "The pass was cancelled."
 msgstr "Geçiş iptal edildi."
 
+msgid "The payment changed. Open Refund again to see its current state."
+msgstr "Ödeme değişti. Güncel durumu görmek için İade ekranını yeniden açın."
+
 msgid "The payment did not go through"
 msgstr "Ödeme gerçekleşmedi"
 

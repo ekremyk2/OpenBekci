@@ -21,7 +21,6 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `vehicles.read` | Read the plate registry and export it. | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
 | `vehicles.manage` | Register and remove vehicles (occupants: their own unit). | `org_admin`, `site_manager`, `board_member`, `owner`, `tenant`, `household` |
 | `jobs.read` | Read background jobs started by the caller (managers: all jobs of the organization). | `member` |
-| `exports.create` | Start an asynchronous export. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
 
 ## people
 

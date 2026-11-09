@@ -72,4 +72,29 @@ export const logicalProperties = {
   },
 }
 
-export default { rules: { 'logical-properties': logicalProperties } }
+// User-facing JSX text must sit inside <Trans> (Lingui) so it reaches the tr catalog.
+/** @type {import('eslint').Rule.RuleModule} */
+export const noUntranslatedText = {
+  meta: {
+    type: 'problem',
+    docs: { description: 'Wrap visible JSX text in <Trans>.' },
+    schema: [],
+    messages: { bare: 'Wrap "{{text}}" in <Trans> so it is translated.' },
+  },
+  create(context) {
+    return {
+      JSXText(node) {
+        const text = node.value.trim()
+        // two words or more: single tokens are mostly names (SMS, English, TR)
+        if (!/[A-Za-z]{2,}\s+[A-Za-z]{2,}/.test(text)) return
+        const p = node.parent
+        if (p?.type === 'JSXElement' && ['Trans', 'Plural', 'Select', 'code', 'pre'].includes(p.openingElement.name.name)) return
+        context.report({ node, messageId: 'bare', data: { text: text.slice(0, 40) } })
+      },
+    }
+  },
+}
+
+export default {
+  rules: { 'logical-properties': logicalProperties, 'no-untranslated-text': noUntranslatedText },
+}

@@ -28,7 +28,7 @@ post:
     accountant:
       - money.post
   x-idempotent: required
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:

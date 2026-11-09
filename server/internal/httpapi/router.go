@@ -127,6 +127,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		maxBody(o.MaxBodyBytes, o.MaxUploadBytes, MaxUploadBytes+1<<20),
 		requestTimeout(o.RequestTimeout),
 		noStoreSensitive,
+		securityHeaders,
 	)
 
 	r.Get("/healthz", healthz)

@@ -6932,33 +6932,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/exports": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start an asynchronous export
-         * @description **Release 0.1.** For exports too large for the synchronous `format` download. The job result is a file.
-         *
-         *     Permission: `exports.create`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["operations.createExport"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/audit": {
         parameters: {
             query?: never;
@@ -7377,35 +7350,6 @@ export interface paths {
          *     Problems: `conflict` (409), `validation_failed` (422).
          */
         post: operations["governance.callMeeting"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/meetings/{meeting_id}:start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the meeting. */
-                meeting_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Open the session
-         * @description **Release 0.2.** Open the session.
-         *
-         *     Permission: `meetings.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        post: operations["governance.startMeeting"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8696,33 +8640,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/visitor-entries/{entry_id}/qr": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the entry. */
-                entry_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * The visitor QR as an image
-         * @description **Release 0.3.** The visitor QR as an image.
-         *
-         *     Permission: `visitors.manage`.
-         */
-        get: operations["community.getVisitorEntryQr"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/recurring-visitors": {
         parameters: {
             query?: never;
@@ -8814,33 +8731,6 @@ export interface paths {
          *     Problems: `conflict` (409).
          */
         post: operations["community.revokeRecurringVisitor"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}/qr": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the recurring visitor. */
-                recurring_visitor_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * The recurring visitor QR as an image
-         * @description **Release 0.3.** The recurring visitor QR as an image.
-         *
-         *     Permission: `visitors.manage`.
-         */
-        get: operations["community.getRecurringVisitorQr"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -10502,107 +10392,14 @@ export interface paths {
         head?: never;
         /**
          * Update my profile
-         * @description **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes go through
-         *     `me.startContactChange`. Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
+         * @description **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes are not part of /v1 yet (see `docs/api/deferred.md`).
+         *     Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
          *     `version_conflict`. Returns the updated `user`, with its new `version`. The display name is the account's own: it wins over the
          *     name of the linked person in `GET /v1/me`; an empty string clears it. The locale is one the server has texts for: `tr` or `en`.
          *
          *     Problems: `version_conflict` (409), `validation_failed` (422).
          */
         patch: operations["me.updateProfile"];
-        trace?: never;
-    };
-    "/v1/me/contact-changes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start changing my email or phone
-         * @description **Release 0.1.** Sends a code to the new address or number.
-         *
-         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
-         *
-         *     Problems: `reauth_required` (403), `conflict` (409), `rate_limited` (429), `sms_unavailable` (503), `mail_unavailable` (503).
-         */
-        post: operations["me.startContactChange"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/me/contact-changes/{change_id}:confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Id of the change. */
-                change_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Confirm the new email or phone
-         * @description **Release 0.1.** Confirm the new email or phone.
-         *
-         *     Problems: `invalid_grant` (401), `rate_limited` (429), `conflict` (409).
-         */
-        post: operations["me.confirmContactChange"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/auth/password-reset": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Request a password reset link
-         * @description **Release 0.1.** Always 202, whether or not the identifier exists. The link format is `{BASE_URL}/reset/{token}`.
-         *
-         *     Problems: `rate_limited` (429), `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
-         */
-        post: operations["auth.requestPasswordReset"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/auth/password-reset/consume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Set a new password with a reset token
-         * @description **Release 0.1.** Single use. Revokes all sessions of the account.
-         *
-         *     Problems: `invalid_grant` (401), `rate_limited` (429), `conflict` (409).
-         */
-        post: operations["auth.resetPassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/v1/orgs/{org_id}/gate/units": {
@@ -13497,39 +13294,6 @@ export interface components {
             display_name?: string;
             /** @description One of the locales the server has texts for, `tr` or `en`. */
             locale?: string;
-        };
-        ContactChangeCreate: {
-            /** @enum {string} */
-            kind: "email" | "phone";
-            value: string;
-        };
-        ContactChange: {
-            /** Format: uuid */
-            id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            kind: "email" | "phone";
-            masked_value: string;
-            /** Format: date-time */
-            expires_at: string;
-        };
-        ContactChangeConfirm: {
-            code: string;
-        };
-        PasswordResetRequest: {
-            identifier: string;
-            /**
-             * @description `mobile` makes the emailed link use the `openbekci://<host>/…` form (the instance host first).
-             * @enum {string}
-             */
-            client?: "web" | "mobile";
-        };
-        PasswordResetConsume: {
-            token: string;
-            /** @description Minimum 10 characters. */
-            new_password: string;
         };
         ChargeScope: {
             /** @enum {string} */
@@ -34362,41 +34126,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "operations.createExport": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExportRequest"];
-            };
-        };
-        responses: {
-            /** @description Accepted; the work continues as a job. */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Job"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "audit.list": {
         parameters: {
             query?: {
@@ -35071,39 +34800,6 @@ export interface operations {
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "governance.startMeeting": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the meeting. */
-                meeting_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Meeting"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -37070,36 +36766,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "community.getVisitorEntryQr": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the entry. */
-                entry_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The file. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "image/svg+xml": string;
-                    "image/png": string;
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "community.listRecurringVisitors": {
         parameters: {
             query: {
@@ -37270,36 +36936,6 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "community.getRecurringVisitorQr": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the recurring visitor. */
-                recurring_visitor_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The file. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "image/svg+xml": string;
-                    "image/png": string;
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -39661,137 +39297,6 @@ export interface operations {
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "me.startContactChange": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ContactChangeCreate"];
-            };
-        };
-        responses: {
-            /** @description Accepted; the work continues as a job. */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ContactChange"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            503: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "me.confirmContactChange": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Id of the change. */
-                change_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ContactChangeConfirm"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MeUser"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "auth.requestPasswordReset": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PasswordResetRequest"];
-            };
-        };
-        responses: {
-            /** @description Accepted; the work continues as a job. */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
-            503: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "auth.resetPassword": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PasswordResetConsume"];
-            };
-        };
-        responses: {
-            /** @description No content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

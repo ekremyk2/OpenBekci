@@ -30,7 +30,7 @@ put:
     - bearerAuth: []
   x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   requestBody:
     required: true
     content:

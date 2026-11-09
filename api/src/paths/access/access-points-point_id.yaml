@@ -28,7 +28,7 @@ get:
       - access.read
     auditor:
       - access.read
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK
@@ -64,7 +64,7 @@ patch:
     site_manager:
       - access.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
@@ -112,7 +112,7 @@ delete:
     site_manager:
       - access.manage
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:

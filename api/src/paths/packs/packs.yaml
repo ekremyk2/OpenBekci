@@ -17,7 +17,7 @@ get:
   x-openbekci-roles:
     org_admin:
       - packs.read
-  x-stability: preview
+  x-stability: stable
   responses:
     "200":
       description: OK

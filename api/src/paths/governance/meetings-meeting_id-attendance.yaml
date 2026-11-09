@@ -20,7 +20,7 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles: [attendance.manage]
-  x-stability: preview
+  x-stability: stable
   parameters:
     - name: mode
       in: query
@@ -73,7 +73,7 @@ post:
     - bearerAuth: []
   x-openbekci-roles: [attendance.manage]
   x-idempotent: optional
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:

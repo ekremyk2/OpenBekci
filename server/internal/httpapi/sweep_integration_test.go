@@ -111,7 +111,7 @@ func TestIntegrationHTTPCSRFSweepOverTheSpec(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		cookie := "obk_session=" + ws.Token
+		cookie := "__Host-obk_session=" + ws.Token
 		for name, h := range badHeaders {
 			rec := e.raw(method, path, body(op), append([]string{"Content-Type", "application/json", "Cookie", cookie}, h...)...)
 			if rec.Code != 403 || !strings.Contains(rec.Body.String(), `"csrf_failed"`) {

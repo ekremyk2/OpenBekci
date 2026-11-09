@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: |
     HTTP API of an OpenBekci instance (residential site management).
-    Conventions: see api/README.md. /v1 is not frozen until 1.0.
+    Conventions: see api/README.md. From 1.0 /v1 is frozen: additive changes only (docs/api/versioning.md).
   license:
     name: AGPL-3.0-or-later
     url: https://www.gnu.org/licenses/agpl-3.0.html

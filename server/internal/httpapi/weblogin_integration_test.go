@@ -35,7 +35,7 @@ func bearerH(token string) []string { return []string{"Authorization", "Bearer "
 
 func sessionCookie(rec *httptest.ResponseRecorder) *http.Cookie {
 	for _, c := range rec.Result().Cookies() {
-		if c.Name == "obk_session" && c.Value != "" {
+		if c.Name == HostCookieName && c.Value != "" {
 			return c
 		}
 	}

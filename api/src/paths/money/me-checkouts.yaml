@@ -23,7 +23,7 @@ get:
       - payments.checkout
     household:
       - payments.checkout
-  x-stability: preview
+  x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor

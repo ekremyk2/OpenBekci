@@ -25,7 +25,7 @@ post:
     org_admin:
       - webhooks.manage
   x-idempotent: none
-  x-stability: preview
+  x-stability: stable
   responses:
     "202":
       description: Accepted
