@@ -236,6 +236,14 @@ func (s *Service) RecordSettlement(ctx context.Context, orgID uuid.UUID, in Sett
 			if bank = ch.AccountCode(in.BankAccountCode); bank == uuid.Nil {
 				return bad("bank_account", "invalid_value")
 			}
+			// a payout arrives in a bank account, not in an expense or a liability
+			var typ, sub string
+			if err := tx.QueryRow(ctx, `SELECT type, COALESCE(subtype, '') FROM account WHERE org_id = $1 AND site_id = $2 AND id = $3`, orgID, in.SiteID, bank).Scan(&typ, &sub); err != nil {
+				return err
+			}
+			if typ != "asset" || sub != ledger.SubBank {
+				return bad("bank_account", "invalid_value")
+			}
 		}
 		clearing, err := ledger.EnsureAccount(ctx, tx, orgID, in.SiteID, ledger.ClearingCode(in.Provider), "Clearing: "+in.Provider, "asset", ledger.SubClearing, nil)
 		if err != nil {

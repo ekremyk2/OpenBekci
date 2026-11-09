@@ -19,6 +19,8 @@ import (
 var (
 	packIDRE = regexp.MustCompile(`^[a-z][a-z0-9]{0,23}$`)
 	nameRE   = regexp.MustCompile(`^[a-z0-9_]+$`)
+	// providerIDRE is the shape payment.method allows after "card:".
+	providerIDRE = regexp.MustCompile(`^[a-z][a-z0-9]*(\.[a-z0-9_]+)?$`)
 	// reservedIDs would clash with the core's own tables pack_enablement*, pack_goose or the instance's names.
 	reservedIDs = map[string]bool{"enablement": true, "site": true, "goose": true, "core": true, "default": true, "sdk": true}
 	// reservedSegments are the first path segments of /v1/orgs/{org}/packs/{id}/ the core serves itself.
@@ -204,6 +206,12 @@ func (r *registry) Services() sdk.Services { return r.svc }
 
 func (r *registry) RegisterPaymentProvider(p sdk.PaymentProvider) {
 	r.claim("payment provider", p.ID())
+	// the id becomes the payment method "card:<id>" and the clearing account code
+	// "1190.<id>": a shape the database check and the chart cannot take would fail
+	// at the first resident payment instead of at startup
+	if !providerIDRE.MatchString(p.ID()) {
+		r.fail(ErrInvalid, "payment provider id %q must be %q or %q followed by a dot and lower-case letters, digits and underscores", p.ID(), r.pack, r.pack)
+	}
 	r.c.PaymentProviders = append(r.c.PaymentProviders, p)
 }
 
@@ -336,6 +344,9 @@ func compileSchema(pack string, raw json.RawMessage) (*schemaInfo, error) {
 	if !ok || top["type"] != "object" {
 		return nil, fmt.Errorf(`the top level must be {"type": "object", ...}`)
 	}
+	if path := straySecret(doc, nil); path != "" {
+		return nil, fmt.Errorf(`%w: "x-secret" at %s is only honored on a top-level property; a nested secret would be stored and returned in clear text`, ErrInvalid, path)
+	}
 	info := &schemaInfo{raw: raw, secrets: map[string]bool{}}
 	props, _ := top["properties"].(map[string]any)
 	for name, p := range props {
@@ -356,6 +367,29 @@ func compileSchema(pack string, raw json.RawMessage) (*schemaInfo, error) {
 		return nil, err
 	}
 	return info, nil
+}
+
+// straySecret returns the path of an "x-secret" keyword anywhere but directly
+// on a top-level property of the schema ("" when there is none).
+func straySecret(node any, path []string) string {
+	switch n := node.(type) {
+	case map[string]any:
+		for k, v := range n {
+			if k == "x-secret" && (len(path) != 2 || path[0] != "properties") {
+				return "/" + strings.Join(path, "/")
+			}
+			if hit := straySecret(v, append(path[:len(path):len(path)], k)); hit != "" {
+				return hit
+			}
+		}
+	case []any:
+		for i, v := range n {
+			if hit := straySecret(v, append(path[:len(path):len(path)], fmt.Sprint(i))); hit != "" {
+				return hit
+			}
+		}
+	}
+	return ""
 }
 
 func (r *registry) RegisterMigrations(fsys fs.FS) {

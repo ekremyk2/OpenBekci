@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -224,17 +225,58 @@ func (h *Host) checkSettings(ctx context.Context, org uuid.UUID, p *Pack, scope 
 		return err
 	}
 	if v, ok := p.impl.(sdk.ValidateSettings); ok {
+		var secretKeys map[string]bool
+		if info := p.reg.schemas[scope.Kind]; info != nil {
+			secretKeys = info.secrets
+		}
 		return h.call(ctx, org, p.Manifest.ID, "ValidateSettings", func(ctx context.Context) error {
-			if err := v.ValidateSettings(ctx, scope, clear); err != nil {
-				if errors.Is(err, sdk.ErrCredentials) || errors.Is(err, sdk.ErrRejected) {
-					return err
-				}
-				return problem.Wrap(422, problem.CodeValidationFailed, err.Error(), err)
+			err := v.ValidateSettings(ctx, scope, clear)
+			if err == nil {
+				return nil
 			}
-			return nil
+			// the text of this error reaches the admin's browser and the logs: a pack that
+			// echoes a credential (a failed request URL, a quoted value) must not leak it
+			msg := redactSecrets(err.Error(), clear, secretKeys)
+			switch {
+			case errors.Is(err, sdk.ErrCredentials):
+				return &sanitizedError{msg: msg, is: sdk.ErrCredentials}
+			case errors.Is(err, sdk.ErrRejected):
+				return &sanitizedError{msg: msg, is: sdk.ErrRejected}
+			}
+			return problem.New(422, problem.CodeValidationFailed, msg)
 		})
 	}
 	return nil
+}
+
+// sanitizedError carries a redacted message and matches one SDK sentinel; the
+// pack's original error (whose text may hold a secret) is dropped.
+type sanitizedError struct {
+	msg string
+	is  error
+}
+
+func (e *sanitizedError) Error() string { return e.msg }
+func (e *sanitizedError) Unwrap() error { return e.is }
+
+// redactSecrets replaces every occurrence of a secret value of the document in msg.
+func redactSecrets(msg string, values map[string]any, secretKeys map[string]bool) string {
+	for k := range secretKeys {
+		v, ok := values[k]
+		if !ok || v == nil {
+			continue
+		}
+		var text string
+		if s, isStr := v.(string); isStr {
+			text = s
+		} else if raw, err := json.Marshal(v); err == nil {
+			text = string(raw)
+		}
+		if text != "" {
+			msg = strings.ReplaceAll(msg, text, "[redacted]")
+		}
+	}
+	return msg
 }
 
 func diffKeys(before, after map[string]any, secretsBefore, secretsAfter []string) audit.Changes {
@@ -299,7 +341,9 @@ func (h *Host) Enable(ctx context.Context, org uuid.UUID, id string, values map[
 	plainJSON, _ := json.Marshal(plain)
 	sealedJSON, _ := json.Marshal(sealed)
 	var out State
+	var undo enableUndo
 	err = h.cfg.DB.InTenantTx(ctx, org, func(tx pgx.Tx) error {
+		undo = enableUndo{}
 		if _, err := tx.Exec(ctx, `INSERT INTO pack_enablement (org_id, pack_id, enabled, settings, secrets, enabled_at)
 			VALUES ($1, $2, true, $3, $4, now())
 			ON CONFLICT (org_id, pack_id) DO UPDATE SET enabled = true, settings = EXCLUDED.settings, secrets = EXCLUDED.secrets,
@@ -315,9 +359,11 @@ func (h *Host) Enable(ctx context.Context, org uuid.UUID, id string, values map[
 			Diff: diffKeys(stored.plain, plain, secretNames(stored.sealed), secretNames(sealed))}); err != nil {
 			return err
 		}
-		if err := h.applyToOrgSites(ctx, tx, org, p); err != nil {
+		u, err := h.applyToOrgSites(ctx, tx, org, p)
+		if err != nil {
 			return err
 		}
+		undo = u
 		if !wasEnabled {
 			if err := h.Emit(ctx, tx, org, sdk.Event{Type: sdk.EventPackEnabled}); err != nil {
 				return err
@@ -331,8 +377,8 @@ func (h *Host) Enable(ctx context.Context, org uuid.UUID, id string, values map[
 	}
 	if oe, ok := p.impl.(sdk.OnEnable); ok && !wasEnabled {
 		if err := h.call(ctx, org, id, "OnEnable", func(ctx context.Context) error { return oe.OnEnable(ctx, sdk.ID(org.String())) }); err != nil {
-			// "a returned error aborts the enablement": withdraw it again
-			if werr := h.setEnabled(ctx, org, id, false, "pack.enable_failed"); werr != nil {
+			// "a returned error aborts the enablement": withdraw it again, presets and chart names included
+			if werr := h.withdrawEnable(context.WithoutCancel(ctx), org, id, stored, undo); werr != nil {
 				h.log.ErrorContext(ctx, "could not withdraw a failed pack enablement", "pack", id, "error", werr)
 			}
 			return State{}, err
@@ -353,13 +399,30 @@ func problemOf(err error) error {
 	return problem.Internal(err)
 }
 
-func (h *Host) setEnabled(ctx context.Context, org uuid.UUID, id string, enabled bool, action string) error {
+// withdrawEnable takes back an enablement whose OnEnable failed: the preset
+// values and chart names the enablement wrote go back to what the sites had
+// (a site that edited a key meanwhile keeps its edit), and the enablement row
+// returns to its earlier state: removed when there was none, otherwise
+// disabled with the settings it had before.
+func (h *Host) withdrawEnable(ctx context.Context, org uuid.UUID, id string, before storedSettings, undo enableUndo) error {
 	return h.cfg.DB.InTenantTx(ctx, org, func(tx pgx.Tx) error {
-		if _, err := tx.Exec(ctx, `UPDATE pack_enablement SET enabled = $3, disabled_at = CASE WHEN $3 THEN NULL ELSE now() END, version = version + 1, updated_at = now()
-			WHERE org_id = $1 AND pack_id = $2`, org, id, enabled); err != nil {
+		if err := h.undoPresets(ctx, tx, org, undo.presets); err != nil {
 			return err
 		}
-		return audit.Record(ctx, tx, audit.Event{OrgID: org, Action: action, TargetType: "pack", TargetID: packTarget(id)})
+		if err := h.undoChart(ctx, tx, org, undo.chart); err != nil {
+			return err
+		}
+		if before.found {
+			plain, _ := json.Marshal(before.plain)
+			sealed, _ := json.Marshal(before.sealed)
+			if _, err := tx.Exec(ctx, `UPDATE pack_enablement SET enabled = false, disabled_at = now(), settings = $3, secrets = $4, version = version + 1, updated_at = now()
+				WHERE org_id = $1 AND pack_id = $2`, org, id, plain, sealed); err != nil {
+				return err
+			}
+		} else if _, err := tx.Exec(ctx, `DELETE FROM pack_enablement WHERE org_id = $1 AND pack_id = $2`, org, id); err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: org, Action: "pack.enable_failed", TargetType: "pack", TargetID: packTarget(id)})
 	})
 }
 

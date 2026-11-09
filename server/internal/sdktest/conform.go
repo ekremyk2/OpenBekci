@@ -1,15 +1,22 @@
 package sdktest
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/openbekci/openbekci/sdk"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -62,6 +69,8 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		h := New(t, newPack(), WithSettings(fx.Settings))
 		unit := h.Unit("A-1")
 		h.PostCharge(unit, 10000)
+		// whatever the case did, the books must still be sound at its end
+		t.Cleanup(h.AssertLedgerInvariants)
 		return h, unit
 	}
 	paid := func(h *Harness, unit sdk.ID, txn string) sdk.WebhookRequest {
@@ -238,6 +247,63 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		}
 	})
 
+	t.Run("unknown_organization_and_provider_are_404_without_side_effects", func(t *testing.T) {
+		h, unit := boot(t)
+		req := paid(h, unit, "tx-ghost")
+		other := NewID()
+		// an organization nobody created
+		post404 := func(path string) {
+			t.Helper()
+			r := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(req.Body))
+			for k, vs := range req.Header {
+				for _, v := range vs {
+					r.Header.Add(k, v)
+				}
+			}
+			rec := httptest.NewRecorder()
+			h.Router.ServeHTTP(rec, r)
+			if rec.Code != http.StatusNotFound {
+				t.Fatalf("POST %s: status %d, want 404\n%s", path, rec.Code, rec.Body)
+			}
+		}
+		post404("/v1/orgs/" + string(other) + "/packs/" + h.PackID + "/payments/" + fx.Provider + "/webhook")
+		post404("/v1/orgs/" + string(h.Org) + "/packs/" + h.PackID + "/payments/" + h.PackID + ".nosuchprovider/webhook")
+		post404("/v1/orgs/" + string(h.Org) + "/packs/nosuchpack/payments/" + fx.Provider + "/webhook")
+		post404("/v1/orgs/not-a-uuid/packs/" + h.PackID + "/payments/" + fx.Provider + "/webhook")
+		if n := h.Int(`SELECT count(*) FROM payment WHERE provider_txn_id = 'tx-ghost'`); n != 0 {
+			t.Fatalf("a webhook for an unknown organization or provider recorded %d payments", n)
+		}
+	})
+
+	t.Run("lock_date_applies_to_provider_payments", func(t *testing.T) {
+		h, unit := boot(t)
+		// the fixture clock is the payment's day; lock it: a locked period takes no new postings, cash or card
+		h.Exec(`UPDATE site SET lock_date = $3 WHERE org_id = $1 AND id = $2`, h.Env.OrgID, h.Env.SiteID, h.Env.Clock.Now().Format("2006-01-02"))
+		if code := post(h, fx.Provider, paid(h, unit, "tx-locked")); code < 400 || code == http.StatusUnauthorized || code >= 500 {
+			t.Fatalf("a provider payment into a locked period: status %d, want a 4xx refusal", code)
+		}
+		if n := count(h, `provider_txn_id = 'tx-locked'`); n != 0 {
+			t.Fatalf("a locked period took %d provider payments", n)
+		}
+		if _, err := h.Payments.Record(h.Ctx(), h.Env.OrgID, payments.Input{SiteID: h.Env.SiteID, Debtor: billing.Debtor{UnitID: ptr(uuid.MustParse(string(unit))), Kind: "owner"}, Method: "bank_transfer",
+			Amount: money.New(100, "TRY"), ReceivedOn: h.Env.Clock.Now().Format("2006-01-02")}); err == nil {
+			t.Fatal("a cash-like payment into the locked period was accepted: the control of this case is broken")
+		}
+	})
+
+	t.Run("receipts_follow_the_cash_numbering", func(t *testing.T) {
+		h, unit := boot(t)
+		h.RecordPayment(unit, 100)
+		post(h, fx.Provider, paid(h, unit, "tx-r1"))
+		post(h, fx.Provider, paid(h, unit, "tx-r1"))
+		var n1, n2 string
+		h.Env.Query([]any{&n1}, `SELECT receipt_no FROM payment WHERE org_id = $1 AND provider_txn_id IS NULL`, h.Env.OrgID)
+		h.Env.Query([]any{&n2}, `SELECT receipt_no FROM payment WHERE org_id = $1 AND provider_txn_id = 'tx-r1'`, h.Env.OrgID)
+		if n1 == "" || n2 == "" || n1[:4] != n2[:4] || n2 <= n1 {
+			t.Fatalf("receipt numbers %q (cash) and %q (provider) must come from one gap-free sequence", n1, n2)
+		}
+	})
+
 	t.Run("checkout_and_status", func(t *testing.T) {
 		h, unit := boot(t)
 		co, err := h.Host.CreateCheckout(h.Ctx(), h.Env.OrgID, h.PackID, fx.Provider, sdk.CheckoutRequest{
@@ -387,3 +453,5 @@ func ConformStatementImporter(t *testing.T, newPack func() sdk.Pack, importerID 
 		}
 	})
 }
+
+func ptr(u uuid.UUID) *uuid.UUID { return &u }

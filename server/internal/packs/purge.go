@@ -24,6 +24,9 @@ type PurgeResult struct {
 // PurgeTables lists the pack's tenant tables (pack_<id>_* with an org_id
 // column, the goose table excluded), children before parents.
 func (h *Host) PurgeTables(ctx context.Context, tx pgx.Tx, packID string) ([]string, error) {
+	if reservedIDs[packID] {
+		return nil, fmt.Errorf("packs: %q is a reserved id, not a pack", packID)
+	}
 	prefix := "pack_" + packID + "_"
 	rows, err := tx.Query(ctx, `SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
 		WHERE n.nspname = 'public' AND c.relkind = 'r' AND c.relname LIKE $1 ESCAPE '\' AND c.relname <> $2
@@ -104,6 +107,11 @@ func (h *Host) Purge(ctx context.Context, org uuid.UUID, packID string) (PurgeRe
 	res := PurgeResult{Tables: map[string]int64{}}
 	if !packIDRE.MatchString(packID) {
 		return res, problem.Validation(problem.Field{Field: "pack", Code: "invalid_format"})
+	}
+	// a reserved id is not a pack: "enablement" would match the core's own
+	// pack_enablement_site table by prefix and wipe every pack's site settings
+	if reservedIDs[packID] {
+		return res, problem.Validation(problem.Field{Field: "pack", Code: "reserved"})
 	}
 	err := h.cfg.DB.InPlatformTx(ctx, func(tx pgx.Tx) error {
 		var enabled bool

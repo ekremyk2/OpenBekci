@@ -78,9 +78,9 @@ func jsonEqual(a, b any) bool {
 // value is still the one this pack wrote earlier ("pack default"). A key the
 // site edited, or another pack filled, is left alone. Which keys are pack
 // defaults is recorded in site_pack_default.
-func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) error {
+func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) ([]presetUndo, error) {
 	if !p.C.HasPresets() {
-		return nil
+		return nil, nil
 	}
 	var info sdk.SiteInfo
 	var settingsRaw []byte
@@ -88,19 +88,19 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	err := tx.QueryRow(ctx, `SELECT s.timezone, s.currency, s.settings, s.status, o.country_code FROM site s JOIN organization o ON o.id = s.org_id
 		WHERE s.org_id = $1 AND s.id = $2 FOR UPDATE OF s`, org, site).Scan(&info.Timezone, &info.Currency, &settingsRaw, &status, &info.CountryCode)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if status != "active" {
-		return nil
+		return nil, nil
 	}
 	info.ID, info.Org = sdk.ID(site.String()), sdk.ID(org.String())
 	values := h.presetValues(sdk.WithOrg(ctx, info.Org), p, info)
 	if len(values) == 0 {
-		return nil
+		return nil, nil
 	}
 	settings := map[string]any{}
 	if err := json.Unmarshal(settingsRaw, &settings); err != nil {
-		return err
+		return nil, err
 	}
 	type mark struct {
 		pack  string
@@ -109,14 +109,14 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	marks := map[string]mark{}
 	rows, err := tx.Query(ctx, `SELECT key, pack_id, value FROM site_pack_default WHERE org_id = $1 AND site_id = $2`, org, site)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for rows.Next() {
 		var k, pk string
 		var raw []byte
 		if err := rows.Scan(&k, &pk, &raw); err != nil {
 			rows.Close()
-			return err
+			return nil, err
 		}
 		var v any
 		_ = json.Unmarshal(raw, &v)
@@ -124,7 +124,7 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
-		return err
+		return nil, err
 	}
 	keys := make([]string, 0, len(values))
 	for k := range values {
@@ -132,6 +132,7 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	}
 	slices.Sort(keys)
 	changed := map[string]any{}
+	var undo []presetUndo
 	for _, k := range keys {
 		cur, has := settings[k]
 		m, marked := marks[k]
@@ -141,28 +142,30 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 		if has && jsonEqual(cur, values[k]) && marked {
 			continue // already up to date
 		}
+		u := presetUndo{site: site, key: k, wrote: values[k], prev: cur, hadSetting: has, markPack: m.pack, markValue: m.value, hadMark: marked}
+		undo = append(undo, u)
 		settings[k] = values[k]
 		changed[k] = values[k]
 		raw, _ := json.Marshal(values[k])
 		if _, err := tx.Exec(ctx, `INSERT INTO site_pack_default (org_id, site_id, key, pack_id, value) VALUES ($1,$2,$3,$4,$5)
 			ON CONFLICT (org_id, site_id, key) DO UPDATE SET pack_id = EXCLUDED.pack_id, value = EXCLUDED.value, applied_at = now()`, org, site, k, p.Manifest.ID, raw); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	if len(changed) == 0 {
-		return nil
+		return nil, nil
 	}
 	raw, _ := json.Marshal(settings)
 	if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, raw); err != nil {
-		return err
+		return nil, err
 	}
 	if lf, ok := changed[sdk.SettingLateFee].(map[string]any); ok {
 		if err := lateFeeDefault(ctx, tx, org, site, lf); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	diff, _ := audit.Diff("site_settings", nil, changed)
-	return audit.Record(ctx, tx, audit.Event{OrgID: org, SiteID: &site, Action: "pack.presets_applied", TargetType: "site", TargetID: site, Diff: diff})
+	return undo, audit.Record(ctx, tx, audit.Event{OrgID: org, SiteID: &site, Action: "pack.presets_applied", TargetType: "site", TargetID: site, Diff: diff})
 }
 
 // lateFeeDefault makes the site's automatic default late fee row (the one a
@@ -196,33 +199,63 @@ func lateFeeDefault(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, lf map[
 	return err
 }
 
-// renameChart renames the site's system accounts by code from the pack's
-// ChartOfAccounts in the organization's default locale (packs localize names,
-// never structure).
-func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) error {
-	if len(p.C.Charts) == 0 {
-		return nil
-	}
-	// the chart is created on first money use otherwise, after this hook ran: create it now so the names apply
-	if _, err := ledger.EnsureChart(ctx, tx, org, site); err != nil {
-		return err
-	}
-	var locale string
-	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, org).Scan(&locale); err != nil {
-		return err
-	}
-	for _, c := range p.C.Charts {
-		var names map[string]string
-		if err := safe(p.Manifest.ID, "chart "+c.ID(), func() error { names = c.Names(locale); return nil }); err != nil {
-			h.log.WarnContext(ctx, "pack chart names skipped", "pack", p.Manifest.ID, "error", err)
-			continue
+// presetUndo records what applyPresets changed for one key of one site, so a
+// failed enablement can put the site back exactly as it was.
+type presetUndo struct {
+	site       uuid.UUID
+	key        string
+	wrote      any
+	hadSetting bool
+	prev       any
+	hadMark    bool
+	markPack   string
+	markValue  any
+}
+
+// undoPresets reverts applyPresets changes in a new transaction's tx: a key goes
+// back to its earlier value (or is removed) only while it still holds the value
+// the enablement wrote; a site edited in between keeps its edit.
+func (h *Host) undoPresets(ctx context.Context, tx pgx.Tx, org uuid.UUID, undo []presetUndo) error {
+	bySite := map[uuid.UUID][]presetUndo{}
+	var order []uuid.UUID
+	for _, u := range undo {
+		if _, ok := bySite[u.site]; !ok {
+			order = append(order, u.site)
 		}
-		for code, name := range names {
-			if name == "" {
-				continue
+		bySite[u.site] = append(bySite[u.site], u)
+	}
+	for _, site := range order {
+		var raw []byte
+		if err := tx.QueryRow(ctx, `SELECT settings FROM site WHERE org_id = $1 AND id = $2 FOR UPDATE`, org, site).Scan(&raw); err != nil {
+			return err
+		}
+		settings := map[string]any{}
+		if err := json.Unmarshal(raw, &settings); err != nil {
+			return err
+		}
+		changed := false
+		for _, u := range bySite[site] {
+			if cur, ok := settings[u.key]; ok && jsonEqual(cur, u.wrote) {
+				if u.hadSetting {
+					settings[u.key] = u.prev
+				} else {
+					delete(settings, u.key)
+				}
+				changed = true
 			}
-			if _, err := tx.Exec(ctx, `UPDATE account SET name = $4, updated_at = now(), version = version + 1
-				WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system AND name <> $4`, org, site, code, name); err != nil {
+			if u.hadMark {
+				mv, _ := json.Marshal(u.markValue)
+				if _, err := tx.Exec(ctx, `INSERT INTO site_pack_default (org_id, site_id, key, pack_id, value) VALUES ($1,$2,$3,$4,$5)
+					ON CONFLICT (org_id, site_id, key) DO UPDATE SET pack_id = EXCLUDED.pack_id, value = EXCLUDED.value`, org, site, u.key, u.markPack, mv); err != nil {
+					return err
+				}
+			} else if _, err := tx.Exec(ctx, `DELETE FROM site_pack_default WHERE org_id = $1 AND site_id = $2 AND key = $3`, org, site, u.key); err != nil {
+				return err
+			}
+		}
+		if changed {
+			out, _ := json.Marshal(settings)
+			if _, err := tx.Exec(ctx, `UPDATE site SET settings = $3, version = version + 1, updated_at = now() WHERE org_id = $1 AND id = $2`, org, site, out); err != nil {
 				return err
 			}
 		}
@@ -230,34 +263,112 @@ func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, 
 	return nil
 }
 
+// chartUndo records one account rename so a failed enablement can revert it.
+type chartUndo struct {
+	site     uuid.UUID
+	code     string
+	old, new string
+}
+
+// renameChart renames the site's system accounts by code from the pack's
+// ChartOfAccounts in the organization's default locale (packs localize names,
+// never structure). It returns what it renamed.
+func (h *Host) renameChart(ctx context.Context, tx pgx.Tx, org, site uuid.UUID, p *Pack) ([]chartUndo, error) {
+	if len(p.C.Charts) == 0 {
+		return nil, nil
+	}
+	// the chart is created on first money use otherwise, after this hook ran: create it now so the names apply
+	if _, err := ledger.EnsureChart(ctx, tx, org, site); err != nil {
+		return nil, err
+	}
+	var locale string
+	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, org).Scan(&locale); err != nil {
+		return nil, err
+	}
+	var undo []chartUndo
+	for _, c := range p.C.Charts {
+		var names map[string]string
+		if err := safe(p.Manifest.ID, "chart "+c.ID(), func() error { names = c.Names(locale); return nil }); err != nil {
+			h.log.WarnContext(ctx, "pack chart names skipped", "pack", p.Manifest.ID, "error", err)
+			continue
+		}
+		codes := make([]string, 0, len(names))
+		for code := range names {
+			codes = append(codes, code)
+		}
+		slices.Sort(codes)
+		for _, code := range codes {
+			name := names[code]
+			if name == "" {
+				continue
+			}
+			var old string
+			err := tx.QueryRow(ctx, `SELECT name FROM account WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system AND name <> $4 FOR UPDATE`, org, site, code, name).Scan(&old)
+			if errors.Is(err, pgx.ErrNoRows) {
+				continue
+			}
+			if err != nil {
+				return nil, err
+			}
+			if _, err := tx.Exec(ctx, `UPDATE account SET name = $4, updated_at = now(), version = version + 1
+				WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system`, org, site, code, name); err != nil {
+				return nil, err
+			}
+			undo = append(undo, chartUndo{site: site, code: code, old: old, new: name})
+		}
+	}
+	return undo, nil
+}
+
+func (h *Host) undoChart(ctx context.Context, tx pgx.Tx, org uuid.UUID, undo []chartUndo) error {
+	for _, u := range undo {
+		if _, err := tx.Exec(ctx, `UPDATE account SET name = $5, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND site_id = $2 AND code = $3 AND is_system AND name = $4`, org, u.site, u.code, u.new, u.old); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// enableUndo is everything an enablement changed outside its own rows.
+type enableUndo struct {
+	presets []presetUndo
+	chart   []chartUndo
+}
+
 // applyToOrgSites applies presets and chart names of an enabled pack to every active site of the organization.
-func (h *Host) applyToOrgSites(ctx context.Context, tx pgx.Tx, org uuid.UUID, p *Pack) error {
+func (h *Host) applyToOrgSites(ctx context.Context, tx pgx.Tx, org uuid.UUID, p *Pack) (enableUndo, error) {
+	var undo enableUndo
 	rows, err := tx.Query(ctx, `SELECT id FROM site WHERE org_id = $1 AND status = 'active' ORDER BY id`, org)
 	if err != nil {
-		return err
+		return undo, err
 	}
 	var sites []uuid.UUID
 	for rows.Next() {
 		var s uuid.UUID
 		if err := rows.Scan(&s); err != nil {
 			rows.Close()
-			return err
+			return undo, err
 		}
 		sites = append(sites, s)
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
-		return err
+		return undo, err
 	}
 	for _, s := range sites {
-		if err := h.applyPresets(ctx, tx, org, s, p); err != nil {
-			return fmt.Errorf("apply presets of pack %s to site %s: %w", p.Manifest.ID, s, err)
+		pu, err := h.applyPresets(ctx, tx, org, s, p)
+		if err != nil {
+			return undo, fmt.Errorf("apply presets of pack %s to site %s: %w", p.Manifest.ID, s, err)
 		}
-		if err := h.renameChart(ctx, tx, org, s, p); err != nil {
-			return err
+		undo.presets = append(undo.presets, pu...)
+		cu, err := h.renameChart(ctx, tx, org, s, p)
+		if err != nil {
+			return undo, err
 		}
+		undo.chart = append(undo.chart, cu...)
 	}
-	return nil
+	return undo, nil
 }
 
 // SiteCreated implements tenancy.SiteHook: for a new site the presets of the
@@ -295,11 +406,11 @@ func (h *Host) SiteCreated(ctx context.Context, tx pgx.Tx, org, site uuid.UUID) 
 			continue
 		}
 		if len(p.Manifest.Countries) == 0 || slices.Contains(p.Manifest.Countries, country) {
-			if err := h.applyPresets(ctx, tx, org, site, p); err != nil {
+			if _, err := h.applyPresets(ctx, tx, org, site, p); err != nil {
 				return err
 			}
 		}
-		if err := h.renameChart(ctx, tx, org, site, p); err != nil {
+		if _, err := h.renameChart(ctx, tx, org, site, p); err != nil {
 			return err
 		}
 	}

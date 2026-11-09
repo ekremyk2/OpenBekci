@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -68,22 +69,67 @@ func (d tenantDB) InTx(ctx context.Context, fn func(sdk.Tx) error) error {
 
 type txAdapter struct{ tx pgx.Tx }
 
+// errForbiddenSQL is returned for statements that would step out of the
+// tenant transaction the host opened.
+var errForbiddenSQL = errors.New("packs: this statement is not allowed in a pack transaction")
+
+// guardSQL refuses statements that change the transaction's tenant context or
+// session state (set_config, SET, RESET, the app.org_id setting, transaction
+// control). Row-level security is what isolates tenants, and it keys on the
+// app.org_id setting the host sets: a pack must not be able to rewrite it by
+// accident. This is a guard against mistakes, not a sandbox: packs are trusted
+// code compiled into the server.
+func guardSQL(sql string) error {
+	l := strings.ToLower(sql)
+	if strings.Contains(l, "app.org_id") || strings.Contains(l, "set_config") || strings.Contains(l, "current_setting('app.") {
+		return errForbiddenSQL
+	}
+	first, _, _ := strings.Cut(strings.TrimLeft(l, " \t\r\n;("), " ")
+	switch strings.TrimRight(first, ";") {
+	case "set", "reset", "begin", "commit", "rollback", "savepoint", "release", "start", "end", "abort", "prepare", "discard", "listen", "unlisten", "load":
+		return errForbiddenSQL
+	}
+	return nil
+}
+
 func (t txAdapter) Exec(ctx context.Context, sql string, args ...any) (int64, error) {
+	if err := guardSQL(sql); err != nil {
+		return 0, err
+	}
 	tag, err := t.tx.Exec(ctx, sql, args...)
 	return tag.RowsAffected(), err
 }
 
 func (t txAdapter) Query(ctx context.Context, sql string, args ...any) (sdk.Rows, error) {
+	if err := guardSQL(sql); err != nil {
+		return nil, err
+	}
 	rows, err := t.tx.Query(ctx, sql, args...)
 	if err != nil {
 		return nil, err
 	}
-	return rows, nil
+	return rowsAdapter{rows}, nil
 }
 
 func (t txAdapter) QueryRow(ctx context.Context, sql string, args ...any) sdk.Row {
+	if err := guardSQL(sql); err != nil {
+		return errRow{err}
+	}
 	return rowAdapter{t.tx.QueryRow(ctx, sql, args...)}
 }
+
+// rowsAdapter exposes only the sdk.Rows methods: a pgx.Rows would let a pack
+// reach the connection with a type assertion (Rows.Conn).
+type rowsAdapter struct{ r pgx.Rows }
+
+func (r rowsAdapter) Next() bool             { return r.r.Next() }
+func (r rowsAdapter) Scan(dest ...any) error { return r.r.Scan(dest...) }
+func (r rowsAdapter) Err() error             { return r.r.Err() }
+func (r rowsAdapter) Close()                 { r.r.Close() }
+
+type errRow struct{ err error }
+
+func (r errRow) Scan(...any) error { return r.err }
 
 type rowAdapter struct{ r pgx.Row }
 
