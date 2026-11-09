@@ -5356,7 +5356,13 @@ schemas:
         format: date
       kind:
         type: string
-        description: Open enum.
+        description: |
+          Open enum. `declared_payment` is a payment the resident declared that a manager has not confirmed yet (`pending_declared`):
+          a memo line that moves no balance (`debit`, `credit`, `principal` and `late_fee` are zero, `balance` is the running
+          balance of the line before it), carrying the amount in `declared_amount` and the payment in `ref_type` `payment` / `ref_id`.
+          Once confirmed it is replaced by an ordinary `payment` line.
+          `fee` is a booked late fee line (`late_fee` is kept for older clients) and `waiver` a waived fee; the late fee accrued up to today and not booked yet
+          is one `fee` line with `accrued: true` (its amount is already in `balance` and `closing_balance`; never add it again).
         enum:
           - opening
           - charge
@@ -5366,6 +5372,9 @@ schemas:
           - refund
           - adjustment
           - reversal
+          - fee
+          - waiver
+          - declared_payment
         x-open-enum: true
       description:
         type: string
@@ -5399,6 +5408,13 @@ schemas:
         allOf:
           - $ref: ./common.yaml#/schemas/Money
         description: Running balance.
+      accrued:
+        type: boolean
+        description: True on the single `fee` line that is the late fee accrued to the end of the statement and not booked yet (M4).
+      declared_amount:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: "Only on `declared_payment` lines: the amount the resident declared."
   Statement:
     type: object
     description: "Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`."

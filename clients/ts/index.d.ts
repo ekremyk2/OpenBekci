@@ -397,6 +397,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update my profile
+         * @description **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes go through
+         *     `me.startContactChange`. Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
+         *     `version_conflict`. Returns the updated `user`, with its new `version`. The display name is the account's own: it wins over the
+         *     name of the linked person in `GET /v1/me`; an empty string clears it. The locale is a BCP 47 tag such as `tr` or `en`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        patch: operations["me.updateProfile"];
+        trace?: never;
+    };
     "/v1/auth/web-login-link:exchange": {
         parameters: {
             query?: never;
@@ -9441,8 +9466,10 @@ export interface components {
             slug: string;
             name: string;
             roles: components["schemas"]["RoleGrant"][];
-            /** @description Effective permissions in this organization, from the caller's active memberships and the role to permission matrix. */
+            /** @description Effective permissions in this organization from the caller's active role memberships and the role to permission matrix. Empty for a resident who holds no role; see `occupant_permissions`. */
             permissions: components["schemas"]["PermissionGrant"][];
+            /** @description Permissions the caller holds in this organization through a current unit occupancy (owner, tenant or household member, S3), as a portal user, each limited to the sites (`site_ids`) of the units they occupy. They are not role permissions and are never listed in `permissions`; a client gates resident screens (statements, declaring a payment, creating tickets) with this list and the staff screens with `permissions`. Narrowing to the caller's own unit and side still happens on the server (`occupancies[].side`, `may_see_money`). Former occupants appear in `occupancies` only; they hold the S7 read right, not these. */
+            occupant_permissions: components["schemas"]["PermissionGrant"][];
             /** @description Sites of the organization the caller can see through a membership or an occupancy. */
             sites: components["schemas"]["MeSite"][];
             /**
@@ -9577,12 +9604,20 @@ export interface components {
         MeUser: {
             /** Format: uuid */
             id: string;
-            /** @description The name of the person linked to the account (first organization), else the email or phone. */
+            /** @description The account's own display name when set (`PATCH /v1/me/profile`), else the name of the person linked to the account (first organization), else the email or phone. */
             display_name: string;
             email: string | null;
             phone: string | null;
             locale: string;
             is_platform_admin: boolean;
+            /** @description Send it in `If-Match` of `PATCH /v1/me/profile`. Grows with every change of the account (profile, password). */
+            version: number;
+        };
+        ProfileUpdate: {
+            /** @description The account's display name; an empty string clears it. */
+            display_name?: string;
+            /** @description BCP 47 language tag, for example `tr` or `en`. */
+            locale?: string;
         };
         /**
          * @description An effective permission. Without `site_ids` and `block_ids` it holds
@@ -17885,10 +17920,13 @@ export interface components {
             /** Format: date */
             date: string;
             /**
-             * @description Open enum.
+             * @description Open enum. `declared_payment` is a payment the resident declared that a manager has not confirmed yet (`pending_declared`):
+             *     a memo line that moves no balance (`debit`, `credit`, `principal` and `late_fee` are zero, `balance` is the running
+             *     balance of the line before it), carrying the amount in `declared_amount` and the payment in `ref_type` `payment` / `ref_id`.
+             *     Once confirmed it is replaced by an ordinary `payment` line.
              * @enum {string}
              */
-            kind: "opening" | "charge" | "payment" | "late_fee" | "credit" | "refund" | "adjustment" | "reversal";
+            kind: "opening" | "charge" | "payment" | "late_fee" | "credit" | "refund" | "adjustment" | "reversal" | "declared_payment";
             description: string;
             ref_type: string | null;
             /** Format: uuid */
@@ -17905,6 +17943,8 @@ export interface components {
             credit: components["schemas"]["Money"];
             /** @description Running balance. */
             balance: components["schemas"]["Money"];
+            /** @description Only on `declared_payment` lines: the amount the resident declared. */
+            declared_amount?: components["schemas"]["Money"];
         };
         /**
          * @example {
@@ -20711,6 +20751,38 @@ export interface operations {
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.updateProfile": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeUser"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

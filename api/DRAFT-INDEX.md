@@ -457,7 +457,7 @@ Total: 445 new operations, plus the 15 already served (instance, auth, me) which
 | platform | `platform.getHealth` | `GET /v1/platform/health` | 0.1 | `platform.read` | - | not yet served |
 | platform | `platform.getBackupStatus` | `GET /v1/platform/backup-status` | 0.1 | `platform.read` | - | not yet served |
 | platform | `platform.listJobs` | `GET /v1/platform/jobs` | 1.0 | `platform.read` | - | not yet served |
-| me | `me.updateProfile` | `PATCH /v1/me/profile` | 0.1 | public / self | optional | not yet served |
+| me | `me.updateProfile` | `PATCH /v1/me/profile` | 0.1 | `sessions.manage_own` | optional | served |
 | me | `me.startContactChange` | `POST /v1/me/contact-changes` | 0.1 | public / self | optional | not yet served |
 | me | `me.confirmContactChange` | `POST /v1/me/contact-changes/{change_id}:confirm` | 0.1 | public / self | optional | not yet served |
 | auth | `auth.requestPasswordReset` | `POST /v1/auth/password-reset` | 0.1 | public / self | optional | not yet served |

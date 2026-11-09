@@ -336,6 +336,38 @@ func (s *apiServer) permissionGrants(o identity.OrgAccess) []gen.PermissionGrant
 	return out
 }
 
+// occupantPermissionGrants lists the portal permissions the caller holds in one
+// organization through current occupancies (the Resolver's occupantGrants, at the
+// site of each unit), so a client can gate resident screens without guessing.
+func (s *apiServer) occupantPermissionGrants(orgID uuid.UUID, occs []identity.MeOccupancy) []gen.PermissionGrant {
+	out := []gen.PermissionGrant{}
+	if s.resolver == nil {
+		return out
+	}
+	reg := s.resolver.Registry()
+	var grants []authz.Grant
+	seen := map[[2]string]bool{}
+	for _, o := range occs {
+		if o.OrgID != orgID || !o.Current {
+			continue
+		}
+		for _, perm := range reg.OccupantPermissions(authz.OccupancyKind(o.Kind)) {
+			k := [2]string{string(perm), o.SiteID.String()}
+			if seen[k] {
+				continue
+			}
+			seen[k] = true
+			site := o.SiteID
+			grants = append(grants, authz.Grant{Permission: perm, ScopeType: authz.ScopeSite, ScopeID: &site, FromOccupancy: true})
+		}
+	}
+	for _, ps := range authz.Summarize(grants) {
+		ids := ps.SiteIDs
+		out = append(out, gen.PermissionGrant{Permission: gen.Permission(ps.Permission), SiteIds: &ids})
+	}
+	return out
+}
+
 // requireAccount checks an account permission (me.read, sessions.manage_own):
 // held by every authenticated caller as an instance grant, so it answers 401
 // for an anonymous one and 403 only if the grant is missing. Without a
@@ -376,16 +408,17 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 		}
 		orgs = append(orgs, gen.OrgAccess{
 			Id: o.ID, Slug: o.Slug, Name: o.Name, Roles: roles,
-			DefaultLocale: o.DefaultLocale,
-			Permissions:   s.permissionGrants(o),
-			Sites:         meSites(o.Sites),
-			PersonId:      nullUUID(o.PersonID),
+			DefaultLocale:       o.DefaultLocale,
+			Permissions:         s.permissionGrants(o),
+			OccupantPermissions: s.occupantPermissionGrants(o.ID, me.Occupancies),
+			Sites:               meSites(o.Sites),
+			PersonId:            nullUUID(o.PersonID),
 		})
 	}
 	return gen.MeGet200JSONResponse(gen.Me{
 		User: gen.MeUser{
 			Id: me.User.ID, DisplayName: me.DisplayName, Email: nullStr(me.User.Email), Phone: nullStr(me.User.Phone),
-			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin,
+			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin, Version: me.User.Version,
 		},
 		Organizations: orgs,
 		Occupancies:   meOccupancies(me.Occupancies),
@@ -393,6 +426,43 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			AppLockRequired:     false,
 			ReauthWindowMinutes: int64(svc.ReauthWindow() / time.Minute),
 		},
+	}), nil
+}
+
+func (s *apiServer) MeUpdateProfile(ctx context.Context, req gen.MeUpdateProfileRequestObject) (gen.MeUpdateProfileResponseObject, error) {
+	svc, err := s.ident()
+	if err != nil {
+		return nil, err
+	}
+	p, err := principal(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
+		return nil, err
+	}
+	if req.Body == nil {
+		return nil, hasBody(true)
+	}
+	version, err := ifMatchVersion(&req.Params.IfMatch)
+	if err != nil {
+		return nil, err
+	}
+	if req.Body.DisplayName == nil && req.Body.Locale == nil {
+		return nil, problem.Validation(problem.Field{Field: "display_name", Code: "required"})
+	}
+	u, err := svc.UpdateProfile(ctx, p.UserID, version, identity.ProfileUpdate{DisplayName: req.Body.DisplayName, Locale: req.Body.Locale})
+	if err != nil {
+		return nil, err
+	}
+	// the name GET /v1/me would show: the account's own, else the linked person's
+	me, err := svc.Me(ctx, p.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return gen.MeUpdateProfile200JSONResponse(gen.MeUser{
+		Id: u.ID, DisplayName: me.DisplayName, Email: nullStr(u.Email), Phone: nullStr(u.Phone),
+		Locale: u.Locale, IsPlatformAdmin: u.IsPlatformAdmin, Version: u.Version,
 	}), nil
 }
 

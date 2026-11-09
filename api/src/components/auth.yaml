@@ -313,13 +313,14 @@ schemas:
       - phone
       - locale
       - is_platform_admin
+      - version
     properties:
       id:
         type: string
         format: uuid
       display_name:
         type: string
-        description: The name of the person linked to the account (first organization), else the email or phone.
+        description: The account's own display name when set (`PATCH /v1/me/profile`), else the name of the person linked to the account (first organization), else the email or phone.
       email:
         type: string
         nullable: true
@@ -330,6 +331,9 @@ schemas:
         type: string
       is_platform_admin:
         type: boolean
+      version:
+        type: integer
+        description: Send it in `If-Match` of `PATCH /v1/me/profile`. Grows with every change of the account (profile, password).
   PermissionGrant:
     type: object
     description: |
@@ -375,6 +379,7 @@ schemas:
       - default_locale
       - roles
       - permissions
+      - occupant_permissions
       - sites
       - person_id
     properties:
@@ -393,7 +398,13 @@ schemas:
           $ref: "#/schemas/RoleGrant"
       permissions:
         type: array
-        description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
+        description: Effective permissions in this organization from the caller's active role memberships and the role to permission matrix. Empty for a resident who holds no role; see `occupant_permissions`.
+        items:
+          $ref: "#/schemas/PermissionGrant"
+      occupant_permissions:
+        type: array
+        description: |
+          Permissions the caller holds in this organization through a current unit occupancy (owner, tenant or household member, S3), as a portal user, each limited to the sites (`site_ids`) of the units they occupy. They are not role permissions and are never listed in `permissions`; a client gates resident screens (statements, declaring a payment, creating tickets) with this list and the staff screens with `permissions`. Narrowing to the caller's own unit and side still happens on the server (`occupancies[].side`, `may_see_money`). Former occupants appear in `occupancies` only; they hold the S7 read right, not these.
         items:
           $ref: "#/schemas/PermissionGrant"
       sites:
@@ -463,7 +474,7 @@ schemas:
         type: string
         format: date
         nullable: true
-        description: Null while the occupancy is current.
+        description: Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while the occupancy is current. A former occupant's money window ends the day before.
     example:
       id: 0192a3f0-1000-7000-8000-000000000005
       org_id: 0192a3f0-1000-7000-8000-000000000001

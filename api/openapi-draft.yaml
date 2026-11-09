@@ -24322,11 +24322,16 @@ paths:
   /v1/me/profile:
     patch:
       operationId: me.updateProfile
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: Update my profile
       description: |-
-        **Release 0.1.** Display name and locale. Contact changes go through `me.startContactChange`.
+        **Release 0.1.** Display name and locale of the signed-in account (`PATCH /v1/me/profile`). Contact changes go through
+        `me.startContactChange`. Send the `version` of `GET /v1/me` (`user.version`) in `If-Match`; a stale one is 409
+        `version_conflict`. Returns the updated `user`, with its new `version`. The display name is the account's own: it wins over the
+        name of the linked person in `GET /v1/me`; an empty string clears it. The locale is a BCP 47 tag such as `tr` or `en`.
 
-        Problems: `conflict` (409).
+        Problems: `version_conflict` (409), `validation_failed` (422).
       tags:
         - me
       security:
@@ -24334,6 +24339,8 @@ paths:
         - bearerAuth: []
       x-idempotent: optional
       x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
       requestBody:
         required: true
         content:
@@ -25632,6 +25639,7 @@ components:
         - default_locale
         - roles
         - permissions
+        - occupant_permissions
         - sites
         - person_id
       properties:
@@ -25650,7 +25658,13 @@ components:
             $ref: '#/components/schemas/RoleGrant'
         permissions:
           type: array
-          description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
+          description: Effective permissions in this organization from the caller's active role memberships and the role to permission matrix. Empty for a resident who holds no role; see `occupant_permissions`.
+          items:
+            $ref: '#/components/schemas/PermissionGrant'
+        occupant_permissions:
+          type: array
+          description: |
+            Permissions the caller holds in this organization through a current unit occupancy (owner, tenant or household member, S3), as a portal user, each limited to the sites (`site_ids`) of the units they occupy. They are not role permissions and are never listed in `permissions`; a client gates resident screens (statements, declaring a payment, creating tickets) with this list and the staff screens with `permissions`. Narrowing to the caller's own unit and side still happens on the server (`occupancies[].side`, `may_see_money`). Former occupants appear in `occupancies` only; they hold the S7 read right, not these.
           items:
             $ref: '#/components/schemas/PermissionGrant'
         sites:
@@ -25892,13 +25906,14 @@ components:
         - phone
         - locale
         - is_platform_admin
+        - version
       properties:
         id:
           type: string
           format: uuid
         display_name:
           type: string
-          description: The name of the person linked to the account (first organization), else the email or phone.
+          description: The account's own display name when set (`PATCH /v1/me/profile`), else the name of the person linked to the account (first organization), else the email or phone.
         email:
           type: string
           nullable: true
@@ -25909,6 +25924,9 @@ components:
           type: string
         is_platform_admin:
           type: boolean
+        version:
+          type: integer
+          description: Send it in `If-Match` of `PATCH /v1/me/profile`. Grows with every change of the account (profile, password).
     PermissionGrant:
       type: object
       description: |
@@ -29324,11 +29342,16 @@ components:
           nullable: true
     ProfileUpdate:
       type: object
+      minProperties: 1
       properties:
         display_name:
           type: string
+          maxLength: 200
+          description: The account's display name; an empty string clears it.
         locale:
           type: string
+          maxLength: 35
+          description: BCP 47 language tag, for example `tr` or `en`.
     ContactChangeCreate:
       type: object
       required:
@@ -34753,7 +34776,11 @@ components:
           format: date
         kind:
           type: string
-          description: Open enum.
+          description: |
+            Open enum. `declared_payment` is a payment the resident declared that a manager has not confirmed yet (`pending_declared`):
+            a memo line that moves no balance (`debit`, `credit`, `principal` and `late_fee` are zero, `balance` is the running
+            balance of the line before it), carrying the amount in `declared_amount` and the payment in `ref_type` `payment` / `ref_id`.
+            Once confirmed it is replaced by an ordinary `payment` line.
           enum:
             - opening
             - charge
@@ -34763,6 +34790,7 @@ components:
             - refund
             - adjustment
             - reversal
+            - declared_payment
           x-open-enum: true
         description:
           type: string
@@ -34796,6 +34824,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Running balance.
+        declared_amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: 'Only on `declared_payment` lines: the amount the resident declared.'
     Statement:
       type: object
       description: 'Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`.'

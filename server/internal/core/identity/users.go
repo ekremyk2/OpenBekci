@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -16,11 +18,11 @@ import (
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
-const userColumns = `id, email::text, phone, locale, status, is_platform_admin, password_hash IS NOT NULL`
+const userColumns = `id, email::text, phone, locale, status, is_platform_admin, password_hash IS NOT NULL, display_name, version`
 
 func scanUser(row pgx.Row) (User, error) {
 	var u User
-	err := row.Scan(&u.ID, &u.Email, &u.Phone, &u.Locale, &u.Status, &u.IsPlatformAdmin, &u.HasPassword)
+	err := row.Scan(&u.ID, &u.Email, &u.Phone, &u.Locale, &u.Status, &u.IsPlatformAdmin, &u.HasPassword, &u.DisplayName, &u.Version)
 	return u, err
 }
 
@@ -290,3 +292,67 @@ func isUniqueViolation(err error) bool {
 	var pg *pgconn.PgError
 	return errors.As(err, &pg) && pg.Code == "23505"
 }
+
+// ProfileUpdate is a change of the account's own profile; nil fields stay as they are.
+type ProfileUpdate struct {
+	DisplayName *string
+	Locale      *string
+}
+
+var localeRE = regexp.MustCompile(`^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$`)
+
+// UpdateProfile changes the display name and locale of the account (me.updateProfile).
+// version is the If-Match value: a stale one answers 409 version_conflict. An empty
+// display name clears it (GET /v1/me then falls back to the linked person's name).
+func (s *Service) UpdateProfile(ctx context.Context, userID uuid.UUID, version int, in ProfileUpdate) (User, error) {
+	var fields []problem.Field
+	var name *string
+	if in.DisplayName != nil {
+		n := strings.TrimSpace(*in.DisplayName)
+		switch {
+		case utf8.RuneCountInString(n) > 200:
+			fields = append(fields, problem.Field{Field: "display_name", Code: "too_long"})
+		case n != "":
+			name = &n
+		}
+	}
+	if in.Locale != nil && (len(*in.Locale) > 35 || !localeRE.MatchString(*in.Locale)) {
+		fields = append(fields, problem.Field{Field: "locale", Code: "invalid_value"})
+	}
+	if len(fields) > 0 {
+		return User{}, problem.Validation(fields...)
+	}
+	var out User
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		cur, err := scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+` FROM "user" WHERE id = $1 FOR UPDATE`, userID))
+		if err != nil {
+			return err
+		}
+		if cur.Version != version {
+			return errStaleProfile
+		}
+		dn, loc := cur.DisplayName, cur.Locale
+		if in.DisplayName != nil {
+			dn = name
+		}
+		if in.Locale != nil {
+			loc = *in.Locale
+		}
+		out, err = scanUser(tx.QueryRow(ctx, `UPDATE "user" SET display_name = $2, locale = $3, updated_at = $4, version = version + 1 WHERE id = $1 RETURNING `+userColumns, userID, dn, loc, s.now()))
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{Action: "user.profile_update", TargetType: "user", TargetID: userID})
+	})
+	switch {
+	case errors.Is(err, errStaleProfile):
+		return User{}, problem.New(409, problem.CodeVersionConflict, "the profile was changed elsewhere; reload and try again")
+	case errors.Is(err, pgx.ErrNoRows):
+		return User{}, problem.NotFound("no such user")
+	case err != nil:
+		return User{}, problem.Internal(fmt.Errorf("update profile: %w", err))
+	}
+	return out, nil
+}
+
+var errStaleProfile = errors.New("stale profile version")

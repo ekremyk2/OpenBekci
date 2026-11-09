@@ -257,6 +257,9 @@ type User struct {
 	Status          string
 	IsPlatformAdmin bool
 	HasPassword     bool
+	// DisplayName is the account's own display name; nil until set.
+	DisplayName *string
+	Version     int
 }
 
 // Meta describes the client of a request, stored with sessions and attempts.

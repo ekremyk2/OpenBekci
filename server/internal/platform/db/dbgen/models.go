@@ -1730,6 +1730,7 @@ type User struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+	DisplayName     pgtype.Text
 }
 
 type Vehicle struct {

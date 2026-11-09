@@ -290,6 +290,7 @@ schemas:
         type: string
         format: date
         nullable: true
+        description: Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
       created_at:
         type: string
         format: date-time
@@ -360,6 +361,7 @@ schemas:
         type: string
         format: date
         nullable: true
+        description: Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
   OccupancyUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -399,6 +401,7 @@ schemas:
         type: string
         format: date
         nullable: true
+        description: Exclusive end date, the first day the person no longer holds the occupancy (the move-out day); null while open. Money and ticket access of a former occupant covers the days before it.
   OccupancyList:
     type: object
     required:
@@ -1618,11 +1621,16 @@ schemas:
         nullable: true
   ProfileUpdate:
     type: object
+    minProperties: 1
     properties:
       display_name:
         type: string
+        maxLength: 200
+        description: The account's display name; an empty string clears it.
       locale:
         type: string
+        maxLength: 35
+        description: BCP 47 language tag, for example `tr` or `en`.
   ContactChangeCreate:
     type: object
     required:
