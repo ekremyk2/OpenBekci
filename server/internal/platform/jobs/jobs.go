@@ -5,6 +5,7 @@ package jobs
 import (
 	"context"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"log/slog"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/rivertype"
 )
 
 // Client is the River client type used throughout the server.
@@ -178,9 +180,10 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 	}
 
 	cfg := &river.Config{
-		Logger:   log,
-		Workers:  workers,
-		PollOnly: o.PollOnly,
+		Logger:     log,
+		Workers:    workers,
+		PollOnly:   o.PollOnly,
+		Middleware: []rivertype.Middleware{&obs.JobMiddleware{}},
 	}
 	if o.Work {
 		cfg.Queues = map[string]river.QueueConfig{

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"io"
 	"net/http"
 	"strings"
@@ -64,7 +65,7 @@ type netgsmResponse struct {
 func (n *Netgsm) Send(ctx context.Context, to, text string) (string, error) {
 	client := n.Client
 	if client == nil {
-		client = &http.Client{Timeout: 10 * time.Second}
+		client = &http.Client{Timeout: 10 * time.Second, Transport: obs.Transport(http.DefaultTransport)}
 	}
 	endpoint := n.BaseURL
 	if endpoint == "" {

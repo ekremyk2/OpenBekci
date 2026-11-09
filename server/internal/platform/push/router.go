@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/openbekci/openbekci/server/internal/platform/obs"
 	"io"
 	"log/slog"
 	"net"
@@ -95,8 +96,8 @@ func NewRouter(o Options) *Router {
 	if o.Transport != nil {
 		rt = o.Transport
 	}
-	r.relay = &http.Client{Timeout: o.Timeout, Transport: rt, CheckRedirect: noRedirect}
-	r.direct = &http.Client{Timeout: o.Timeout, CheckRedirect: noRedirect, Transport: directTransport(o.AllowPrivate)}
+	r.relay = &http.Client{Timeout: o.Timeout, Transport: obs.Transport(rt), CheckRedirect: noRedirect}
+	r.direct = &http.Client{Timeout: o.Timeout, CheckRedirect: noRedirect, Transport: obs.Transport(directTransport(o.AllowPrivate))}
 	return r
 }
 
@@ -143,6 +144,9 @@ func (r *Router) Send(ctx context.Context, msgs []Message) ([]Result, error) {
 				out[i] = res[j]
 			}
 		}
+	}
+	for _, x := range out {
+		obs.Push(string(x.Outcome))
 	}
 	return out, nil
 }
