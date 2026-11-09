@@ -157,10 +157,10 @@ func TestTRCheckoutEndToEndInBothMerchantModes(t *testing.T) {
 	}
 }
 
-// Organization mode with two sites: the provider reports no per-payment ids (the daily report carries iyzico's
-// payment id, the core keys payments by token), so the organization payout is posted to the reporting site whole.
-// The books still balance, a replay posts nothing, and the sites' clearing accounts net out across the organization.
-func TestTROrganizationPayoutWithoutTxnIDsFallsBackToTheReportingSite(t *testing.T) {
+// Organization mode with two sites: the daily report carries iyzico's payment id, the pack maps it back to the checkout tokens,
+// so the core splits the one organization payout per site (each site receives the net of its own payments).
+// A replay posts nothing and every clearing account is back to zero.
+func TestTROrganizationPayoutIsSplitPerSite(t *testing.T) {
 	e, fake := newTRCheckoutEnv(t, sdk.MerchantOrganization)
 	site2, unit2 := e.secondSite()
 	e.charge("owner", 40000, "site 1 dues")
@@ -190,14 +190,14 @@ func TestTROrganizationPayoutWithoutTxnIDsFallsBackToTheReportingSite(t *testing
 	}
 	// the money of an organization payout is client money (the organization's account holds it), not a site's bank
 	b1, b2 := e.bal(e.Env.SiteID, ledger.ClientMoneyCode), e.bal(site2, ledger.ClientMoneyCode)
-	if b1+b2 != 38800+24250 || (b1 != 0 && b2 != 0) {
-		t.Fatalf("client money = %d and %d: the whole payout (63050) goes to the one reporting site", b1, b2)
+	if b1 != 38800 || b2 != 24250 {
+		t.Fatalf("client money = %d and %d, want 38800 and 24250: the payout is split per site", b1, b2)
 	}
 	if e.bal(e.Env.SiteID, "1100")+e.bal(site2, "1100") != 0 {
 		t.Fatal("the organization's payout reached a site bank account")
 	}
-	if c1c, c2c := e.bal(e.Env.SiteID, "1190.tr.iyzico"), e.bal(site2, "1190.tr.iyzico"); c1c+c2c != 0 {
-		t.Fatalf("clearing across the sites = %d, want 0", c1c+c2c)
+	if c1c, c2c := e.bal(e.Env.SiteID, "1190.tr.iyzico"), e.bal(site2, "1190.tr.iyzico"); c1c != 0 || c2c != 0 {
+		t.Fatalf("clearing = %d and %d, want 0 each", c1c, c2c)
 	}
 	if posted, _, _ := e.chk.SyncSettlements(e.Ctx(), today(), today()); posted != 0 {
 		t.Fatalf("a replay posted %d", posted)

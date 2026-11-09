@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -161,7 +162,7 @@ func (pr *iyzico) CreateCheckout(ctx context.Context, req sdk.CheckoutRequest) (
 	if err != nil {
 		return sdk.Checkout{}, err
 	}
-	acct := account{Site: req.Target.SiteID, Merchant: merchantOf(req.MerchantOfRecord)}
+	acct := account{Site: req.Target.SiteID, Merchant: merchantOf(req.MerchantOfRecord), Basket: basket}
 	cl, err := pr.client(ctx, acct.scope())
 	if err != nil {
 		return sdk.Checkout{}, err
@@ -226,6 +227,12 @@ func (pr *iyzico) retrieve(ctx context.Context, cl *iyzicoClient, token string) 
 	err := cl.do(ctx, http.MethodPost, pathCFDetail, nil, cfDetailRequest{Locale: "tr", Token: token}, &d)
 	if err != nil {
 		return d, mapErr(err)
+	}
+	// the daily report names payments by paymentId: keep the link to the token
+	if strings.EqualFold(d.PaymentStatus, "SUCCESS") && d.PaymentID != "" {
+		if err := pr.accounts().setPayment(ctx, token, d.PaymentID); err != nil {
+			return d, fmt.Errorf("remember the payment id: %w", err)
+		}
 	}
 	return d, nil
 }
@@ -300,12 +307,17 @@ func (pr *iyzico) HandleWebhook(ctx context.Context, req sdk.WebhookRequest) (sd
 	if req.Query.Get("m") == "" {
 		acct.Merchant = sdk.MerchantOrganization
 	}
+	var stored account
 	if token != "" {
-		if a, ok, err := pr.accounts().get(ctx, token); err != nil {
+		a, ok, err := pr.accounts().get(ctx, token)
+		if err != nil {
 			return sdk.WebhookResult{}, err
-		} else if ok {
-			acct = a
 		}
+		if !ok {
+			// only checkouts this pack created are honoured: nothing in the request can name a site or a unit to pay
+			return sdk.WebhookResult{}, fmt.Errorf("webhook: unknown checkout: %w", sdk.ErrInvalidSignature)
+		}
+		acct, stored = a, a
 	}
 	cl, err := pr.client(ctx, acct.scope())
 	if err != nil {
@@ -343,9 +355,10 @@ func (pr *iyzico) HandleWebhook(ctx context.Context, req sdk.WebhookRequest) (sd
 	var events []sdk.PaymentEvent
 	switch st.State {
 	case sdk.PaymentPaid:
-		target, err := decodeBasket(d.BasketID)
-		if err != nil {
-			return sdk.WebhookResult{}, err
+		// the target is the checkout's own, stored when it was created; iyzico's echo must agree
+		target, err := decodeBasket(stored.Basket)
+		if err != nil || d.BasketID != stored.Basket || target.SiteID != stored.Site {
+			return sdk.WebhookResult{}, fmt.Errorf("basket id %q is not the one of this checkout: %w", d.BasketID, sdk.ErrRejected)
 		}
 		// OccurredAt stays zero: the core books the payment on the day it is confirmed, at the site
 		events = append(events, sdk.PaymentEvent{Kind: sdk.EventKindPaid, ProviderTxnID: token, Target: target, Gross: st.Gross, Fee: st.Fee, Net: st.Net, Reference: d.ConversationID})
@@ -354,11 +367,12 @@ func (pr *iyzico) HandleWebhook(ctx context.Context, req sdk.WebhookRequest) (sd
 	}
 	resp := ok()
 	if redirect != "" {
-		u, _ := url.Parse(redirect)
-		qq := u.Query()
-		qq.Set("status", string(st.State))
-		u.RawQuery = qq.Encode()
-		resp = &sdk.HTTPResponse{Status: http.StatusSeeOther, Header: http.Header{"Location": {u.String()}}}
+		if u, err := url.Parse(redirect); err == nil {
+			qq := u.Query()
+			qq.Set("status", string(st.State))
+			u.RawQuery = qq.Encode()
+			resp = &sdk.HTTPResponse{Status: http.StatusSeeOther, Header: http.Header{"Location": {u.String()}}}
+		}
 	}
 	return sdk.WebhookResult{Events: events, Response: resp}, nil
 }
@@ -398,7 +412,11 @@ func (pr *iyzico) Refund(ctx context.Context, req sdk.RefundRequest) (sdk.Refund
 	res := sdk.RefundResult{ProviderRefundID: "iyz-refund-" + d.PaymentID, Amount: st.Gross}
 	// iyzico documents no idempotency for refunds: look at the payment first, so a replay is not an error
 	var det payDetailResponse
-	if err := cl.do(ctx, http.MethodGet, pathPayDetail, url.Values{"paymentId": {d.PaymentID}}, nil, &det); err == nil && refundedStatuses[strings.ToUpper(det.PaymentRefundStatus)] {
+	err = cl.do(ctx, http.MethodGet, pathPayDetail, url.Values{"paymentId": {d.PaymentID}}, nil, &det)
+	if errors.Is(err, sdk.ErrUnavailable) {
+		return sdk.RefundResult{}, err // not knowing whether it was refunded: never refund blind
+	}
+	if err == nil && refundedStatuses[strings.ToUpper(det.PaymentRefundStatus)] {
 		return res, nil
 	}
 	var out refundResponse
@@ -439,6 +457,7 @@ func (pr *iyzico) Settlements(ctx context.Context, req sdk.SettlementRequest) ([
 	for day := from; !day.After(to); day = day.AddDate(0, 0, 1) {
 		date := day.Format("2006-01-02")
 		var gross, fee, net int64
+		var paymentIDs []string
 		for page := 1; ; page++ {
 			var r dailyResponse
 			q := url.Values{"transactionDate": {date}, "page": {fmt.Sprint(page)}}
@@ -450,6 +469,9 @@ func (pr *iyzico) Settlements(ctx context.Context, req sdk.SettlementRequest) ([
 				switch strings.ToUpper(t.TransactionType) {
 				case "PAYMENT":
 					gross, net = gross+g, net+n
+					if t.PaymentID != "" {
+						paymentIDs = append(paymentIDs, t.PaymentID)
+					}
 					fee += g - n
 				case "REFUND", "CANCEL":
 					if g < 0 {
@@ -470,7 +492,14 @@ func (pr *iyzico) Settlements(ctx context.Context, req sdk.SettlementRequest) ([
 			continue
 		}
 		m := func(n int64) sdk.Money { return sdk.Money{Amount: n, Currency: "TRY"} }
-		out = append(out, sdk.Settlement{Ref: "iyzico-" + date, SettledOn: date, Gross: m(gross), Fee: m(fee), Net: m(net)})
+		// the report knows paymentIds, the core knows tokens: with the organization as merchant of record the core splits the net per site by these
+		var tokens []string
+		if len(paymentIDs) > 0 {
+			if tokens, err = pr.accounts().tokensOf(ctx, paymentIDs); err != nil {
+				return nil, err
+			}
+		}
+		out = append(out, sdk.Settlement{Ref: "iyzico-" + date, SettledOn: date, Gross: m(gross), Fee: m(fee), Net: m(net), ProviderTxnIDs: tokens})
 	}
 	return out, nil
 }

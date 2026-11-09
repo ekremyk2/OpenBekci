@@ -5,6 +5,7 @@ package tr
 import (
 	"context"
 	"errors"
+	"slices"
 	"testing"
 
 	"github.com/openbekci/openbekci/packs/tr/trtest"
@@ -19,6 +20,24 @@ func (m memAccounts) put(_ context.Context, token string, a account) error { m[t
 func (m memAccounts) get(_ context.Context, token string) (account, bool, error) {
 	a, ok := m[token]
 	return a, ok, nil
+}
+
+func (m memAccounts) setPayment(_ context.Context, token, paymentID string) error {
+	a := m[token]
+	a.PaymentID = paymentID
+	m[token] = a
+	return nil
+}
+
+func (m memAccounts) tokensOf(_ context.Context, paymentIDs []string) ([]string, error) {
+	var out []string
+	for tok, a := range m {
+		if a.PaymentID != "" && slices.Contains(paymentIDs, a.PaymentID) {
+			out = append(out, tok)
+		}
+	}
+	slices.Sort(out)
+	return out, nil
 }
 
 // The merchant-of-record mode decides whose iyzico account every call uses, and

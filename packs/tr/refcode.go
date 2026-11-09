@@ -22,7 +22,8 @@ import (
 // Constraints, because banks mangle descriptions: ASCII only after
 // folding, no spaces inside the code, the period always last (YYYY-MM).
 
-var refCodeRe = regexp.MustCompile(`^(.*?)[\s/-]*(\d{4})-(0[1-9]|1[0-2])\s*$`)
+// The period must stand alone: after a separator, or be the whole text ("12026-03" is not unit "1").
+var refCodeRe = regexp.MustCompile(`^(?:(.*?)[\s/-]+)?(\d{4})-(0[1-9]|1[0-2])\s*$`)
 
 // RefCode returns the reference text a resident writes for a unit and period
 // ("2026-03"). Spaces in the unit's door number are replaced by hyphens and

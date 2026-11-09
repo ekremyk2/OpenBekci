@@ -24,6 +24,11 @@ func migrations() (fs.FS, error) { return fs.Sub(migrationFiles, "migrations") }
 type account struct {
 	Site     sdk.ID
 	Merchant string
+	// Basket is the basketId the checkout was created with: the payment target
+	// of a checkout is read from here, never from what iyzico echoes back.
+	Basket string
+	// PaymentID is the iyzico paymentId once the payment was seen paid, else empty.
+	PaymentID string
 }
 
 func (a account) scope() sdk.Scope { return sdk.AccountScope(a.Merchant, a.Site) }
@@ -32,6 +37,10 @@ func (a account) scope() sdk.Scope { return sdk.AccountScope(a.Merchant, a.Site)
 type accountStore interface {
 	put(ctx context.Context, token string, a account) error
 	get(ctx context.Context, token string) (account, bool, error)
+	// setPayment remembers the iyzico paymentId of a paid checkout (the daily report names payments by it).
+	setPayment(ctx context.Context, token, paymentID string) error
+	// tokensOf returns the known checkout tokens of paymentIds.
+	tokensOf(ctx context.Context, paymentIDs []string) ([]string, error)
 }
 
 type sqlAccounts struct{ svc sdk.Services }
@@ -42,8 +51,8 @@ func (s sqlAccounts) put(ctx context.Context, token string, a account) error {
 		return sdk.ErrNoOrg
 	}
 	return s.svc.DB().InTx(ctx, func(tx sdk.Tx) error {
-		_, err := tx.Exec(ctx, `INSERT INTO pack_tr_iyzico_checkout (org_id, token, site_id, merchant) VALUES ($1::uuid, $2, $3::uuid, $4)
-			ON CONFLICT (org_id, token) DO NOTHING`, string(org), token, string(a.Site), a.Merchant)
+		_, err := tx.Exec(ctx, `INSERT INTO pack_tr_iyzico_checkout (org_id, token, site_id, merchant, basket_id) VALUES ($1::uuid, $2, $3::uuid, $4, $5)
+			ON CONFLICT (org_id, token) DO NOTHING`, string(org), token, string(a.Site), a.Merchant, a.Basket)
 		return err
 	})
 }
@@ -52,13 +61,40 @@ func (s sqlAccounts) get(ctx context.Context, token string) (account, bool, erro
 	var a account
 	var site string
 	err := s.svc.DB().InTx(ctx, func(tx sdk.Tx) error {
-		return tx.QueryRow(ctx, `SELECT site_id::text, merchant FROM pack_tr_iyzico_checkout WHERE token = $1`, token).Scan(&site, &a.Merchant)
+		return tx.QueryRow(ctx, `SELECT site_id::text, merchant, basket_id, COALESCE(payment_id, '') FROM pack_tr_iyzico_checkout WHERE token = $1`, token).Scan(&site, &a.Merchant, &a.Basket, &a.PaymentID)
 	})
 	if err == sdk.ErrNoRows {
 		return account{}, false, nil
 	}
 	a.Site = sdk.ID(site)
 	return a, err == nil, err
+}
+
+func (s sqlAccounts) setPayment(ctx context.Context, token, paymentID string) error {
+	return s.svc.DB().InTx(ctx, func(tx sdk.Tx) error {
+		_, err := tx.Exec(ctx, `UPDATE pack_tr_iyzico_checkout SET payment_id = $2 WHERE token = $1 AND payment_id IS DISTINCT FROM $2`, token, paymentID)
+		return err
+	})
+}
+
+func (s sqlAccounts) tokensOf(ctx context.Context, paymentIDs []string) ([]string, error) {
+	var out []string
+	err := s.svc.DB().InTx(ctx, func(tx sdk.Tx) error {
+		rows, err := tx.Query(ctx, `SELECT token FROM pack_tr_iyzico_checkout WHERE payment_id = ANY($1) ORDER BY token`, paymentIDs)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var t string
+			if err := rows.Scan(&t); err != nil {
+				return err
+			}
+			out = append(out, t)
+		}
+		return rows.Err()
+	})
+	return out, err
 }
 
 func (pr *iyzico) accounts() accountStore {

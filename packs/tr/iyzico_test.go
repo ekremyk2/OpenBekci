@@ -244,16 +244,19 @@ func TestWebhookFailedPendingAndForeignBasket(t *testing.T) {
 	if err != nil || len(res.Events) != 0 {
 		t.Fatalf("pending: %+v %v", res, err)
 	}
+	pr.p.accounts.(memAccounts)["tok-fail"] = account{Site: tSite, Merchant: sdk.MerchantOrganization, Basket: "tr1." + string(tSite) + "." + string(tUnit) + ".o"}
 	fake.Seed(trtest.IyzicoTxn{Token: "tok-fail", ConversationID: "c", BasketID: "tr1.a.b.o", Price: "1.00", Status: "FAILURE"})
 	res, err = pr.HandleWebhook(ctx, fake.Webhook("tok-fail"))
 	if err != nil || len(res.Events) != 1 || res.Events[0].Kind != sdk.EventKindFailed {
 		t.Fatalf("failed: %+v %v", res, err)
 	}
-	fake.Seed(trtest.IyzicoTxn{Token: "tok-foreign", PaymentID: "5", ConversationID: "c", BasketID: "some-other-shop-basket", Price: "1.00", Status: "SUCCESS", IyziFee: "0", IyziRate: "0"})
+	// the stored checkout names unit tUnit; iyzico echoing another basket (another unit, another site) is refused
+	pr.p.accounts.(memAccounts)["tok-foreign"] = account{Site: tSite, Merchant: sdk.MerchantOrganization, Basket: "tr1." + string(tSite) + "." + string(tUnit) + ".o"}
+	fake.Seed(trtest.IyzicoTxn{Token: "tok-foreign", PaymentID: "5", ConversationID: "c", BasketID: "tr1." + string(tSite) + ".99999999-9999-9999-9999-999999999999.o", Price: "1.00", Status: "SUCCESS", IyziFee: "0", IyziRate: "0"})
 	if _, err = pr.HandleWebhook(ctx, fake.Webhook("tok-foreign")); !errors.Is(err, sdk.ErrRejected) {
 		t.Fatalf("a payment of another basket must not be recorded: %v", err)
 	}
-	if _, err = pr.HandleWebhook(ctx, fake.CallbackFor("https://x.test/cb", "tok-unknown")); !errors.Is(err, sdk.ErrNotFound) {
+	if _, err = pr.HandleWebhook(ctx, fake.CallbackFor("https://x.test/cb", "tok-unknown")); !errors.Is(err, sdk.ErrInvalidSignature) {
 		t.Fatalf("unknown token: %v", err)
 	}
 	if _, err = pr.HandleWebhook(ctx, sdk.WebhookRequest{Body: []byte("garbage"), Header: http.Header{}}); !errors.Is(err, sdk.ErrRejected) {

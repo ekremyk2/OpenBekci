@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/openbekci/openbekci/sdk"
@@ -187,7 +188,7 @@ func (p *Pack) ValidateSettings(ctx context.Context, scope sdk.Scope, values map
 	if b("tr_payments_iyzico_enabled") && scope.Kind == sdk.ScopeOrg && s("tr_payments_iyzico_api_key") == "" {
 		return fmt.Errorf("iyzico is enabled: set the api key and the secret key")
 	}
-	if u := s("tr_payments_iyzico_callback_base_url"); u != "" && !strings.HasPrefix(u, "https://") && !strings.HasPrefix(u, "http://localhost") {
+	if u := s("tr_payments_iyzico_callback_base_url"); u != "" && !validCallbackBase(u) {
 		return fmt.Errorf("the public address of the server must be an https:// address (iyzico requires a valid certificate)")
 	}
 	if (s("tr_sms_iletimerkezi_username") == "") != (s("tr_sms_iletimerkezi_password") == "") {
@@ -212,3 +213,12 @@ func (p *Pack) ValidateSettings(ctx context.Context, scope sdk.Scope, values map
 }
 
 var _ sdk.ValidateSettings = (*Pack)(nil)
+
+// validCallbackBase accepts an https address, or plain http on the local machine only (development).
+func validCallbackBase(raw string) bool {
+	u, err := url.Parse(raw)
+	if err != nil || u.Host == "" {
+		return false
+	}
+	return u.Scheme == "https" || (u.Scheme == "http" && (u.Hostname() == "localhost" || u.Hostname() == "127.0.0.1"))
+}

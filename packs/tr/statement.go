@@ -326,6 +326,9 @@ func balances(lines []sdk.StatementLine) (opening, closing *int64) {
 		}
 	}
 	switch {
+	case asc && desc && len(lines) > 1:
+		// shortcut: payments that cancel out chain both ways, the order is unknowable without the dates; compare the dates if this matters
+		return nil, nil
 	case asc:
 		o, c := *lines[0].Balance-lines[0].Amount, *lines[len(lines)-1].Balance
 		return &o, &c
@@ -383,6 +386,9 @@ func parseMoney(s string) (int64, error) {
 		whole = strings.ReplaceAll(s, ".", "")
 	default:
 		whole, frac, _ = strings.Cut(s, ".")
+	}
+	if len(whole) > 15 { // no account holds that much, and whole*100 must not overflow
+		return 0, fmt.Errorf("%q is not an amount", orig)
 	}
 	if whole == "" && frac == "" {
 		return 0, fmt.Errorf("%q is not an amount", orig)
