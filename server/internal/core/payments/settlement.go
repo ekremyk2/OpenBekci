@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math/big"
 	"sort"
 
 	"github.com/google/uuid"
@@ -102,7 +103,7 @@ func (s *Service) RecordProviderSettlement(ctx context.Context, orgID uuid.UUID,
 		if err := providerLock(ctx, tx, orgID, "settlement", in.Provider, in.Ref); err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, `SELECT site_id, entry_id, net, merchant_of_record FROM provider_settlement WHERE org_id = $1 AND provider = $2 AND ref = $3 ORDER BY site_id`, orgID, in.Provider, in.Ref)
+		rows, err := tx.Query(ctx, `SELECT site_id, entry_id, net, merchant_of_record FROM provider_settlement WHERE org_id = $1 AND provider = $2 AND ref = $3 AND (merchant_of_record = 'organization' OR site_id = $4) ORDER BY site_id`, orgID, in.Provider, in.Ref, in.SiteID)
 		if err != nil {
 			return err
 		}
@@ -263,7 +264,9 @@ func splitByPayments(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, in Settlem
 		// the provider paid less than the payments it covers (a refund or an adjustment): scale down
 		var given int64
 		for _, site := range ids {
-			shares[site] = matched[site] * net / sum
+			// the product of two amounts can leave int64: scale in big integers (floor, so the shares never exceed net)
+			p := new(big.Int).Mul(big.NewInt(matched[site]), big.NewInt(net))
+			shares[site] = p.Div(p, big.NewInt(sum)).Int64()
 			given += shares[site]
 		}
 		shares[ids[0]] += net - given
