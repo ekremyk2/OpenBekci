@@ -11243,7 +11243,7 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             /** @description Card payment capabilities and the merchant of record of the site (release 0.4). */
-            payments: {
+            payments?: {
                 /** @description Whether "Pay by card" exists for the site; clients show it only when `available` is true. */
                 card: {
                     /** @description A payment provider of an enabled pack is available for the site. */
@@ -15155,7 +15155,7 @@ export interface components {
              * Format: int64
              * @description Moves whenever the payment changes status; send it as `If-Match` to refund a provider payment.
              */
-            version: number;
+            version?: number;
         };
         /**
          * @example {

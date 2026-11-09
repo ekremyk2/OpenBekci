@@ -116,7 +116,6 @@ schemas:
       - legal_preset
       - access
       - extra
-      - payments
       - version
     properties:
       version:

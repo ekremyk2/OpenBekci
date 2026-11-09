@@ -2703,7 +2703,6 @@ schemas:
       - bank_transaction_id
       - created_at
       - updated_at
-      - version
     properties:
       id:
         type: string
