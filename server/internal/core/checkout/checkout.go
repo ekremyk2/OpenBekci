@@ -611,11 +611,23 @@ func (s *Service) Get(ctx context.Context, org, checkoutID uuid.UUID) (Checkout,
 // reconcile asks the provider about a pending checkout.
 func (s *Service) reconcile(ctx context.Context, org uuid.UUID, c Checkout) (Checkout, error) {
 	now := s.cfg.Now()
-	if c.providerTxn != nil && s.cfg.Providers != nil && (c.lastPolled == nil || now.Sub(*c.lastPolled) >= pollEvery) {
-		_ = s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
-			_, err := tx.Exec(ctx, `UPDATE checkout SET last_polled_at = $3 WHERE org_id = $1 AND id = $2`, org, c.ID, now.UTC())
+	// The throttle is a claim in the database, taken with one conditional UPDATE: of any number of concurrent
+	// polls (of this process or another) only the one that moves last_polled_at asks the provider, so a client
+	// that polls in a loop cannot turn the poll into a flood of provider calls.
+	claimed := false
+	if c.providerTxn != nil && s.cfg.Providers != nil {
+		err := s.run(ctx, org, "checkout", func(tx pgx.Tx) error {
+			tag, err := tx.Exec(ctx, `UPDATE checkout SET last_polled_at = $3 WHERE org_id = $1 AND id = $2 AND status = 'pending'
+				AND (last_polled_at IS NULL OR last_polled_at <= $3::timestamptz - make_interval(secs => $4))`, org, c.ID, now.UTC(), pollEvery.Seconds())
+			claimed = tag.RowsAffected() == 1
 			return err
 		})
+		if err != nil {
+			s.cfg.Log.WarnContext(ctx, "checkout status poll: claiming the poll", "checkout_id", c.ID, "error", err)
+			claimed = false
+		}
+	}
+	if claimed {
 		pack := s.packOf(ctx, org, c.Provider)
 		st, err := s.cfg.Providers.PaymentStatus(ctx, org, pack, c.Provider, *c.providerTxn)
 		switch {
