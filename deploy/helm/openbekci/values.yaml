@@ -1,0 +1,129 @@
+# Values are documented in README.md.
+
+image:
+  repository: ghcr.io/openbekci/openbekci
+  tag: "" # default: the chart's appVersion
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# Becomes OPENBEKCI_<KEY> in a ConfigMap shared by server, worker and migrate job.
+# Secret-bearing settings never go here: see "secrets".
+config:
+  BASE_URL: "" # required: the public URL, e.g. https://site.example.com
+  TRUSTED_PROXIES: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  DATA_DIR: /data
+  # STORAGE_DRIVER: s3  (with STORAGE_S3_*) is required for more than one server replica.
+
+# Raw OTEL_* variables for the server, worker and job. Tracing stays off until
+# OTEL_EXPORTER_OTLP_ENDPOINT is set, e.g.
+#   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.observability:4318
+#   OTEL_SERVICE_NAME: openbekci
+otel: {}
+
+# One Secret holds every secret; each key is mounted as a file and read through
+# the matching OPENBEKCI_<NAME>_FILE variable.
+secrets:
+  existingSecret: "" # required
+  keys:
+    DATABASE_URL: database-url
+    MIGRATOR_DATABASE_URL: migrator-database-url
+    PLATFORM_DATABASE_URL: platform-database-url
+    SECRET_KEY: secret-key
+    ENCRYPTION_KEY: encryption-key
+    METRICS_TOKEN: metrics-token # only read when metrics.enabled
+
+# GET /metrics on the server needs OPENBEKCI_METRICS_TOKEN; the worker serves it on its own port.
+metrics:
+  enabled: false # mounts METRICS_TOKEN from the Secret
+
+# Extra environment (list of EnvVar) and envFrom (list of EnvFromSource) for all workloads,
+# for SMTP_*, SMS_*, STORAGE_S3_*, PUSH_RELAYS and so on.
+extraEnv: []
+extraEnvFrom: []
+
+# PostgreSQL is external: put its URLs into the Secret above. For an evaluation
+# install, enable the bitnami sub-chart (run `helm dependency update` first);
+# the three application roles still have to be created, see docs/ops/install.md.
+postgresql:
+  enabled: false
+  auth:
+    database: openbekci
+
+migrate:
+  enabled: true # pre-install/pre-upgrade hook Job running `openbekci migrate up`
+  backoffLimit: 1
+  activeDeadlineSeconds: 900
+  resources: {}
+
+persistence: # local file storage (DATA_DIR); an emptyDir without it
+  enabled: false
+  size: 10Gi
+  storageClass: ""
+  existingClaim: ""
+  accessMode: ReadWriteOnce
+
+server:
+  replicas: 2
+  resources:
+    requests: {cpu: 100m, memory: 192Mi}
+    limits: {memory: 512Mi}
+  terminationGracePeriodSeconds: 30
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  autoscaling: # off by default
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+worker:
+  replicas: 1 # River elects a leader for periodic jobs; more replicas add throughput only
+  metricsPort: 9090
+  resources:
+    requests: {cpu: 50m, memory: 128Mi}
+    limits: {memory: 384Mi}
+  terminationGracePeriodSeconds: 30
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+service:
+  type: ClusterIP
+  port: 80
+
+# TLS terminates at the ingress (cert-manager issues the certificate).
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # cert-manager.io/cluster-issuer: letsencrypt
+  host: ""
+  tls:
+    enabled: true
+    secretName: openbekci-tls
+
+# Requires the Prometheus operator CRDs and secrets.keys.METRICS_TOKEN.
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile: {type: RuntimeDefault}
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities: {drop: [ALL]}

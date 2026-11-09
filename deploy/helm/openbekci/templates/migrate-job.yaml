@@ -1,0 +1,44 @@
+{{- if .Values.migrate.enabled }}
+{{- $keys := list "MIGRATOR_DATABASE_URL" }}
+{{- /* With the in-cluster sub-chart the database does not exist before install, so migrate after it. */}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "openbekci.name" . }}-migrate-{{ .Release.Revision }}
+  labels: {{- include "openbekci.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate
+  annotations:
+    helm.sh/hook: {{ ternary "post-install,pre-upgrade" "pre-install,pre-upgrade" .Values.postgresql.enabled }}
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrate.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrate.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels: {{- include "openbekci.selector" (dict "root" . "component" "migrate") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migrate
+          image: {{ include "openbekci.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["migrate", "up"]
+          {{- /* no ConfigMap: as a pre-install hook the Job runs before it exists; migrate needs only the migrator URL */}}
+          {{- with .Values.extraEnvFrom }}
+          envFrom: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env: {{- include "openbekci.env" (dict "root" . "keys" $keys) | nindent 12 }}
+          resources: {{- toYaml .Values.migrate.resources | nindent 12 }}
+          securityContext: {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            - {name: secrets, mountPath: /secrets, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        {{- include "openbekci.secretVolume" (dict "root" . "keys" $keys) | nindent 8 }}
+        - {name: tmp, emptyDir: {}}
+{{- end }}

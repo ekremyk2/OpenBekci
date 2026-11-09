@@ -14,6 +14,10 @@ Open-source residential community management: apartment buildings, gated sites, 
 | API | OpenAPI 3.1, contract-first; Go server and TypeScript/Dart clients are generated |
 | Country packs | Compile-time Go modules behind a public SDK; the core contains no country logic. First pack: Turkey |
 
+## Documentation site
+
+Install, operate, use, integrate, packs and mobile guides live in `docs/` and are built with MkDocs Material (`docs-site/`, `.github/workflows/docs.yml`); the API reference is a Redoc page over `api/openapi.yaml`. Preview: `pip install -r docs-site/requirements.txt && mkdocs serve -f docs-site/mkdocs.yml`. `tools/obkbuild` builds a server with an extra pack ([authoring guide](docs/packs/authoring.md)).
+
 ## Plans
 
 | Document | Covers |
@@ -22,7 +26,7 @@ Open-source residential community management: apartment buildings, gated sites, 
 | [Backend](docs/plans/01-backend.md) | Stack, modules, domain model (from the decision files), multi-tenancy and site portability, auth, API, money rules, pack SDK (0.4), jobs, privacy, testing, phases per release |
 | [Web](docs/plans/02-web.md) | Routes for management, portal and platform, data layer, permissions in the UI, feature areas per release, design system, i18n, testing |
 | [Mobile](docs/plans/03-mobile.md) | The Flutter app (own repository, ships with core 0.4): discovery, auth, features, push via relay, store release |
-| [Packs](docs/plans/04-packs.md) | Pack SDK (0.4), extension points, authoring, the Turkish pack; the [authoring guide](docs/packs/README.md) and `packs/example` |
+| [Packs](docs/plans/04-packs.md) | Pack SDK (0.4), extension points, authoring, the Turkish pack; the [authoring guide](docs/packs/authoring.md), the [pack index](docs/packs/index.md) and `packs/example` |
 | [Infrastructure](docs/plans/05-infra.md) | Compose/systemd/Helm targets, backups with secrets, upgrades, push relay, on-site access agent, observability, release engineering |
 | [Review](docs/plans/06-review.md) | The critical review that drove v0.2 of the plans (applied; kept for the reasoning) |
 
