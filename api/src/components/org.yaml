@@ -30,11 +30,16 @@ schemas:
         type: string
         format: uuid
         nullable: true
+      actor_key_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The API key that caused the event (`actor_kind` is `api_key`); null otherwise. `actor_user_id` is null then, so a key's actions are never attributed to its creator.
       actor_kind:
         type: string
         x-open-enum: true
-        description: 'Open enum: user, system, job.'
-        enum: [user, system, job]
+        description: 'Open enum: user, system, job, api_key.'
+        enum: [user, system, job, api_key]
       action:
         type: string
         description: '`<area>.<verb>`, for example `org.update`.'

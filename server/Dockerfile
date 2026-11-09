@@ -2,7 +2,7 @@
 # Build context: the repository root (go.work, sdk/, packs/example/, packs/tr/ and server/ are needed):
 #   docker build -f server/Dockerfile -t openbekci .
 
-FROM golang:1.27 AS build
+FROM golang:1.27.3 AS build
 WORKDIR /src
 COPY go.work go.work.sum ./
 COPY sdk/go.mod sdk/go.sum* sdk/

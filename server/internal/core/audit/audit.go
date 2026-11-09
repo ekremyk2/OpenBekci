@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/netip"
+	"sync/atomic"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -35,10 +36,15 @@ const (
 	ActorUser   ActorKind = "user"
 	ActorSystem ActorKind = "system"
 	ActorJob    ActorKind = "job"
+	// ActorAPIKey: the request was authenticated by an organization API key;
+	// the event names the key (Event.ActorKeyID), never its creator.
+	ActorAPIKey ActorKind = "api_key"
 )
 
 // Event is one audit record.
 type Event struct {
+	// ID is the id of the stored event; Record fills it when zero.
+	ID uuid.UUID
 	// OrgID is the organization; uuid.Nil records an instance-level event in
 	// platform_audit_event.
 	OrgID  uuid.UUID
@@ -47,6 +53,8 @@ type Event struct {
 	// event with the principal's user id, else a system event.
 	ActorKind   ActorKind
 	ActorUserID *uuid.UUID
+	// ActorKeyID is the API key behind an api_key event.
+	ActorKeyID *uuid.UUID
 	// Action is "<area>.<verb>", for example org.update.
 	Action     string
 	TargetType string
@@ -85,7 +93,10 @@ func Record(ctx context.Context, tx pgx.Tx, e Event) error {
 		return fmt.Errorf("audit: event needs an action and a target type")
 	}
 	if e.ActorKind == "" {
-		if p := authz.PrincipalFromContext(ctx); p != nil {
+		if p := authz.PrincipalFromContext(ctx); p != nil && p.APIKey != nil {
+			kid := p.APIKey.KeyID
+			e.ActorKind, e.ActorKeyID = ActorAPIKey, &kid
+		} else if p != nil {
 			uid := p.UserID
 			e.ActorKind, e.ActorUserID = ActorUser, &uid
 		} else {
@@ -119,19 +130,57 @@ func Record(ctx context.Context, tx pgx.Tx, e Event) error {
 			ip = truncatedIP(addr)
 		}
 	}
+	if e.ID == uuid.Nil {
+		e.ID = id.New()
+	}
 	if e.OrgID == uuid.Nil {
 		_, err = tx.Exec(ctx, `
-			INSERT INTO platform_audit_event (id, actor_user_id, actor_kind, action, target_type, target_id, diff, ip, request_id)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-			id.New(), e.ActorUserID, e.ActorKind, e.Action, e.TargetType, e.TargetID, diffJSON, ip, nullIfEmpty(e.RequestID))
+			INSERT INTO platform_audit_event (id, actor_user_id, actor_key_id, actor_kind, action, target_type, target_id, diff, ip, request_id)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+			e.ID, e.ActorUserID, e.ActorKeyID, e.ActorKind, e.Action, e.TargetType, e.TargetID, diffJSON, ip, nullIfEmpty(e.RequestID))
 	} else {
 		_, err = tx.Exec(ctx, `
-			INSERT INTO audit_event (id, org_id, site_id, actor_user_id, actor_kind, action, target_type, target_id, diff, ip, request_id)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-			id.New(), e.OrgID, e.SiteID, e.ActorUserID, e.ActorKind, e.Action, e.TargetType, e.TargetID, diffJSON, ip, nullIfEmpty(e.RequestID))
+			INSERT INTO audit_event (id, org_id, site_id, actor_user_id, actor_key_id, actor_kind, action, target_type, target_id, diff, ip, request_id)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+			e.ID, e.OrgID, e.SiteID, e.ActorUserID, e.ActorKeyID, e.ActorKind, e.Action, e.TargetType, e.TargetID, diffJSON, ip, nullIfEmpty(e.RequestID))
 	}
 	if err != nil {
 		return fmt.Errorf("audit: record %s: %w", e.Action, err)
+	}
+	if e.OrgID != uuid.Nil {
+		if sink := currentSink(); sink != nil {
+			if err := sink(ctx, tx, e); err != nil {
+				return fmt.Errorf("audit: sink %s: %w", e.Action, err)
+			}
+		}
+	}
+	return nil
+}
+
+// Sink receives every organization audit event right after it is stored,
+// inside the same transaction. The integrations module installs one that turns
+// recorded domain actions into outbound webhook events, so no domain service
+// emits them by hand: an event is emitted if and only if the audit record (and
+// therefore the change) commits.
+type Sink func(ctx context.Context, tx pgx.Tx, e Event) error
+
+var sinkPtr atomic.Pointer[Sink]
+
+// SetSink installs the sink (nil removes it) and returns a function that
+// restores the previous one.
+func SetSink(s Sink) (restore func()) {
+	var prev *Sink
+	if s == nil {
+		prev = sinkPtr.Swap(nil)
+	} else {
+		prev = sinkPtr.Swap(&s)
+	}
+	return func() { sinkPtr.Store(prev) }
+}
+
+func currentSink() Sink {
+	if p := sinkPtr.Load(); p != nil {
+		return *p
 	}
 	return nil
 }

@@ -24,6 +24,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
@@ -64,6 +65,8 @@ type idEnv struct {
 	charge *recCharger
 	hooks  *recHooks
 	acc    *access.Service
+	integ  *integrations.Service
+	jobRec *jobRecorder
 	cookie *http.Cookie
 	files  *files.Service
 	ops    *opsTest
@@ -112,15 +115,17 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		t.Fatal(perr)
 	}
 	e.acc = newTestAccess(t, d, cfg.Log)
+	e.jobRec = &jobRecorder{}
+	e.integ = newTestIntegrations(t, d, reg, cfg.Log, e.jobRec, e.notes)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc,
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc, Integrations: e.integ,
 		Money:         e.moneyDeps(d),
-		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
+		Authenticator: SessionAuthenticator{Identity: e.svc, Keys: e.integ, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	host, herr := packs.New(packs.Config{DB: d, Log: cfg.Log}, nil)
 	if herr == nil {

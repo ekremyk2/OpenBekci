@@ -510,16 +510,14 @@ func (h *Host) Disable(ctx context.Context, org uuid.UUID, id string) (State, er
 	if err != nil {
 		return State{}, err
 	}
-	if on {
-		if od, ok := p.impl.(sdk.OnDisable); ok {
-			if err := h.call(ctx, org, id, "OnDisable", func(ctx context.Context) error { return od.OnDisable(ctx, sdk.ID(org.String())) }); err != nil {
-				return State{}, err
-			}
-		}
-	}
 	var out State
 	err = h.cfg.DB.InTenantTx(ctx, org, func(tx pgx.Tx) error {
 		if on {
+			// pack.disabled goes out while the pack is still enabled (Emit selects enabled packs);
+			// its delivery is exempt from the enabled check
+			if err := h.Emit(ctx, tx, org, sdk.Event{Type: sdk.EventPackDisabled}); err != nil {
+				return err
+			}
 			if _, err := tx.Exec(ctx, `UPDATE pack_enablement SET enabled = false, disabled_at = now(), version = version + 1, updated_at = now() WHERE org_id = $1 AND pack_id = $2`, org, id); err != nil {
 				return err
 			}
@@ -530,6 +528,18 @@ func (h *Host) Disable(ctx context.Context, org uuid.UUID, id string) (State, er
 		out, err = h.stateOf(ctx, tx, org, p)
 		return err
 	})
+	if err != nil {
+		return out, problemOf(err)
+	}
 	h.notifyChanged()
-	return out, problemOf(err)
+	// OnDisable runs once the disablement is committed, so a failed commit never tells the pack it
+	// is disabled; it cannot veto the disablement, a failure is logged
+	if on {
+		if od, ok := p.impl.(sdk.OnDisable); ok {
+			if err := h.call(context.WithoutCancel(ctx), org, id, "OnDisable", func(ctx context.Context) error { return od.OnDisable(ctx, sdk.ID(org.String())) }); err != nil {
+				h.log.ErrorContext(ctx, "pack OnDisable failed after the pack was disabled", "pack", id, "error", err)
+			}
+		}
+	}
+	return out, nil
 }

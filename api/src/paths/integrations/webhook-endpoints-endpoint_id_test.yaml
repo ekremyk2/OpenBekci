@@ -1,0 +1,43 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: endpoint_id
+    in: path
+    required: true
+    description: Id of the webhook endpoint.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: integrations.testWebhookEndpoint
+  summary: Send a ping event to a webhook endpoint
+  description: |-
+    **Release 0.4.** Queues a `ping` event to the endpoint (also when it is inactive) and returns
+    the pending delivery. Its outcome shows in the delivery log. A `ping` has the same envelope,
+    headers and signature as every other event.
+
+    Permission: `webhooks.manage`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.manage
+  x-idempotent: none
+  x-stability: preview
+  responses:
+    "202":
+      description: Accepted
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookDelivery
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

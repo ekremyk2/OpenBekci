@@ -155,10 +155,13 @@ func (h *Host) Deliver(ctx context.Context, org uuid.UUID, a EventArgs) error {
 	if sub == nil {
 		return fmt.Errorf("packs: pack %q has no subscription %q", a.Pack, a.Sub)
 	}
-	if on, err := h.Enabled(ctx, org, a.Pack); err != nil {
-		return err
-	} else if !on {
-		return ErrDisabled
+	// pack.disabled is queued while the pack is enabled and delivered after it was disabled
+	if a.Type != sdk.EventPackDisabled {
+		if on, err := h.Enabled(ctx, org, a.Pack); err != nil {
+			return err
+		} else if !on {
+			return ErrDisabled
+		}
 	}
 	ev := sdk.Event{Type: a.Type, Version: a.Ver, Org: sdk.ID(org.String()), IDs: map[string]sdk.ID{}}
 	for k, v := range a.IDs {

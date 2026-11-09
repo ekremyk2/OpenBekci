@@ -12,9 +12,11 @@ import (
 	"time"
 
 	"github.com/openbekci/openbekci/server/internal/core/access"
+	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/packs"
@@ -35,6 +37,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return err
 	}
 	defer rt.db.Close()
+	defer rt.restoreSink()
 
 	ln, err := net.Listen("tcp", cfg.ListenAddr)
 	if err != nil {
@@ -43,7 +46,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 
 	cfg.SMSPicker = rt.pick
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money, rt.packs)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money, rt.integrations, rt.packs)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -110,6 +113,7 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 		return err
 	}
 	defer rt.db.Close()
+	defer rt.restoreSink()
 	log.Info("worker running")
 	<-ctx.Done()
 	log.Info("shutting down")
@@ -120,18 +124,22 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 
 // runtime is what serve and worker share: pools and the River client.
 type runtime struct {
-	db      *db.DB
-	jobs    *jobs.Client
-	gov     *governance.Service
-	money   httpapi.MoneyDeps
-	comm    *community.Service
-	idem    *idempotency.PG
-	files   *files.Service
-	ops     *opsServices
-	access  *access.Service
-	packs   *packs.Host
-	pick    *lazySMSPicker
-	working bool
+	db     *db.DB
+	jobs   *jobs.Client
+	gov    *governance.Service
+	money  httpapi.MoneyDeps
+	comm   *community.Service
+	idem   *idempotency.PG
+	files  *files.Service
+	ops    *opsServices
+	access *access.Service
+	// integrations serves API keys and webhooks; restoreSink removes the audit
+	// sink that emits webhook events when the process stops.
+	integrations *integrations.Service
+	restoreSink  func()
+	packs        *packs.Host
+	pick         *lazySMSPicker
+	working      bool
 }
 
 func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (*runtime, error) {
@@ -224,6 +232,11 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	integ, err := newIntegrations(cfg, log, d, ops.late)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
 		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) {
 			registerGov(w)
@@ -231,6 +244,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			acc.Workers(w)
 			registerMoney(w)
 			host.RegisterWorkers(w)
+			integ.Workers(w)
 		},
 		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney, host.PeriodicJobs())})
 	if err != nil {
@@ -240,13 +254,16 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	ops.late.c.Store(client)
 	host.SetJobs(client)
 	gov.SetNotifier(governance.RiverNotifier{Client: client})
+	integ.SetInsert(integrations.Insert(client))
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, packs: host, pick: pick, working: withWorker}, nil
+	// every audited domain action (here, in jobs and in the worker alike) emits its webhook event in its own transaction
+	restore := audit.SetSink(integ.EmitFromAudit)
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, integrations: integ, packs: host, pick: pick, restoreSink: restore, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

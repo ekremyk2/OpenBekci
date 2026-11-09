@@ -158,6 +158,10 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"pack_enablement_site": "per-site pack settings and sealed secrets of the old organization's packs",
 	"site_pack_default":    "bookkeeping of which settings a pack filled; the settings themselves travel in the site row",
 	"provider_settlement":  "payout bookkeeping against the old organization's provider clearing accounts",
+	// integrations: organization-level, never site data; credentials are not handed over
+	"api_key":          "organization API keys are credentials of the old organization (and bound to its administrators); create new ones after the hand-over",
+	"webhook_endpoint": "organization-level endpoints with sealed signing secrets; the new organization registers its own",
+	"webhook_delivery": "delivery log of the old organization's endpoints",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

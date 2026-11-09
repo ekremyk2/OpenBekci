@@ -47,13 +47,15 @@ type Stored struct {
 	At          time.Time
 	SiteID      *uuid.UUID
 	ActorUserID *uuid.UUID
-	ActorKind   string
-	Action      string
-	TargetType  string
-	TargetID    uuid.UUID
-	Diff        json.RawMessage
-	IP          *string
-	RequestID   *string
+	// ActorKeyID is the API key of an api_key event.
+	ActorKeyID *uuid.UUID
+	ActorKind  string
+	Action     string
+	TargetType string
+	TargetID   uuid.UUID
+	Diff       json.RawMessage
+	IP         *string
+	RequestID  *string
 }
 
 // Filter narrows List. Zero fields do not filter; From is inclusive, To exclusive.
@@ -140,7 +142,7 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, f Filter, cursorStr
 	var out []Stored
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		rows, err := tx.Query(ctx, `
-			SELECT id, at, site_id, actor_user_id, actor_kind, action, target_type, target_id, diff, host(ip), request_id
+			SELECT id, at, site_id, actor_user_id, actor_key_id, actor_kind, action, target_type, target_id, diff, host(ip), request_id
 			FROM audit_event
 			WHERE org_id = $1
 			  AND ($2::text IS NULL OR action = $2)
@@ -160,7 +162,7 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, f Filter, cursorStr
 		defer rows.Close()
 		for rows.Next() {
 			var e Stored
-			if err := rows.Scan(&e.ID, &e.At, &e.SiteID, &e.ActorUserID, &e.ActorKind, &e.Action, &e.TargetType, &e.TargetID, &e.Diff, &e.IP, &e.RequestID); err != nil {
+			if err := rows.Scan(&e.ID, &e.At, &e.SiteID, &e.ActorUserID, &e.ActorKeyID, &e.ActorKind, &e.Action, &e.TargetType, &e.TargetID, &e.Diff, &e.IP, &e.RequestID); err != nil {
 				return err
 			}
 			e.At = e.At.UTC()

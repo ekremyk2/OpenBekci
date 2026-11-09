@@ -343,6 +343,14 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 			return
 		}
 		pr, err := p.auth.Authenticate(r)
+		if err == nil && pr != nil && pr.APIKey != nil && len(p.op(r).perms) == 0 {
+			// An API key reaches only operations that name a permission: the
+			// ones that ask for nothing but a signed-in person (password and
+			// re-authentication, sessions, accepting an invitation, claiming a
+			// unit) are the creator's own and closed to the key, in either mode.
+			problem.Write(w, r, problem.Forbidden("an API key cannot call this operation"))
+			return
+		}
 		if mode == authOptional {
 			if isCSRFProblem(err) {
 				problem.Write(w, r, err)
