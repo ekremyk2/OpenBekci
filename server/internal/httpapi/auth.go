@@ -20,6 +20,8 @@ import (
 const (
 	// CookieName is the browser session cookie (backend plan section 6).
 	CookieName = "obk_session"
+	// HostCookieName is the name served over HTTPS: the __Host- prefix makes browsers refuse a copy set by a sibling subdomain or over http.
+	HostCookieName = "__Host-obk_session"
 	// CSRFHeader and CSRFHeaderValue are required on cookie-authenticated mutations.
 	CSRFHeader      = "X-Requested-With"
 	CSRFHeaderValue = "openbekci-web"
@@ -42,6 +44,8 @@ type SessionAuthenticator struct {
 	// Origins are the browser origins allowed to mutate with a cookie:
 	// BASE_URL and EXTRA_ORIGINS.
 	Origins []string
+	// Insecure is INSECURE_DEV: the session cookie then has the plain name and no Secure flag.
+	Insecure bool
 }
 
 // Authenticate implements Authenticator.
@@ -62,7 +66,7 @@ func (a SessionAuthenticator) Authenticate(r *http.Request) (*authz.Principal, e
 		}
 		return a.Identity.Authenticate(r.Context(), identity.KindAccessToken, token)
 	}
-	c, err := r.Cookie(CookieName)
+	c, err := r.Cookie(cookieName(a.Insecure))
 	if err != nil || c.Value == "" {
 		return nil, problem.Unauthenticated("authentication is required")
 	}
@@ -152,7 +156,7 @@ func infoFrom(ctx context.Context) *reqInfo {
 // unless the instance runs in INSECURE_DEV (http on localhost).
 func authCookie(token string, expires time.Time, insecure bool) *http.Cookie {
 	return &http.Cookie{ //nolint:gosec // Secure is on except for INSECURE_DEV on localhost
-		Name: CookieName, Value: token, Path: "/", Expires: expires,
+		Name: cookieName(insecure), Value: token, Path: "/", Expires: expires,
 		MaxAge:   int(time.Until(expires).Seconds()),
 		HttpOnly: true, Secure: !insecure, SameSite: http.SameSiteLaxMode,
 	}
@@ -160,5 +164,13 @@ func authCookie(token string, expires time.Time, insecure bool) *http.Cookie {
 
 func clearedCookie(insecure bool) *http.Cookie {
 	return &http.Cookie{ //nolint:gosec // Secure is on except for INSECURE_DEV on localhost
-		Name: CookieName, Value: "", Path: "/", MaxAge: -1, Expires: time.Unix(0, 0), HttpOnly: true, Secure: !insecure, SameSite: http.SameSiteLaxMode}
+		Name: cookieName(insecure), Value: "", Path: "/", MaxAge: -1, Expires: time.Unix(0, 0), HttpOnly: true, Secure: !insecure, SameSite: http.SameSiteLaxMode}
+}
+
+// cookieName is the session cookie name: __Host- prefixed wherever it is Secure.
+func cookieName(insecure bool) string {
+	if insecure {
+		return CookieName
+	}
+	return HostCookieName
 }

@@ -252,6 +252,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 			Identity: ident,
 			Keys:     integ,
 			Origins:  append([]string{cfg.BaseURL}, cfg.ExtraOrigins...),
+			Insecure: cfg.InsecureDev,
 		},
 		InsecureCookies:   cfg.InsecureDev,
 		Instance:          inst,

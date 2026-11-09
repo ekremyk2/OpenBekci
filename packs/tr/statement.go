@@ -177,7 +177,7 @@ func (b *bankImporter) Parse(ctx context.Context, filename string, data []byte) 
 
 // readXLSX returns the rows of the first sheet that holds the format's header.
 func readXLSX(data []byte, b *bankImporter) ([][]string, error) {
-	f, err := excelize.OpenReader(bytes.NewReader(data))
+	f, err := excelize.OpenReader(bytes.NewReader(data), excelize.Options{UnzipSizeLimit: 64 << 20, UnzipXMLSizeLimit: 32 << 20}) // zip-bomb caps
 	if err != nil {
 		return nil, err
 	}

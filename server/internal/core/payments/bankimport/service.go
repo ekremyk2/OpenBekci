@@ -236,6 +236,9 @@ func (s *Service) Create(ctx context.Context, orgID uuid.UUID, in CreateInput) (
 			in.OpeningBalance, in.ClosingBalance = opening, closing
 		}
 	}
+	if len(lines) > MaxLines {
+		return Import{}, problem.Validation(problem.Field{Field: "file", Code: "too_many_rows", Params: map[string]any{"max_rows": MaxLines}})
+	}
 	if len(lines) == 0 {
 		return Import{}, problem.Validation(problem.Field{Field: "file", Code: "required"})
 	}

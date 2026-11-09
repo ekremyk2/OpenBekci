@@ -67,6 +67,30 @@ func clientFromXFF(values []string, isTrusted func(netip.Addr) bool) string {
 	return ""
 }
 
+// webCSP is the policy of the embedded web app: no inline or remote script,
+// same-origin everything else.
+// shortcut: style-src keeps 'unsafe-inline' (shadcn/Radix set inline styles), upgrade when the UI moves to class-only styling or style nonces.
+const webCSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; " +
+	"connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+// securityHeaders sets the browser hardening headers on every response; a
+// handler that sets one itself (file downloads send their own CSP) overrides it.
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("X-Frame-Options", "DENY")
+		h.Set("Referrer-Policy", "no-referrer")
+		h.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains") // browsers ignore it over plain http
+		if isAPIPath(r.URL.Path) {
+			h.Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+		} else {
+			h.Set("Content-Security-Policy", webCSP)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // noStoreSensitive marks every /v1/auth and /v1/me response (tokens, session
 // lists, the caller's identity) as not cacheable by browsers or proxies.
 func noStoreSensitive(next http.Handler) http.Handler {
