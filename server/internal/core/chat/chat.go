@@ -22,6 +22,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/riverqueue/river"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/platform/chat"
@@ -63,6 +64,11 @@ type Service struct {
 	db     TxRunner
 	cipher *crypto.FieldCipher
 	cfg    Config
+
+	// wired after construction (group.go)
+	insert   func(ctx context.Context, tx pgx.Tx, args river.JobArgs) error
+	polls    PollSink
+	commands Commands
 }
 
 // NewService returns a Service; a missing encryption key is an error.

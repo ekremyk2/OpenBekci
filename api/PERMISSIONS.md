@@ -161,6 +161,7 @@ Account permissions are instance grants held by every signed-in caller (`me.read
 | `webhooks.read` | Read webhook endpoints and their delivery log. | `org_admin` |
 | `webhooks.manage` | Create, change, delete, test and rotate the secret of webhook endpoints (never through an API key). | `org_admin` |
 | `chat.manage` | Edit the organization's chat bot credentials (Telegram, WhatsApp). | `org_admin` |
+| `chatgroups.manage` | Link the site's Telegram group and edit its WhatsApp invite link. | `org_admin`, `site_manager` |
 
 ## packs
 

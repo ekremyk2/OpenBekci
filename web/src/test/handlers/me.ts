@@ -85,6 +85,7 @@ export const ALL_PERMISSIONS = [
   'packs.read',
   'packs.manage',
   'chat.manage',
+  'chatgroups.manage',
   'apikeys.read',
   'apikeys.manage',
   'webhooks.read',

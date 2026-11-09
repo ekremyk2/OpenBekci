@@ -19,6 +19,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/chat"
 	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -433,7 +434,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
 		return Meeting{}, err
 	}
-	channels, err := cleanChannels(in.NotifyChannels)
+	channels, err := cleanChannels(in.NotifyChannels, true)
 	if err != nil {
 		return Meeting{}, err
 	}
@@ -523,6 +524,18 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		if _, err = tx.Exec(ctx, `UPDATE meeting SET call_letter_document_id = $3 WHERE org_id = $1 AND id = $2`, orgID, id, filed.DocumentID); err != nil {
 			return err
 		}
+		if slices.Contains(channels, jobs.ChannelTelegramGroup) {
+			// the call is one post (and a pin) in the site's group; the owners' legal notices are unaffected
+			titles := make([]string, len(agenda))
+			for i, a := range agenda {
+				titles[i] = a.Title
+			}
+			if err := s.postGroup(ctx, tx, orgID, m.SiteID, jobs.GroupPostArgs{Type: jobs.GroupMeetingCall, Pin: true,
+				HTML: chat.MeetingCallHTML(si.Locale, si.Name, title, fmtTime(m.ScheduledAt, si.Loc, si.Locale), m.Location, titles, strings.TrimRight(s.cfg.BaseURL, "/")+"/meetings/"+id.String())}, true); err != nil {
+				return err
+			}
+		}
+		channels := slices.DeleteFunc(slices.Clone(channels), func(c string) bool { return c == jobs.ChannelTelegramGroup })
 		if len(channels) > 0 && s.notifier != nil {
 			body := fmt.Sprintf("%s: %s, %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale), m.Location)
 			if err := s.notifier.Notify(ctx, tx, jobs.NotifyArgs{OrgID: orgID, SiteID: &m.SiteID, Type: "meeting.called", Recipients: recipients(people), Channels: channels,
@@ -546,10 +559,10 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 	return out, dbErr(err, "meeting")
 }
 
-func cleanChannels(in []string) ([]string, error) {
+func cleanChannels(in []string, group bool) ([]string, error) {
 	var out []string
 	for _, c := range in {
-		if !slices.Contains([]string{"in_app", "email", "sms"}, c) {
+		if !slices.Contains([]string{"in_app", "email", "sms"}, c) && (!group || c != jobs.ChannelTelegramGroup) {
 			return nil, fieldProblem("notify_channels", "invalid_value")
 		}
 		if !slices.Contains(out, c) {

@@ -139,6 +139,7 @@ type Service struct {
 	filer       DocumentFiler
 	files       FileChecker
 	notifier    Notifier
+	groups      jobs.GroupChannel
 	docResolver doctpl.Resolver
 	log         *slog.Logger
 	now         func() time.Time

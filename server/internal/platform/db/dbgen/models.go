@@ -520,6 +520,33 @@ type ChatConfig struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type ChatGroup struct {
+	OrgID         pgtype.UUID
+	ID            pgtype.UUID
+	SiteID        pgtype.UUID
+	Provider      string
+	ChatID        pgtype.Text
+	Title         pgtype.Text
+	Kind          pgtype.Text
+	CodeHash      []byte
+	CodeExpiresAt pgtype.Timestamptz
+	LinkedBy      pgtype.UUID
+	Verified      bool
+	VerifiedAt    pgtype.Timestamptz
+	CreatedAt     pgtype.Timestamptz
+}
+
+type ChatGroupPoll struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	ChatID       string
+	MessageID    int64
+	TgPollID     string
+	ClosedAt     pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+}
+
 type ChatLink struct {
 	OrgID            pgtype.UUID
 	ID               pgtype.UUID
@@ -532,6 +559,20 @@ type ChatLink struct {
 	VerifiedAt       pgtype.Timestamptz
 	LastInboundAt    pgtype.Timestamptz
 	CreatedAt        pgtype.Timestamptz
+}
+
+type ChatSiteInfo struct {
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	WhatsappInviteUrl pgtype.Text
+	UpdatedAt         pgtype.Timestamptz
+}
+
+type ChatUpdate struct {
+	OrgID    pgtype.UUID
+	Provider string
+	UpdateID int64
+	SeenAt   pgtype.Timestamptz
 }
 
 type Checkout struct {
@@ -1421,15 +1462,17 @@ type PlatformAuditEvent struct {
 }
 
 type Poll struct {
-	OrgID        pgtype.UUID
-	SiteID       pgtype.UUID
-	AgendaItemID pgtype.UUID
-	Question     pgtype.Text
-	OpensAt      pgtype.Timestamptz
-	ClosesAt     pgtype.Timestamptz
-	CreatedAt    pgtype.Timestamptz
-	UpdatedAt    pgtype.Timestamptz
-	Version      int32
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	AgendaItemID       pgtype.UUID
+	Question           pgtype.Text
+	OpensAt            pgtype.Timestamptz
+	ClosesAt           pgtype.Timestamptz
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+	Version            int32
+	GroupOpenPostedAt  pgtype.Timestamptz
+	GroupClosePostedAt pgtype.Timestamptz
 }
 
 type PollAnswer struct {

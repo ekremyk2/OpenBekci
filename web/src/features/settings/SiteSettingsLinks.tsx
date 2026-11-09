@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Trans } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
+import { SiteChatGroupCards } from '@/features/chat/TelegramGroupCard'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 /**
@@ -39,6 +40,11 @@ export function SiteSettingsLinks() {
           </ul>
         </CardContent>
       </Card>
+      {can('chatgroups.manage')
+        ? org?.sites.map((site) => (
+            <SiteChatGroupCards key={site.id} siteId={site.id} siteName={site.name} />
+          ))
+        : null}
       {can('tickets.manage') || can('notifications.manage') ? (
         <Card>
           <CardHeader>

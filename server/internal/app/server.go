@@ -15,6 +15,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/dashboardmoney"
 	"github.com/openbekci/openbekci/server/internal/core/files"
@@ -25,6 +26,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/packs"
+	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -71,6 +73,15 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Access = rt.access
 	deps.Privacy = rt.privacy
 	deps.Chat = rt.ops.chat
+	if rt.ops.chat != nil {
+		reg, err := permissions.NewRegistry()
+		if err != nil {
+			_ = ln.Close()
+			rt.stopJobs(log)
+			return err
+		}
+		rt.ops.chat.SetCommands(&chatCommands{db: rt.db, resolver: authz.NewResolver(rt.db, reg, nil), tickets: rt.ops.tickets, reports: rt.money.Reports, anns: rt.ops.announcements, baseURL: cfg.BaseURL})
+	}
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db, rt.packs), MetricsToken: cfg.MetricsToken},
@@ -272,8 +283,11 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	priv := privacy.NewService(d, privacy.Config{Files: fs, Notifier: ops.late, Log: log})
 	fs.RegisterResolver(privacy.Scope, privacy.FileResolver())
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
-		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) {
+		Notifications: ops.notifications, Tasks: append(ops.tasks(), jobs.Task{Name: governance.PollMirrorTask, Every: time.Minute, Run: gov.RunPollMirror}), Register: func(w *river.Workers) {
 			registerGov(w)
+			if ops.chat != nil {
+				ops.chat.RegisterWorkers(w)
+			}
 			comm.RegisterWorkers(w)
 			acc.Workers(w)
 			registerMoney(w)
@@ -291,6 +305,16 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	ops.late.c.Store(client)
 	host.SetJobs(client)
 	gov.SetNotifier(governance.RiverNotifier{Client: client})
+	if ops.chat != nil { // the site's Telegram group: needs the encryption key like the chat channel
+		ops.chat.SetInsert(func(ctx context.Context, tx pgx.Tx, args river.JobArgs) error {
+			_, err := client.InsertTx(ctx, tx, args, nil)
+			return err
+		})
+		ops.chat.SetPollSink(gov)
+		gov.SetGroups(ops.chat)
+		ops.announcements.SetGroups(ops.chat)
+		mny.Collections.Groups = ops.chat
+	}
 	integ.SetInsert(integrations.Insert(client))
 	priv.SetInsert(func(ctx context.Context, tx pgx.Tx, args river.JobArgs) error {
 		_, err := client.InsertTx(ctx, tx, args, nil)

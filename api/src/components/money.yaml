@@ -4907,7 +4907,8 @@ schemas:
             - email
             - sms
             - letter
-        description: Chosen by the sender (O5).
+            - telegram_group
+        description: Chosen by the sender (O5). `telegram_group` posts one generic "dues reminder sent, check your statement" in the site's Telegram group, never a name or an amount (409 without a linked group).
   DunningRunPreview:
     type: object
     required:

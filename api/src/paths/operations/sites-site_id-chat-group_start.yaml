@@ -1,0 +1,51 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: operations.startSiteChatGroupLink
+  summary: Start linking the site's Telegram group
+  description: |-
+    **Release 1.0.** Issues a single-use code (valid 10 minutes). The manager adds the organization's bot to the group as an
+    administrator and sends `/link <code>` in the group; the webhook then verifies the link and stores the group. Asking again
+    replaces the code; a linked group stays linked until the new code is verified.
+
+    Permission: `chatgroups.manage`.
+
+    Problems: `conflict` (409, Telegram is not configured for the organization).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - chatgroups.manage
+    site_manager:
+      - chatgroups.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/SiteChatGroupStarted
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -301,7 +301,7 @@ func (s *Service) NotifyMeetingDecisions(ctx context.Context, orgID, meetingID u
 	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
 		return DecisionNotifyResult{}, err
 	}
-	channels, err := cleanChannels(in.Channels)
+	channels, err := cleanChannels(in.Channels, false)
 	if err != nil {
 		return DecisionNotifyResult{}, err
 	}

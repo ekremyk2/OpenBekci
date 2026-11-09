@@ -22,6 +22,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/opsx"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/chat"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -60,6 +61,8 @@ type Config struct {
 	// SMS and Mail say whether the channels are configured; publishing with an
 	// unavailable channel answers 503.
 	SMS, Mail bool
+	// BaseURL is the public address; group posts link back to the announcement.
+	BaseURL string
 }
 
 // Service is the announcements module.
@@ -67,6 +70,7 @@ type Service struct {
 	db     DB
 	files  *files.Service
 	notify jobs.Notifier
+	groups jobs.GroupChannel
 	cfg    Config
 	now    func() time.Time
 }
@@ -462,7 +466,7 @@ func checkChannels(ch []string, field string) []problem.Field {
 	}
 	for i, c := range ch {
 		switch c {
-		case jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat:
+		case jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat, jobs.ChannelTelegramGroup:
 		default:
 			bad = append(bad, problem.Field{Field: fmt.Sprintf("%s[%d]", field, i), Code: "invalid_value"})
 		}
@@ -472,7 +476,7 @@ func checkChannels(ch []string, field string) []problem.Field {
 
 func normChannels(ch []string) []string {
 	var out []string
-	for _, c := range []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat} {
+	for _, c := range []string{jobs.ChannelInApp, jobs.ChannelEmail, jobs.ChannelSMS, jobs.ChannelPush, jobs.ChannelChat, jobs.ChannelTelegramGroup} {
 		if slices.Contains(ch, c) {
 			out = append(out, c)
 		}
@@ -788,7 +792,40 @@ type Preview struct {
 	SMSSegments int `json:"sms_segments"`
 	MailCount   int `json:"email_count"`
 	InAppCount  int `json:"in_app_count"`
+	// TelegramGroup is what the telegram_group channel would do; nil when it was not chosen.
+	TelegramGroup *GroupPreview `json:"telegram_group,omitempty"`
 }
+
+// GroupPreview is the outcome of the telegram_group channel before publishing.
+type GroupPreview struct {
+	// Title is the linked group's title (empty when none is linked).
+	Title    string `json:"title"`
+	WillPost bool   `json:"will_post"`
+	// Reason when it will not post: "not_linked" or "audience_narrower" (the
+	// group sees the whole site, so a notice for a block or a few units is never posted there).
+	Reason string `json:"reason,omitempty"`
+}
+
+// groupPreview decides whether the group would get the post.
+func (s *Service) groupPreview(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, a Audience) (*GroupPreview, error) {
+	if s.groups == nil {
+		return &GroupPreview{Reason: "not_linked"}, nil
+	}
+	title, ok, err := s.groups.GroupTitle(ctx, tx, orgID, siteID)
+	if err != nil {
+		return nil, err
+	}
+	switch {
+	case !ok:
+		return &GroupPreview{Reason: "not_linked"}, nil
+	case a.Kind != "site":
+		return &GroupPreview{Title: title, Reason: "audience_narrower"}, nil
+	}
+	return &GroupPreview{Title: title, WillPost: true}, nil
+}
+
+// SetGroups wires the site group channel (nil: telegram_group is not available).
+func (s *Service) SetGroups(g jobs.GroupChannel) { s.groups = g }
 
 type recipient struct {
 	person           uuid.UUID
@@ -898,7 +935,10 @@ func (s *Service) PreviewAnnouncement(ctx context.Context, orgID, siteID uuid.UU
 			title = strings.Repeat("ş", smsTitleMax) // no title yet: the longest a text takes, in the widest alphabet
 		}
 		out = countFor(rs, channels, siteName, title)
-		return nil
+		if slices.Contains(channels, jobs.ChannelTelegramGroup) {
+			out.TelegramGroup, err = s.groupPreview(ctx, tx, orgID, siteID, a)
+		}
+		return err
 	})
 	return out, tenancy.DBProblem(err, "announcement")
 }
@@ -977,10 +1017,14 @@ func (s *Service) publishLocked(ctx context.Context, tx pgx.Tx, before Announcem
 		rec[i] = jobs.Recipient{PersonID: &p}
 	}
 	site := before.SiteID
-	if err := s.notify.Notify(ctx, tx, jobs.NotifyArgs{OrgID: before.OrgID, SiteID: &site, Type: "announcement.published", Recipients: rec, Channels: channels,
-		Payload: map[string]any{"announcement_id": before.ID, "title": before.Title, "sms_title": smsTitle(before.Title), "snippet": snippet(before.BodyMD)}, Link: "/announcements/" + before.ID.String(),
-		Key: "announcement:" + before.ID.String()}); err != nil {
-		return out, err
+	// telegram_group is one post in the site's group, not a per-person delivery: the dispatcher never sees it
+	persons := slices.DeleteFunc(slices.Clone(channels), func(c string) bool { return c == jobs.ChannelTelegramGroup })
+	if len(persons) > 0 {
+		if err := s.notify.Notify(ctx, tx, jobs.NotifyArgs{OrgID: before.OrgID, SiteID: &site, Type: "announcement.published", Recipients: rec, Channels: persons,
+			Payload: map[string]any{"announcement_id": before.ID, "title": before.Title, "sms_title": smsTitle(before.Title), "snippet": snippet(before.BodyMD)}, Link: "/announcements/" + before.ID.String(),
+			Key: "announcement:" + before.ID.String()}); err != nil {
+			return out, err
+		}
 	}
 	out, err = scanAnn(tx.QueryRow(ctx, selectSQL+` WHERE a.org_id = $1 AND a.id = $4`, before.OrgID, uuid.Nil, true, before.ID))
 	if err != nil {
@@ -989,7 +1033,40 @@ func (s *Service) publishLocked(ctx context.Context, tx pgx.Tx, before Announcem
 	if err := s.fillFiles(ctx, tx, before.OrgID, []*Announcement{&out}); err != nil {
 		return out, err
 	}
+	if slices.Contains(channels, jobs.ChannelTelegramGroup) {
+		if err := s.postToGroup(ctx, tx, out, checkGateways); err != nil {
+			return out, err
+		}
+	}
 	return out, s.record(ctx, tx, "announcements.publish", &before, out)
+}
+
+// postToGroup posts the announcement in the site's Telegram group when its
+// audience is the whole site; a narrower audience is skipped (the group would
+// show it to people it is not for). An explicit publish with no group linked
+// is a conflict; a scheduled one (explicit false) just does not post.
+func (s *Service) postToGroup(ctx context.Context, tx pgx.Tx, a Announcement, explicit bool) error {
+	pv, err := s.groupPreview(ctx, tx, a.OrgID, a.SiteID, a.Audience)
+	if err != nil {
+		return err
+	}
+	if !pv.WillPost {
+		if pv.Reason == "not_linked" && explicit {
+			return problem.Conflict("no Telegram group is linked to this site")
+		}
+		return nil
+	}
+	var locale string
+	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, a.OrgID).Scan(&locale); err != nil {
+		return err
+	}
+	link := strings.TrimRight(s.cfg.BaseURL, "/") + "/announcements/" + a.ID.String()
+	names := make([]string, len(a.Attachments))
+	for i, f := range a.Attachments {
+		names[i] = f.Name
+	}
+	return s.groups.PostToGroup(ctx, tx, jobs.GroupPostArgs{OrgID: a.OrgID, SiteID: a.SiteID, Type: jobs.GroupAnnouncement, Pin: a.Pinned,
+		HTML: chat.AnnouncementHTML(locale, a.Title, a.BodyMD, link, names)})
 }
 
 func personIDs(rs []recipient) []uuid.UUID {

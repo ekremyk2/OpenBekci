@@ -305,6 +305,12 @@ paths:
     $ref: ./paths/operations/chat-settings.yaml
   /v1/orgs/{org_id}/chat-settings/{provider}:
     $ref: ./paths/operations/chat-settings-provider.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/chat-group:
+    $ref: ./paths/operations/sites-site_id-chat-group.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/chat-group:start:
+    $ref: ./paths/operations/sites-site_id-chat-group_start.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/chat-info:
+    $ref: ./paths/operations/sites-site_id-chat-info.yaml
   /v1/orgs/{org_id}/sms-usage:
     $ref: ./paths/operations/sms-usage.yaml
   /v1/orgs/{org_id}/files:

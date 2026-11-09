@@ -11,7 +11,7 @@ import {
   ifMatch,
   type Announcement,
   type AnnouncementAudience,
-  type Channel,
+  type AnnouncementChannel,
 } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { FormError, FormField, SubmitButton, useApplyApiError } from '@/components/forms/FormField'
@@ -34,7 +34,7 @@ import { DeliveryPreviewPanel, useDeliveryPreview } from './DeliveryPreview'
 // The editor pulls in the Markdown renderer; readers of announcements never load it.
 const MarkdownEditor = lazy(() => import('./MarkdownEditor'))
 
-const CHANNELS: Channel[] = ['in_app', 'email', 'sms', 'chat']
+const CHANNELS: AnnouncementChannel[] = ['in_app', 'email', 'sms', 'chat', 'telegram_group']
 
 function AudiencePicker({
   orgId,
@@ -141,7 +141,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
             unit_ids: z.array(z.string()).optional(),
           }),
           channels: z
-            .array(z.enum(['in_app', 'email', 'sms', 'push', 'chat']))
+            .array(z.enum(['in_app', 'email', 'sms', 'push', 'chat', 'telegram_group']))
             .min(1, t`Choose a channel`),
           pinned: z.boolean(),
           publish_at: z.string(),
@@ -195,7 +195,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
     orgId,
     siteId: site?.id,
     audience: audience as AnnouncementAudience,
-    channels: channels as Channel[],
+    channels: channels as AnnouncementChannel[],
   })
   const publishAt = useWatch({ control: form.control, name: 'publish_at' })
   const scheduled = !!publishAt && zonedLocalToIso(publishAt, tz) > new Date().toISOString()
@@ -362,7 +362,9 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
                     ? t`Email`
                     : c === 'chat'
                       ? t`Chat (Telegram/WhatsApp)`
-                      : t`SMS`}
+                      : c === 'telegram_group'
+                        ? t`Telegram group`
+                        : t`SMS`}
               </Label>
             ))}
           </div>
@@ -371,7 +373,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
               {errors.channels.message}
             </p>
           ) : null}
-          <DeliveryPreviewPanel preview={preview} channels={channels as Channel[]} />
+          <DeliveryPreviewPanel preview={preview} channels={channels as AnnouncementChannel[]} />
         </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2">

@@ -23,6 +23,17 @@ func init() {
 			return mreq{method: "DELETE", path: orgPath(org, "/me/chat-links/"+uuid.NewString())}
 		}},
 	}
+	// the site's Telegram group: nothing is configured or linked in the matrix environment
+	site := func(method, suffix, body string) func(*authztest.World, authztest.Org, *testing.T) mreq {
+		return func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: method, path: orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+suffix), body: body}
+		}
+	}
+	rows["operations.getSiteChatGroup"] = mrow{perms: perms(chat.PermGroupManage), status: 200, build: site("GET", "/chat-group", "")}
+	rows["operations.startSiteChatGroupLink"] = mrow{perms: perms(chat.PermGroupManage), status: 409, build: site("POST", "/chat-group:start", "")}
+	rows["operations.updateSiteChatGroup"] = mrow{perms: perms(chat.PermGroupManage), status: 200, build: site("PATCH", "/chat-group", `{"whatsapp_invite_url":null}`)}
+	rows["operations.unlinkSiteChatGroup"] = mrow{perms: perms(chat.PermGroupManage), status: 404, build: site("DELETE", "/chat-group", "")}
+	rows["operations.getSiteChatInfo"] = mrow{perms: perms(notifications.PermRead), status: 200, build: site("GET", "/chat-info", "")}
 	for k, v := range rows {
 		authzMatrixRows[k] = v
 	}

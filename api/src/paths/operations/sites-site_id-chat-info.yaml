@@ -1,0 +1,39 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.getSiteChatInfo
+  summary: The chat groups residents may join
+  description: |-
+    **Release 1.0.** What the site tells its residents about its chat groups: the WhatsApp group invite link (`null` when the site
+    has none). Shown on Home as "Join the site's WhatsApp group".
+
+    Permission: `notifications.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/SiteChatInfo
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

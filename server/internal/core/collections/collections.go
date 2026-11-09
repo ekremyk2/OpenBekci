@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -29,6 +30,8 @@ type Service struct {
 	Now      func() time.Time
 	// Templates renders the ihtarname with a template of an enabled pack when there is one (nil: the generic letter).
 	PackDocs doctpl.Resolver
+	// Groups posts the generic dues reminder in the site's group (nil: telegram_group is not available).
+	Groups jobs.GroupChannel
 }
 
 // NewService returns a Service; now nil means time.Now, notifier nil drops notifications.

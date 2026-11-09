@@ -992,6 +992,7 @@ schemas:
             - sms
             - push
             - chat
+            - telegram_group
           x-open-enum: true
         description: Chosen by the sender (O5).
       recipient_count:
@@ -1107,6 +1108,7 @@ schemas:
             - sms
             - push
             - chat
+            - telegram_group
           x-open-enum: true
       file_ids:
         type: array
@@ -1144,6 +1146,7 @@ schemas:
             - sms
             - push
             - chat
+            - telegram_group
           x-open-enum: true
       file_ids:
         type: array
@@ -1217,6 +1220,7 @@ schemas:
             - sms
             - push
             - chat
+            - telegram_group
       title:
         type: string
         maxLength: 200
@@ -1249,6 +1253,24 @@ schemas:
       in_app_count:
         type: integer
         format: int64
+      telegram_group:
+        type: object
+        description: Present when `telegram_group` was chosen. The group sees the whole site, so a notice for a narrower audience (a block, some units) is not posted there.
+        required:
+          - title
+          - will_post
+        properties:
+          title:
+            type: string
+            description: The linked group's title; empty when none is linked.
+          will_post:
+            type: boolean
+          reason:
+            type: string
+            enum:
+              - not_linked
+              - audience_narrower
+            description: Why it will not post.
   AnnouncementPublish:
     type: object
     properties:
@@ -1262,6 +1284,7 @@ schemas:
             - sms
             - push
             - chat
+            - telegram_group
         description: Overrides the stored channels.
   AnnouncementRead:
     type: object
@@ -1892,6 +1915,86 @@ schemas:
       expires_at:
         type: string
         format: date-time
+  SiteChatGroup:
+    type: object
+    description: The site's Telegram group (the bot posts there like a member) and the WhatsApp invite link the site maintains.
+    required:
+      - status
+      - title
+      - kind
+      - linked_at
+      - code_expires_at
+      - bot_username
+      - whatsapp_invite_url
+    properties:
+      status:
+        type: string
+        enum:
+          - none
+          - pending
+          - linked
+        description: "`pending`: a link code was issued and `/link <code>` was not yet sent in the group."
+      title:
+        type: string
+        nullable: true
+        description: The group's title as Telegram reports it; null until linked.
+      kind:
+        type: string
+        nullable: true
+        enum:
+          - group
+          - channel
+      linked_at:
+        type: string
+        format: date-time
+        nullable: true
+      code_expires_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: When the issued link code stops working; null when no code is pending.
+      bot_username:
+        type: string
+        nullable: true
+        description: The bot to add to the group (without @); null when Telegram is not configured.
+      whatsapp_invite_url:
+        type: string
+        nullable: true
+  SiteChatGroupUpdate:
+    type: object
+    required:
+      - whatsapp_invite_url
+    properties:
+      whatsapp_invite_url:
+        type: string
+        nullable: true
+        pattern: ^https://chat\.whatsapp\.com/[A-Za-z0-9]{10,64}$
+        description: "`https://chat.whatsapp.com/<code>`; null clears it."
+  SiteChatGroupStarted:
+    type: object
+    required:
+      - code
+      - expires_at
+      - bot_username
+    properties:
+      code:
+        type: string
+        description: Send `/link <code>` in the group after adding the bot as an administrator. Shown once.
+      expires_at:
+        type: string
+        format: date-time
+      bot_username:
+        type: string
+        nullable: true
+  SiteChatInfo:
+    type: object
+    required:
+      - whatsapp_invite_url
+    properties:
+      whatsapp_invite_url:
+        type: string
+        nullable: true
+        description: Invite link to the site's WhatsApp group, if the site keeps one.
   ChatProviderSettings:
     type: object
     required:

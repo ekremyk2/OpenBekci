@@ -93,7 +93,7 @@ func newOps(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) (*opsServ
 		late:          late,
 		notifications: notifications.NewService(d, ncfg),
 		tickets:       tickets.NewService(d, fs, late),
-		announcements: announcements.NewService(d, fs, late, announcements.Config{SMS: gw != nil, Mail: mailer != nil}),
+		announcements: announcements.NewService(d, fs, late, announcements.Config{SMS: gw != nil, Mail: mailer != nil, BaseURL: cfg.BaseURL}),
 		documents:     documents.NewService(d, fs),
 		dashboards:    dashboards.NewService(d, nil),
 		codes:         codes.NewService(d),

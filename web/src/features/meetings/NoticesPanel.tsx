@@ -28,6 +28,8 @@ import {
 } from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
+import { useSession } from '@/app/session'
+import { useSiteChatGroup } from '@/features/chat/TelegramGroupCard'
 import { GOV_SCALE, useGovernanceSettings, useNotices } from './hooks'
 import {
   gApi,
@@ -52,14 +54,18 @@ import { Callout, DownloadButton } from './kit/widgets'
 import { callTimingIssues, noticeProgress } from './logic'
 import { NOTICE_METHODS, useGovLabels } from './labels'
 
-const CHANNELS = ['in_app', 'email', 'sms'] as const
+const CHANNELS = ['in_app', 'email', 'sms', 'telegram_group'] as const
 
 /** Step 1 (draft): check the legal timing, choose channels, send the call. */
 export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
   const settings = useGovernanceSettings(ctx.orgId, ctx.siteId)
+  const { can } = useSession()
   const [channels, setChannels] = useState<string[]>(['in_app'])
+  const manager = can('chatgroups.manage')
+  const group = useSiteChatGroup(ctx.orgId, ctx.siteId, manager)
+  const linked = group.data?.status === 'linked'
   const [error, setError] = useState<string | null>(null)
   const issues = settings.data
     ? callTimingIssues(settings.data.settings, meeting.scheduled_at, meeting.second_call_at)
@@ -71,11 +77,16 @@ export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting']
           path: { org_id: ctx.orgId, meeting_id: meeting.id },
           header: idemHeader(idem.key),
         },
-        body: { notify_channels: channels as ('in_app' | 'email' | 'sms')[] },
+        body: { notify_channels: channels as ('in_app' | 'email' | 'sms' | 'telegram_group')[] },
       }),
     ),
   )
-  const names: Record<string, string> = { in_app: t`In the app`, email: t`Email`, sms: t`SMS` }
+  const names: Record<string, string> = {
+    in_app: t`In the app`,
+    email: t`Email`,
+    sms: t`SMS`,
+    telegram_group: t`Telegram group`,
+  }
   return (
     <Card>
       <CardHeader>
@@ -115,11 +126,21 @@ export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting']
               key={c}
               label={names[c]}
               checked={channels.includes(c)}
+              disabled={c === 'telegram_group' && manager && group.isSuccess && !linked}
               onChange={(e) =>
                 setChannels((cur) => (e.target.checked ? [...cur, c] : cur.filter((x) => x !== c)))
               }
             />
           ))}
+          {manager && group.isSuccess ? (
+            <p className="basis-full text-sm text-muted-foreground">
+              {linked ? (
+                <Trans>Will post to {group.data.title} and pin the call</Trans>
+              ) : (
+                <Trans>No Telegram group is linked</Trans>
+              )}
+            </p>
+          ) : null}
         </fieldset>
         {error ? <FormRootError message={error} /> : null}
         <div>

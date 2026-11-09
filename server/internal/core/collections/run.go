@@ -221,6 +221,7 @@ func (s *Service) prepareRun(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, in
 
 // PreviewRun counts the recipients of a run without sending (collections.manage).
 func (s *Service) PreviewRun(ctx context.Context, orgID uuid.UUID, in RunInput) (Preview, error) {
+	in.Channels, _ = splitGroup(in.Channels)
 	var out Preview
 	err := s.run(ctx, orgID, "dunning stage", func(tx pgx.Tx) error {
 		_, _, rec, frozen, err := s.prepareRun(ctx, tx, orgID, in)
@@ -240,6 +241,8 @@ func (s *Service) PreviewRun(ctx context.Context, orgID uuid.UUID, in RunInput) 
 // event row, and a dunning.reminder notification job for the message channels or the
 // stored letter for the letter channel. Debtors with an open collection case are skipped.
 func (s *Service) CreateRun(ctx context.Context, orgID uuid.UUID, in RunInput) (Run, error) {
+	var group bool
+	in.Channels, group = splitGroup(in.Channels)
 	var out Run
 	err := s.run(ctx, orgID, "dunning stage", func(tx pgx.Tx) error {
 		site, stage, rec, _, err := s.prepareRun(ctx, tx, orgID, in)
@@ -263,6 +266,11 @@ func (s *Service) CreateRun(ctx context.Context, orgID uuid.UUID, in RunInput) (
 		}
 		if _, err := tx.Exec(ctx, `UPDATE dunning_run SET event_count=$3, sms_count=$4 WHERE org_id=$1 AND id=$2`, orgID, out.ID, out.EventCount, out.SMSCount); err != nil {
 			return err
+		}
+		if group && len(rec) > 0 {
+			if err := s.postDues(ctx, tx, orgID, site); err != nil {
+				return err
+			}
 		}
 		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "dunning_run.create", "dunning_run", out.ID, nil, map[string]any{"stage_id": in.StageID, "events": out.EventCount}); err != nil {
 			return err

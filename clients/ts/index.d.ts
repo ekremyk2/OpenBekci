@@ -3888,6 +3888,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/sites/{site_id}/chat-group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The site's Telegram group and WhatsApp invite link
+         * @description **Release 1.0.** Whether the site's Telegram group is `linked`, `pending` (a link code was issued and not yet sent in the
+         *     group) or `none`, its title and kind, and the WhatsApp group invite link the site maintains.
+         *
+         *     Permission: `chatgroups.manage`.
+         */
+        get: operations["operations.getSiteChatGroup"];
+        put?: never;
+        post?: never;
+        /**
+         * Unlink the site's Telegram group
+         * @description **Release 1.0.** Removes the link and has the bot leave the group. Nothing is posted there any more.
+         *
+         *     Permission: `chatgroups.manage`.
+         *
+         *     Problems: `not_found` (404, the site has no Telegram group).
+         */
+        delete: operations["operations.unlinkSiteChatGroup"];
+        options?: never;
+        head?: never;
+        /**
+         * Set the WhatsApp group invite link
+         * @description **Release 1.0.** Sets (`https://chat.whatsapp.com/<code>`) or clears (`null`) the WhatsApp group invite link residents see
+         *     on Home as "Join the site's WhatsApp group".
+         *
+         *     Permission: `chatgroups.manage`.
+         *
+         *     Problems: `validation_failed` (422).
+         */
+        patch: operations["operations.updateSiteChatGroup"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/chat-group:start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start linking the site's Telegram group
+         * @description **Release 1.0.** Issues a single-use code (valid 10 minutes). The manager adds the organization's bot to the group as an
+         *     administrator and sends `/link <code>` in the group; the webhook then verifies the link and stores the group. Asking again
+         *     replaces the code; a linked group stays linked until the new code is verified.
+         *
+         *     Permission: `chatgroups.manage`.
+         *
+         *     Problems: `conflict` (409, Telegram is not configured for the organization).
+         */
+        post: operations["operations.startSiteChatGroupLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/chat-info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The chat groups residents may join
+         * @description **Release 1.0.** What the site tells its residents about its chat groups: the WhatsApp group invite link (`null` when the site
+         *     has none). Shown on Home as "Join the site's WhatsApp group".
+         *
+         *     Permission: `notifications.read`.
+         */
+        get: operations["operations.getSiteChatInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/sms-usage": {
         parameters: {
             query?: never;
@@ -10324,7 +10428,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "chat.manage" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.export" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "apikeys.manage" | "apikeys.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "chat.manage" | "chatgroups.manage" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.checkout" | "payments.declare" | "payments.record" | "people.erase" | "people.export" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read" | "webhooks.manage" | "webhooks.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -13352,7 +13456,7 @@ export interface components {
             expires_at: string | null;
             pinned: boolean;
             /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat" | "telegram_group")[];
             /**
              * Format: int64
              * @description Set at publish.
@@ -13402,7 +13506,7 @@ export interface components {
             /** Format: date-time */
             expires_at?: string | null;
             pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat" | "telegram_group")[];
             file_ids?: string[];
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
@@ -13415,7 +13519,7 @@ export interface components {
             /** Format: date-time */
             expires_at?: string | null;
             pinned?: boolean;
-            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat" | "telegram_group")[];
             file_ids?: string[];
         };
         /**
@@ -13469,7 +13573,7 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             audience: components["schemas"]["AnnouncementAudience"];
-            channels: ("in_app" | "email" | "sms" | "push" | "chat")[];
+            channels: ("in_app" | "email" | "sms" | "push" | "chat" | "telegram_group")[];
             /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
             title?: string;
         };
@@ -13494,10 +13598,21 @@ export interface components {
             email_count: number;
             /** Format: int64 */
             in_app_count: number;
+            /** @description Present when `telegram_group` was chosen. The group sees the whole site, so a notice for a narrower audience (a block, some units) is not posted there. */
+            telegram_group?: {
+                /** @description The linked group's title; empty when none is linked. */
+                title: string;
+                will_post: boolean;
+                /**
+                 * @description Why it will not post.
+                 * @enum {string}
+                 */
+                reason?: "not_linked" | "audience_narrower";
+            };
         };
         AnnouncementPublish: {
             /** @description Overrides the stored channels. */
-            channels?: ("in_app" | "email" | "sms" | "push" | "chat")[];
+            channels?: ("in_app" | "email" | "sms" | "push" | "chat" | "telegram_group")[];
         };
         /**
          * @example {
@@ -14433,8 +14548,8 @@ export interface components {
             next_cursor: string | null;
         };
         MeetingCall: {
-            /** @description Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices. */
-            notify_channels?: ("in_app" | "email" | "sms")[];
+            /** @description Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices. `telegram_group` posts (and pins) the call once in the site's linked Telegram group; without a linked group the call answers 409. */
+            notify_channels?: ("in_app" | "email" | "sms" | "telegram_group")[];
         };
         MeetingCancel: {
             reason: string;
@@ -19187,8 +19302,8 @@ export interface components {
             /** @description Restrict the run to these debtors; omitted: every debtor above `min_balance`. Person targets reach carried debt of former occupants. */
             debtors?: components["schemas"]["DebtorRef"][];
             min_balance?: components["schemas"]["Money"];
-            /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms" | "letter")[];
+            /** @description Chosen by the sender (O5). `telegram_group` posts one generic "dues reminder sent, check your statement" in the site's Telegram group, never a name or an amount (409 without a linked group). */
+            channels: ("in_app" | "email" | "sms" | "letter" | "telegram_group")[];
         };
         DunningRunPreview: {
             /** Format: int64 */
@@ -19635,6 +19750,43 @@ export interface components {
             values: {
                 [key: string]: unknown;
             };
+        };
+        /** @description The site's Telegram group (the bot posts there like a member) and the WhatsApp invite link the site maintains. */
+        SiteChatGroup: {
+            /**
+             * @description `pending`: a link code was issued and `/link <code>` was not yet sent in the group.
+             * @enum {string}
+             */
+            status: "none" | "pending" | "linked";
+            /** @description The group's title as Telegram reports it; null until linked. */
+            title: string | null;
+            /** @enum {string|null} */
+            kind: "group" | "channel" | null;
+            /** Format: date-time */
+            linked_at: string | null;
+            /**
+             * Format: date-time
+             * @description When the issued link code stops working; null when no code is pending.
+             */
+            code_expires_at: string | null;
+            /** @description The bot to add to the group (without @); null when Telegram is not configured. */
+            bot_username: string | null;
+            whatsapp_invite_url: string | null;
+        };
+        SiteChatGroupUpdate: {
+            /** @description `https://chat.whatsapp.com/<code>`; null clears it. */
+            whatsapp_invite_url: string | null;
+        };
+        SiteChatGroupStarted: {
+            /** @description Send `/link <code>` in the group after adding the bot as an administrator. Shown once. */
+            code: string;
+            /** Format: date-time */
+            expires_at: string;
+            bot_username: string | null;
+        };
+        SiteChatInfo: {
+            /** @description Invite link to the site's WhatsApp group, if the site keeps one. */
+            whatsapp_invite_url: string | null;
         };
         MySide: {
             /** Format: uuid */
@@ -27576,6 +27728,163 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getSiteChatGroup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteChatGroup"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.unlinkSiteChatGroup": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.updateSiteChatGroup": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteChatGroupUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteChatGroup"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.startSiteChatGroupLink": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteChatGroupStarted"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.getSiteChatInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteChatInfo"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
