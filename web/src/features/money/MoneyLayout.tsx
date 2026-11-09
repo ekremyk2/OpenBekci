@@ -30,6 +30,8 @@ export function MoneyLayout() {
     { to: '/orgs/$orgId/money/late-fees', label: t`Late fees`, any: ['money.read'] },
     { to: '/orgs/$orgId/money/payments', label: t`Payments`, any: ['money.read'] },
     { to: '/orgs/$orgId/money/bank', label: t`Bank import`, any: ['money.read'] },
+    { to: '/orgs/$orgId/money/checkouts', label: t`Card checkouts`, any: ['money.read'] },
+    { to: '/orgs/$orgId/money/settlements', label: t`Settlements`, any: ['money.read'] },
     { to: '/orgs/$orgId/money/expenses', label: t`Expenses`, any: ['money.read'] },
     { to: '/orgs/$orgId/money/collections', label: t`Collections`, any: ['money.read'] },
     {
@@ -47,6 +49,9 @@ export function MoneyLayout() {
   const residentTabs: Tab[] = [
     { to: '/orgs/$orgId/money', label: t`My balance`, any: [], exact: true },
     { to: '/orgs/$orgId/money/pay', label: t`Pay`, any: [] },
+    ...(can('payments.checkout')
+      ? [{ to: '/orgs/$orgId/money/my-checkouts', label: t`Card payments`, any: [] as string[] }]
+      : []),
     { to: '/orgs/$orgId/money/statements', label: t`Statement`, any: [] },
   ]
   const collectorTabs: Tab[] = [

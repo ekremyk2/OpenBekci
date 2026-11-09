@@ -1,5 +1,5 @@
 // Initial-route budget (web plan §14): the JS a first-time visitor downloads to see the first screen
-// (the login page) must stay <= 250 kB gzipped. Counted:
+// (the login page) must stay <= 260 kB gzipped (raised from 250 kB in 0.4: the Turkish and English catalogs carry every screen's strings). Counted:
 //   - the entry script and every modulepreload listed in dist/index.html,
 //   - the /login route chunk and everything it statically imports (not dynamic imports),
 //   - the largest locale catalog chunk a person can pick in the UI (en or tr; one catalog is loaded
@@ -70,7 +70,7 @@ export default [
   {
     name: 'initial route JS (entry + preloads + login route + catalog, gzip)',
     path: [...counted].sort().map((f) => `dist/assets/${f}`),
-    limit: '250 kB',
+    limit: '260 kB',
     gzip: true,
   },
   {

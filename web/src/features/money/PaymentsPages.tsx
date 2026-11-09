@@ -58,6 +58,7 @@ import {
   useMyCashBox,
   useAllUnits,
 } from './pickers'
+import { CardRefundDialog } from './CheckoutsPages'
 import {
   applyServerErrors,
   LabeledCheckbox,
@@ -139,6 +140,7 @@ export function PaymentsPage() {
   const [rejectFor, setRejectFor] = useState<S['Payment'] | null>(null)
   const [confirmFor, setConfirmFor] = useState<S['Payment'] | null>(null)
   const [voidFor, setVoidFor] = useState<S['Payment'] | null>(null)
+  const [refundFor, setRefundFor] = useState<S['Payment'] | null>(null)
   const units = useAllUnits(ctx)
   const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
   const q = useMoneyQuery(['payments', ctx.siteId, status], () =>
@@ -252,6 +254,7 @@ export function PaymentsPage() {
                     <option value="confirmed">{t`Confirmed`}</option>
                     <option value="pending_declared">{t`Awaiting confirmation`}</option>
                     <option value="voided">{t`Voided`}</option>
+                    <option value="refunded">{t`Refunded`}</option>
                   </Select>
                 </Field>
               </div>
@@ -309,7 +312,12 @@ export function PaymentsPage() {
                           <SideBadge side={p.debtor_kind} />
                         </TableCell>
                         <TableCell>{p.payer_display_name ?? '–'}</TableCell>
-                        <TableCell>{labels.method[p.method] ?? p.method}</TableCell>
+                        <TableCell>
+                          {labels.method[p.method] ??
+                            (p.method.startsWith('card:')
+                              ? `${labels.method.card} (${p.method.slice(5)})`
+                              : p.method)}
+                        </TableCell>
                         <TableCell className="text-end">
                           <Money minor={p.gross.amount} currency={ctx.currency} />
                         </TableCell>
@@ -342,11 +350,19 @@ export function PaymentsPage() {
                               >
                                 <Trans>Receipt</Trans>
                               </Button>
-                              <Gate permission="payments.record" fallback={null}>
-                                <Button variant="ghost" size="sm" onClick={() => setVoidFor(p)}>
-                                  <Trans>Void</Trans>
-                                </Button>
-                              </Gate>
+                              {p.method.startsWith('card:') ? (
+                                <Gate permission="money.post" fallback={null}>
+                                  <Button variant="ghost" size="sm" onClick={() => setRefundFor(p)}>
+                                    <Trans>Refund</Trans>
+                                  </Button>
+                                </Gate>
+                              ) : (
+                                <Gate permission="payments.record" fallback={null}>
+                                  <Button variant="ghost" size="sm" onClick={() => setVoidFor(p)}>
+                                    <Trans>Void</Trans>
+                                  </Button>
+                                </Gate>
+                              )}
                             </>
                           ) : null}
                         </TableCell>
@@ -366,6 +382,9 @@ export function PaymentsPage() {
         <RejectDialog ctx={ctx} payment={rejectFor} onClose={() => setRejectFor(null)} />
       ) : null}
       {voidFor ? <VoidDialog ctx={ctx} payment={voidFor} onClose={() => setVoidFor(null)} /> : null}
+      {refundFor ? (
+        <CardRefundDialog ctx={ctx} payment={refundFor} onClose={() => setRefundFor(null)} />
+      ) : null}
     </div>
   )
 }
