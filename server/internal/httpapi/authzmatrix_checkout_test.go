@@ -60,6 +60,11 @@ func init() {
 			s := c2NewSite(w, t, org)
 			return jsonReq("POST", orgPath(org, "/payments/"+s.providerPayment(w, t).String()+":refund"), `{"reason":"matrix"}`, append(moneyIdem(), "If-Match", `"1"`)...)
 		}},
+		// no client money is owed in the matrix world: an authorized caller gets the 422 of an amount above the balance
+		"money.payoutClientMoney": {perms: perms(ledger.PermMoneyPost), status: 422, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			s := c2NewSite(w, t, org)
+			return jsonReq("POST", orgPath(org, "/payment-clearing:payout"), fmt.Sprintf(`{"site_id":"%s","amount":{"amount":100,"currency":"TRY"},"reference":"matrix"}`, s.f.Site), moneyIdem()...)
+		}},
 		"money.listPaymentSettlements": siteGet("/payment-settlements", read),
 		"money.getPaymentClearing":     siteGet("/payment-clearing", read),
 	}
