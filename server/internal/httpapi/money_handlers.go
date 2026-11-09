@@ -3,11 +3,14 @@ package httpapi
 import (
 	"bytes"
 	"context"
+	"errors"
 	"math"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/money"
@@ -471,19 +474,39 @@ func (s *apiServer) MoneyGetDebtorReport(ctx context.Context, req gen.MoneyGetDe
 	return gen.MoneyGetDebtorReport200JSONResponse(out), err
 }
 
+// statementUnitSite resolves the site of a unit for a statement request. Staff
+// reach it through units.read; residents hold statements.read_own and the
+// occupancy-derived right instead (S3, S7: the caller's occupancies, current or
+// former, name the unit and its site), so the unit lookup falls back to them.
+// The statement service then checks the side (CanAccessUnit / CanReadUnitAt).
+func (s *apiServer) statementUnitSite(ctx context.Context, orgID, unitID uuid.UUID) (uuid.UUID, error) {
+	t, err := s.tn()
+	if err != nil {
+		return uuid.Nil, err
+	}
+	u, err := t.GetUnit(ctx, orgID, unitID)
+	if err == nil {
+		return u.SiteID, nil
+	}
+	var pe *problem.Error
+	if errors.As(err, &pe) && pe.Status == http.StatusForbidden {
+		g := authz.GrantsFromContext(ctx)
+		for _, o := range g.Occupancies {
+			if g.OrgID == orgID && o.UnitID == unitID {
+				return o.SiteID, nil
+			}
+		}
+	}
+	return uuid.Nil, err
+}
+
 func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetUnitStatementRequestObject) (gen.MoneyGetUnitStatementResponseObject, error) {
 	r, err := s.rp()
 	if err != nil {
 		return nil, err
 	}
-	var siteID uuid.UUID
-	if t, err := s.tn(); err == nil {
-		u, err := t.GetUnit(ctx, req.OrgId, req.UnitId)
-		if err != nil {
-			return nil, err
-		}
-		siteID = u.SiteID
-	} else {
+	siteID, err := s.statementUnitSite(ctx, req.OrgId, req.UnitId)
+	if err != nil {
 		return nil, err
 	}
 	unit := req.UnitId
@@ -507,36 +530,7 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 			return nil, problem.Validation(problem.Field{Field: "format", Code: "unsupported"})
 		}
 	}
-	cur := st.Currency
-	zero := money.Zero(cur)
-	lines := []map[string]any{}
-	for _, row := range st.Rows {
-		debit, credit := zero, zero
-		if row.Amount.Amount >= 0 {
-			debit = row.Amount
-		} else {
-			credit = money.New(-row.Amount.Amount, cur)
-		}
-		principal, fee := zero, zero
-		if row.Part == "fee" {
-			fee = row.Amount
-		} else {
-			principal = row.Amount
-		}
-		lines = append(lines, map[string]any{"date": row.Date, "kind": row.Kind, "description": row.Ref, "debit": debit, "credit": credit, "principal": principal, "late_fee": fee, "balance": row.Balance.Total,
-			"debtor_kind": req.DebtorKind, "debtor_display_name": nil, "ref_type": nil, "ref_id": nil})
-	}
-	from, to := st.AsOf, st.AsOf
-	if st.From != nil {
-		from = *st.From
-	} else if len(st.Rows) > 0 {
-		from = st.Rows[0].Date
-	}
-	if st.To != nil {
-		to = *st.To
-	}
-	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"mode": "unit_side", "unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
-		"closing_balance": st.Closing.Total, "accrued_late_fee": st.AccruedFee, "credit": st.Credit, "total_due": st.Closing.Total, "lines": lines})
+	out, err := conv[gen.Statement](statementMap(st, map[string]any{"mode": "unit_side", "unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, req.DebtorKind))
 	return gen.MoneyGetUnitStatement200JSONResponse(out), err
 }
 

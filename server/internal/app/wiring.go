@@ -21,6 +21,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/moneyhooks"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/core/tickets"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/permissions"
@@ -239,7 +240,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Identity:     ident,
 		Devices:      devs,
 		Authz:        authz.NewResolver(d, reg, nil),
-		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host).WithValidators(host).WithBankReferenceHint(host),
+		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(siteHooks{host, tickets.SiteSeeder{}}).WithValidators(host).WithBankReferenceHint(host),
 		Packs:        host,
 		People:       peopleSvc,
 		Community:    communitySvc,

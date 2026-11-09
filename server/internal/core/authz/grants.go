@@ -626,7 +626,7 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 		return Grants{}, false, nil
 	}
 	g = Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms), Occupancies: occs, Today: today}
-	g.Items = append(g.Items, r.occupantGrants(g.Current())...)
+	g.Items = append(g.Items, r.OccupantGrants(g.Current())...)
 	g.Items = append(g.Items, r.formerGrants(g.Occupancies, g.Current(), today)...)
 	if p.APIKey != nil {
 		g = r.keyGrants(g, p.APIKey)
@@ -661,9 +661,10 @@ func (r *Resolver) keyGrants(g Grants, k *APIKeyInfo) Grants {
 	return out
 }
 
-// occupantGrants derives the portal permissions of the current occupancies:
+// OccupantGrants derives the portal permissions of the current occupancies (the
+// resolver adds them to the grants of a request; /v1/me lists them with the same call):
 // each carries the permissions that list its kind, at the unit's site.
-func (r *Resolver) occupantGrants(current []OccupancyAccess) []Grant {
+func (r *Resolver) OccupantGrants(current []OccupancyAccess) []Grant {
 	type key struct {
 		p    Permission
 		site uuid.UUID

@@ -79,6 +79,8 @@ paths:
     $ref: ./paths/me/me-devices-id.yaml
   /v1/me/web-login-link:
     $ref: ./paths/me/me-web-login-link.yaml
+  /v1/me/profile:
+    $ref: ./paths/me/me-profile.yaml
   /v1/auth/web-login-link:exchange:
     $ref: ./paths/auth/auth-web-login-link_exchange.yaml
   /v1/orgs/{org_id}/audit:
@@ -789,6 +791,8 @@ components:
       $ref: ./components/auth.yaml#/schemas/SessionList
     MeUser:
       $ref: ./components/auth.yaml#/schemas/MeUser
+    ProfileUpdate:
+      $ref: ./components/people.yaml#/schemas/ProfileUpdate
     PermissionGrant:
       $ref: ./components/auth.yaml#/schemas/PermissionGrant
     MeSite:
