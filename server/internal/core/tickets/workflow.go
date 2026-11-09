@@ -423,3 +423,14 @@ func actorUser(ctx context.Context) *uuid.UUID {
 	}
 	return nil
 }
+
+// SiteSeeder is a tenancy.SiteHook that gives a new site its default workflow and
+// starter categories when it is created, so residents find them before anybody
+// managing the site has opened the tickets screens. Sites that exist already get
+// them the first time any ticket operation touches them.
+type SiteSeeder struct{}
+
+// SiteCreated implements tenancy.SiteHook.
+func (SiteSeeder) SiteCreated(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) error {
+	return ensureWorkflow(ctx, tx, orgID, siteID)
+}

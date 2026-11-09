@@ -107,6 +107,9 @@ func (s *Service) Me(ctx context.Context, userID uuid.UUID) (Me, error) {
 	if err != nil {
 		return Me{}, problem.Internal(fmt.Errorf("load me: %w", err))
 	}
+	if me.User.DisplayName != nil {
+		me.DisplayName = *me.User.DisplayName
+	}
 	if me.DisplayName == "" {
 		switch {
 		case me.User.Email != nil:

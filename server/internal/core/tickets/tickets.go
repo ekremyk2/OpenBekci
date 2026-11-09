@@ -506,8 +506,12 @@ func (s *Service) CreateTicket(ctx context.Context, orgID uuid.UUID, d tenancy.D
 		if err != nil {
 			return err
 		}
+		// the creator chooses (O3): a private ticket about their own unit or a common one
+		// about the shared parts; without a choice the category's default applies. A
+		// private ticket needs a unit the opener occupies (the checks below), so a resident
+		// cannot open one for somebody else's flat.
 		vis := catVis
-		if c.manage && in.Vis != "" {
+		if in.Vis != "" {
 			vis = in.Vis
 		}
 		unit := in.UnitID
