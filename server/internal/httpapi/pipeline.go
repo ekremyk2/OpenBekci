@@ -106,6 +106,9 @@ type opInfo struct {
 	// bodyOptional: the body is declared and not required; a body that is
 	// exactly JSON null (or empty) counts as absent.
 	bodyOptional bool
+	// jsonParts: multipart properties of type object. They travel as JSON
+	// text; a part without a Content-Type (browser FormData) or as text/plain is read as JSON.
+	jsonParts map[string]bool
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -146,6 +149,18 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				hasBody:      op.RequestBody != nil,
 				bodyOptional: op.RequestBody != nil && op.RequestBody.Value != nil && !op.RequestBody.Value.Required,
 				perms:        extPermissions(op.Extensions),
+			}
+			if op.RequestBody != nil && op.RequestBody.Value != nil {
+				if mt := op.RequestBody.Value.Content.Get("multipart/form-data"); mt != nil && mt.Schema != nil && mt.Schema.Value != nil {
+					for name, ps := range mt.Schema.Value.Properties {
+						if ps.Value != nil && ps.Value.Type.Is("object") {
+							if info.jsonParts == nil {
+								info.jsonParts = map[string]bool{}
+							}
+							info.jsonParts[name] = true
+						}
+					}
+				}
 			}
 			if op.Deprecated {
 				info.deprecation, info.sunset = "true", ""

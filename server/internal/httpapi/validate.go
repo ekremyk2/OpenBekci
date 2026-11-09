@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime"
+	"mime/multipart"
 	"net/http"
 	"regexp"
 	"strings"
@@ -31,6 +33,9 @@ func (p *pipeline) validation(next http.Handler) http.Handler {
 			if info.bodyOptional {
 				dropNullBody(r)
 			}
+			if len(info.jsonParts) > 0 {
+				tagJSONParts(r, info.jsonParts)
+			}
 			full.ServeHTTP(w, r)
 			return
 		}
@@ -40,6 +45,56 @@ func (p *pipeline) validation(next http.Handler) http.Handler {
 		}
 		streamed.ServeHTTP(w, r)
 	})
+}
+
+// tagJSONParts gives parts named in names that carry no Content-Type (or text/plain) the type
+// application/json, so the validator reads them as JSON instead of text. The
+// body is already size-limited; on any parse trouble it is left to the validator.
+func tagJSONParts(r *http.Request, names map[string]bool) {
+	mt, params, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil || mt != "multipart/form-data" || r.Body == nil || r.Body == http.NoBody {
+		return
+	}
+	raw, err := io.ReadAll(r.Body)
+	_ = r.Body.Close()
+	restore := func(b []byte, e error) {
+		r.Body = readCloser{io.MultiReader(bytes.NewReader(b), errReader{e}), http.NoBody}
+	}
+	if err != nil {
+		restore(raw, err)
+		return
+	}
+	var out bytes.Buffer
+	mw := multipart.NewWriter(&out)
+	if mw.SetBoundary(params["boundary"]) != nil {
+		restore(raw, io.EOF)
+		return
+	}
+	mr := multipart.NewReader(bytes.NewReader(raw), params["boundary"])
+	for {
+		part, err := mr.NextPart()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			restore(raw, io.EOF)
+			return
+		}
+		h := part.Header
+		if names[part.FormName()] && (h.Get("Content-Type") == "" || strings.HasPrefix(h.Get("Content-Type"), "text/plain")) {
+			h.Set("Content-Type", "application/json")
+		}
+		pw, err := mw.CreatePart(h)
+		if err == nil {
+			_, err = io.Copy(pw, part)
+		}
+		if err != nil {
+			restore(raw, io.EOF)
+			return
+		}
+	}
+	_ = mw.Close()
+	r.Body, r.ContentLength = io.NopCloser(&out), int64(out.Len())
 }
 
 // requestValidator returns the kin-openapi request validation middleware with
