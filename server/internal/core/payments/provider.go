@@ -13,7 +13,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
-	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // Provider payments (packs plan 3.8): the resident pays gross through a
@@ -93,8 +92,16 @@ func (s *Service) RecordProvider(ctx context.Context, orgID uuid.UUID, in Provid
 		if _, err := ledger.ParseDate(in.ReceivedOn); err != nil {
 			return bad("received_on", "invalid_format")
 		}
+		// The provider's date is what it says, not what we can post: the money has moved, so a confirmation dated
+		// ahead of our clock (a provider in another timezone, or a skewed clock) is booked today, and so is one
+		// for a period that has been locked since (a late webhook after the books were closed) - the lock date is
+		// never breached, and a lock that covers today too is the stable 409 locked_period of the ledger.
+		requested := in.ReceivedOn
 		if in.ReceivedOn > today {
-			return bad("received_on", "in_the_future")
+			in.ReceivedOn = today
+		}
+		if site.LockDate != nil && in.ReceivedOn <= *site.LockDate {
+			in.ReceivedOn = today
 		}
 		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
 		if err != nil {
@@ -129,7 +136,11 @@ func (s *Service) RecordProvider(ctx context.Context, orgID uuid.UUID, in Provid
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "payment.record", "payment", p.ID, nil, map[string]any{
-			"amount": in.Gross.Amount, "fee": in.Fee.Amount, "method": p.Method, "provider_txn_id": in.ProviderTxnID, "receipt_no": *p.ReceiptNo, "received_on": in.ReceivedOn}); err != nil {
+			"amount": in.Gross.Amount, "fee": in.Fee.Amount, "method": p.Method, "provider_txn_id": in.ProviderTxnID, "receipt_no": *p.ReceiptNo, "received_on": in.ReceivedOn, "provider_date": requested}); err != nil {
+			return err
+		}
+		// the provider confirmed the money: the webhook event payment.confirmed follows the audit action
+		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "payment.confirm", "payment", p.ID, nil, map[string]any{"provider": in.Provider, "provider_txn_id": in.ProviderTxnID}); err != nil {
 			return err
 		}
 		if err := s.notify(ctx, tx, NotifyPaymentConfirmed, p); err != nil {
@@ -182,89 +193,4 @@ func (s *Service) RefundProvider(ctx context.Context, orgID uuid.UUID, in Provid
 	}
 	p, err := s.reverse(ctx, orgID, pid, reason, "refunded", refp)
 	return p, status == "refunded", err
-}
-
-// SettlementInput is a provider payout.
-type SettlementInput struct {
-	Provider string
-	SiteID   uuid.UUID
-	Ref      string
-	// BankAccountCode is the bank account the net arrived in; empty means the site's default bank account.
-	BankAccountCode string
-	SettledOn       string
-	Net             money.Money
-}
-
-// RecordSettlement posts a payout: the net moves from the provider's clearing
-// account to the bank. A settlement recorded before returns its entry with
-// duplicate set.
-func (s *Service) RecordSettlement(ctx context.Context, orgID uuid.UUID, in SettlementInput) (entry uuid.UUID, duplicate bool, err error) {
-	if in.Provider == "" || in.Ref == "" {
-		return uuid.Nil, false, bad("ref", "required")
-	}
-	err = s.run(ctx, orgID, "settlement", func(tx pgx.Tx) error {
-		if err := providerLock(ctx, tx, orgID, "settlement", in.Provider, in.Ref); err != nil {
-			return err
-		}
-		qerr := tx.QueryRow(ctx, `SELECT entry_id FROM provider_settlement WHERE org_id = $1 AND provider = $2 AND ref = $3`, orgID, in.Provider, in.Ref).Scan(&entry)
-		switch {
-		case qerr == nil:
-			duplicate = true
-			return nil
-		case !errors.Is(qerr, pgx.ErrNoRows):
-			return qerr
-		}
-		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyPost, in.SiteID); err != nil {
-			return err
-		}
-		site, err := tenancy.LoadSite(ctx, tx, orgID, in.SiteID, true, false)
-		if err != nil {
-			return err
-		}
-		if in.Net.Amount <= 0 || in.Net.Currency != ledger.Currency(site) {
-			return bad("net", "invalid_value")
-		}
-		if _, err := ledger.ParseDate(in.SettledOn); err != nil {
-			return bad("settled_on", "invalid_format")
-		}
-		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
-		if err != nil {
-			return err
-		}
-		bank := ch.Account(ledger.SubBank)
-		if in.BankAccountCode != "" {
-			if bank = ch.AccountCode(in.BankAccountCode); bank == uuid.Nil {
-				return bad("bank_account", "invalid_value")
-			}
-			// a payout arrives in a bank account, not in an expense or a liability
-			var typ, sub string
-			if err := tx.QueryRow(ctx, `SELECT type, COALESCE(subtype, '') FROM account WHERE org_id = $1 AND site_id = $2 AND id = $3`, orgID, in.SiteID, bank).Scan(&typ, &sub); err != nil {
-				return err
-			}
-			if typ != "asset" || sub != ledger.SubBank {
-				return bad("bank_account", "invalid_value")
-			}
-		}
-		clearing, err := ledger.EnsureAccount(ctx, tx, orgID, in.SiteID, ledger.ClearingCode(in.Provider), "Clearing: "+in.Provider, "asset", ledger.SubClearing, nil)
-		if err != nil {
-			return err
-		}
-		entry, err = ledger.PostEntry(ctx, tx, ledger.Entry{OrgID: orgID, SiteID: in.SiteID, EntryDate: in.SettledOn, Memo: "Settlement " + in.Provider + " " + in.Ref,
-			SourceType: "provider_settlement", Lines: []ledger.Line{
-				{AccountID: bank, FundID: ch.OperatingFund, Debit: in.Net.Amount},
-				{AccountID: clearing, FundID: ch.OperatingFund, Credit: in.Net.Amount},
-			}})
-		if err != nil {
-			return err
-		}
-		if _, err := tx.Exec(ctx, `INSERT INTO provider_settlement (org_id, site_id, provider, ref, net, settled_on, entry_id) VALUES ($1,$2,$3,$4,$5,$6::date,$7)`,
-			orgID, in.SiteID, in.Provider, in.Ref, in.Net.Amount, in.SettledOn, entry); err != nil {
-			return err
-		}
-		return ledger.Audit(ctx, tx, orgID, in.SiteID, "payment.settle", "provider_settlement", entry, nil, map[string]any{"provider": in.Provider, "ref": in.Ref, "net": in.Net.Amount, "settled_on": in.SettledOn})
-	})
-	if errors.Is(err, pgx.ErrNoRows) {
-		return uuid.Nil, false, problem.NotFound("no such payment")
-	}
-	return entry, duplicate, err
 }

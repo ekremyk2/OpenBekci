@@ -93,17 +93,21 @@ type Payment struct {
 	Unallocated    money.Money  `json:"unallocated"`
 	Allocations    []Allocation `json:"allocations"`
 	CreatedAt      time.Time    `json:"created_at"`
+	// Version moves whenever the payment changes status; it is the If-Match value of a refund.
+	Version int `json:"version"`
+	// ProviderTxnID is the provider's transaction id of a card payment.
+	ProviderTxnID *string `json:"provider_txn_id"`
 }
 
 const paySel = `SELECT p.id, p.org_id, p.site_id, p.payer_person_id, p.unit_id, p.debtor_kind, p.debtor_person_id, p.method, p.gross, p.fee, p.net, p.received_on::text, p.recorded_by,
-	p.asset_account_id, p.reference, p.status, p.receipt_no, p.journal_entry_id, s.currency, p.created_at
+	p.asset_account_id, p.reference, p.status, p.receipt_no, p.journal_entry_id, s.currency, p.created_at, p.version, p.provider_txn_id
 	FROM payment p JOIN site s ON s.org_id = p.org_id AND s.id = p.site_id`
 
 func scanPayment(r pgx.Row) (p Payment, err error) {
 	var gross, fee, net int64
 	var cur string
 	err = r.Scan(&p.ID, &p.OrgID, &p.SiteID, &p.PayerPersonID, &p.UnitID, &p.DebtorKind, &p.PersonID, &p.Method, &gross, &fee, &net, &p.ReceivedOn, &p.RecordedBy,
-		&p.AssetAccountID, &p.Reference, &p.Status, &p.ReceiptNo, &p.JournalEntryID, &cur, &p.CreatedAt)
+		&p.AssetAccountID, &p.Reference, &p.Status, &p.ReceiptNo, &p.JournalEntryID, &cur, &p.CreatedAt, &p.Version, &p.ProviderTxnID)
 	c := money.Code(cur)
 	p.Gross, p.Fee, p.Net = money.New(gross, c), money.New(fee, c), money.New(net, c)
 	p.Allocated, p.Unallocated = money.Zero(c), money.New(net, c)

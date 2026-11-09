@@ -1,0 +1,44 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listMyCheckouts
+  summary: List my checkouts
+  description: |-
+    **Release 0.4.** The card checkouts the caller started in this organization, oldest first.
+
+    Permission: `payments.checkout`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.checkout
+    site_manager:
+      - payments.checkout
+    owner:
+      - payments.checkout
+    tenant:
+      - payments.checkout
+    household:
+      - payments.checkout
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/CheckoutList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

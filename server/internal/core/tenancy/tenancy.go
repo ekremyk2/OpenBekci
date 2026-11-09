@@ -169,6 +169,7 @@ func (p Patch) validate() error {
 			fields = append(fields, problem.Field{Field: "timezone", Code: "invalid_value"})
 		}
 	}
+	fields = append(fields, validatePaymentSettings(p.Settings)...)
 	if len(fields) > 0 {
 		return problem.Validation(fields...)
 	}
@@ -221,6 +222,9 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 				}
 			}
 			next.Settings = merged
+			if err := guardOrgMerchantChange(ctx, tx, orgID, before.Settings, merged); err != nil {
+				return err
+			}
 		}
 		diff, err := audit.Diff("organization", before.auditView(), next.auditView())
 		if err != nil {
@@ -246,6 +250,10 @@ func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion i
 	case errors.Is(err, pgx.ErrNoRows):
 		return Org{}, problem.NotFound("no such organization")
 	case err != nil:
+		var pe *problem.Error
+		if errors.As(err, &pe) {
+			return Org{}, err
+		}
 		return Org{}, problem.Internal(fmt.Errorf("update organization: %w", err))
 	}
 	return out, nil

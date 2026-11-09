@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/sdk"
+	"github.com/openbekci/openbekci/server/internal/core/checkout"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -32,6 +33,35 @@ func (h *Host) AttachPayments(p *payments.Service) {
 	p.OnRefunded = func(ctx context.Context, tx pgx.Tx, pay payments.Payment) error {
 		return h.Emit(ctx, tx, pay.OrgID, sdk.Event{Type: sdk.EventPaymentRefunded, IDs: ids(pay)})
 	}
+}
+
+// CheckoutHooks is the checkout module as the webhook route sees it: a payment event whose transaction belongs to
+// a checkout is completed by the checkout (which records the payment for the debtor and charges it was created
+// for), anything else is recorded from the event's own target.
+type CheckoutHooks interface {
+	// OnPaid completes the checkout of a paid event; handled is false when the transaction is no checkout's.
+	OnPaid(ctx context.Context, org uuid.UUID, provider string, ev sdk.PaymentEvent) (handled bool, err error)
+	OnFailed(ctx context.Context, org uuid.UUID, provider, txn, code string) error
+	OnRefunded(ctx context.Context, org uuid.UUID, provider, txn string) error
+}
+
+// AttachCheckouts makes the payment webhook route complete checkouts.
+func (h *Host) AttachCheckouts(c CheckoutHooks) { h.checkouts = c }
+
+// Providers lists the payment providers of the packs enabled for the organization, by pack id: what card
+// checkout chooses from.
+func (h *Host) Providers(ctx context.Context, org uuid.UUID) ([]checkout.ProviderInfo, error) {
+	active, err := h.Active(ctx, org)
+	if err != nil {
+		return nil, err
+	}
+	var out []checkout.ProviderInfo
+	for _, p := range active {
+		for _, pr := range p.C.PaymentProviders {
+			out = append(out, checkout.ProviderInfo{Pack: p.Manifest.ID, Provider: pr.ID()})
+		}
+	}
+	return out, nil
 }
 
 // paymentProvider finds an enabled pack's payment provider. The provider id is
@@ -146,20 +176,37 @@ func (h *Host) HandleWebhook(ctx context.Context, org uuid.UUID, packID, provide
 	for i, ev := range res.Events {
 		switch ev.Kind {
 		case sdk.EventKindPaid:
-			if ev.ProviderTxnID == "" || ev.Target.UnitID == "" || ev.Target.SiteID == "" {
+			if ev.ProviderTxnID == "" {
 				return res, problem.Validation(problem.Field{Field: fmt.Sprintf("events[%d]", i), Code: "invalid_value"})
 			}
-			_, err = rec.RecordProviderPayment(octx, sdk.ProviderPayment{Provider: providerID, ProviderTxnID: ev.ProviderTxnID, Target: ev.Target,
-				Gross: ev.Gross, Fee: ev.Fee, Reference: ev.Reference, ReceivedOn: dateOf(ev)})
+			// a transaction of a checkout is recorded for the debtor and the charges the checkout was created for
+			// (never from what the event says); anything else from the event's own target
+			handled := false
+			if h.checkouts != nil {
+				handled, err = h.checkouts.OnPaid(octx, org, providerID, ev)
+			}
+			if err == nil && !handled {
+				if ev.Target.UnitID == "" || ev.Target.SiteID == "" {
+					return res, problem.Validation(problem.Field{Field: fmt.Sprintf("events[%d]", i), Code: "invalid_value"})
+				}
+				_, err = rec.RecordProviderPayment(octx, sdk.ProviderPayment{Provider: providerID, ProviderTxnID: ev.ProviderTxnID, Target: ev.Target,
+					Gross: ev.Gross, Fee: ev.Fee, Reference: ev.Reference, ReceivedOn: dateOf(ev)})
+			}
 		case sdk.EventKindRefunded:
 			_, err = rec.RefundProviderPayment(octx, sdk.ProviderRefund{Provider: providerID, ProviderTxnID: ev.ProviderTxnID, RefundRef: orElse(ev.RefundID, ev.ProviderTxnID), Reason: "refunded by the provider"})
+			if err == nil && h.checkouts != nil {
+				err = h.checkouts.OnRefunded(octx, org, providerID, ev.ProviderTxnID)
+			}
 		case sdk.EventKindSettled:
 			if ev.Settlement == nil || ev.Target.SiteID == "" {
 				return res, problem.Validation(problem.Field{Field: fmt.Sprintf("events[%d]", i), Code: "invalid_value"})
 			}
-			_, err = rec.RecordSettlement(octx, sdk.ProviderSettlement{Provider: providerID, Site: ev.Target.SiteID, Ref: ev.Settlement.Ref, SettledOn: ev.Settlement.SettledOn, Net: ev.Settlement.Net})
+			_, err = rec.RecordSettlement(octx, sdk.ProviderSettlement{Provider: providerID, Site: ev.Target.SiteID, Ref: ev.Settlement.Ref, SettledOn: ev.Settlement.SettledOn, Net: ev.Settlement.Net,
+				ProviderTxnIDs: ev.Settlement.ProviderTxnIDs})
 		case sdk.EventKindFailed:
-			continue
+			if h.checkouts != nil && ev.ProviderTxnID != "" {
+				err = h.checkouts.OnFailed(octx, org, providerID, ev.ProviderTxnID, "provider_declined")
+			}
 		default:
 			err = fmt.Errorf("unknown payment event kind %q", ev.Kind)
 		}
@@ -192,7 +239,7 @@ func (h *Host) SyncSettlements(ctx context.Context, org uuid.UUID, packID, provi
 	rec := recorder{h: h, pack: packID}
 	octx := sdk.WithOrg(ctx, sdk.ID(org.String()))
 	for _, s := range list {
-		out, err := rec.RecordSettlement(octx, sdk.ProviderSettlement{Provider: providerID, Site: site, Ref: s.Ref, SettledOn: s.SettledOn, Net: s.Net})
+		out, err := rec.RecordSettlement(octx, sdk.ProviderSettlement{Provider: providerID, Site: site, Ref: s.Ref, SettledOn: s.SettledOn, Net: s.Net, ProviderTxnIDs: s.ProviderTxnIDs})
 		if err != nil {
 			return posted, MapError(packID, err)
 		}

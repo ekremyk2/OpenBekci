@@ -1,0 +1,58 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: money.payoutClientMoney
+  summary: Record a client money payout to a site
+  description: |-
+    **Release 0.4.** Records that the organization, as merchant of record, paid client money out to a site's bank
+    account: debit the site's bank account (`1100`), credit its client money account (`1195`), so the balance the
+    organization owes the site (`client_money_owed` of `money.getPaymentClearing`) goes down. The amount cannot
+    exceed that balance. `reference` (the bank transfer reference) is kept in the entry's memo and the audit trail.
+
+    Permission: `money.post` at the site.
+
+    Problems: `validation_failed` (422, `amount` not positive, in another currency or above the balance, `reference`
+    missing, `paid_on` in the future), `locked_period` (409), `idempotency_mismatch` (422).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/ClientMoneyPayoutCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/PaymentClearing
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

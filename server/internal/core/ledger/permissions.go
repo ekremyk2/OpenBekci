@@ -11,6 +11,7 @@ const (
 	PermMoneyLock         authz.Permission = "money.lock"
 	PermPaymentsRecord    authz.Permission = "payments.record"
 	PermPaymentsDeclare   authz.Permission = "payments.declare"
+	PermPaymentsCheckout  authz.Permission = "payments.checkout"
 	PermStatementsRead    authz.Permission = "statements.read"
 	PermStatementsReadOwn authz.Permission = "statements.read_own"
 	PermReportsRead       authz.Permission = "reports.read"
@@ -35,6 +36,8 @@ func Permissions() []authz.PermissionDef {
 		{Name: PermPaymentsRecord, Description: "Record and confirm payments, allocate them and issue receipts (cash collectors only into their own cash box)",
 			Roles: append(append([]authz.Role{}, posting...), authz.RoleStaff), Scopes: orgSite},
 		{Name: PermPaymentsDeclare, Description: "Declare a bank transfer already made", Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager}, Scopes: orgSite, Occupants: owners},
+		{Name: PermPaymentsCheckout, Description: "Start a card checkout for a unit side (a resident only for a side their occupancy reaches; managers for any), poll it and list one's own checkouts",
+			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager}, Scopes: orgSite, Occupants: all},
 		{Name: PermStatementsRead, Description: "Read unit-side and person statements", Roles: overview, Scopes: orgSite},
 		{Name: PermStatementsReadOwn, Description: "Read statements, balances, charges, payments and receipts of the caller's own side", Roles: overview, Scopes: orgSite, Occupants: all},
 		{Name: PermReportsRead, Description: "Read the financial reports", Roles: overview, Scopes: orgSite},
