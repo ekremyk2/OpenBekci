@@ -1,0 +1,21 @@
+# Türkiye İş Bankası account statement (hesap ekstresi) export.
+#
+# Built from public knowledge of the export shape and tested with SYNTHETIC
+# fixtures only (see BANKS.md); verify against a real file before relying on it.
+id: tr.isbank
+name: Türkiye İş Bankası
+formats: [csv, xlsx]
+filename_hints: [isbank, is_bankasi, isbankasi]
+delimiter: ";"
+currency: TRY
+fingerprint: [İşlem Tarihi, Açıklama, Borç, Alacak, Bakiye]
+date_formats: ["02.01.2006 15:04:05", "02.01.2006", "02/01/2006"]
+columns:
+  date: [İşlem Tarihi, Tarih]
+  description: [Açıklama]
+  debit: [Borç]            # money out, positive numbers
+  credit: [Alacak]         # money in
+  balance: [Bakiye]
+  reference: [Dekont No, Referans]
+  counterparty: [Karşı Taraf, Gönderen/Alıcı]
+skip_row_prefixes: [Toplam, Genel Toplam, Devreden]

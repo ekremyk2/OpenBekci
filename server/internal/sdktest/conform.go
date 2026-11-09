@@ -48,6 +48,9 @@ type PaymentFixture struct {
 	// Refunded builds a correctly signed webhook reporting a refund started at
 	// the provider's side. Optional: the refund-webhook case is skipped without it.
 	Refunded func(txn, refundID string) sdk.WebhookRequest
+	// Prepare runs before Paid builds a webhook, for providers that only honour transactions they created
+	// (it stands in for the checkout that would have made the transaction). Optional.
+	Prepare func(h *Harness, e PaidEvent)
 }
 
 func post(h *Harness, provider string, req sdk.WebhookRequest) int {
@@ -74,7 +77,11 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		return h, unit
 	}
 	paid := func(h *Harness, unit sdk.ID, txn string) sdk.WebhookRequest {
-		return fx.Paid(PaidEvent{Txn: txn, Site: h.Site, Unit: unit, DebtorKind: "owner", Gross: 10000, Fee: 250, Currency: "TRY", Reference: "ref-" + txn})
+		ev := PaidEvent{Txn: txn, Site: h.Site, Unit: unit, DebtorKind: "owner", Gross: 10000, Fee: 250, Currency: "TRY", Reference: "ref-" + txn}
+		if fx.Prepare != nil {
+			fx.Prepare(h, ev)
+		}
+		return fx.Paid(ev)
 	}
 	count := func(h *Harness, where string, args ...any) int64 {
 		return h.Int(`SELECT count(*) FROM payment WHERE org_id = '`+string(h.Org)+`' AND `+where, args...)
@@ -308,7 +315,9 @@ func ConformPaymentProvider(t *testing.T, newPack func() sdk.Pack, fx PaymentFix
 		h, unit := boot(t)
 		co, err := h.Host.CreateCheckout(h.Ctx(), h.Env.OrgID, h.PackID, fx.Provider, sdk.CheckoutRequest{
 			Reference: "chk-" + strconv.FormatInt(time.Now().UnixNano(), 36), Gross: sdk.Money{Amount: 10000, Currency: "TRY"}, Locale: "en",
-			Target: sdk.PaymentTarget{SiteID: h.Site, UnitID: unit, DebtorKind: "owner"}, ReturnURL: "https://example.test/return"})
+			Target: sdk.PaymentTarget{SiteID: h.Site, UnitID: unit, DebtorKind: "owner"}, ReturnURL: "https://example.test/return",
+			// the fixture settings are organization settings: the organization is the merchant
+			MerchantOfRecord: sdk.MerchantOrganization})
 		if err != nil {
 			t.Fatalf("CreateCheckout: %v", err)
 		}
@@ -339,6 +348,10 @@ type ImporterSample struct {
 	Name     string
 	Filename string
 	Data     []byte
+	// Text is the content of the file as text, for binary or non-UTF-8 files
+	// (a workbook, windows-1254): the raw rows of a parse are checked against
+	// it instead of the bytes. Empty means the bytes are the text.
+	Text string
 	// WantLines is the number of parsed lines and WantTotal their sum in minor units.
 	WantLines int
 	WantTotal int64
@@ -410,6 +423,10 @@ func ConformStatementImporter(t *testing.T, newPack func() sdk.Pack, importerID 
 					t.Errorf("line %d has a zero amount", l.LineNo)
 				}
 			}
+			haystack := s.Text
+			if haystack == "" {
+				haystack = string(s.Data)
+			}
 			// raw payload: nothing the core needs may live only in Raw, and Raw only repeats the file
 			stripped := st.StripRaw()
 			for i, l := range st.Lines {
@@ -418,7 +435,7 @@ func ConformStatementImporter(t *testing.T, newPack func() sdk.Pack, importerID 
 					t.Fatalf("line %d changes when Raw is stripped", l.LineNo)
 				}
 				for k, v := range l.Raw {
-					if v != "" && !strings.Contains(string(s.Data), v) {
+					if v != "" && !strings.Contains(haystack, v) {
 						t.Errorf("line %d raw[%q] = %q does not appear in the file: Raw must be the source row, not derived or invented data", l.LineNo, k, v)
 					}
 				}

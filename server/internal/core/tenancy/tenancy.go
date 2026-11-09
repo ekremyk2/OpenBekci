@@ -48,6 +48,7 @@ type Service struct {
 	db         TxRunner
 	archiveKey []byte // signs site archives; see WithArchiveKey
 	siteHook   SiteHook
+	refHint    BankReferenceHint
 	validators extval.Validators
 }
 

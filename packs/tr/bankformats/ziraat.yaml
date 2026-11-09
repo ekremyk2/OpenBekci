@@ -1,0 +1,24 @@
+# Ziraat Bankası account statement (hesap hareketleri) export.
+#
+# Built from public knowledge of the export shape and tested with SYNTHETIC
+# fixtures only (see BANKS.md); verify against a real file before relying on it.
+id: tr.ziraat
+name: Ziraat Bankası
+formats: [csv, xlsx]
+# an xlsx cannot be recognized from its first KiB: a file name containing one of these is taken
+filename_hints: [ziraat]
+delimiter: ";"
+currency: TRY
+# every header of the list must be in the header row for the file to be this format
+fingerprint: [Tarih, Açıklama, Tutar, Bakiye]
+date_formats: ["02.01.2006 15:04:05", "02.01.2006", "02/01/2006", "2006-01-02"]
+columns:
+  date: [Tarih]
+  description: [Açıklama]
+  amount: [Tutar]          # signed: money out is negative
+  balance: [Bakiye]
+  reference: [Dekont No, Fiş No]
+skip_row_prefixes: [Toplam, Genel Toplam]
+# the payer or payee named inside the description when the file has no column for it
+counterparty_patterns:
+  - '(?i)(?:gönderen|gonderen|alıcı|alici)\s*:\s*(.+?)(?:\s+-\s+|\s*$)'
