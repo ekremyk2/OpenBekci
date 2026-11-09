@@ -233,7 +233,7 @@ func (r *Router) viaRelay(ctx context.Context, cfg RelayConfig, batch []Message)
 		_ = json.Unmarshal(raw, &e)
 		code := clip(e.Error.Code, 64)
 		detail := "relay answered " + strconv.Itoa(resp.StatusCode) + " " + code
-		if resp.StatusCode >= 500 || code == "stale_timestamp" || code == "replayed_nonce" {
+		if resp.StatusCode >= 500 || code == "stale_timestamp" || code == "replayed_nonce" || code == "server_disabled" {
 			return allError(len(batch), detail, Error)
 		}
 		return allError(len(batch), detail, Rejected)

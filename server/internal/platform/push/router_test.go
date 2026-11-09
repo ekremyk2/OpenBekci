@@ -68,7 +68,7 @@ func TestRelayFailureModes(t *testing.T) {
 		status int
 		reply  string
 		want   Outcome
-	}{{429, "", RateLimited}, {503, "", Error}, {401, `{"error":{"code":"stale_timestamp"}}`, Error}, {401, `{"error":{"code":"unauthorized"}}`, Rejected}, {400, "", Rejected}, {200, `not json`, Error}, {200, `{"results":[]}`, Error}} {
+	}{{429, "", RateLimited}, {503, "", Error}, {401, `{"error":{"code":"stale_timestamp"}}`, Error}, {403, `{"error":{"code":"server_disabled"}}`, Error}, {401, `{"error":{"code":"unauthorized"}}`, Rejected}, {400, "", Rejected}, {200, `not json`, Error}, {200, `{"results":[]}`, Error}} {
 		status, reply = c.status, c.reply
 		res, _ := r.Send(context.Background(), one)
 		if res[0].Outcome != c.want || res[0].Retryable() != (c.want != Rejected) {
