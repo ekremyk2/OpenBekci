@@ -51,7 +51,6 @@ export function PackDetailPage({ packId }: { packId: string }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <BackLink orgId={orgId} />
         <h2 className="flex flex-wrap items-center gap-2 text-lg font-semibold">
           {title}
           <Badge variant="outline">v{pack.version}</Badge>

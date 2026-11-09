@@ -4,13 +4,24 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useLocale } from '@/app/locale'
-import { useTheme, type ThemePreference } from '@/app/theme'
+import { ACCENTS, useTheme, type Accent, type ThemePreference } from '@/app/theme'
 import { USER_LOCALES, isLocale } from '@/lib/i18n'
+
+// swatch = the light-mode primary of each palette in src/index.css (brand = the default blue)
+const SWATCH: Record<Accent, string> = {
+  brand: '#2563eb',
+  slate: 'oklch(0.42 0.03 255)',
+  forest: 'oklch(0.45 0.09 155)',
+  terracotta: 'oklch(0.5 0.12 40)',
+  navy: 'oklch(0.38 0.1 255)',
+}
 
 const LOCALE_NAMES: Record<string, string> = { en: 'English', tr: 'Türkçe' }
 
@@ -45,8 +56,15 @@ export function LocaleToggle() {
 }
 
 export function ThemeToggle() {
-  const { preference, resolved, setPreference } = useTheme()
+  const { preference, resolved, accent, setPreference, setAccent } = useTheme()
   const { t } = useLingui()
+  const accentNames: Record<Accent, string> = {
+    brand: t`Organization color`,
+    slate: t`Slate`,
+    forest: t`Forest`,
+    terracotta: t`Terracotta`,
+    navy: t`Navy`,
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -68,6 +86,22 @@ export function ThemeToggle() {
           <DropdownMenuRadioItem value="dark">
             <MoonIcon className="size-4" /> <Trans>Dark</Trans>
           </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>
+          <Trans>Accent</Trans>
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={accent} onValueChange={(v) => setAccent(v as Accent)}>
+          {ACCENTS.map((a) => (
+            <DropdownMenuRadioItem key={a} value={a}>
+              <span
+                className="size-4 rounded-full border"
+                style={{ background: SWATCH[a] }}
+                aria-hidden="true"
+              />{' '}
+              {accentNames[a]}
+            </DropdownMenuRadioItem>
+          ))}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -151,16 +151,20 @@ export function roleMe(role: 'resident' | 'guard'): Me {
         permissions: permissions.map((permission) => ({ permission })),
       },
     ],
-    occupancies: [
-      {
-        id: 'occ-mock',
-        organization_id: org.id,
-        site_id: 'site-a',
-        unit_id: 'u-a1',
-        unit_label: 'A1',
-        kind: 'owner',
-        may_see_money: true,
-      },
-    ],
+    // the guard of the booth lives nowhere: no unit, so no Money
+    occupancies:
+      role === 'guard'
+        ? []
+        : [
+            {
+              id: 'occ-mock',
+              organization_id: org.id,
+              site_id: 'site-a',
+              unit_id: 'u-a1',
+              unit_label: 'A1',
+              kind: 'owner',
+              may_see_money: true,
+            },
+          ],
   }
 }
