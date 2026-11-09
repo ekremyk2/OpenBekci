@@ -532,7 +532,7 @@ func (r *Resolver) Registry() *Registry { return r.reg }
 // platform_admin role (platform.manage), and nothing inside organizations.
 func (r *Resolver) InstanceGrants(p *Principal) Grants {
 	var g Grants
-	if p == nil {
+	if p == nil || p.APIKey != nil { // a key holds no account permissions and nothing instance-wide
 		return g
 	}
 	for _, perm := range r.reg.Permissions() {
@@ -561,7 +561,7 @@ func (r *Resolver) InstanceGrants(p *Principal) Grants {
 // or the organization does not exist or is not active: callers answer 404 so
 // the existence of the organization does not leak.
 func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID) (g Grants, member bool, err error) {
-	if p == nil {
+	if p == nil || p.APIKey != nil && p.APIKey.OrgID != orgID {
 		return Grants{}, false, nil
 	}
 	now := r.now()
@@ -628,7 +628,37 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 	g = Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms), Occupancies: occs, Today: today}
 	g.Items = append(g.Items, r.occupantGrants(g.Current())...)
 	g.Items = append(g.Items, r.formerGrants(g.Occupancies, g.Current(), today)...)
+	if p.APIKey != nil {
+		g = r.keyGrants(g, p.APIKey)
+	}
 	return g, true, nil
+}
+
+// keyGrants narrows the creator's grants to what an API key may use: role
+// grants only (no occupancy or former-occupant rights), for the permissions in
+// the key's scopes, and, for a site-restricted key, at that site only. An
+// organization-wide grant becomes a site grant when the permission can be
+// granted at a site, and is dropped otherwise. The result is the intersection
+// of the key's scopes and the creator's grants as they are now.
+func (r *Resolver) keyGrants(g Grants, k *APIKeyInfo) Grants {
+	out := Grants{OrgID: g.OrgID, Today: g.Today}
+	for _, it := range g.Items {
+		if it.FromOccupancy || !slices.Contains(k.Scopes, it.Permission) {
+			continue
+		}
+		if k.SiteID != nil {
+			switch {
+			case it.ScopeType == ScopeOrg && slices.Contains(r.reg.defs[it.Permission].Scopes, ScopeSite):
+				site := *k.SiteID
+				it = Grant{Permission: it.Permission, ScopeType: ScopeSite, ScopeID: &site}
+			case it.ScopeType == ScopeSite && it.ScopeID != nil && *it.ScopeID == *k.SiteID:
+			default:
+				continue
+			}
+		}
+		out.Items = append(out.Items, it)
+	}
+	return out
 }
 
 // occupantGrants derives the portal permissions of the current occupancies:

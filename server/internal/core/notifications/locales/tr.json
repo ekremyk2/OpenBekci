@@ -26,6 +26,7 @@
   "access.agent_silent": {"title": "Geçiş ajanı sessiz", "body": "{{.site}} geçiş ajanı bir süredir rapor vermiyor.", "subject": "Geçiş ajanı sessiz", "sms": "{{.site}}: geçiş ajanı sessiz."},
   "access.agent_clock_skew": {"title": "Geçiş ajanı saat farkı", "body": "Geçiş ajanının saati sunucudan farklı.", "subject": "Geçiş ajanı saat farkı", "sms": "{{.site}}: geçiş ajanı saat farkı."},
   "access.agent_stopped": {"title": "Geçiş ajanı durdu", "body": "{{.site}} geçiş ajanı durdu.", "subject": "Geçiş ajanı durdu", "sms": "{{.site}}: geçiş ajanı durdu."},
+  "webhook.endpoint_failing": {"title": "Webhook uç noktası başarısız", "body": "{{.host}} adresindeki webhook uç noktasına gönderimler başarısız oluyor. Uç noktayı ve gönderim kayıtlarını kontrol edin.", "subject": "Webhook uç noktası başarısız", "sms": "{{.host}} webhook uç noktası başarısız oluyor."},
   "auth.sign_in_code": {"title": "Giriş kodunuz", "body": "Giriş kodunuz {{.code}}. {{.minutes}} dakika geçerlidir. Kimseyle paylaşmayın.", "subject": "Giriş kodunuz", "sms": "Giriş kodunuz {{.code}}. Kimseyle paylaşmayın."},
   "invitation.sent": {"title": "Davet edildiniz", "body": "{{.inviter}} sizi {{.site}} sitesine davet etti. Katılmak için bağlantıyı açın.", "subject": "{{.site}} daveti", "sms": "{{.site}}: katılmaya davet edildiniz. {{.link}}"}
 }

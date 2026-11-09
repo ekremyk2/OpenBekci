@@ -1,0 +1,81 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: integrations.listWebhookEndpoints
+  summary: List webhook endpoints
+  description: |-
+    **Release 0.4.** Lists the organization's outbound webhook endpoints.
+
+    Permission: `webhooks.read`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookEndpointList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: integrations.createWebhookEndpoint
+  summary: Create a webhook endpoint
+  description: |-
+    **Release 0.4.** Creates an endpoint and returns its signing secret exactly once. The URL
+    must be `https` and its host must not resolve to a private, loopback or link-local address
+    (field `url`: `https_required`, `forbidden_target`, `unresolvable`, `invalid_url`).
+    At most 20 endpoints per organization.
+
+    Permission: `webhooks.manage`.
+
+    Problems: `validation_failed` (422), `conflict` (409, too many endpoints).
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.manage
+  x-idempotent: none
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/integrations.yaml#/schemas/WebhookEndpointCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookEndpointCreated
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

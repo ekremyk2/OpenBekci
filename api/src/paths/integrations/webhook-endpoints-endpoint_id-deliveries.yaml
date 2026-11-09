@@ -1,0 +1,55 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: endpoint_id
+    in: path
+    required: true
+    description: Id of the webhook endpoint.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: integrations.listWebhookDeliveries
+  summary: List the deliveries of a webhook endpoint
+  description: |-
+    **Release 0.4.** The delivery log, newest first: status, attempts, last response code and error,
+    and the next retry time while a delivery is pending.
+
+    Permission: `webhooks.read`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.read
+  x-stability: preview
+  parameters:
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - succeeded
+          - failed
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookDeliveryList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

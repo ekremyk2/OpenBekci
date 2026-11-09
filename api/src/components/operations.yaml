@@ -30,6 +30,7 @@ schemas:
       - access.agent_silent
       - access.agent_clock_skew
       - access.agent_stopped
+      - webhook.endpoint_failing
   TicketSemantic:
     type: string
     description: Whether a status counts as open work or as finished. Open enum.

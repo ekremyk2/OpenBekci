@@ -153,6 +153,10 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"access_event":         "the opening log stays with the organization that recorded it",
 	"access_dirty":         "outbox of the projector",
 	"access_event_counter": "sequence counter of the opening log, which stays with the old organization",
+	// integrations: organization-level, never site data; credentials are not handed over
+	"api_key":          "organization API keys are credentials of the old organization (and bound to its administrators); create new ones after the hand-over",
+	"webhook_endpoint": "organization-level endpoints with sealed signing secrets; the new organization registers its own",
+	"webhook_delivery": "delivery log of the old organization's endpoints",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

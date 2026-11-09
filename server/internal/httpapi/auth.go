@@ -25,11 +25,20 @@ const (
 	CSRFHeaderValue = "openbekci-web"
 )
 
+// APIKeyAuthenticator resolves an API key token: found is false when the token
+// is not a key we know, so the caller tries it as a session token.
+type APIKeyAuthenticator interface {
+	AuthenticateAPIKey(ctx context.Context, token string) (p *authz.Principal, found bool, err error)
+}
+
 // SessionAuthenticator authenticates requests by opaque session token: the
 // `obk_session` cookie (web) or `Authorization: Bearer` (mobile and
 // integrations). Cookie-authenticated mutations also pass the CSRF check.
 type SessionAuthenticator struct {
 	Identity *identity.Service
+	// Keys resolves bearer tokens that are organization API keys
+	// (obk_<prefix>_<secret>); nil leaves API keys unsupported.
+	Keys APIKeyAuthenticator
 	// Origins are the browser origins allowed to mutate with a cookie:
 	// BASE_URL and EXTRA_ORIGINS.
 	Origins []string
@@ -42,6 +51,14 @@ func (a SessionAuthenticator) Authenticate(r *http.Request) (*authz.Principal, e
 		token = strings.TrimSpace(token)
 		if !ok || !strings.EqualFold(scheme, "Bearer") || token == "" {
 			return nil, problem.Unauthenticated("the Authorization header is not a Bearer token")
+		}
+		if a.Keys != nil {
+			// a token shaped like an API key that no key matches falls through to
+			// the session lookup (an ordinary access token can begin with "obk_")
+			p, found, err := a.Keys.AuthenticateAPIKey(r.Context(), token)
+			if found || err != nil {
+				return p, err
+			}
 		}
 		return a.Identity.Authenticate(r.Context(), identity.KindAccessToken, token)
 	}

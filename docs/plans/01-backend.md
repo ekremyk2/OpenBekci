@@ -311,7 +311,7 @@ Conventions from overview §6.2. Backend specifics:
 - **Client-driven endpoints and their releases:** discovery + `/v1/instance` + `/v1/me` (0.1 skeleton); `GET /v1/orgs/{org}/me/dashboard` and the org-level portfolio dashboard (0.1); `POST …/units:import?dry_run=true` and opening-balance import (0.1); `POST …/charge-plans:preview` (0.1); `GET …/codes?locale=` (enum/error labels incl. pack labels, 0.1); platform endpoints `/v1/platform/orgs|settings|health|jobs|backup-status` (0.1 minimal, 1.0 complete); image `?variant=thumb|medium` (0.1, generated on upload); `POST/DELETE /v1/me/devices` (0.4); web-login link (0.4); checkout `checkout_url`/`return_url` + status poll (0.4); `GET /v1/orgs/{org}/reference/{dataset}` for pack-registered reference data such as il/ilçe lists (0.4). **No `updated_since` / ETag** in v1.
 - **Bulk:** CSV/XLSX import with `dry_run` returning a row-level report; exports as CSV/XLSX via jobs.
 - **Rate limiting:** in-memory token buckets per instance (per IP on auth/OTP/magic-link/invitation sending; per user elsewhere). `429` with `Retry-After`.
-- **Webhooks / API keys:** 0.4.
+- **Webhooks / API keys (0.4):** `/v1/orgs/{org_id}/api-keys` (create with the one-time secret, list, `:rotate`, `:revoke`; bearer `obk_<prefix>_<secret>`, rights = key scopes ∩ the creator's grants at call time, re-authentication to manage) and `/v1/orgs/{org_id}/webhook-endpoints` (CRUD, `:test`, `/deliveries`). `docs/integrations.md`, `docs/adr/0002-webhook-signing.md`.
 - **Realtime:** polling (unread count endpoint, visitor approval requests). SSE later.
 
 ---
@@ -368,6 +368,7 @@ Until 0.4, everything Turkish is **core**: `tr` locale, Law 634 presets as defau
 | `privacy.export` / `privacy.erase` / `maintenance.prune` (retention) | on demand / daily | privacy / platform |
 | `governance.term_reminders`, `governance.notify_absentees` (0.2) | daily / on demand | governance |
 | `community.visitor_request_expiry`, `community.booking_fees` (0.3) | on demand | community |
+| `webhooks.deliver` (0.4) | one job per (event, endpoint), unique on both; exponential backoff, bounded attempts | integrations |
 
 `openbekci serve` runs the worker in-process by default; `openbekci worker` runs it alone. CPU-heavy jobs (PDF, imports) are capped at `max(1, NumCPU/2)`.
 
@@ -443,6 +444,9 @@ All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the
 | `SMTP_*` | no | email channel disabled without it |
 | `SMS_PROVIDER`, `SMS_NETGSM_*` | no (yes for phone-first sites) | core gateway; per-site credentials may override |
 | `SEND_DAILY_BUDGET`, `SMS_HOURLY_BUDGET`, `MAIL_HOURLY_BUDGET` | no | sign-in message budgets: per identifier per day (default 10), per instance per hour for SMS (120) and mail (300); negative removes the limit |
+| `API_KEY_RATE_PER_MINUTE` (0.4) | no | requests per minute per organization API key (default 600, with a burst of ten seconds' worth); negative removes the limit |
+| `WEBHOOK_MAX_ATTEMPTS` (0.4) | no | delivery attempts per (event, endpoint) before the endpoint is marked failing (default 8, 1 to 20); backoff doubles from 30 s up to 4 h |
+| `WEBHOOK_ALLOWED_CIDRS` (0.4) | no | comma separated CIDRs or IPs outbound webhooks may reach although private, loopback or link-local (self-hosted receivers on the LAN); empty keeps the SSRF guard strict. Webhook secrets are sealed with `ENCRYPTION_KEY` |
 | `PUSH_RELAYS` (0.4) | no | list of `relay_id=url;server_id;secret_file;app_id` |
 | `TRUSTED_PROXIES` | yes behind a proxy | CIDRs; also what lets the agent enrol rate limit (10/min) count per real client IP: without it behind a proxy every enrolment shares one budget |
 | `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | |

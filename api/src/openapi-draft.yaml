@@ -31,6 +31,8 @@ tags:
     description: Facilities, bookings, visitors, deliveries and the guard console (release 0.3).
   - name: access
     description: Agents, access points, credentials, access events and manual open (release 0.3).
+  - name: integrations
+    description: Organization API keys and signed outbound webhooks (release 0.4).
   - name: agent
     description: "Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1)."
   - name: dashboards
@@ -632,6 +634,22 @@ paths:
     $ref: ./paths/access/agents-agent_id_revoke.yaml
   /v1/orgs/{org_id}/agents/{agent_id}:rotate-token:
     $ref: ./paths/access/agents-agent_id_rotate-token.yaml
+  /v1/orgs/{org_id}/api-keys:
+    $ref: ./paths/integrations/api-keys.yaml
+  /v1/orgs/{org_id}/api-keys/{key_id}:rotate:
+    $ref: ./paths/integrations/api-keys-key_id_rotate.yaml
+  /v1/orgs/{org_id}/api-keys/{key_id}:revoke:
+    $ref: ./paths/integrations/api-keys-key_id_revoke.yaml
+  /v1/orgs/{org_id}/webhook-endpoints:
+    $ref: ./paths/integrations/webhook-endpoints.yaml
+  /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:
+    $ref: ./paths/integrations/webhook-endpoints-endpoint_id.yaml
+  /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:test:
+    $ref: ./paths/integrations/webhook-endpoints-endpoint_id_test.yaml
+  /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:rotate-secret:
+    $ref: ./paths/integrations/webhook-endpoints-endpoint_id_rotate-secret.yaml
+  /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}/deliveries:
+    $ref: ./paths/integrations/webhook-endpoints-endpoint_id-deliveries.yaml
   /v1/orgs/{org_id}/access/allowlist:rebuild:
     $ref: ./paths/access/access-allowlist_rebuild.yaml
   /v1/orgs/{org_id}/access/events:
@@ -1675,6 +1693,28 @@ components:
       $ref: ./components/access.yaml#/schemas/AgentList
     AgentEnrolment:
       $ref: ./components/access.yaml#/schemas/AgentEnrolment
+    ApiKey:
+      $ref: ./components/integrations.yaml#/schemas/ApiKey
+    ApiKeyList:
+      $ref: ./components/integrations.yaml#/schemas/ApiKeyList
+    ApiKeyCreate:
+      $ref: ./components/integrations.yaml#/schemas/ApiKeyCreate
+    ApiKeyCreated:
+      $ref: ./components/integrations.yaml#/schemas/ApiKeyCreated
+    WebhookEndpoint:
+      $ref: ./components/integrations.yaml#/schemas/WebhookEndpoint
+    WebhookEndpointList:
+      $ref: ./components/integrations.yaml#/schemas/WebhookEndpointList
+    WebhookEndpointCreate:
+      $ref: ./components/integrations.yaml#/schemas/WebhookEndpointCreate
+    WebhookEndpointCreated:
+      $ref: ./components/integrations.yaml#/schemas/WebhookEndpointCreated
+    WebhookEndpointUpdate:
+      $ref: ./components/integrations.yaml#/schemas/WebhookEndpointUpdate
+    WebhookDelivery:
+      $ref: ./components/integrations.yaml#/schemas/WebhookDelivery
+    WebhookDeliveryList:
+      $ref: ./components/integrations.yaml#/schemas/WebhookDeliveryList
     AllowlistRebuild:
       $ref: ./components/access.yaml#/schemas/AllowlistRebuild
     RecurringWindow:

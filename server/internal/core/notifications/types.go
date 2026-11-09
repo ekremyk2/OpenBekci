@@ -39,6 +39,9 @@ const (
 	TypeAgentSilent           = "access.agent_silent"
 	TypeAgentClockSkew        = "access.agent_clock_skew"
 	TypeAgentStopped          = "access.agent_stopped"
+	// TypeWebhookFailing tells the organization's administrators that an
+	// outbound webhook endpoint keeps failing (integrations module).
+	TypeWebhookFailing = "webhook.endpoint_failing"
 
 	// Always delivered, cannot be muted, channels fixed (SMS when the person has
 	// a phone, otherwise email). The identity and people modules send these
@@ -54,7 +57,7 @@ var Vocabulary = []string{
 	TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent, TypeTicketUpdated, TypeTicketCommented,
 	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeAssemblyDue, TypeTermExpiring,
 	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived, TypeDeliveryWaiting, TypeVisitorQRRotated,
-	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped,
+	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped, TypeWebhookFailing,
 }
 
 // Unmutable are the types no preference and no site default can change.

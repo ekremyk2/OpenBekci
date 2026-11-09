@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -59,6 +60,9 @@ type Deps struct {
 	// Access serves /v1/orgs/{org_id}/access-points, agents, credentials and events,
 	// and the agent transport under /v1/agent. Nil leaves them unwired (unit tests).
 	Access *access.Service
+	// Integrations serves API keys and webhook endpoints. Nil answers their
+	// operations with an internal error (unit tests only).
+	Integrations *integrations.Service
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service
