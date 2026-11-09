@@ -278,6 +278,18 @@ func TestTRGoldenSiteRendersEveryTemplate(t *testing.T) {
 		t.Fatalf("personal call letter: %v", err)
 	}
 	sp.has(t, "call_letter", "Sayın Ayşe Yılmaz", "[qr:")
+	// the documents only the pack provides were filed with the call letter
+	filed := func(kind string) int64 {
+		return h.Int(`SELECT count(*) FROM meeting_document WHERE org_id = $1 AND meeting_id = $2 AND kind = $3 AND mime = 'application/pdf' AND length(content) > 1000 AND substring(content from 1 for 5) = '\x255044462d'::bytea`, org, m.ID, kind)
+	}
+	for _, kind := range []string{"call_letter", "delivery_checklist", "proxy_form"} {
+		if n := filed(kind); n != 1 {
+			t.Errorf("the called meeting has %d filed %s documents, want 1", n, kind)
+		}
+	}
+	if n := filed("decision_book_draft"); n != 0 {
+		t.Errorf("the decision book draft is filed with the minutes, not the call (%d)", n)
+	}
 	// a call 10 days ahead breaks the pack's 15-day minimum
 	soon, _ := gov.CreateMeeting(ctx, org, governance.MeetingCreate{SiteID: site, Kind: "general_assembly", Scope: "site",
 		ScheduledAt: time.Date(2026, 1, 11, 16, 0, 0, 0, time.UTC), SecondCallAt: time.Date(2026, 1, 19, 16, 0, 0, 0, time.UTC), Location: "Salon"})
@@ -311,6 +323,16 @@ func TestTRGoldenSiteRendersEveryTemplate(t *testing.T) {
 		t.Fatal(err)
 	}
 	sp.has(t, "minutes", "KAT MALİKLERİ KURULU TOPLANTI TUTANAĞI", "yerine geçmez")
+	if n := filed("minutes"); n != 1 || filed("decision_book_draft") != 1 {
+		t.Errorf("the minutes and the decision book draft are filed together: %d minutes, %d drafts", n, filed("decision_book_draft"))
+	}
+	// generating the minutes again replaces the filed draft, it does not pile them up
+	if _, err := gov.GenerateMinutes(ctx, org, m.ID); err != nil {
+		t.Fatal(err)
+	}
+	if n := filed("decision_book_draft"); n != 1 {
+		t.Errorf("%d decision book drafts after regenerating the minutes", n)
+	}
 	if pdf, _, err := gov.PackDocument(ctx, org, m.ID, "decision_book_draft", nil); err != nil || !isPDF(pdf) {
 		t.Fatalf("decision book draft: %v", err)
 	}
@@ -388,6 +410,10 @@ func TestWithoutThePackTheGenericDocumentsAreRendered(t *testing.T) {
 	}
 	if len(sp.docs) != 0 {
 		t.Fatalf("no pack template may render: %v", sp.docs)
+	}
+	// without the pack only the generic call letter is filed
+	if n := h.Int(`SELECT count(*) FROM meeting_document WHERE org_id = $1 AND meeting_id = $2 AND kind <> 'call_letter'`, h.Env.OrgID, m.ID); n != 0 {
+		t.Fatalf("%d pack-only documents were filed without a pack", n)
 	}
 	if pdf, _, err := gov.CallLetterPDF(ctx, org, m.ID, nil); err != nil || !isPDF(pdf) {
 		t.Fatalf("the generic call letter: %v", err)

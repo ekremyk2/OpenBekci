@@ -71,7 +71,7 @@ type DecisionEffects interface {
 
 // Document is a generated document ready to be filed.
 type Document struct {
-	Kind      string // call_letter, attendance_sheet, minutes
+	Kind      string // call_letter, attendance_sheet, minutes, and the pack-only delivery_checklist, proxy_form, decision_book_draft
 	FileName  string
 	MIME      string
 	Content   []byte

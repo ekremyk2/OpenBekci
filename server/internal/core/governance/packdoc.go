@@ -7,11 +7,8 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 
-	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/platform/doctpl"
-	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // SetTemplates gives the service the resolver of pack document templates. Without
@@ -105,115 +102,6 @@ func (d MinutesData) data() map[string]any {
 	return map[string]any{"site_name": d.SiteName, "kind": d.Kind, "locale": d.Locale, "scheduled_at": fmtTime(d.ScheduledAt, d.Loc, d.Locale), "second_call": fmtTime(d.SecondCall, d.Loc, d.Locale),
 		"location": d.Location, "call": d.Call, "attended": d.Attended, "eligible_votes": d.Eligible.Votes, "eligible_share": fmtShare(d.Eligible.Share),
 		"present_votes": d.Present.Votes, "present_share": fmtShare(d.Present.Share), "quorum_reached": d.Quorum.Reached, "items": items}
-}
-
-// ---- pack-only documents
-
-// PackDocument renders a document that only a pack provides: the per-owner call
-// delivery checklist (delivery_checklist), the proxy form (proxy_form, blank, or
-// filled for person) and the numbered karar defteri page draft
-// (decision_book_draft). There is no generic equivalent: a 404 says no enabled
-// pack offers the template. It needs meetings.manage.
-func (s *Service) PackDocument(ctx context.Context, orgID, meetingID uuid.UUID, kind string, person *uuid.UUID) ([]byte, string, error) {
-	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
-		return nil, "", err
-	}
-	switch kind {
-	case doctpl.KindDeliveryChecklist, doctpl.KindProxyForm, doctpl.KindDecisionBookDraft:
-	default:
-		return nil, "", problem.NotFound("no such document")
-	}
-	var pdf []byte
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		m, _, err := s.meetingAt(ctx, tx, PermMeetingsManage, orgID, meetingID, false)
-		if err != nil {
-			return err
-		}
-		si, err := loadSiteInfo(ctx, tx, orgID, m.SiteID)
-		if err != nil {
-			return err
-		}
-		data := map[string]any{"site_name": si.Name, "kind": m.Kind, "locale": si.Locale, "scheduled_at": fmtTime(m.ScheduledAt, si.Loc, si.Locale),
-			"second_call": fmtTime(m.SecondCallAt, si.Loc, si.Locale), "location": m.Location}
-		switch kind {
-		case doctpl.KindDeliveryChecklist:
-			if len(m.EligibilitySnapshot) == 0 {
-				return problem.Conflict("the meeting has not been called, so there is nothing to deliver")
-			}
-			snap, err := loadSnapshot(m.EligibilitySnapshot)
-			if err != nil {
-				return err
-			}
-			notices := map[uuid.UUID]Notice{}
-			rows, err := tx.Query(ctx, noticeSelect+` WHERE n.org_id = $1 AND n.meeting_id = $2 AND n.phase = 'call'`, orgID, meetingID)
-			if err != nil {
-				return err
-			}
-			for rows.Next() {
-				n, err := scanNotice(rows)
-				if err != nil {
-					rows.Close()
-					return err
-				}
-				notices[n.PersonID] = n
-			}
-			rows.Close()
-			if err := rows.Err(); err != nil {
-				return err
-			}
-			set := m.rules()
-			owners := make([]any, 0, len(snap.Owners))
-			for i, o := range snap.Owners {
-				var units []string
-				for _, u := range o.Units {
-					units = append(units, u.DoorNumber)
-				}
-				row := map[string]any{"no": i + 1, "name": o.DisplayName, "units": strings.Join(units, ", ")}
-				if n, ok := notices[o.PersonID]; ok && n.SentAt != nil {
-					row["sent_at"] = fmtTime(*n.SentAt, si.Loc, si.Locale)
-					if n.Method != nil {
-						row["method"] = *n.Method
-					}
-					if n.TrackingNo != nil {
-						row["proof"] = *n.TrackingNo
-					}
-				}
-				owners = append(owners, row)
-			}
-			data["owners"], data["min_notice_days"] = owners, set.CallMinDays
-		case doctpl.KindProxyForm:
-			if person != nil && len(m.EligibilitySnapshot) > 0 {
-				if snap, err := loadSnapshot(m.EligibilitySnapshot); err == nil {
-					if o, ok := snap.Owner(*person); ok {
-						var units []string
-						for _, u := range o.Units {
-							units = append(units, u.DoorNumber)
-						}
-						data["owner_name"], data["units"] = o.DisplayName, strings.Join(units, ", ")
-					}
-				}
-			}
-		case doctpl.KindDecisionBookDraft:
-			md, err := s.minutesData(ctx, tx, m)
-			if err != nil {
-				return err
-			}
-			decs := make([]any, 0, len(md.Items))
-			for _, it := range md.Items {
-				if dec := decisionData(it.Decision); dec != nil {
-					decs = append(decs, dec)
-				}
-			}
-			data["decisions"] = decs
-		}
-		model, ok := s.packModel(ctx, orgID, kind, si.Locale, data, nil)
-		if !ok {
-			return problem.NotFound("no template for this document is available for the site")
-		}
-		pdf, err = model.PDF()
-		return err
-	})
-	return pdf, strings.ReplaceAll(kind, "_", "-") + ".pdf", dbErr(err, "document")
 }
 
 // ---- Markdown to DocModel
