@@ -1,0 +1,15 @@
+{{.SiteName}} MANAGEMENT
+FORMAL PAYMENT NOTICE
+
+Date: {{.Date}}
+
+Dear {{.DebtorName}},
+
+Our records show that the dues and related charges you owe as {{.SideLabel}} (unit {{.Door}}) at {{.SiteName}} were unpaid as of {{.AsOf}}. The total outstanding is {{.Total}} (principal {{.Principal}}, late fees {{.LateFee}}). A breakdown by period follows.
+
+Please pay the outstanding amount within {{.Days}} days of receiving this notice. If it is not paid, the management will pursue the debt, with late fees and costs, as the law and the building's management rules allow.
+
+If you have already paid, please disregard this letter and send your proof of payment to the management.
+
+Kind regards,
+{{.SiteName}} Management

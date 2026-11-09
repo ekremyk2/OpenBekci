@@ -100,9 +100,15 @@ func (s *Service) run(ctx context.Context, orgID uuid.UUID, what string, fn func
 	return ledger.DBProblem(err, what)
 }
 
-// amount renders money for a document: Turkish number format with the currency sign.
-func amount(m money.Money) string {
-	s, err := m.Format("tr-TR")
+// amount renders money for a document in the number format of the organization's
+// locale (Turkish: ₺1.234,50, anything else: the English format, $1,234.50) with the
+// sign of the currency.
+func amount(locale string, m money.Money) string {
+	tag := "en-US"
+	if l := strings.ToLower(locale); l == "tr" || strings.HasPrefix(l, "tr-") || strings.HasPrefix(l, "tr_") {
+		tag = "tr-TR"
+	}
+	s, err := m.Format(tag)
 	if err != nil {
 		return m.String()
 	}
@@ -130,6 +136,7 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 		if site, err = tenancy.LoadSite(ctx, tx, orgID, p.SiteID, false, true); err != nil {
 			return err
 		}
+		locale = packdocs.OrgLocale(ctx, tx, orgID)
 		d := billing.Debtor{PersonID: p.PersonID}
 		if p.UnitID != nil && p.DebtorKind != nil && *p.DebtorKind != "person" {
 			_ = tx.QueryRow(ctx, `SELECT door_number FROM unit WHERE org_id=$1 AND id=$2`, orgID, *p.UnitID).Scan(&door)
@@ -145,18 +152,17 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 			if a.ChargeID != nil {
 				_ = tx.QueryRow(ctx, `SELECT COALESCE(NULLIF(description, ''), charge_type) || CASE WHEN period <> '' THEN ' ' || period ELSE '' END FROM charge WHERE org_id=$1 AND id=$2`, orgID, *a.ChargeID).Scan(&desc)
 			}
-			lines = append(lines, line{desc, amount(a.Amount), a.ChargeID == nil})
+			lines = append(lines, line{desc, amount(locale, a.Amount), a.ChargeID == nil})
 		}
 		if p.Unallocated.Amount > 0 {
-			lines = append(lines, line{"Advance payment (credit)", amount(p.Unallocated), true})
+			lines = append(lines, line{"Advance payment (credit)", amount(locale, p.Unallocated), true})
 		}
-		locale = packdocs.OrgLocale(ctx, tx, orgID)
 		charges, err := billing.LoadCharges(ctx, tx, orgID, p.SiteID, d)
 		if err != nil {
 			return err
 		}
 		pr, fee := billing.OpenTotal(charges)
-		balanceLine = amount(money.New(pr+fee, p.Net.Currency))
+		balanceLine = amount(locale, money.New(pr+fee, p.Net.Currency))
 		return nil
 	})
 	if err != nil {
@@ -173,7 +179,7 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 	}
 	if b, ok := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindReceipt, locale, map[string]any{
 		"site_name": site.Name, "receipt_no": *p.ReceiptNo, "date": p.ReceivedOn, "payer": who, "unit": door, "method": p.Method, "kind": deref(p.DebtorKind),
-		"reference": deref(p.Reference), "lines": packLines, "total": amount(p.Net), "balance": balanceLine}); ok {
+		"reference": deref(p.Reference), "lines": packLines, "total": amount(locale, p.Net), "balance": balanceLine}); ok {
 		return b, *p.ReceiptNo, nil
 	}
 	doc := pdf.New("Receipt " + *p.ReceiptNo)
@@ -209,7 +215,7 @@ func (s *Service) ReceiptPDF(ctx context.Context, orgID, paymentID uuid.UUID) ([
 	doc.Rule()
 	doc.Skip(6)
 	doc.Text(pdf.MarginX, "Total received / Toplam tahsilat", 11, true)
-	doc.Right(pdf.PageW-pdf.MarginX, amount(p.Net), 11, true)
+	doc.Right(pdf.PageW-pdf.MarginX, amount(locale, p.Net), 11, true)
 	doc.Skip(16)
 	doc.Text(pdf.MarginX, "Balance still due / Kalan borc", 10, false)
 	doc.Right(pdf.PageW-pdf.MarginX, balanceLine, 10, false)
@@ -493,7 +499,7 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 		cur := money.Code(j.currency)
 		certPDF, packed := packdocs.Render(ctx, s.PackDocs, s.Log, orgID, doctpl.KindDebtCertificate, locale, map[string]any{
 			"site_name": siteName, "person": who, "unit": door + " (" + j.side + ")", "as_of": j.asOf, "move_out_date": j.asOf,
-			"has_debt": j.carried != 0, "balance": amount(money.New(j.carried, cur)), "open_charges": j.openCharges})
+			"has_debt": j.carried != 0, "balance": amount(locale, money.New(j.carried, cur)), "open_charges": j.openCharges})
 		doc := pdf.New("Debt status certificate")
 		doc.Line(siteName, 14, true)
 		doc.Line("Borc durum belgesi / Debt status certificate", 12, true)
@@ -510,11 +516,11 @@ func (s *Service) fillOne(ctx context.Context, orgID uuid.UUID, j closingJob) er
 		case j.carried == 0:
 			doc.Line("No unpaid dues or late fees were open on this date. / Bu tarihte odenmemis aidat veya gecikme zammi yoktur.", 10, false)
 		case j.openCharges == "write_off":
-			doc.Line("Open amount written off by the management: "+amount(money.New(j.carried, cur)), 10, false)
+			doc.Line("Open amount written off by the management: "+amount(locale, money.New(j.carried, cur)), 10, false)
 		case j.openCharges == "keep_on_unit":
 			doc.Line("Open amounts stay on the unit.", 10, false)
 		default:
-			doc.Line("Open amount carried to the person: "+amount(money.New(j.carried, cur)), 10, false)
+			doc.Line("Open amount carried to the person: "+amount(locale, money.New(j.carried, cur)), 10, false)
 		}
 		doc.Skip(10)
 		doc.Line("Issued on "+ledger.Today(siteTZ, s.Now())+" by the management system.", 8, false)
