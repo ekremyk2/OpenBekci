@@ -1,0 +1,52 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: request_id
+    in: path
+    required: true
+    description: Id of the request.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: community.getVisitorApprovalRequest
+  summary: One visitor approval request
+  description: |-
+    **Release 0.3.** One approval request, in the shape of the list items (a pending request past its expiry reads as `expired`). Served to the resident it is addressed to (a unit they live in or own) and to the site's overview roles; anyone else gets 404, so a request is never confirmed to exist. The guard console polls the visitor with `community.getGateVisitor` instead.
+
+    Permission (any one of): `visitors.decide` (own units), `visitors.read`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.read
+    site_manager:
+      - visitors.read
+    board_member:
+      - visitors.read
+    auditor:
+      - visitors.read
+    owner:
+      - visitors.decide
+    tenant:
+      - visitors.decide
+    household:
+      - visitors.decide
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/VisitorApprovalRequest
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

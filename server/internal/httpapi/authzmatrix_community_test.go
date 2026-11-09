@@ -135,6 +135,12 @@ func init() {
 			f := w.NewSite(t, org)
 			return jsonReq("POST", orgPath(org, "/bookings/"+cmBooking(w, t, f, cmFacility(w, t, f)).String()+":cancel"), `{"reason":"Matrix"}`, "Idempotency-Key", idem())
 		}},
+		"community.previewBooking": {perms: p(community.PermBookingsCreate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			fid := cmFacility(w, t, f)
+			start := time.Now().UTC().Add(48 * time.Hour).Truncate(24 * time.Hour).Add(9 * time.Hour)
+			return jsonReq("POST", orgPath(org, "/facilities/"+fid.String()+"/bookings:preview"), fmt.Sprintf(`{"facility_id":%q,"unit_id":%q,"start":%q,"end":%q}`, fid, f.Unit, rfc(start), rfc(start.Add(time.Hour))))
+		}},
 
 		"community.listVisitorEntries": {perms: anyP(community.PermVisitorsRead, community.PermVisitorsManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/visitor-entries")}
@@ -185,6 +191,13 @@ func init() {
 		}},
 		// residents only: no role holds visitors.decide, so every role of the matrix is refused before the handler
 		"community.listVisitorApprovalRequests": {perms: p(community.PermVisitorsDecide), status: 200, build: mget("/v1/orgs/{org_id}/visitor-approval-requests")},
+		"community.getVisitorApprovalRequest": {perms: anyP(community.PermVisitorsRead, community.PermVisitorsDecide), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			e := cmEntry(w, t, f, "requested", time.Now(), time.Now())
+			rid := id.New()
+			w.Exec(t, `INSERT INTO visitor_approval_request (id, org_id, site_id, entry_id, unit_id, expires_at) VALUES ($1, $2, $3, $4, $5, now() + interval '10 minutes')`, rid, org.ID, f.Site, e, f.Unit)
+			return mreq{method: "GET", path: orgPath(org, "/visitor-approval-requests/"+rid.String())}
+		}},
 		"community.decideVisitorApprovalRequest": {perms: p(community.PermVisitorsDecide), status: 200, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
 			return jsonReq("POST", orgPath(org, "/visitor-approval-requests/"+uuid.NewString()+":decide"), `{"decision":"approve"}`)
 		}},

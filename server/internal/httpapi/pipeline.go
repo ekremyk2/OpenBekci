@@ -99,6 +99,9 @@ type opInfo struct {
 	// response is not buffered by the response validator.
 	stream  bool
 	hasBody bool // the operation declares a request body
+	// bodyOptional: the body is declared and not required; a body that is
+	// exactly JSON null (or empty) counts as absent.
+	bodyOptional bool
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -130,14 +133,15 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
 			info := opInfo{
-				idempotent: idemMode(extString(op.Extensions, "x-idempotent")),
-				preview:    extString(op.Extensions, "x-stability") == "preview",
-				auth:       authModeOf(spec, op),
-				query:      queryParams(item, op),
-				orgScoped:  isOrgPath(path),
-				stream:     extBool(op.Extensions, "x-openbekci-stream"),
-				hasBody:    op.RequestBody != nil,
-				perms:      extPermissions(op.Extensions),
+				idempotent:   idemMode(extString(op.Extensions, "x-idempotent")),
+				preview:      extString(op.Extensions, "x-stability") == "preview",
+				auth:         authModeOf(spec, op),
+				query:        queryParams(item, op),
+				orgScoped:    isOrgPath(path),
+				stream:       extBool(op.Extensions, "x-openbekci-stream"),
+				hasBody:      op.RequestBody != nil,
+				bodyOptional: op.RequestBody != nil && op.RequestBody.Value != nil && !op.RequestBody.Value.Required,
+				perms:        extPermissions(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
 		}

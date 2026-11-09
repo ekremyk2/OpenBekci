@@ -1138,6 +1138,38 @@ func (s *Service) ListApprovalRequests(ctx context.Context, orgID uuid.UUID, sta
 	return items, next, nil
 }
 
+// GetApprovalRequest reads one approval request: the resident it is addressed
+// to (visitors.decide, units they live in or own) and the site's overview roles
+// (visitors.read). Anyone else gets 404, so a request is never confirmed to
+// exist. A pending request past its expiry reads as expired.
+func (s *Service) GetApprovalRequest(ctx context.Context, orgID, requestID uuid.UUID) (ApprovalRequest, error) {
+	var out ApprovalRequest
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		req, err := scanRequest(tx.QueryRow(ctx, requestSelect+` WHERE r.org_id = $1 AND r.id = $2`, orgID, requestID))
+		if errors.Is(err, pgx.ErrNoRows) {
+			return problem.NotFound("no such approval request")
+		}
+		if err != nil {
+			return err
+		}
+		sc, err := siteScope(ctx, tx, req.siteID)
+		if err != nil {
+			return err
+		}
+		if !authz.Has(ctx, PermVisitorsRead, sc) {
+			if !authz.Has(ctx, PermVisitorsDecide, sc) || authz.CanActOnUnit(ctx, req.UnitID) != nil {
+				return problem.NotFound("no such approval request")
+			}
+		}
+		out = req
+		return nil
+	})
+	if err != nil {
+		return ApprovalRequest{}, tenancy.DBProblem(err, "approval request")
+	}
+	return out, nil
+}
+
 // DecideApprovalRequest answers a request: the first answer of any occupant of
 // the unit decides (visitors.decide). Approving admits the visitor for the
 // next 30 minutes; an answer after the expiry is a 409 conflict.

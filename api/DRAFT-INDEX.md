@@ -2,18 +2,18 @@
 
 The builders' checklist (the Status column says whether `api/src/openapi.yaml`, the served root, already has the operation; `tenancy.importPeople`, `tenancy.importAllocationKeyValues`, the unit-tag resources, `people.erasePerson`, `people.previewMoveOut` and `people.updateMembership` are the tenancy and people operations not yet served): every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 457 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 464 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3, 0.4 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
-| tenancy | 48 |
-| people | 53 |
-| me | 9 |
-| money | 138 |
+| tenancy | 50 |
+| people | 54 |
+| me | 10 |
+| money | 140 |
 | operations | 56 |
 | audit | 4 |
 | governance | 45 |
-| community | 43 |
+| community | 45 |
 | access | 21 |
 | integrations | 12 |
 | agent | 4 |
@@ -382,6 +382,7 @@ Total: 457 new operations, plus the 15 already served (instance, auth, me) which
 | community | `community.createFacilityBlock` | `POST /v1/orgs/{org_id}/facilities/{facility_id}/blocks` | 0.3 | `facilities.manage` | optional | served |
 | community | `community.deleteFacilityBlock` | `DELETE /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}` | 0.3 | `facilities.manage` | optional | served |
 | community | `community.getFacilityAvailability` | `GET /v1/orgs/{org_id}/facilities/{facility_id}/availability` | 0.3 | `bookings.create` | - | served |
+| community | `community.previewBooking` | `POST /v1/orgs/{org_id}/facilities/{facility_id}/bookings:preview` | 0.3 | `bookings.create` | - | served |
 | community | `community.listBookings` | `GET /v1/orgs/{org_id}/bookings` | 0.3 | `bookings.read` | - | served |
 | community | `community.createBooking` | `POST /v1/orgs/{org_id}/bookings` | 0.3 | `bookings.create` | required | served |
 | community | `community.getBooking` | `GET /v1/orgs/{org_id}/bookings/{booking_id}` | 0.3 | `bookings.read` | - | served |
@@ -399,6 +400,7 @@ Total: 457 new operations, plus the 15 already served (instance, auth, me) which
 | community | `community.revokeRecurringVisitor` | `POST /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke` | 0.3 | `visitors.manage` | optional | served |
 | community | `community.getRecurringVisitorQr` | `GET /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}/qr` | 0.3 | `visitors.manage` | - | not yet served |
 | community | `community.listVisitorApprovalRequests` | `GET /v1/orgs/{org_id}/visitor-approval-requests` | 0.3 | `visitors.decide` | - | served |
+| community | `community.getVisitorApprovalRequest` | `GET /v1/orgs/{org_id}/visitor-approval-requests/{request_id}` | 0.3 | `visitors.decide`, `visitors.read` | - | served |
 | community | `community.decideVisitorApprovalRequest` | `POST /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide` | 0.3 | `visitors.decide` | optional | served |
 | community | `community.listDeliveries` | `GET /v1/orgs/{org_id}/deliveries` | 0.3 | `visitors.read`, `deliveries.read` | - | served |
 | community | `community.getGateConsole` | `GET /v1/orgs/{org_id}/gate/console` | 0.3 | `gate.operate` | - | served |
