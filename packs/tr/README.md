@@ -1,6 +1,6 @@
 # OpenBekci Turkish pack (`packs/tr`)
 
-The first official pack (milestone P1, "TR-1"): the Turkish rules and papers on top of the core. Licence AGPL-3.0.
+The first official pack (milestones P1 "TR-1" and P2 "TR-2"): the Turkish rules and papers on top of the core, card payments, bank statements and SMS. Licence AGPL-3.0.
 Legal status of every value: see [LEGAL.md](LEGAL.md). Plan: `docs/plans/04-packs.md` section 6.
 
 Enable it per organization (`POST /v1/orgs/{org}/packs/tr/enable`); it is in the default build and absent from
@@ -18,9 +18,35 @@ hand; with the pack, the values below are **pack defaults** the site may edit.
 | `Validator` | vergi numarası (and TCKN as tax id), TR IBAN, plate |
 | `ConsentTexts` | KVKK aydınlatma metni and açık rıza per purpose (identity, contact, financial, camera), tr and en, at `GET /v1/orgs/{org}/privacy/consents` |
 | `Catalog` | tr and en labels for all of the above, in the `pack_labels` section of `GET /v1/orgs/{org}/codes` |
-| `SettingsSchema` | `tr_kvkk_data_controller` (site), and declared for TR-2: `tr_payments_iyzico_*`, `tr_sms_iletimerkezi_*` (org and site), `tr_bank_formats` (org) |
+| `SettingsSchema` | `tr_kvkk_data_controller` (site), `tr_payments_iyzico_*`, `tr_sms_iletimerkezi_*` (org and site), `tr_bank_formats` (org) |
+| `PaymentProvider` | `tr.iyzico`: hosted checkout form, callback and signed webhook, status, full refunds, daily settlements. Flow, assumptions and recording: [PAYMENTS.md](PAYMENTS.md) |
+| `StatementImporter` x2 | `tr.ziraat`, `tr.isbank`: CSV (UTF-8 or windows-1254) and XLSX, table-driven format files in `bankformats/`, reference code `<unit>-<period>` lifted into the line reference. Synthetic fixtures: [BANKS.md](BANKS.md) |
+| `SMSProvider` | `tr.iletimerkezi`: İleti Merkezi send-sms JSON API, every message sent as operational (`iys` 0); an organization selects it with the setting `sms_provider` = `tr.iletimerkezi` |
 
-Not here (TR-2, another builder): iyzico, İleti Merkezi, bank statement importers.
+
+## SMS: İleti Merkezi and İYS
+
+`tr.iletimerkezi` sends through `POST https://api.iletimerkezi.com/v1/send-sms/json` with the credentials in the request body
+(`tr_sms_iletimerkezi_username` is the API key and `tr_sms_iletimerkezi_password` the API hash that the İleti Merkezi panel
+generates, `tr_sms_iletimerkezi_sender_id` the approved sender). The pack reads them at organization scope and sets
+`iys` to `"0"` on **every** message: the software sends operational notices only (sign-in codes, dues and meeting notices,
+receipts); marketing is out of scope and the İYS consent flow is not implemented (LEGAL.md). Status codes mapped: 401 to
+`ErrCredentials`, 451 (duplicate), 452 and 466 (recipient), 400, 402 and 450 to `ErrRejected`, transport and 5xx failures to
+`ErrUnavailable`. API access must be switched on in the panel (Ayarlar, Güvenlik, Erişim İzinleri).
+
+`ValidateSettings` checks the shape of the iyzico and İleti Merkezi settings. It tests the İleti Merkezi credentials with a
+`get-balance` request **only when the pack was built with `tr.WithSMSTestEndpoint(url)`** (tests and staging): a production
+build never sends anything to the provider when an administrator saves settings.
+
+## Existing Turkish organizations
+
+Organizations created before the pack existed have `country_code` `TR` (the default) and no enablement row, and would
+lose the Turkish governance defaults that moved from the core into this pack. At every start the server runs
+`packs.Host.AutoEnableForCountry`: it enables each pack that lists countries for the organizations of those countries
+**that have no enablement row for it**, as a system action (audited as `pack.enable`, presets applied to the sites that
+have not changed the settings). An organization that has a row, enabled or disabled, is never touched, so an administrator
+who disabled the pack keeps that decision. Note that an organization created later in country `TR` is enabled at the next
+start too, unless it disabled the pack first.
 
 ## Presets
 

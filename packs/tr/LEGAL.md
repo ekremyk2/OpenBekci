@@ -84,7 +84,19 @@ The software never claims to be the karar defteri. The minutes and the "karar de
   publicly (KVKK Board practice, verify), and keeps access to camera and visitor logs to authorised staff.
 - **İYS**: messages that are operational (a call to a meeting, a receipt, a debt notice, an OTP) are exempt from the
   commercial message consent regime (verify); marketing messages are out of scope. Every message the software sends is
-  operational.
+  operational. The İleti Merkezi provider (`tr.iletimerkezi`) enforces this in code: every message is sent with the
+  API field `iys` = `"0"` (not a commercial message), there is no way to send with `"1"`, and the İYS consent and
+  filtering flow (`iysList`, İYS registration of recipients) is not implemented. Whether a given notice (for example a
+  payment reminder with a late-fee warning) is operational or commercial is the sender's responsibility; the legal
+  maintainer should confirm the classification of each notice type before 1.0 (verify).
+- **Card payments and bank statements** (TR-2): card payments go through iyzico, which is the payment institution and
+  holds the card data; the software never sees a card number. It sends iyzico the payer's name, and e-mail and phone
+  number when held, never the TCKN or an address (placeholders instead, see `PAYMENTS.md`). Bank statements contain
+  personal data of third parties (payer names and descriptions); the raw rows are deleted after 90 days. Whether the
+  management company or the site is the merchant, and therefore whose money the clearing account holds, is the owner's
+  decision recorded in `docs/decisions/money.md` (M5); the software does not decide it and gives no tax or
+  payment-institution advice (verify with the accountant whether collecting dues by card on behalf of the owners
+  needs anything beyond the provider's own onboarding).
 
 ## What the software does NOT do (tax and employer obligations)
 

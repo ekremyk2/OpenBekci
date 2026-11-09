@@ -21,6 +21,7 @@ const iyzicoProps = `
     "tr_payments_iyzico_api_key":    {"type": "string", "x-secret": true, "x-ui": {"order": 11, "group": "iyzico", "widget": "password"}},
     "tr_payments_iyzico_secret_key": {"type": "string", "x-secret": true, "x-ui": {"order": 12, "group": "iyzico", "widget": "password"}},
     "tr_payments_iyzico_sandbox":    {"type": "boolean", "x-ui": {"order": 13, "group": "iyzico"}},
+    "tr_payments_iyzico_callback_base_url": {"type": "string", "format": "uri", "maxLength": 200, "x-ui": {"order": 14, "group": "iyzico", "help": "tr.settings.iyzico_callback_base_url"}},
     "tr_sms_iletimerkezi_enabled":   {"type": "boolean", "x-ui": {"order": 20, "group": "iletimerkezi", "help": "tr.settings.iletimerkezi"}},
     "tr_sms_iletimerkezi_username":  {"type": "string", "x-ui": {"order": 21, "group": "iletimerkezi"}},
     "tr_sms_iletimerkezi_password":  {"type": "string", "x-secret": true, "x-ui": {"order": 22, "group": "iletimerkezi", "widget": "password"}},

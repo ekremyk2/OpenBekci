@@ -8,13 +8,16 @@
 //
 // The presets only fill site settings with defaults; every value is editable
 // by the site where its yönetim planı allows. Every legal value is cited in
-// LEGAL.md. The payment, SMS and bank-statement contributions of milestone
-// TR-2 (iyzico, İleti Merkezi, bank formats) are declared in the settings
-// schema and implemented separately.
+// LEGAL.md.
+//
+// Milestone TR-2 adds the iyzico payment provider (PAYMENTS.md), the İleti
+// Merkezi SMS provider and the statement importers of Ziraat Bankası and İş
+// Bankası (BANKS.md), plus the reference-code scheme helpers.
 package tr
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/openbekci/openbekci/sdk"
 )
@@ -26,10 +29,20 @@ const ID = "tr"
 const Version = "0.1.0"
 
 // Pack is the Turkish pack. New returns a ready one.
-type Pack struct{}
+type Pack struct {
+	svc        sdk.Services
+	http       *http.Client
+	smsTestURL string
+}
 
 // New returns the Turkish pack.
-func New() *Pack { return &Pack{} }
+func New(opts ...Option) *Pack {
+	p := &Pack{}
+	for _, o := range opts {
+		o(p)
+	}
+	return p
+}
 
 var _ sdk.Pack = (*Pack)(nil)
 
@@ -39,7 +52,17 @@ func (*Pack) Manifest() sdk.Manifest {
 }
 
 // Register implements sdk.Pack: one call per extension point.
-func (*Pack) Register(_ context.Context, r sdk.Registry) error {
+func (p *Pack) Register(_ context.Context, r sdk.Registry) error {
+	p.svc = r.Services()
+	r.RegisterPaymentProvider(&iyzico{p: p})
+	r.RegisterSMSProvider(&iletiMerkezi{p: p})
+	formats, err := loadBankFormats()
+	if err != nil {
+		return err
+	}
+	for _, f := range formats {
+		r.RegisterStatementImporter(&bankImporter{p: p, def: f})
+	}
 	rules := Rules{}
 	r.RegisterQuorumPreset(rules)
 	r.RegisterThresholdPreset(rules)

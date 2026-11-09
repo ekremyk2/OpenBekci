@@ -227,6 +227,10 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	mny.Docs.PackDocs = host
 	mny.Collections.PackDocs = host
 	pick.h.Store(host)
+	// organizations of a pack's country that never chose get its defaults (once per organization, never against a recorded decision)
+	if _, err := host.AutoEnableForCountry(ctx); err != nil {
+		log.WarnContext(ctx, "packs: enabling country packs for existing organizations failed", "error", err)
+	}
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs, host)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
