@@ -4,6 +4,7 @@ import { occupancyKindLabel } from '@/lib/labels'
 import { useSession } from '@/app/session'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ProfileForm } from '@/features/people/ProfileForm'
 import { HouseholdPanel } from '@/features/people/HouseholdPanel'
 
 export const Route = createFileRoute('/orgs/$orgId/me/')({
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/orgs/$orgId/me/')({
         <h1 className="text-2xl font-semibold">
           <Trans>My account</Trans>
         </h1>
+        <ProfileForm key={`${me.user.version}`} />
         <Card>
           <CardHeader>
             <CardTitle>{me.user.display_name}</CardTitle>

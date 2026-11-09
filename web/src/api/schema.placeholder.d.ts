@@ -78,6 +78,8 @@ export interface components {
         email?: string | null
         phone?: string | null
         locale?: string | null
+        /** `If-Match` of `PATCH /v1/me/profile`. */
+        version?: number
         is_platform_admin?: boolean // gates /platform
       }
       organizations: components['schemas']['MeOrganization'][]

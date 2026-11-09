@@ -501,6 +501,25 @@ export const checkoutHandlers = [
     }),
   ),
 
+  // me.updateProfile: name and locale, If-Match on the user version of /v1/me
+  http.patch('*/v1/me/profile', async ({ request }) => {
+    const v = ifMatchOf(request)
+    if (v === null) return problem(422, 'validation_failed', 'If-Match is required')
+    if (v !== '1') return problem(409, 'version_conflict')
+    const body = (await request.json()) as { display_name?: string; locale?: string }
+    if (body.locale !== undefined && body.locale !== 'tr' && body.locale !== 'en')
+      return problem(422, 'validation_failed', undefined, [{ field: 'locale', code: 'invalid' }])
+    return json({
+      id: 'u1',
+      display_name: body.display_name ?? 'Ayşe Yılmaz',
+      email: 'ayse@example.com',
+      phone: '+905551112233',
+      locale: body.locale ?? 'tr',
+      is_platform_admin: false,
+      version: 2,
+    })
+  }),
+
   // privacy notice and consent texts per locale (codes.listConsents); read only, no accept operation
   http.get(`${O}/privacy/consents`, ({ request }) => {
     const locale = new URL(request.url).searchParams.get('locale') === 'tr' ? 'tr' : 'en'

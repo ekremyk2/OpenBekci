@@ -74,3 +74,38 @@ describe('privacy notice and consents', () => {
     expect(within(document.body).getByRole('note')).toBeInTheDocument()
   })
 })
+
+describe('profile name and language', () => {
+  it('sends only what changed, with If-Match from the user version', async () => {
+    const seen: { ifMatch: string | null; body: Promise<unknown> }[] = []
+    server.events.on('request:start', ({ request }) => {
+      if (request.method === 'PATCH' && request.url.endsWith('/v1/me/profile'))
+        seen.push({ ifMatch: request.headers.get('If-Match'), body: request.clone().json() })
+    })
+    await mountApp('/orgs/org-1/me')
+    const name = await screen.findByLabelText('Display name')
+    expect(screen.getByRole('button', { name: 'Save profile' })).toBeDisabled()
+    await userEvent.clear(name)
+    await userEvent.type(name, 'Ayşe K.')
+    await userEvent.click(screen.getByRole('button', { name: 'Save profile' }))
+    await waitFor(() => expect(seen).toHaveLength(1))
+    expect(seen[0]!.ifMatch).toBe('"1"')
+    expect(await seen[0]!.body).toEqual({ display_name: 'Ayşe K.' })
+    server.events.removeAllListeners()
+  })
+
+  it('says so when the account changed meanwhile', async () => {
+    server.use(
+      http.patch('*/v1/me/profile', () =>
+        HttpResponse.json(
+          { status: 409, code: 'version_conflict' },
+          { status: 409, headers: { 'content-type': 'application/problem+json' } },
+        ),
+      ),
+    )
+    await mountApp('/orgs/org-1/me')
+    await userEvent.type(await screen.findByLabelText('Display name'), 'x')
+    await userEvent.click(screen.getByRole('button', { name: 'Save profile' }))
+    expect(await screen.findByText(/Someone else changed this record/)).toBeInTheDocument()
+  })
+})

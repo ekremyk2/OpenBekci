@@ -37,6 +37,7 @@ export const meFixture: Me = {
     phone: '+905551112233',
     locale: 'tr',
     is_platform_admin: false,
+    version: 1,
   },
   organizations: [
     {

@@ -1768,6 +1768,9 @@ msgstr "Could not save your answer."
 msgid "Could not save your preferences."
 msgstr "Could not save your preferences."
 
+msgid "Could not save your profile."
+msgstr "Could not save your profile."
+
 msgid "Could not send the call."
 msgstr "Could not send the call."
 
@@ -2172,6 +2175,9 @@ msgstr "Disabled"
 
 msgid "Dismiss"
 msgstr "Dismiss"
+
+msgid "Display name"
+msgstr "Display name"
 
 msgid "Dissent text"
 msgstr "Dissent text"
@@ -4824,6 +4830,9 @@ msgstr "Preferences"
 msgid "Preferred channel"
 msgstr "Preferred channel"
 
+msgid "Preferred language"
+msgstr "Preferred language"
+
 msgid "Prepayment credit"
 msgstr "Prepayment credit"
 
@@ -4893,6 +4902,9 @@ msgstr "Private: that unit and management"
 
 msgid "Profile"
 msgstr "Profile"
+
+msgid "Profile saved."
+msgstr "Profile saved."
 
 msgid "Progress"
 msgstr "Progress"
@@ -5472,6 +5484,9 @@ msgstr "Save plan"
 
 msgid "Save policy"
 msgstr "Save policy"
+
+msgid "Save profile"
+msgstr "Save profile"
 
 msgid "Save settings"
 msgstr "Save settings"
