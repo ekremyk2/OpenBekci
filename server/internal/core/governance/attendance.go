@@ -676,45 +676,48 @@ func (s *Service) GetMyMeeting(ctx context.Context, orgID, meetingID uuid.UUID) 
 		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $4 AND (person_id = $3 OR proxy_for_person_id = $3))`, orgID, meetingID, me, m.heldCall()).Scan(&out.CheckedIn); err != nil {
 			return err
 		}
-		prows, err := tx.Query(ctx, `SELECT a.id, a.title, COALESCE((SELECT array_agg(pa.unit_id) FROM poll_answer pa WHERE pa.org_id = a.org_id AND pa.agenda_item_id = a.id AND pa.answered_by = $3), '{}')
-			FROM agenda_item a JOIN poll p ON p.org_id = a.org_id AND p.agenda_item_id = a.id WHERE a.org_id = $1 AND a.meeting_id = $2 ORDER BY a.position`, orgID, meetingID, me)
+		prows, err := tx.Query(ctx, `SELECT a.id, a.title FROM agenda_item a JOIN poll p ON p.org_id = a.org_id AND p.agenda_item_id = a.id
+			WHERE a.org_id = $1 AND a.meeting_id = $2 ORDER BY a.position`, orgID, meetingID)
 		if err != nil {
 			return err
 		}
 		defer prows.Close()
+		var ids []uuid.UUID
 		for prows.Next() {
-			mp := MyPoll{Answers: []MyPollAnswer{}}
-			if err := prows.Scan(&mp.AgendaItemID, &mp.Title, &mp.AnsweredUnits); err != nil {
+			mp := MyPoll{AnsweredUnits: []uuid.UUID{}, Answers: []MyPollAnswer{}}
+			if err := prows.Scan(&mp.AgendaItemID, &mp.Title); err != nil {
 				return err
 			}
 			out.Polls = append(out.Polls, mp)
+			ids = append(ids, mp.AgendaItemID)
 		}
 		if err := prows.Err(); err != nil {
 			return err
 		}
 		prows.Close()
-		// the caller's own answers per unit (answered_by = me: never another owner's)
-		for i := range out.Polls {
-			arows, err := tx.Query(ctx, `SELECT unit_id, answer, answered_at FROM poll_answer WHERE org_id = $1 AND agenda_item_id = $2 AND answered_by = $3 ORDER BY unit_id`,
-				orgID, out.Polls[i].AgendaItemID, me)
-			if err != nil {
-				return err
-			}
-			for arows.Next() {
-				var a MyPollAnswer
-				if err := arows.Scan(&a.UnitID, &a.Answer, &a.AnsweredAt); err != nil {
-					arows.Close()
-					return err
-				}
-				a.AnsweredAt = a.AnsweredAt.UTC()
-				out.Polls[i].Answers = append(out.Polls[i].Answers, a)
-			}
-			arows.Close()
-			if err := arows.Err(); err != nil {
-				return err
-			}
+		// the caller's own answers per unit, one query for all polls (answered_by = me: never another owner's)
+		arows, err := tx.Query(ctx, `SELECT agenda_item_id, unit_id, answer, answered_at FROM poll_answer WHERE org_id = $1 AND answered_by = $2 AND agenda_item_id = ANY($3) ORDER BY unit_id`,
+			orgID, me, ids)
+		if err != nil {
+			return err
 		}
-		return nil
+		defer arows.Close()
+		byItem := map[uuid.UUID]*MyPoll{}
+		for i := range out.Polls {
+			byItem[out.Polls[i].AgendaItemID] = &out.Polls[i]
+		}
+		for arows.Next() {
+			var item uuid.UUID
+			var a MyPollAnswer
+			if err := arows.Scan(&item, &a.UnitID, &a.Answer, &a.AnsweredAt); err != nil {
+				return err
+			}
+			a.AnsweredAt = a.AnsweredAt.UTC()
+			mp := byItem[item]
+			mp.Answers = append(mp.Answers, a)
+			mp.AnsweredUnits = append(mp.AnsweredUnits, a.UnitID)
+		}
+		return arows.Err()
 	})
 	return out, dbErr(err, "my meeting")
 }
