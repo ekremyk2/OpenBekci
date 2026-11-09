@@ -424,7 +424,7 @@ As overview §6.6. Server catalogs for emails, SMS, PDFs and notification bodies
 - **Audit diffs are PII-safe**: fields registered as PII (names, contacts, national ids, plates, free-text notes) are stored as hashes before/after; non-PII fields as values.
 - **Erasure** (1.0, as built) pseudonymizes instead of rewriting append-only tables: the `person` row keeps its id and loses name, contact, notes and national id (`erased_at` is the marker), so `journal_line`, `ballot` and `attendance` rows stay untouched and point at "Former person xxxxxxxx"; audit hashes are never touched. The `user` is unlinked (scrubbed when no person of any organization remains), sessions and devices deleted; occupancies keep unit and dates. Blocked while the person has open charges unless an admin overrides (re-auth, audited as forced); `openbekci admin privacy erase` does the same for the operator. No `privacy_erase` SQL function was needed. Backups age out per the retention policy page.
 - **Retention**: `bank_transaction.raw` and `payment.provider_payload` stripped after reconciliation (default 90 days); sessions, login attempts, visitor logs (default 90 days, C) per `retention_setting`; `maintenance.prune` enforces.
-- **Export**: per-person JSON + PDF bundle by job, filed as private documents (1.0: `POST …/persons/{id}/data-export`).
+- **Export**: per-person JSON + PDF bundle by job, stored as private person-scoped files (1.0: `POST …/persons/{id}/data-export`).
 - **Consent**: `consent` records (per user and organization) with versioned texts; accept or decline the current version, audited; `GET /v1/me` flags required texts not accepted (1.0).
 - Secrets (`SECRET_KEY`, `ENCRYPTION_KEY`) are state and part of the backup set (infra plan).
 

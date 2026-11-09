@@ -596,6 +596,14 @@ type Credential struct {
 	UpdatedAt    pgtype.Timestamptz
 }
 
+type DataExport struct {
+	OrgID       pgtype.UUID
+	ID          pgtype.UUID
+	PersonID    pgtype.UUID
+	RequestedBy pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+}
+
 type Decision struct {
 	ID                    pgtype.UUID
 	OrgID                 pgtype.UUID

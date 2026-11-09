@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -15,7 +16,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
-	"github.com/openbekci/openbekci/server/internal/core/documents"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
@@ -82,6 +83,9 @@ func (s *Service) RequestExport(ctx context.Context, orgID, personID uuid.UUID) 
 		}
 		if siteID == nil {
 			return errNoSite
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO data_export (org_id, id, person_id, requested_by) VALUES ($1, $2, $3, $4)`, orgID, reqID, personID, p.UserID); err != nil {
+			return err
 		}
 		if err := (*ins)(ctx, tx, ExportArgs{OrgID: orgID, PersonID: personID, SiteID: *siteID, RequestID: reqID, RequestedBy: p.UserID}); err != nil {
 			return err
@@ -179,9 +183,52 @@ func (w *exportWorker) Work(ctx context.Context, job *river.Job[ExportArgs]) err
 	return w.s.RunExport(ctx, job.Args)
 }
 
-// RunExport builds the bundle, files the JSON and the PDF in the privacy
-// folder of the person's site (readable by the person and the managers) and
-// notifies the person and the requester. Filing twice yields the same documents.
+// Scope is the file scope of an export; its id is the request id. Only the person
+// and the user who asked can read the files (FileResolver), and they expire after ExportTTL.
+const Scope = "privacy_export"
+
+// ExportTTL is how long the export files are kept.
+const ExportTTL = 7 * 24 * time.Hour
+
+// Uploader stores generated files (*files.Service).
+type Uploader interface {
+	UploadGenerated(ctx context.Context, p files.UploadParams) (files.File, error)
+}
+
+// FileResolver decides who may read the files of an export: the person whose data it
+// holds and the user who requested it, nobody else (a reader other than the person is
+// audited as privacy.export_read). Administrators with files.manage still read every
+// file, as everywhere in the file module.
+func FileResolver() files.VisibilityResolver {
+	return files.ResolverFuncs{Read: func(ctx context.Context, tx pgx.Tx, ref files.ScopeRef) (bool, error) {
+		p := authz.PrincipalFromContext(ctx)
+		if p == nil {
+			return false, nil
+		}
+		var org, person uuid.UUID
+		var owner *uuid.UUID
+		var asker uuid.UUID
+		err := tx.QueryRow(ctx, `SELECT e.org_id, e.person_id, p.user_id, e.requested_by FROM data_export e JOIN person p ON p.org_id = e.org_id AND p.id = e.person_id WHERE e.id = $1`, ref.ID).
+			Scan(&org, &person, &owner, &asker)
+		if isNoRows(err) {
+			return false, nil
+		}
+		if err != nil {
+			return false, err
+		}
+		if owner != nil && *owner == p.UserID {
+			return true, nil
+		}
+		if asker != p.UserID {
+			return false, nil
+		}
+		return true, audit.Record(ctx, tx, audit.Event{OrgID: org, Action: "privacy.export_read", TargetType: "person", TargetID: person})
+	}}
+}
+
+// RunExport builds the bundle and stores the JSON and the PDF as private files
+// (scope privacy_export, readable by the person and the requester only, kept 7 days),
+// then notifies the person and the requester.
 func (s *Service) RunExport(ctx context.Context, a ExportArgs) error {
 	return s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
 		bundle, err := BuildBundle(ctx, tx, a.OrgID, a.PersonID)
@@ -189,30 +236,28 @@ func (s *Service) RunExport(ctx context.Context, a ExportArgs) error {
 			return err
 		}
 		day := s.now().UTC().Format("2006-01-02")
-		title := "Personal data export " + day
 		js, err := json.MarshalIndent(bundle, "", "  ")
 		if err != nil {
 			return err
 		}
-		pd, err := bundle.PDF(title)
+		pd, err := bundle.PDF("Personal data export " + day)
 		if err != nil {
 			return err
 		}
-		var pdfDoc documents.Document
+		until := s.now().Add(ExportTTL)
+		var pdfFile files.File
 		for _, f := range []struct {
-			ext, typ string
-			content  []byte
-		}{{"json", "privacy_export_json", js}, {"pdf", "privacy_export_pdf", pd}} {
-			d, err := s.cfg.Filer.FileGenerated(ctx, tx, documents.GeneratedParams{
-				OrgID: a.OrgID, SiteID: a.SiteID, Title: title + " (" + f.ext + ")", FileName: "personal-data-" + day + "." + f.ext, Content: bytes.NewReader(f.content),
-				SystemKey: "privacy", FolderName: "Privacy", FolderVisibility: documents.Visibility{Level: documents.LevelBoard},
-				GeneratedType: f.typ, GeneratedID: a.RequestID, RecipientPersonID: &a.PersonID,
-			})
+			ext     string
+			content []byte
+		}{{"json.txt", js}, {"pdf", pd}} {
+			site := a.SiteID
+			up, err := s.cfg.Files.UploadGenerated(ctx, files.UploadParams{OrgID: a.OrgID, SiteID: &site, Scope: &files.ScopeRef{Type: Scope, ID: a.RequestID},
+				Name: "personal-data-" + day + "." + f.ext, Content: bytes.NewReader(f.content), RetentionUntil: &until})
 			if err != nil {
 				return err
 			}
-			if f.ext == "pdf" {
-				pdfDoc = d
+			if f.ext == "pdf" { // json.txt: JSON is not on the default upload allowlist, plain text is
+				pdfFile = up
 			}
 		}
 		// the person, and the manager who asked when it was not the person
@@ -225,7 +270,7 @@ func (s *Service) RunExport(ctx context.Context, a ExportArgs) error {
 		}
 		return s.cfg.Notifier.Notify(ctx, tx, jobs.NotifyArgs{
 			OrgID: a.OrgID, SiteID: &a.SiteID, Type: notifications.TypeDataExportReady, Recipients: rcpt,
-			Payload: map[string]any{"document_id": pdfDoc.ID, "request_id": a.RequestID},
+			Payload: map[string]any{"file_id": pdfFile.ID, "request_id": a.RequestID},
 			Key:     "privacy.export:" + a.RequestID.String(),
 		})
 	})

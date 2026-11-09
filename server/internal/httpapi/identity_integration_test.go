@@ -127,7 +127,8 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	}
 	e.acc = newTestAccess(t, d, cfg.Log)
 	e.jobRec = &jobRecorder{}
-	e.priv = privacy.NewService(d, privacy.Config{Filer: e.ops.documents, Notifier: e.notes, Log: cfg.Log})
+	e.priv = privacy.NewService(d, privacy.Config{Files: e.files, Notifier: e.notes, Log: cfg.Log})
+	e.files.RegisterResolver(privacy.Scope, privacy.FileResolver())
 	e.priv.SetInsert(func(_ context.Context, _ pgx.Tx, args river.JobArgs) error {
 		e.privJob = append(e.privJob, args.(privacy.ExportArgs))
 		return nil

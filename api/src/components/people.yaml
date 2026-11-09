@@ -1736,7 +1736,7 @@ schemas:
       override_open_balance: false
   DataExportRequested:
     type: object
-    description: A data export that was queued. When the job is done the person's JSON and PDF bundle is filed as private documents (in the "Privacy" folder of their site, readable by the person and the managers) and the person, and the manager who asked, get a `privacy.export_ready` notification.
+    description: A data export that was queued. When the job is done the person's JSON and PDF bundle is stored as private files (readable by the person and the requester only, kept 7 days) and the person, and the manager who asked, get a `privacy.export_ready` notification.
     required:
       - request_id
       - status

@@ -4,33 +4,33 @@ import (
 	"context"
 	"io"
 	"strings"
-	"sync"
+
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/openbekci/openbekci/server/internal/core/documents"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/privacy"
 	"github.com/openbekci/openbekci/server/internal/moneytest"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
-type fakeFiler struct {
-	mu     sync.Mutex
-	params []documents.GeneratedParams
-	body   map[string]string
-}
-
-func (f *fakeFiler) FileGenerated(_ context.Context, _ pgx.Tx, p documents.GeneratedParams) (documents.Document, error) {
-	b, _ := io.ReadAll(p.Content)
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.params = append(f.params, p)
-	f.body[p.GeneratedType] = string(b)
-	return documents.Document{ID: id.New()}, nil
+// readAs reads the export file as the user holding files.read; the resolver decides.
+func readAs(fs *files.Service, e *moneytest.Env, user, file uuid.UUID) (string, error) {
+	ctx := authz.WithGrants(authz.WithPrincipal(context.Background(), &authz.Principal{ID: user, UserID: user}),
+		authz.Grants{OrgID: e.OrgID, Items: []authz.Grant{{Permission: files.PermRead, ScopeType: authz.ScopeOrg}}})
+	d, err := fs.Open(ctx, e.OrgID, file, "")
+	if err != nil {
+		return "", err
+	}
+	defer d.Body.Close()
+	b, err := io.ReadAll(d.Body)
+	return string(b), err
 }
 
 type fakeNotifier struct{ got []jobs.NotifyArgs }
@@ -133,33 +133,44 @@ func TestIntegrationErase(t *testing.T) {
 	}
 }
 
-func TestIntegrationExportBundle(t *testing.T) {
+func TestIntegrationExportFilesArePrivate(t *testing.T) {
 	e := moneytest.New(t)
 	person, user := account(e, "zeynep")
 	e.Occupy(e.Unit("B-2", 0), person, "tenant", "2024-01-01", "")
-	filer, notes := &fakeFiler{body: map[string]string{}}, &fakeNotifier{}
-	s := privacy.NewService(e.DB, privacy.Config{Filer: filer, Notifier: notes})
-	args := privacy.ExportArgs{OrgID: e.OrgID, PersonID: person, SiteID: e.SiteID, RequestID: id.New(), RequestedBy: user}
-	if err := s.RunExport(context.Background(), args); err != nil {
+	signer := storage.NewSigner([]byte("0123456789abcdef0123456789abcdef"))
+	fs := files.NewService(e.DB, storage.NewLocal(t.TempDir(), signer), files.Config{Signer: signer})
+	fs.RegisterResolver(privacy.Scope, privacy.FileResolver())
+	notes := &fakeNotifier{}
+	s := privacy.NewService(e.DB, privacy.Config{Files: fs, Notifier: notes})
+	manager, board, req := id.New(), id.New(), id.New()
+	e.Exec(`INSERT INTO data_export (org_id, id, person_id, requested_by) VALUES ($1, $2, $3, $4)`, e.OrgID, req, person, manager)
+	if err := s.RunExport(context.Background(), privacy.ExportArgs{OrgID: e.OrgID, PersonID: person, SiteID: e.SiteID, RequestID: req, RequestedBy: manager}); err != nil {
 		t.Fatal(err)
 	}
-	js, pdf := filer.body["privacy_export_json"], filer.body["privacy_export_pdf"]
-	if !strings.Contains(js, "zeynep") || !strings.Contains(js, `"occupancies"`) || !strings.Contains(js, "allergic to cats") {
-		t.Fatalf("bundle misses the person's data: %.300s", js)
+	var js, pdf uuid.UUID
+	e.Query([]any{&js, &pdf}, `SELECT (SELECT id FROM file WHERE scope_id = $1 AND name LIKE '%.json.txt'), (SELECT id FROM file WHERE scope_id = $1 AND name LIKE '%.pdf')`, req)
+
+	body, err := readAs(fs, e, user, js)
+	if err != nil || !strings.Contains(body, "zeynep") || !strings.Contains(body, `"occupancies"`) || strings.Contains(body, "national_id_enc") {
+		t.Fatalf("the person reads their bundle: %.200s, %v", body, err)
 	}
-	if strings.Contains(js, "national_id_enc") {
-		t.Fatal("the sealed national id is in the bundle")
+	if b, err := readAs(fs, e, user, pdf); err != nil || !strings.HasPrefix(b, "%PDF") {
+		t.Fatalf("pdf: %.10s, %v", b, err)
 	}
-	if !strings.HasPrefix(pdf, "%PDF") {
-		t.Fatalf("not a PDF: %.20s", pdf)
+	if _, err := readAs(fs, e, manager, js); err != nil {
+		t.Fatalf("the requesting manager reads it: %v", err)
+	}
+	if n := e.Int(`SELECT count(*) FROM audit_event WHERE org_id = $1 AND action = 'privacy.export_read' AND target_id = $2`, e.OrgID, person); n != 1 {
+		t.Fatalf("%d export_read audit events, want 1 (the person's own read is not one)", n)
+	}
+	if _, err := readAs(fs, e, board, js); err == nil {
+		t.Fatal("a board member read somebody's export")
 	}
 	if len(notes.got) != 1 || notes.got[0].Type != "privacy.export_ready" || *notes.got[0].Recipients[0].PersonID != person {
 		t.Fatalf("notification = %+v", notes.got)
 	}
-	for _, p := range filer.params {
-		if p.RecipientPersonID == nil || *p.RecipientPersonID != person || p.SystemKey != "privacy" {
-			t.Fatalf("document not private to the person: %+v", p)
-		}
+	if n := e.Int(`SELECT count(*) FROM file WHERE scope_id = $1 AND retention_until > now() + interval '6 days' AND retention_until < now() + interval '8 days'`, req); n != 2 {
+		t.Fatalf("%d files with a 7 day expiry, want 2", n)
 	}
 }
 

@@ -3466,7 +3466,7 @@ paths:
       operationId: people.requestDataExport
       summary: Export a person's data
       description: |-
-        **Release 1.0.** Queues the export of everything the organization holds about the person: the person, occupancies, charges and payments, tickets and comments, consents and the audit trail of the person (personal values appear in it only as keyed hashes). A job files a JSON and a PDF as private documents in the "Privacy" folder of the person's site, readable by the person and the managers, and notifies the person and the manager who asked (`privacy.export_ready`). The national id is not included (it is only ever shown masked).
+        **Release 1.0.** Queues the export of everything the organization holds about the person: the person, occupancies, charges and payments, tickets and comments, consents and the audit trail of the person (personal values appear in it only as keyed hashes). A job stores a JSON (as `.json.txt`) and a PDF as private files (file scope `privacy_export`, kept 7 days) that only the person and the user who asked can read through the file endpoints (a read by the requester is audited as `privacy.export_read`; administrators with `files.manage` keep their file-module access), and notifies the person and the manager who asked (`privacy.export_ready`). The national id is not included (it is only ever shown masked).
 
         Permission: `people.export` (a manager for the person) or `me.manage` (the person asking for their own data). Anyone else answers 403.
 
@@ -38979,7 +38979,7 @@ components:
         override_open_balance: false
     DataExportRequested:
       type: object
-      description: A data export that was queued. When the job is done the person's JSON and PDF bundle is filed as private documents (in the "Privacy" folder of their site, readable by the person and the managers) and the person, and the manager who asked, get a `privacy.export_ready` notification.
+      description: A data export that was queued. When the job is done the person's JSON and PDF bundle is stored as private files (readable by the person and the requester only, kept 7 days) and the person, and the manager who asked, get a `privacy.export_ready` notification.
       required:
         - request_id
         - status

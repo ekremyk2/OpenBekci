@@ -17,7 +17,6 @@ import (
 	"github.com/riverqueue/river"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
-	"github.com/openbekci/openbekci/server/internal/core/documents"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -34,8 +33,8 @@ type InsertFunc func(ctx context.Context, tx pgx.Tx, args river.JobArgs) error
 
 // Config configures the Service.
 type Config struct {
-	// Filer files the export documents; Notifier tells the person it is ready.
-	Filer    documents.Filer
+	// Files stores the export files; Notifier tells the person it is ready.
+	Files    Uploader
 	Notifier jobs.Notifier
 	Log      *slog.Logger
 	// Now is the clock; nil means time.Now.

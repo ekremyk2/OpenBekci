@@ -267,7 +267,8 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
-	priv := privacy.NewService(d, privacy.Config{Filer: ops.documents, Notifier: ops.late, Log: log})
+	priv := privacy.NewService(d, privacy.Config{Files: fs, Notifier: ops.late, Log: log})
+	fs.RegisterResolver(privacy.Scope, privacy.FileResolver())
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
 		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) {
 			registerGov(w)
