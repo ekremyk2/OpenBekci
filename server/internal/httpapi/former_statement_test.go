@@ -1,10 +1,65 @@
 package httpapi
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/server/internal/core/dashboardmoney"
+	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
+
+// "Current" occupancy on the dashboard is judged on the site's civil day, not the database's: in a zone
+// ahead of UTC (or behind it) an occupancy that starts or ends "today" there counts as it does there.
+func TestIntegrationDashboardSidesUseSiteCivilDay(t *testing.T) {
+	for _, zone := range []string{"Pacific/Kiritimati", "Pacific/Pago_Pago"} { // UTC+14 and UTC-11: one of them is on another date than UTC
+		t.Run(zone, func(t *testing.T) {
+			w := newResidentWorld(t)
+			p := w.p
+			p.w.Exec(t, `UPDATE site SET timezone = $2 WHERE id = $1`, w.f.Site, zone)
+			today := civilToday(t, zone).Format("2006-01-02")
+			utc := time.Now().UTC().Format("2006-01-02")
+			figures := dashboardmoney.New(p.e.deps.Money.Reports)
+			// the figures themselves (the request gate judges the day on the organization's zone)
+			count := func(person uuid.UUID) int {
+				var n int
+				err := p.e.db.InTenantTx(context.Background(), p.org.ID, func(tx pgx.Tx) error {
+					sides, err := figures.MySides(context.Background(), tx, p.org.ID, person, nil)
+					n = len(sides)
+					return err
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				return n
+			}
+			// an occupancy that starts on a date is current from that date on, one that ends on a date no longer on it,
+			// both measured on the site's civil day (today) and not on the UTC or database date (utc)
+			for _, c := range []struct {
+				name       string
+				from, to   string
+				wantSeeing bool
+			}{
+				{"starts civil today", today, "", true},
+				{"ended civil today", "2020-01-01", today, false},
+				{"starts utc date", utc, "", utc <= today},
+				{"ends utc date", "2020-01-01", utc, utc > today},
+			} {
+				person, unit := p.w.NewPerson(t, p.org), p.w.NewUnit(t, w.f)
+				p.w.Exec(t, `INSERT INTO occupancy (id, org_id, site_id, unit_id, person_id, kind, side, valid_from, valid_to) VALUES ($1, $2, $3, $4, $5, 'owner', 'owner', $6::date, NULLIF($7, '')::date)`,
+					id.New(), p.org.ID, w.f.Site, unit, person, c.from, c.to)
+				if n := count(person); (n == 1) != c.wantSeeing {
+					t.Fatalf("%s in %s (civil %s, utc %s): %d sides, want seeing=%v", c.name, zone, today, utc, n, c.wantSeeing)
+				}
+			}
+		})
+	}
+}
 
 // A manager's own late fee policy starts a new period and keeps the default one before it: a due that is
 // already overdue keeps the fee the default earned up to the new policy's start.
