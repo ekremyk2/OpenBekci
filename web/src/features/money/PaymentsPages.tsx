@@ -45,13 +45,12 @@ import {
   type MoneyCtx,
   type S,
 } from './api'
-import { isoDate, MoneyFormField, positiveMinor, useDebounced, useZodMessages } from './forms'
+import { isoDate, MoneyFormField, positiveMinor, useZodMessages } from './forms'
 import { DebtorPicker, debtorRef, emptyTarget, targetId, type DebtorTarget } from './DebtorPicker'
 import { useLabels } from './labels'
 import { useSession } from '@/app/session'
 import {
   AccountPicker,
-  CashOrBankPicker,
   PersonPicker,
   useAccounts,
   useCashBoxes,
@@ -654,22 +653,6 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   }, [defaultAccount, method, allAccounts.data, form])
   const account = v.asset_account_id || defaultAccount
   const amount = typeof v.amount === 'bigint' && v.amount > 0n ? v.amount : null
-  const key = useDebounced(v.unit_id && amount ? { ref: debtorRef(target), amount } : null)
-  const preview = useMoneyQuery(
-    ['alloc-preview', JSON.stringify(key?.ref), String(key?.amount)],
-    () =>
-      unwrap(
-        moneyApi.POST('/v1/orgs/{org_id}/payments:preview-allocation', {
-          params: { path: { org_id: ctx.orgId } },
-          body: {
-            site_id: ctx.siteId,
-            debtor: key!.ref,
-            amount: minorMoney(key!.amount, ctx.currency),
-          },
-        }),
-      ),
-    { enabled: key !== null },
-  )
   const open = useMoneyQuery(
     ['open-charges', JSON.stringify(debtorRef(target))],
     () =>
@@ -693,14 +676,25 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
           .filter((c) => c.balance.amount > 0 && c.status !== 'cancelled')
           .sort((a, b) => a.due_date.localeCompare(b.due_date)),
       ),
-    { enabled: !!v.unit_id && manual },
+    { enabled: !!v.unit_id },
   )
+  // The server settles oldest charge first and keeps the rest as credit; the preview is the same rule here.
+  const preview = useMemo(() => {
+    if (!open.data || !amount) return null
+    let left = amount
+    const allocations = open.data.flatMap((c) => {
+      const take = left < BigInt(c.balance.amount) ? left : BigInt(c.balance.amount)
+      left -= take
+      return take > 0n ? [{ charge_id: c.id, charge_description: c.description ?? c.period, amount: Number(take) }] : []
+    })
+    return { allocations, credit: Number(left) }
+  }, [open.data, amount])
   const startManual = () => setManual(true)
   // Manual rows start from the automatic allocation; typed amounts override it per charge.
   const rows = useMemo<AllocRow[]>(() => {
     if (!manual || !open.data) return []
     const auto = new Map(
-      (preview.data?.allocations ?? []).map((al) => [al.charge_id, al.amount.amount]),
+      (preview?.allocations ?? []).map((al) => [al.charge_id, al.amount]),
     )
     return open.data.map((c) => ({
       charge_id: c.id,
@@ -708,7 +702,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
       balance: c.balance.amount,
       amount: c.id in edits ? edits[c.id]! : auto.has(c.id) ? BigInt(auto.get(c.id)!) : null,
     }))
-  }, [manual, open.data, preview.data, edits])
+  }, [manual, open.data, preview, edits])
   const allocated = rows.reduce((a, r) => a + (r.amount ?? 0n), 0n)
   const rowError =
     manual &&
@@ -919,23 +913,23 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
           <CardContent className="flex flex-col gap-3">
             {!manual ? (
               <>
-                {!preview.data ? (
+                {!preview ? (
                   <p className="text-sm text-muted-foreground" role="status">
-                    {preview.isFetching ? t`Calculating…` : t`Choose a unit and an amount.`}
+                    {open.isFetching ? t`Calculating…` : t`Choose a unit and an amount.`}
                   </p>
                 ) : (
                   <>
                     <Table aria-label={t`Automatic allocation`}>
                       <TableBody>
-                        {preview.data.allocations.map((a) => (
+                        {preview.allocations.map((a) => (
                           <TableRow key={a.charge_id}>
                             <TableCell>{a.charge_description}</TableCell>
                             <TableCell className="text-end">
-                              <Money minor={a.amount.amount} currency={ctx.currency} />
+                              <Money minor={a.amount} currency={ctx.currency} />
                             </TableCell>
                           </TableRow>
                         ))}
-                        {preview.data.credit.amount > 0 ? (
+                        {preview.credit > 0 ? (
                           <TableRow>
                             <TableCell>
                               <Badge variant="info">
@@ -943,7 +937,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-end">
-                              <Money minor={preview.data.credit.amount} currency={ctx.currency} />
+                              <Money minor={preview.credit} currency={ctx.currency} />
                             </TableCell>
                           </TableRow>
                         ) : null}
@@ -1026,7 +1020,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   )
 }
 
-/* ───────────────────────── cash boxes, transfers, refunds, credits ───────────────────────── */
+/* ───────────────────────── cash boxes, transfers, refunds ───────────────────────── */
 
 export function CashBoxesPage() {
   const ctx = useMoneyCtx()!
@@ -1036,13 +1030,6 @@ export function CashBoxesPage() {
     unwrap(
       moneyApi.GET('/v1/orgs/{org_id}/transfers', {
         params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, limit: 50 } },
-      }),
-    ).then((r) => r.items),
-  )
-  const credits = useMoneyQuery(['credits', ctx.siteId], () =>
-    unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/credits', {
-        params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, has_balance: true } },
       }),
     ).then((r) => r.items),
   )
@@ -1061,7 +1048,6 @@ export function CashBoxesPage() {
     from: string
     kind: S['Transfer']['kind']
   } | null>(null)
-  const [refundFor, setRefundFor] = useState<S['Credit'] | null>(null)
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -1161,41 +1147,6 @@ export function CashBoxesPage() {
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans>Credits (prepayments)</Trans>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <QueryBoundary query={credits} isEmpty={(d) => d.length === 0} emptyTitle={t`No credits`}>
-            {(items) => (
-              <Table>
-                <TableBody>
-                  {items.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell>{door(c.unit_id)}</TableCell>
-                      <TableCell>
-                        <SideBadge side={c.debtor_kind} />
-                      </TableCell>
-                      <TableCell className="text-end">
-                        <Money minor={c.balance.amount} currency={ctx.currency} />
-                      </TableCell>
-                      <TableCell className="text-end">
-                        <Gate permission="money.post" fallback={null}>
-                          <Button size="sm" variant="ghost" onClick={() => setRefundFor(c)}>
-                            <Trans>Refund</Trans>
-                          </Button>
-                        </Gate>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </QueryBoundary>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>
             <Trans>Refunds</Trans>
           </CardTitle>
         </CardHeader>
@@ -1229,9 +1180,6 @@ export function CashBoxesPage() {
           kind={transferFor.kind}
           onClose={() => setTransferFor(null)}
         />
-      ) : null}
-      {refundFor ? (
-        <RefundDialog ctx={ctx} credit={refundFor} onClose={() => setRefundFor(null)} />
       ) : null}
     </div>
   )
@@ -1392,66 +1340,5 @@ function TransferDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function RefundDialog({
-  ctx,
-  credit,
-  onClose,
-}: {
-  ctx: MoneyCtx
-  credit: S['Credit']
-  onClose: () => void
-}) {
-  const { t } = useLingui()
-  const idem = useIdempotencyKey()
-  const [amount, setAmount] = useState<bigint | null>(BigInt(credit.balance.amount))
-  const [from, setFrom] = useState('')
-  const [error, setError] = useState<string>()
-  const m = useMoneyMutation(async (reason: string) => {
-    await moneyApi.POST('/v1/orgs/{org_id}/refunds', {
-      params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
-      body: {
-        site_id: ctx.siteId,
-        unit_id: credit.unit_id,
-        debtor_kind: credit.debtor_kind,
-        person_id: credit.person_id,
-        amount: minorMoney(amount!, ctx.currency),
-        reason,
-        kind: 'overpayment',
-        paid_from_account_id: from,
-        ...toContractDate('refunded', todayIn(ctx.timeZone)),
-        credit_id: credit.id,
-      },
-    })
-  })
-  const invalid = !amount || amount <= 0n || amount > BigInt(credit.balance.amount) || !from
-  return (
-    <ReasonDialog
-      open
-      onOpenChange={(o) => !o && onClose()}
-      title={t`Refund a credit`}
-      confirmLabel={t`Refund`}
-      pending={m.isPending || invalid}
-      error={error}
-      onConfirm={(reason) =>
-        m.mutateAsync(reason).then(
-          () => {
-            idem.renew()
-            toast.info(t`Refund recorded.`)
-            onClose()
-          },
-          () => setError(t`Could not record the refund.`),
-        )
-      }
-    >
-      <Field label={t`Amount`} htmlFor="rf-amount">
-        <MoneyInput id="rf-amount" currency={ctx.currency} value={amount} onChange={setAmount} />
-      </Field>
-      <Field label={t`Paid from`} htmlFor="rf-from">
-        <CashOrBankPicker ctx={ctx} id="rf-from" value={from} onChange={setFrom} />
-      </Field>
-    </ReasonDialog>
   )
 }

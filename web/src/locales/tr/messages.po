@@ -165,6 +165,9 @@ msgstr "<0>{name}</0>: ödeme sağlayıcı henüz <1/> ödemedi (takas hesabı {
 msgid "1. Add @{bot} to your group as an administrator."
 msgstr "1. @{bot} botunu grubunuza yönetici olarak ekleyin."
 
+msgid "16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update."
+msgstr "16 ile 256 arası harf, rakam, - veya _. Telegram her güncellemede bunu bir başlıkta geri gönderir."
+
 msgid "2. Send this message in the group. The code works for 10 minutes."
 msgstr "2. Bu mesajı grupta gönderin. Kod 10 dakika geçerlidir."
 
@@ -298,6 +301,9 @@ msgstr "Erişim noktası"
 
 msgid "Access points"
 msgstr "Erişim noktaları"
+
+msgid "Access token"
+msgstr "Erişim anahtarı"
 
 msgid "Account"
 msgstr "Hesap"
@@ -456,12 +462,6 @@ msgstr "Tedarikçi ekle"
 
 msgid "Address line 2"
 msgstr "Adres satırı 2"
-
-msgid "Adjust"
-msgstr "Düzelt"
-
-msgid "Adjust this charge"
-msgstr "Bu tahakkuku düzelt"
 
 msgid "Adjustment"
 msgstr "Düzeltme"
@@ -660,6 +660,9 @@ msgstr "Uygulama ve e-posta"
 
 msgid "App and SMS"
 msgstr "Uygulama ve SMS"
+
+msgid "App secret"
+msgstr "Uygulama sırrı"
 
 #. placeholder {0}: labels.effect(decision.effect.kind)
 msgid "Applied: {0}"
@@ -873,9 +876,6 @@ msgstr "Geldiği banka satırı"
 msgid "Bank lines"
 msgstr "Banka satırları"
 
-msgid "Bank reconciliation"
-msgstr "Banka mutabakatı"
-
 msgid "Bank statement import"
 msgstr "Banka ekstresi aktarımı"
 
@@ -964,6 +964,12 @@ msgstr "Rezervasyon için en az {0} dakika önceden haber vermek gerekir."
 msgid "Bookings per unit"
 msgstr "Bağımsız bölüm başına rezervasyon"
 
+msgid "Bot token"
+msgstr "Bot anahtarı"
+
+msgid "Bot username"
+msgstr "Bot kullanıcı adı"
+
 msgid "Both"
 msgstr "Her ikisi"
 
@@ -984,6 +990,9 @@ msgstr "Bütçe kaydedildi."
 
 msgid "Budget vs actual"
 msgstr "Bütçe ve gerçekleşen"
+
+msgid "Business number"
+msgstr "İşletme numarası"
 
 msgid "By"
 msgstr "Gönderim"
@@ -1193,9 +1202,6 @@ msgstr "Kanallar"
 msgid "Charge"
 msgstr "Tahakkuk"
 
-msgid "Charge adjusted; the difference is posted as a correction."
-msgstr "Tahakkuk düzeltildi; fark bir düzeltme olarak kaydedildi."
-
 msgid "Charge cancelled; a reversal was created."
 msgstr "Tahakkuk iptal edildi; bir ters kayıt oluşturuldu."
 
@@ -1207,9 +1213,6 @@ msgstr "Gider türü"
 
 msgid "Charges"
 msgstr "Tahakkuklar"
-
-msgid "Charges created."
-msgstr "Tahakkuklar oluşturuldu."
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
 msgstr "Giderler varsayılan ödeyene gider (olağan aidatta kiracı, olağanüstü tahakkuklarda mal sahibi). Yalnızca bu birimin farklı olduğu durumlarda satır ekleyin."
@@ -1485,9 +1488,6 @@ msgstr "Tahsilat"
 msgid "Collector"
 msgstr "Tahsilatçı"
 
-msgid "Collector reconciliation"
-msgstr "Tahsilatçı mutabakatı"
-
 msgid "Comment"
 msgstr "Yorum"
 
@@ -1594,9 +1594,6 @@ msgstr "Oran eklenemedi."
 msgid "Could not add the stage."
 msgstr "Aşama eklenemedi."
 
-msgid "Could not adjust the charge."
-msgstr "Tahakkuk düzeltilemedi."
-
 msgid "Could not apply the decision. You can try again; nothing is created twice."
 msgstr "Karar uygulanamadı. Yeniden deneyebilirsiniz; hiçbir şey iki kez oluşturulmaz."
 
@@ -1650,9 +1647,6 @@ msgstr "Ajan oluşturulamadı."
 
 msgid "Could not create the assembly."
 msgstr "Toplantı oluşturulamadı."
-
-msgid "Could not create the charges."
-msgstr "Tahakkuklar oluşturulamadı."
 
 msgid "Could not create the credential."
 msgstr "Kimlik bilgisi oluşturulamadı."
@@ -1728,9 +1722,6 @@ msgstr "Ödeme kaydedilemedi."
 
 msgid "Could not record the proxy."
 msgstr "Vekâlet kaydedilemedi."
-
-msgid "Could not record the refund."
-msgstr "İade kaydedilemedi."
 
 msgid "Could not record the transfer."
 msgstr "Virman kaydedilemedi."
@@ -1899,9 +1890,6 @@ msgstr "Toplantı oluştur"
 msgid "Create budget"
 msgstr "Bütçe oluştur"
 
-msgid "Create charges"
-msgstr "Tahakkukları oluştur"
-
 msgid "Create code"
 msgstr "Kod oluştur"
 
@@ -1947,9 +1935,6 @@ msgstr "Kimlik bilgileri"
 msgid "Credit"
 msgstr "Alacak"
 
-msgid "Credits (prepayments)"
-msgstr "Alacaklar (peşin ödemeler)"
-
 msgid "Currency"
 msgstr "Para birimi"
 
@@ -1982,10 +1967,6 @@ msgstr "Ödediğiniz tarih"
 
 msgid "day"
 msgstr "gün"
-
-#. placeholder {0}: r.day_of_month
-msgid "Day {0}"
-msgstr "{0}. gün"
 
 msgid "days"
 msgstr "gün"
@@ -2212,9 +2193,6 @@ msgstr "Bu paketi devre dışı bırak"
 msgid "Disabled"
 msgstr "Devre dışı"
 
-msgid "Dismiss"
-msgstr "Kapat"
-
 msgid "Display name"
 msgstr "Görünen ad"
 
@@ -2295,9 +2273,6 @@ msgstr "Deneme çalıştırması: {1} satırdan {0} tanesi uygun, {2} tanesinde 
 
 msgid "Due"
 msgstr "Vade"
-
-msgid "Due date"
-msgstr "Vade tarihi"
 
 msgid "Due day"
 msgstr "Vade günü"
@@ -2675,8 +2650,8 @@ msgstr "Her makbuz, sitenin boşluksuz sırasında bir sonraki numarayı alır. 
 msgid "Every receivable by period, unit and side"
 msgstr "Dönem, birim ve tarafa göre tüm alacaklar"
 
-msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
-msgstr "Bir birim tarafının her alacağı. Tahakkuklar asla düzenlenmez: gerekçeyle iptal edin veya düzeltin, ters kayıt oluşturulur."
+msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
+msgstr "Bir birim tarafının tüm alacakları. Tahakkuklar düzenlenmez: gerekçeyle iptal edilir ve ters kayıt atılır."
 
 msgid "Every status needs a name."
 msgstr "Her durumun bir adı olmalı."
@@ -2908,11 +2883,17 @@ msgstr "Sıklık"
 msgid "From"
 msgstr "Başlangıç"
 
+msgid "From @BotFather."
+msgstr "@BotFather'dan alınır."
+
 msgid "From a vehicle"
 msgstr "Araçtan"
 
 msgid "From a visitor"
 msgstr "Ziyaretçiden"
+
+msgid "From the Meta app's WhatsApp setup."
+msgstr "Meta uygulamasının WhatsApp kurulumundan alınır."
 
 msgid "Frozen"
 msgstr "Donduruldu"
@@ -3007,9 +2988,6 @@ msgstr "Teslim et"
 msgid "Hand over to"
 msgstr "Teslim edilecek kişi"
 
-msgid "Handed over"
-msgstr "Teslim edilen"
-
 msgid "Handover"
 msgstr "Teslim"
 
@@ -3098,9 +3076,6 @@ msgstr "İçe aktarma başarısız"
 
 msgid "Import finished"
 msgstr "İçe aktarma tamamlandı"
-
-msgid "Import progress"
-msgstr "İçe aktarma durumu"
 
 msgid "Import units"
 msgstr "Birimleri içe aktar"
@@ -3216,6 +3191,9 @@ msgstr "İçinde bulunduğu klasörün görünürlüğüyle başlar. Sonra deği
 msgid "It stops opening gates at once."
 msgstr "Kapıların hemen açılmasını durdurur."
 
+msgid "It will come in a later release."
+msgstr "Sonraki bir sürümde gelecek."
+
 msgid "Italic"
 msgstr "İtalik"
 
@@ -3318,6 +3296,9 @@ msgstr "Gecikme tazminatı"
 msgid "Late fee accrued so far (not yet booked)"
 msgstr "Şimdiye kadar tahakkuk eden gecikme tazminatı (henüz kaydedilmedi)"
 
+msgid "Late fee policy"
+msgstr "Gecikme zammı politikası"
+
 msgid "Late fee waived."
 msgstr "Gecikme tazminatı affedildi."
 
@@ -3356,9 +3337,6 @@ msgstr "Kişi kaydındaki numarayı veya adresi kullanmak için boş bırakın."
 
 msgid "Leave the guard console"
 msgstr "Güvenlik konsolundan çık"
-
-msgid "Ledger balance"
-msgstr "Defter bakiyesi"
 
 msgid "Ledger closing"
 msgstr "Defter kapanışı"
@@ -3552,6 +3530,9 @@ msgstr "{0}. durumun anlamı"
 msgid "Meeting notices"
 msgstr "Toplantı bildirimleri"
 
+msgid "Meeting quorum"
+msgstr "Toplantı yeter sayısı"
+
 msgid "Meetings"
 msgstr "Toplantılar"
 
@@ -3621,8 +3602,8 @@ msgstr "Aylık"
 msgid "Monthly bookings"
 msgstr "Aylık kayıtlar"
 
-msgid "Monthly recurring expenses"
-msgstr "Aylık tekrarlayan giderler"
+msgid "Monthly rate (%)"
+msgstr "Aylık oran (%)"
 
 msgid "Months overdue"
 msgstr "Gecikme ayı"
@@ -3900,9 +3881,6 @@ msgstr "Sonraki fotoğraf"
 msgid "Next retry"
 msgstr "Sonraki deneme"
 
-msgid "Next: choose the split"
-msgstr "Sonraki: bölüştürmeyi seçin"
-
 msgid "No"
 msgstr "Hayır"
 
@@ -3978,14 +3956,8 @@ msgstr "Bu durumda ödeme işlemi yok"
 msgid "No claims waiting"
 msgstr "Bekleyen talep yok"
 
-msgid "No collectors"
-msgstr "Tahsilatçı yok"
-
 msgid "No credentials found"
 msgstr "Kimlik bilgisi bulunamadı"
-
-msgid "No credits"
-msgstr "Alacak yok"
 
 msgid "No debtors"
 msgstr "Borçlu yok"
@@ -4233,9 +4205,6 @@ msgstr "Bağlayıcı değil"
 
 msgid "none"
 msgstr "yok"
-
-msgid "None"
-msgstr "Yok"
 
 msgid "Not available"
 msgstr "Kullanılamıyor"
@@ -4852,6 +4821,9 @@ msgstr "Telefon"
 msgid "Phone number"
 msgstr "Telefon numarası"
 
+msgid "Phone number id"
+msgstr "Telefon numarası kimliği"
+
 msgid "Phone or email"
 msgstr "Telefon veya e-posta"
 
@@ -5123,6 +5095,9 @@ msgstr "Oranlar"
 msgid "Rates, split rules and live previews"
 msgstr "Oranlar, bölüştürme kuralları ve canlı önizlemeler"
 
+msgid "Raw"
+msgstr "Ham veri"
+
 msgid "Re-enrol"
 msgstr "Yeniden kaydet"
 
@@ -5170,9 +5145,6 @@ msgstr "Bu dosyadaki alacaklar: <0/>. Banka ve kasa bakiyeleri: <1/>."
 
 msgid "Receive notifications in Telegram or WhatsApp."
 msgstr "Bildirimleri Telegram veya WhatsApp'ta alın."
-
-msgid "Received"
-msgstr "Alınan"
 
 msgid "Received in"
 msgstr "Alındığı yer"
@@ -5272,12 +5244,6 @@ msgstr "Referans: {0}"
 
 msgid "Refund"
 msgstr "İade"
-
-msgid "Refund a credit"
-msgstr "Alacağı iade et"
-
-msgid "Refund recorded."
-msgstr "İade kaydedildi."
 
 msgid "Refund the payment"
 msgstr "Ödemeyi iade et"
@@ -5885,14 +5851,14 @@ msgstr "Pay"
 msgid "Share %"
 msgstr "Pay %"
 
-msgid "Share an expense"
-msgstr "Bir gideri paylaştır"
-
 msgid "Share of land present"
 msgstr "Hazır bulunan arsa payı"
 
 msgid "Share of owners present"
 msgstr "Hazır bulunan malik payı"
+
+msgid "Sharing a one-off cost is not available yet"
+msgstr "Tek seferlik gideri paylaştırma henüz yok"
 
 msgid "Shop"
 msgstr "Dükkân"
@@ -5969,6 +5935,9 @@ msgstr "İmza anahtarı"
 
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
+
+msgid "Signs the webhook (X-Hub-Signature-256)."
+msgstr "Webhook imzasını atar (X-Hub-Signature-256)."
 
 msgid "Site"
 msgstr "Site"
@@ -6098,9 +6067,6 @@ msgstr "Durum"
 msgid "Statement"
 msgstr "Ekstre"
 
-msgid "Statement balance"
-msgstr "Ekstre bakiyesi"
-
 msgid "Statement closing"
 msgstr "Ekstre kapanışı"
 
@@ -6139,17 +6105,11 @@ msgstr "Yasal sınır: ayda %{0}."
 msgid "Steps"
 msgstr "Adımlar"
 
-msgid "Still in the box"
-msgstr "Kasada kalan"
-
 msgid "Still waiting for the provider"
 msgstr "Sağlayıcı bekleniyor"
 
 msgid "Stop camera"
 msgstr "Kamerayı durdur"
-
-msgid "Stop repeating"
-msgstr "Tekrarlamayı durdur"
 
 msgid "Storage"
 msgstr "Depo"
@@ -6328,6 +6288,9 @@ msgstr "Rezervasyon iptal edildi."
 msgid "The bot leaves the group and nothing is posted there any more."
 msgstr "Bot gruptan ayrılır ve orada artık hiçbir şey paylaşılmaz."
 
+msgid "The bot's username without @ (for the t.me link)."
+msgstr "Botun kullanıcı adı, @ işareti olmadan (t.me bağlantısı için)."
+
 msgid "The box does not hold that much."
 msgstr "Kasada o kadar para yok."
 
@@ -6445,9 +6408,6 @@ msgstr "İçe aktarma başlatılamadı. Lütfen yeniden deneyin; yeniden deneme 
 msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
 msgstr "İçe aktarma tamamlanmadı. Bazı satırlar uygulanmış olabilir: bağımsız bölümler ve kişiler sayfalarını kontrol edin, dosyayı düzeltip yeniden deneyin."
 
-msgid "The import did not finish. Nothing was posted; check the file and try again."
-msgstr "İçe aktarma tamamlanmadı. Hiçbir şey işlenmedi; dosyayı kontrol edip tekrar deneyin."
-
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr "İş tamamlanmadı. Bazı satırlar uygulanmış olabilir: yeniden denemeden önce bağımsız bölümler ve kişiler sayfalarını kontrol edin."
 
@@ -6498,9 +6458,6 @@ msgstr "Bir ziyaretçi geldiğinde güvenliğin arayabileceği numara. Yukarıda
 
 msgid "The old key no longer works. Use this one from now on."
 msgstr "Eski anahtar artık çalışmıyor. Bundan sonra bunu kullanın."
-
-msgid "The opening balances were imported."
-msgstr "Açılış bakiyeleri içe aktarıldı."
 
 msgid "The opening log is not available."
 msgstr "Açılış kaydı kullanılamıyor."
@@ -6671,6 +6628,9 @@ msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı).
 msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
 msgstr "Kuruluşunuzun verilerinizin nasıl işlendiğini anlatmak için kullandığı metinler, seçtiğiniz dilde. Her birini kabul edin veya reddedin."
 
+msgid "The token you enter in Meta's webhook setup."
+msgstr "Meta'nın webhook kurulumuna gireceğiniz anahtar."
+
 msgid "The transfer could not be started. Please try again."
 msgstr "Devir başlatılamadı. Lütfen yeniden deneyin."
 
@@ -6682,6 +6642,9 @@ msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
 
 msgid "The visit must end after it starts."
 msgstr "Ziyaret, başladıktan sonra bitmelidir."
+
+msgid "The WhatsApp number people write to, international format (for the wa.me link)."
+msgstr "İnsanların yazdığı WhatsApp numarası, uluslararası biçimde (wa.me bağlantısı için)."
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
 msgstr "Tutarın tamamı, <0/>, sağlayıcı aracılığıyla sakinin kartına iade edilir. Ödediği tahakkuklar yeniden açılır. Kısmi iade mümkün değildir."
@@ -6901,9 +6864,6 @@ msgstr "Bu ortak bir talep olacak ve tüm site tarafından görülecek."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "Bu işlem, bu kararla bağlantılı bir {0} oluşturur. Daha sonra düzeltilebilir ancak sessizce geri alınamaz."
 
-msgid "Tick “Repeat every month” on a new expense to add one."
-msgstr "Eklemek için yeni bir giderde “Her ay tekrarla” seçeneğini işaretleyin."
-
 msgid "Ticket settings"
 msgstr "Talep ayarları"
 
@@ -7029,9 +6989,6 @@ msgstr "Toplam <0/>"
 msgid "Total <0/> across {0} units"
 msgstr "{0} birim için toplam <0/>"
 
-msgid "Total amount"
-msgstr "Toplam tutar"
-
 msgid "Totals"
 msgstr "Toplamlar"
 
@@ -7070,9 +7027,6 @@ msgstr "Tekrar dene"
 
 msgid "Try widening the filters."
 msgstr "Filtreleri genişletmeyi deneyin."
-
-msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
-msgstr "Bir maliyeti, aidatla aynı bölüştürme kurallarıyla birimlere tahakkuk olarak yansıtın. Adım {step}/3."
 
 msgid "Type"
 msgstr "Tür"
@@ -7118,9 +7072,6 @@ msgstr "Bağımsız bölüm alacağı"
 msgid "Units"
 msgstr "Birimler"
 
-msgid "Units with a tag"
-msgstr "Etiketli birimler"
-
 msgid "unknown permission"
 msgstr "bilinmeyen yetki"
 
@@ -7138,12 +7089,6 @@ msgstr "Eşleşmeyi kaldır"
 
 msgid "Unmatched"
 msgstr "Eşleşmedi"
-
-msgid "Unmatched money in"
-msgstr "Eşleşmeyen gelen para"
-
-msgid "Unmatched money out"
-msgstr "Eşleşmeyen giden para"
 
 msgid "Unread"
 msgstr "Okunmadı"
@@ -7407,6 +7352,9 @@ msgstr "Oylanacak"
 msgid "Votes and proxies"
 msgstr "Oylar ve vekâletler"
 
+msgid "Voting thresholds"
+msgstr "Oylama eşikleri"
+
 msgid "Waiting"
 msgstr "Bekliyor"
 
@@ -7481,6 +7429,12 @@ msgstr "Webhook adresi"
 msgid "Webhook endpoints"
 msgstr "Webhook uç noktaları"
 
+msgid "Webhook secret"
+msgstr "Webhook sırrı"
+
+msgid "Webhook verify token"
+msgstr "Webhook doğrulama anahtarı"
+
 msgid "Webhooks"
 msgstr "Webhook'lar"
 
@@ -7501,9 +7455,6 @@ msgstr "Her birim ne öderdi"
 
 msgid "What happens to open charges"
 msgstr "Açık giderlere ne olur"
-
-msgid "What is it for?"
-msgstr "Ne için?"
 
 msgid "What is it? (optional)"
 msgstr "Nedir? (isteğe bağlı)"

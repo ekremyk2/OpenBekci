@@ -90,7 +90,6 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
   const idem = useIdempotencyKey()
   const dryIdem = useIdempotencyKey()
   const { intl } = useLocale()
-  const [jobId, setJobId] = useState<string | null>(null)
   const [asOf, setAsOf] = useState(todayIn(ctx.timeZone))
   const [cells, setCells] = useState<Cells>({})
   const [file, setFile] = useState<File | null>(null)
@@ -300,13 +299,13 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
             disabled={locked || !report || report.error_rows > 0 || commit.isPending}
             onClick={() =>
               commit.mutateAsync().then(
-                (r) => {
+                () => {
                   idem.renew()
                   setReport(null)
                   setCells({})
                   setError(undefined)
-                  // 202: the work runs in a job; the result is shown once it finishes
-                  setJobId(r.job_id)
+                  // the server posts the import before it answers (job_id is null)
+                  toast.info(t`Opening balances saved.`)
                 },
                 (e) =>
                   setError(
@@ -341,7 +340,6 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
             ) : null}
           </div>
         ) : null}
-        {jobId ? <ImportJob ctx={ctx} jobId={jobId} onClose={() => setJobId(null)} /> : null}
         <details className="text-sm" data-testid="file-layout">
           <summary className="cursor-pointer font-medium">
             <Trans>File layout for a spreadsheet upload</Trans>
@@ -440,57 +438,6 @@ function DryRunTotals({
         and cash balances: <Money minor={totals.accounts} currency={ctx.currency} />.
       </Trans>
     </p>
-  )
-}
-
-/** Follows the 202 job of a committed import until it finishes, then shows the result. */
-function ImportJob({ ctx, jobId, onClose }: { ctx: MoneyCtx; jobId: string; onClose: () => void }) {
-  const { t } = useLingui()
-  const job = useMoneyQuery(
-    ['job', jobId],
-    () =>
-      unwrap(
-        moneyApi.GET('/v1/orgs/{org_id}/jobs/{job_id}', {
-          params: { path: { org_id: ctx.orgId, job_id: jobId } },
-        }),
-      ),
-    {
-      refetchInterval: (q) => {
-        const s = q.state.data?.status
-        return s === 'succeeded' || s === 'failed' || s === 'cancelled' ? false : 1000
-      },
-    },
-  )
-  const status = job.data?.status
-  const done = status === 'succeeded'
-  const failed = status === 'failed' || status === 'cancelled' || job.isError
-  useEffect(() => {
-    if (done) toast.info(t`Opening balances saved.`)
-  }, [done, t])
-  return (
-    <div role="status" aria-label={t`Import progress`} className="rounded-md border p-3 text-sm">
-      {done ? (
-        <p>
-          <Trans>The opening balances were imported.</Trans>
-        </p>
-      ) : failed ? (
-        <p className="text-destructive">
-          <Trans>
-            The import did not finish. Nothing was posted; check the file and try again.
-          </Trans>
-        </p>
-      ) : (
-        <p>
-          <Trans>Importing…</Trans>
-          {job.data?.progress != null ? ` ${Math.round(job.data.progress * 100)}%` : ''}
-        </p>
-      )}
-      {done || failed ? (
-        <Button size="sm" variant="ghost" onClick={onClose}>
-          <Trans>Dismiss</Trans>
-        </Button>
-      ) : null}
-    </div>
   )
 }
 
