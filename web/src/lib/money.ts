@@ -45,7 +45,7 @@ export function formatMoney(
   // Turkish convention: the symbol trails the number ("1.234,56 ₺").
   if (!locale.startsWith('tr')) return text
   const symbol = currencySymbol(currency, locale)
-  return text.includes(symbol) ? `${text.replace(symbol, '').trim()} ${symbol}` : text
+  return text.includes(symbol) ? `${text.replace(symbol, '').trim()}\u2009${symbol}` : text
 }
 
 /** The symbol Intl shows for this currency in this locale, e.g. "₺" for TRY in tr. */
