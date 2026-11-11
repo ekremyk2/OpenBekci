@@ -37,10 +37,11 @@ import {
   Textarea,
 } from './ui'
 
+/** The resident's sides come with the served home summary (`me/dashboard`), not a separate balances call. */
 function useMyBalances(ctx: MoneyCtx) {
   return useMoneyQuery(['my-balances', ctx.siteId], () =>
     unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/me/balances', {
+      moneyApi.GET('/v1/orgs/{org_id}/me/dashboard', {
         params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId } },
       }),
     ),

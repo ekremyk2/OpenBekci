@@ -8,8 +8,6 @@ const IDS = [
   'budget',
   'trial-balance',
   'aging',
-  'collectors',
-  'bank',
   'funds',
 ]
 

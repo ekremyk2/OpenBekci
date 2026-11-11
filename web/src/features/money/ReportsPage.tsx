@@ -43,8 +43,6 @@ export type ReportId =
   | 'budget'
   | 'trial-balance'
   | 'aging'
-  | 'collectors'
-  | 'bank'
   | 'funds'
 
 export function ReportsPage({ report }: { report: ReportId }) {
@@ -58,8 +56,6 @@ export function ReportsPage({ report }: { report: ReportId }) {
     { id: 'budget', label: t`Budget vs actual`, perm: 'reports.read' },
     { id: 'trial-balance', label: t`Trial balance`, perm: 'reports.read' },
     { id: 'aging', label: t`Receivables aging`, perm: 'reports.read' },
-    { id: 'collectors', label: t`Collector reconciliation`, perm: 'reports.read' },
-    { id: 'bank', label: t`Bank reconciliation`, perm: 'reports.read' },
     { id: 'funds', label: t`Fund balances`, perm: 'reports.read' },
   ]
   const visible = all.filter(
@@ -99,10 +95,6 @@ export function ReportsPage({ report }: { report: ReportId }) {
         <TrialBalance ctx={ctx} />
       ) : current.id === 'aging' ? (
         <Aging ctx={ctx} />
-      ) : current.id === 'collectors' ? (
-        <Collectors ctx={ctx} />
-      ) : current.id === 'bank' ? (
-        <BankRecon ctx={ctx} />
       ) : (
         <Funds ctx={ctx} />
       )}
@@ -765,127 +757,6 @@ function Aging({ ctx }: { ctx: MoneyCtx }) {
               </TableRow>
             </TableFooter>
           </Table>
-        )}
-      </QueryBoundary>
-    </div>
-  )
-}
-
-function Collectors({ ctx }: { ctx: MoneyCtx }) {
-  const { t } = useLingui()
-  const r = useRange(ctx)
-  const q = useMoneyQuery(['rep-collectors', ctx.siteId, r.from, r.to], () =>
-    unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/reports/collector-reconciliation', {
-        params: {
-          path: { org_id: ctx.orgId },
-          query: { site_id: ctx.siteId, from: r.from, to: r.to },
-        },
-      }),
-    ),
-  )
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-end gap-4">
-        <RangeFields r={r} />
-        <ExportButtons
-          endpoint="/v1/orgs/{org_id}/reports/collector-reconciliation"
-          query={{ site_id: ctx.siteId, from: r.from, to: r.to }}
-          basename="collector-reconciliation"
-        />
-      </div>
-      <QueryBoundary query={q} isEmpty={(d) => d.rows.length === 0} emptyTitle={t`No collectors`}>
-        {(d) => (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  <Trans>Collector</Trans>
-                </TableHead>
-                <TableHead className="text-end">
-                  <Trans>Received</Trans>
-                </TableHead>
-                <TableHead className="text-end">
-                  <Trans>Handed over</Trans>
-                </TableHead>
-                <TableHead className="text-end">
-                  <Trans>Still in the box</Trans>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {d.rows.map((c) => (
-                <TableRow key={c.cash_box_id}>
-                  <TableCell>{c.collector_display_name ?? '–'}</TableCell>
-                  <TableCell className="text-end">
-                    <Money minor={c.received.amount} currency={ctx.currency} />
-                  </TableCell>
-                  <TableCell className="text-end">
-                    <Money minor={c.handed_over.amount} currency={ctx.currency} />
-                  </TableCell>
-                  <TableCell className="text-end">
-                    <Money minor={c.balance.amount} currency={ctx.currency} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </QueryBoundary>
-    </div>
-  )
-}
-
-function BankRecon({ ctx }: { ctx: MoneyCtx }) {
-  const { t } = useLingui()
-  const banks = useAccounts(ctx, 'bank')
-  const [account, setAccount] = useState('')
-  const acct = account || banks.data?.[0]?.id || ''
-  const [asOf, setAsOf] = useState(todayIn(ctx.timeZone))
-  const q = useMoneyQuery(
-    ['rep-bank', ctx.siteId, acct, asOf],
-    () =>
-      unwrap(
-        moneyApi.GET('/v1/orgs/{org_id}/reports/bank-reconciliation', {
-          params: {
-            path: { org_id: ctx.orgId },
-            query: { site_id: ctx.siteId, account_id: acct, as_of: asOf },
-          },
-        }),
-      ),
-    { enabled: !!acct },
-  )
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-end gap-4">
-        <Field label={t`Bank account`} htmlFor="br-acct">
-          <AccountPicker ctx={ctx} subtype="bank" id="br-acct" value={acct} onChange={setAccount} />
-        </Field>
-        <AsOf value={asOf} onChange={setAsOf} />
-        <ExportButtons
-          endpoint="/v1/orgs/{org_id}/reports/bank-reconciliation"
-          query={{ site_id: ctx.siteId, account_id: acct, as_of: asOf }}
-          basename="bank-reconciliation"
-        />
-      </div>
-      <QueryBoundary query={q} skeleton="page">
-        {(d) => (
-          <dl className="grid max-w-2xl gap-3 sm:grid-cols-2">
-            {[
-              [t`Ledger balance`, d.ledger_balance],
-              [t`Statement balance`, d.statement_balance],
-              [t`Unmatched money in`, d.unmatched_in],
-              [t`Unmatched money out`, d.unmatched_out],
-              [t`Difference`, d.difference],
-            ].map(([label, v]) => (
-              <div key={label as string} className="rounded-lg border p-3">
-                <dt className="text-sm text-muted-foreground">{label as string}</dt>
-                <dd className="text-lg font-semibold">
-                  {v ? <Money minor={(v as S['Money']).amount} currency={ctx.currency} /> : '–'}
-                </dd>
-              </div>
-            ))}
-          </dl>
         )}
       </QueryBoundary>
     </div>

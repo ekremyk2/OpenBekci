@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { cn } from '@/lib/utils'
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
-    <div className="relative max-h-[75vh] w-full overflow-auto">
+    <div className="relative max-h-[75vh] w-full overflow-auto" tabIndex={0}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   )
@@ -21,7 +22,8 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
   return <tr className={cn('border-b transition-colors hover:bg-muted/50', className)} {...props} />
 }
 
-function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
+function TableHead({ className, children, ...props }: React.ComponentProps<'th'>) {
+  const { t } = useLingui()
   return (
     <th
       className={cn(
@@ -29,7 +31,9 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
         className,
       )}
       {...props}
-    />
+    >
+      {children ?? <span className="sr-only">{t`Actions`}</span>}
+    </th>
   )
 }
 

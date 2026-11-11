@@ -47,6 +47,7 @@ import {
   Field,
   FormRootError,
   Gate,
+  MonthPicker,
   PageHeader,
   QueryBoundary,
   ReasonDialog,
@@ -66,7 +67,6 @@ export function ChargesPage() {
   const [type, setType] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [cancelFor, setCancelFor] = useState<S['Charge'] | null>(null)
-  const [adjustFor, setAdjustFor] = useState<S['Charge'] | null>(null)
   const [remindOpen, setRemindOpen] = useState(false)
   const filters = { period, unitId, side, status, type }
   const q = useMoneyQuery(['charges', ctx.siteId, filters], () =>
@@ -98,7 +98,7 @@ export function ChargesPage() {
     <div className="flex flex-col gap-4">
       <PageHeader
         title={t`Charges`}
-        description={t`Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted.`}
+        description={t`Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted.`}
         actions={
           <Gate anyOf={['collections.manage']} fallback={null}>
             <Button variant="outline" onClick={() => setRemindOpen(true)}>
@@ -107,15 +107,9 @@ export function ChargesPage() {
           </Gate>
         }
       />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Field label={t`Period`} htmlFor="f-period">
-          <Input
-            id="f-period"
-            type="month"
-            dir="ltr"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-          />
+          <MonthPicker id="f-period" value={period} onChange={setPeriod} />
         </Field>
         <Field label={t`Unit`} htmlFor="f-unit">
           <UnitPicker
@@ -250,9 +244,6 @@ export function ChargesPage() {
                         <Gate permission="money.post" fallback={null}>
                           {c.status !== 'cancelled' ? (
                             <>
-                              <Button variant="ghost" size="sm" onClick={() => setAdjustFor(c)}>
-                                <Trans>Adjust</Trans>
-                              </Button>
                               <Button variant="ghost" size="sm" onClick={() => setCancelFor(c)}>
                                 <Trans>Cancel charge</Trans>
                               </Button>
@@ -296,9 +287,6 @@ export function ChargesPage() {
       </QueryBoundary>
       {cancelFor ? (
         <CancelChargeDialog charge={cancelFor} ctx={ctx} onClose={() => setCancelFor(null)} />
-      ) : null}
-      {adjustFor ? (
-        <AdjustChargeDialog charge={adjustFor} ctx={ctx} onClose={() => setAdjustFor(null)} />
       ) : null}
       {remindOpen ? (
         <RemindDialog ctx={ctx} selection={[...selected]} onClose={() => setRemindOpen(false)} />
@@ -362,57 +350,6 @@ function CancelChargeDialog({
       }
     >
       {useReversalNote(charge, ctx)}
-    </ReasonDialog>
-  )
-}
-
-function AdjustChargeDialog({
-  charge,
-  ctx,
-  onClose,
-}: {
-  charge: S['Charge']
-  ctx: MoneyCtx
-  onClose: () => void
-}) {
-  const { t } = useLingui()
-  const idem = useIdempotencyKey()
-  const [amount, setAmount] = useState<bigint | null>(BigInt(charge.amount.amount))
-  const [error, setError] = useState<string>()
-  const m = useMoneyMutation(async (reason: string) => {
-    await moneyApi.POST('/v1/orgs/{org_id}/charges/{charge_id}:adjust', {
-      params: { path: { org_id: ctx.orgId, charge_id: charge.id }, header: idemHeader(idem.key) },
-      body: { amount: minorMoney(amount!, ctx.currency), reason },
-    })
-  })
-  const invalid = amount === null || amount < 0n
-  return (
-    <ReasonDialog
-      open
-      onOpenChange={(o) => !o && onClose()}
-      title={t`Adjust this charge`}
-      description={`${charge.unit_door_number} · ${charge.description ?? ''}`}
-      confirmLabel={t`Adjust`}
-      pending={m.isPending || invalid}
-      error={error}
-      onConfirm={(reason) =>
-        m.mutateAsync(reason).then(
-          () => {
-            toast.info(t`Charge adjusted; the difference is posted as a correction.`)
-            onClose()
-          },
-          () => setError(t`Could not adjust the charge.`),
-        )
-      }
-    >
-      {useReversalNote(charge, ctx)}
-      <Field
-        label={t`New amount`}
-        htmlFor="adj-amount"
-        error={invalid ? t`Enter an amount.` : undefined}
-      >
-        <MoneyInput id="adj-amount" currency={ctx.currency} value={amount} onChange={setAmount} />
-      </Field>
     </ReasonDialog>
   )
 }
