@@ -1723,6 +1723,28 @@ export const moneyHandlers = [
       updated_at: stamp(),
     }
     db.expenses.push(x)
+    if (body.recurring) {
+      const day = body.recurring.day ?? Number(body.paid_on.slice(8, 10))
+      db.recurring.push({
+        id: nextId(db, 'rec'),
+        org_id: db.orgId,
+        site_id: db.siteId,
+        category_account_id: body.category_account_id,
+        fund_id: body.fund_id,
+        amount: body.amount,
+        paid_from_account_id: body.paid_from_account_id,
+        vendor_id: body.vendor_id ?? null,
+        description: body.description,
+        day_of_month: day,
+        start: body.paid_on,
+        end: null,
+        status: 'active',
+        next_run_on: addMonths(body.paid_on, 1),
+        created_at: stamp(),
+        updated_at: stamp(),
+        version: 1,
+      })
+    }
     const cb = db.cashBoxes.find((c) => c.account_id === body.paid_from_account_id)
     if (cb) cb.balance = m(cb.balance.amount - body.amount.amount)
     return created(x)
@@ -1737,43 +1759,6 @@ export const moneyHandlers = [
     x.status = 'voided'
     x.voided_reason = body.reason
     return ok(x)
-  }),
-  route('get', 'recurring-expenses', () => list(db.recurring)),
-  route('post', 'recurring-expenses', ({ body }) => {
-    const e = validate(need(body.description, 'description'), need(body.amount?.amount, 'amount'))
-    if (e) return e
-    const r: S['RecurringExpense'] = {
-      id: nextId(db, 'rec'),
-      org_id: db.orgId,
-      site_id: db.siteId,
-      category_account_id: body.category_account_id,
-      fund_id: body.fund_id,
-      amount: body.amount,
-      paid_from_account_id: body.paid_from_account_id,
-      vendor_id: body.vendor_id ?? null,
-      description: body.description,
-      day_of_month: body.day_of_month,
-      start: body.start,
-      end: body.end ?? null,
-      status: 'active',
-      next_run_on: addMonths(body.start, 1),
-      created_at: stamp(),
-      updated_at: stamp(),
-      version: 1,
-    }
-    db.recurring.push(r)
-    return created(r)
-  }),
-  route('patch', 'recurring-expenses/:id', ({ params, body }) => {
-    const r = db.recurring.find((x) => x.id === params.id)
-    if (!r) return fail(404, 'not_found')
-    Object.assign(r, body, { version: r.version + 1 })
-    return ok(r)
-  }),
-  route('delete', 'recurring-expenses/:id', ({ params }) => {
-    const r = db.recurring.find((x) => x.id === params.id)
-    if (r) r.status = 'ended'
-    return noContent()
   }),
   route('get', 'bills', () => list(db.bills.map(withPayments))),
   route('post', 'bills', ({ body }) => {
@@ -2091,7 +2076,7 @@ export const moneyHandlers = [
       sms_count: body.channels.includes('sms') ? 1 : 0,
     } satisfies S['StatementSent'])
   }),
-  http.get('*/v1/orgs/:orgId/me/balances', () => {
+  http.get('*/v1/orgs/:orgId/me/dashboard', () => {
     // the signed-in resident owns A1 (owner side) and A1's tenant side is somebody else's
     const u = db.units[0]!
     const sides = (['owner'] as Side[]).map((s) => {
@@ -2119,7 +2104,16 @@ export const moneyHandlers = [
         },
       } satisfies S['MySide']
     })
-    return HttpResponse.json({ as_of: db.today, sides } satisfies S['MyBalances'])
+    return HttpResponse.json({
+      home: 'resident',
+      sides,
+      unread_notifications: 0,
+      unread_announcements: 0,
+      my_open_tickets: 0,
+      upcoming_meetings: [],
+      pending_visitor_approvals: 0,
+      waiting_deliveries: 0,
+    } satisfies S['MeDashboard'])
   }),
 
   // ---- opening balances

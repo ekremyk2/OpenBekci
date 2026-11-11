@@ -98,7 +98,7 @@ export function MoneyLayout() {
           <span className="text-sm text-muted-foreground">{ctx.siteName}</span>
         ) : null}
       </div>
-      <nav aria-label={t`Money sections`} className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+      <nav aria-label={t`Money sections`} className="-mx-1 flex snap-x gap-1 overflow-x-auto px-1 pb-1">
         {tabs.map((tab) => (
           <Link
             key={tab.to}
@@ -106,7 +106,7 @@ export function MoneyLayout() {
             params={{ orgId: org?.id ?? '' }}
             activeOptions={{ exact: !!tab.exact }}
             className={cn(
-              'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+              'inline-flex min-h-11 snap-start items-center rounded-md px-3 text-sm font-medium whitespace-nowrap outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               '[&.active]:bg-primary [&.active]:text-primary-foreground',
             )}
           >

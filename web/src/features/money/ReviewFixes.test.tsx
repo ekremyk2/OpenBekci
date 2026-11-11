@@ -149,11 +149,11 @@ describe('versioned writes and previews', () => {
 })
 
 describe('idempotent expense saves', () => {
-  it('reuses the expense, recurring and receipt keys when a save is retried', async () => {
+  it('reuses the expense and receipt keys when a save is retried', async () => {
     const seen = recordKeys()
     server.use(
       http.post(
-        '*/v1/orgs/:orgId/recurring-expenses',
+        '*/v1/orgs/:orgId/expenses',
         () => HttpResponse.json({ status: 503 }, { status: 503 }),
         { once: true },
       ),
@@ -173,12 +173,8 @@ describe('idempotent expense saves', () => {
     const keys = (suffix: string) =>
       seen.filter((r) => r.method === 'POST' && r.url.endsWith(suffix)).map((r) => r.key)
     const expenseKeys = keys('/expenses')
-    const recurringKeys = keys('/recurring-expenses')
     expect(expenseKeys).toHaveLength(2)
     expect(expenseKeys[0]).toBe(expenseKeys[1])
-    expect(recurringKeys).toHaveLength(2)
-    expect(recurringKeys[0]).toBe(recurringKeys[1])
-    expect(recurringKeys[0]).not.toBe(expenseKeys[0])
     expect(db.expenses).toHaveLength(1) // the replay did not book it twice
   })
 })
@@ -242,9 +238,8 @@ describe('opening balances import', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save opening balances' }))
     await waitFor(() => expect(db.openings).toHaveLength(2))
     expect(new Set(db.openings.map((o) => o.unit_id))).toEqual(new Set(['u-a1', 'u-a1-b']))
-    expect(
-      await screen.findByText('The opening balances were imported.', {}, { timeout: 8000 }),
-    ).toBeInTheDocument()
+    // the page clears the dry-run report once the import is saved
+    await waitFor(() => expect(screen.queryByText(/Dry run: 2 of 2 rows/)).not.toBeInTheDocument())
   }, 15_000)
 
   it('totals in integer minor units and rejects what it cannot read', () => {

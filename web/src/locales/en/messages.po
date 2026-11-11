@@ -463,12 +463,6 @@ msgstr "Add vendor"
 msgid "Address line 2"
 msgstr "Address line 2"
 
-msgid "Adjust"
-msgstr "Adjust"
-
-msgid "Adjust this charge"
-msgstr "Adjust this charge"
-
 msgid "Adjustment"
 msgstr "Adjustment"
 
@@ -885,9 +879,6 @@ msgstr "Bank line it arrived as"
 msgid "Bank lines"
 msgstr "Bank lines"
 
-msgid "Bank reconciliation"
-msgstr "Bank reconciliation"
-
 msgid "Bank statement import"
 msgstr "Bank statement import"
 
@@ -1214,9 +1205,6 @@ msgstr "Channels"
 msgid "Charge"
 msgstr "Charge"
 
-msgid "Charge adjusted; the difference is posted as a correction."
-msgstr "Charge adjusted; the difference is posted as a correction."
-
 msgid "Charge cancelled; a reversal was created."
 msgstr "Charge cancelled; a reversal was created."
 
@@ -1228,9 +1216,6 @@ msgstr "Charge type"
 
 msgid "Charges"
 msgstr "Charges"
-
-msgid "Charges created."
-msgstr "Charges created."
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
 msgstr "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
@@ -1506,9 +1491,6 @@ msgstr "Collections"
 msgid "Collector"
 msgstr "Collector"
 
-msgid "Collector reconciliation"
-msgstr "Collector reconciliation"
-
 msgid "Comment"
 msgstr "Comment"
 
@@ -1618,9 +1600,6 @@ msgstr "Could not add the rate."
 msgid "Could not add the stage."
 msgstr "Could not add the stage."
 
-msgid "Could not adjust the charge."
-msgstr "Could not adjust the charge."
-
 msgid "Could not apply the decision. You can try again; nothing is created twice."
 msgstr "Could not apply the decision. You can try again; nothing is created twice."
 
@@ -1674,9 +1653,6 @@ msgstr "Could not create the agent."
 
 msgid "Could not create the assembly."
 msgstr "Could not create the assembly."
-
-msgid "Could not create the charges."
-msgstr "Could not create the charges."
 
 msgid "Could not create the credential."
 msgstr "Could not create the credential."
@@ -1752,9 +1728,6 @@ msgstr "Could not record the payout."
 
 msgid "Could not record the proxy."
 msgstr "Could not record the proxy."
-
-msgid "Could not record the refund."
-msgstr "Could not record the refund."
 
 msgid "Could not record the transfer."
 msgstr "Could not record the transfer."
@@ -1923,9 +1896,6 @@ msgstr "Create assembly"
 msgid "Create budget"
 msgstr "Create budget"
 
-msgid "Create charges"
-msgstr "Create charges"
-
 msgid "Create endpoint"
 msgstr "Create endpoint"
 
@@ -1968,9 +1938,6 @@ msgstr "Credentials"
 msgid "Credit"
 msgstr "Credit"
 
-msgid "Credits (prepayments)"
-msgstr "Credits (prepayments)"
-
 msgid "Currency"
 msgstr "Currency"
 
@@ -2003,10 +1970,6 @@ msgstr "Date you paid"
 
 msgid "day"
 msgstr "day"
-
-#. placeholder {0}: r.day_of_month
-msgid "Day {0}"
-msgstr "Day {0}"
 
 msgid "days"
 msgstr "days"
@@ -2233,9 +2196,6 @@ msgstr "Disable this pack"
 msgid "Disabled"
 msgstr "Disabled"
 
-msgid "Dismiss"
-msgstr "Dismiss"
-
 msgid "Display name"
 msgstr "Display name"
 
@@ -2316,9 +2276,6 @@ msgstr "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
 
 msgid "Due"
 msgstr "Due"
-
-msgid "Due date"
-msgstr "Due date"
 
 msgid "Due day"
 msgstr "Due day"
@@ -2699,8 +2656,8 @@ msgstr "Every receipt gets the next number in the site's gap-free sequence. A mi
 msgid "Every receivable by period, unit and side"
 msgstr "Every receivable by period, unit and side"
 
-msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
-msgstr "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
+msgstr "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 
 msgid "Every status needs a name."
 msgstr "Every status needs a name."
@@ -3037,9 +2994,6 @@ msgstr "Hand over"
 msgid "Hand over to"
 msgstr "Hand over to"
 
-msgid "Handed over"
-msgstr "Handed over"
-
 msgid "Handover"
 msgstr "Handover"
 
@@ -3128,9 +3082,6 @@ msgstr "Import failed"
 
 msgid "Import finished"
 msgstr "Import finished"
-
-msgid "Import progress"
-msgstr "Import progress"
 
 msgid "Import units"
 msgstr "Import units"
@@ -3245,6 +3196,9 @@ msgstr "It starts with the visibility of the folder it is in. You can change it 
 
 msgid "It stops opening gates at once."
 msgstr "It stops opening gates at once."
+
+msgid "It will come in a later release."
+msgstr "It will come in a later release."
 
 msgid "Italic"
 msgstr "Italic"
@@ -3389,9 +3343,6 @@ msgstr "Leave empty to use the number or address on the person's record."
 
 msgid "Leave the guard console"
 msgstr "Leave the guard console"
-
-msgid "Ledger balance"
-msgstr "Ledger balance"
 
 msgid "Ledger closing"
 msgstr "Ledger closing"
@@ -3659,9 +3610,6 @@ msgstr "Monthly bookings"
 
 msgid "Monthly rate (%)"
 msgstr "Monthly rate (%)"
-
-msgid "Monthly recurring expenses"
-msgstr "Monthly recurring expenses"
 
 msgid "Months overdue"
 msgstr "Months overdue"
@@ -3939,9 +3887,6 @@ msgstr "Next photo"
 msgid "Next retry"
 msgstr "Next retry"
 
-msgid "Next: choose the split"
-msgstr "Next: choose the split"
-
 msgid "No"
 msgstr "No"
 
@@ -4017,14 +3962,8 @@ msgstr "No checkouts with this status"
 msgid "No claims waiting"
 msgstr "No claims waiting"
 
-msgid "No collectors"
-msgstr "No collectors"
-
 msgid "No credentials found"
 msgstr "No credentials found"
-
-msgid "No credits"
-msgstr "No credits"
 
 msgid "No debtors"
 msgstr "No debtors"
@@ -4272,9 +4211,6 @@ msgstr "Non-binding"
 
 msgid "none"
 msgstr "none"
-
-msgid "None"
-msgstr "None"
 
 msgid "Not available"
 msgstr "Not available"
@@ -5213,9 +5149,6 @@ msgstr "Receivables in this file: <0/>. Bank and cash balances: <1/>."
 msgid "Receive notifications in Telegram or WhatsApp."
 msgstr "Receive notifications in Telegram or WhatsApp."
 
-msgid "Received"
-msgstr "Received"
-
 msgid "Received in"
 msgstr "Received in"
 
@@ -5314,12 +5247,6 @@ msgstr "Reference: {0}"
 
 msgid "Refund"
 msgstr "Refund"
-
-msgid "Refund a credit"
-msgstr "Refund a credit"
-
-msgid "Refund recorded."
-msgstr "Refund recorded."
 
 msgid "Refund the payment"
 msgstr "Refund the payment"
@@ -5927,14 +5854,14 @@ msgstr "Share"
 msgid "Share %"
 msgstr "Share %"
 
-msgid "Share an expense"
-msgstr "Share an expense"
-
 msgid "Share of land present"
 msgstr "Share of land present"
 
 msgid "Share of owners present"
 msgstr "Share of owners present"
+
+msgid "Sharing a one-off cost is not available yet"
+msgstr "Sharing a one-off cost is not available yet"
 
 msgid "Shop"
 msgstr "Shop"
@@ -6143,9 +6070,6 @@ msgstr "State"
 msgid "Statement"
 msgstr "Statement"
 
-msgid "Statement balance"
-msgstr "Statement balance"
-
 msgid "Statement closing"
 msgstr "Statement closing"
 
@@ -6184,17 +6108,11 @@ msgstr "Statutory cap: {0}% per month."
 msgid "Steps"
 msgstr "Steps"
 
-msgid "Still in the box"
-msgstr "Still in the box"
-
 msgid "Still waiting for the provider"
 msgstr "Still waiting for the provider"
 
 msgid "Stop camera"
 msgstr "Stop camera"
-
-msgid "Stop repeating"
-msgstr "Stop repeating"
 
 msgid "Storage"
 msgstr "Storage"
@@ -6493,9 +6411,6 @@ msgstr "The import could not be started. Please try again; a retry never applies
 msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
 msgstr "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
 
-msgid "The import did not finish. Nothing was posted; check the file and try again."
-msgstr "The import did not finish. Nothing was posted; check the file and try again."
-
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 
@@ -6546,9 +6461,6 @@ msgstr "The number guards may call when a visitor arrives. Leave empty to use th
 
 msgid "The old key no longer works. Use this one from now on."
 msgstr "The old key no longer works. Use this one from now on."
-
-msgid "The opening balances were imported."
-msgstr "The opening balances were imported."
 
 msgid "The opening log is not available."
 msgstr "The opening log is not available."
@@ -6952,9 +6864,6 @@ msgstr "This will be a common ticket, visible to the whole site."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 
-msgid "Tick “Repeat every month” on a new expense to add one."
-msgstr "Tick “Repeat every month” on a new expense to add one."
-
 msgid "Ticket settings"
 msgstr "Ticket settings"
 
@@ -7080,9 +6989,6 @@ msgstr "Total <0/>"
 msgid "Total <0/> across {0} units"
 msgstr "Total <0/> across {0} units"
 
-msgid "Total amount"
-msgstr "Total amount"
-
 msgid "Totals"
 msgstr "Totals"
 
@@ -7121,9 +7027,6 @@ msgstr "Try again"
 
 msgid "Try widening the filters."
 msgstr "Try widening the filters."
-
-msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
-msgstr "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
 
 msgid "Type"
 msgstr "Type"
@@ -7169,9 +7072,6 @@ msgstr "Unit receivable"
 msgid "Units"
 msgstr "Units"
 
-msgid "Units with a tag"
-msgstr "Units with a tag"
-
 msgid "unknown permission"
 msgstr "unknown permission"
 
@@ -7189,12 +7089,6 @@ msgstr "Unmatch"
 
 msgid "Unmatched"
 msgstr "Unmatched"
-
-msgid "Unmatched money in"
-msgstr "Unmatched money in"
-
-msgid "Unmatched money out"
-msgstr "Unmatched money out"
 
 msgid "Unread"
 msgstr "Unread"
@@ -7557,9 +7451,6 @@ msgstr "What each unit would pay"
 
 msgid "What happens to open charges"
 msgstr "What happens to open charges"
-
-msgid "What is it for?"
-msgstr "What is it for?"
 
 msgid "What is it? (optional)"
 msgstr "What is it? (optional)"
