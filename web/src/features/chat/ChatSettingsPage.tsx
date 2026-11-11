@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { msg } from '@lingui/core/macro'
+import type { MessageDescriptor } from '@lingui/core'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { CheckIcon, CopyIcon } from 'lucide-react'
 import { draftApi, type Schema } from '@/api/draft'
@@ -15,6 +17,36 @@ import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
 
 type Provider = Schema<'ChatProviderSettings'>
+
+/** The server sends English titles and hints in the provider schemas; these are their translations. */
+const SCHEMA_TEXT: Record<string, MessageDescriptor> = {
+  'Bot username': msg`Bot username`,
+  "The bot's username without @ (for the t.me link).": msg`The bot's username without @ (for the t.me link).`,
+  'Bot token': msg`Bot token`,
+  'From @BotFather.': msg`From @BotFather.`,
+  'Webhook secret': msg`Webhook secret`,
+  '16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update.': msg`16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update.`,
+  'Business number': msg`Business number`,
+  'The WhatsApp number people write to, international format (for the wa.me link).': msg`The WhatsApp number people write to, international format (for the wa.me link).`,
+  'Phone number id': msg`Phone number id`,
+  "From the Meta app's WhatsApp setup.": msg`From the Meta app's WhatsApp setup.`,
+  'Access token': msg`Access token`,
+  'App secret': msg`App secret`,
+  'Signs the webhook (X-Hub-Signature-256).': msg`Signs the webhook (X-Hub-Signature-256).`,
+  'Webhook verify token': msg`Webhook verify token`,
+  "The token you enter in Meta's webhook setup.": msg`The token you enter in Meta's webhook setup.`,
+}
+
+function localize(schema: JsonSchema, tr: (d: MessageDescriptor) => string): JsonSchema {
+  const one = (x: string | undefined) => (x && SCHEMA_TEXT[x] ? tr(SCHEMA_TEXT[x]) : x)
+  const properties = Object.fromEntries(
+    Object.entries(schema.properties ?? {}).map(([k, v]) => [
+      k,
+      { ...v, title: one(v.title), description: one(v.description) },
+    ]),
+  )
+  return { ...schema, properties }
+}
 
 /** Bot credentials of the core chat providers (Telegram, WhatsApp); needs `chat.manage`. */
 export function ChatSettingsPage() {
@@ -42,7 +74,7 @@ export function ChatSettingsPage() {
 }
 
 function ProviderCard({ orgId, p }: { orgId: string; p: Provider }) {
-  const { t } = useLingui()
+  const { t, i18n } = useLingui()
   const qc = useQueryClient()
   const [copied, setCopied] = useState(false)
   const name =
@@ -110,7 +142,7 @@ function ProviderCard({ orgId, p }: { orgId: string; p: Provider }) {
         </div>
         <SchemaForm
           key={p.secrets_set.join(',')}
-          schema={p.schema as JsonSchema}
+          schema={localize(p.schema as JsonSchema, (d) => i18n._(d))}
           values={p.values as Values}
           secretsSet={p.secrets_set}
           idPrefix={`chat-${p.provider}`}

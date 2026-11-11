@@ -19,7 +19,12 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { PackDefaultBadge, packDefaultEntries } from '@/features/packs/PackDefaultBadge'
+import {
+  PackDefaultBadge,
+  packDefaultEntries,
+  PackValue,
+  useSettingLabel,
+} from '@/features/packs/PackDefaultBadge'
 import { SiteMerchantCard } from '@/features/settings/MerchantOfRecord'
 import { siteQueries } from './queries'
 
@@ -169,13 +174,21 @@ function SettingsForm({
           ) : null}
         </div>
       ) : null}
-      <PackDefaultsList settings={settings} />
+      <PackDefaultsList settings={settings} canRaw={canEdit} />
     </form>
   )
 }
 
 /** Settings a pack's presets filled in that this site has not changed since (plan 04 §3.7). */
-function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
+function PackDefaultsList({
+  settings,
+  canRaw,
+}: {
+  settings: Schema<'SiteSettings'>
+  canRaw: boolean
+}) {
+  const label = useSettingLabel()
+  const [raw, setRaw] = useState(false)
   const entries = packDefaultEntries(settings)
   if (entries.length === 0) return null
   return (
@@ -183,9 +196,9 @@ function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
       aria-labelledby="pack-defaults-title"
       className="flex flex-col gap-2 rounded-md border p-3"
     >
-      <h3 id="pack-defaults-title" className="text-sm font-semibold">
+      <h2 id="pack-defaults-title" className="text-sm font-semibold">
         <Trans>Values from a pack</Trans>
-      </h3>
+      </h2>
       <p className="text-xs text-muted-foreground">
         <Trans>
           A pack filled these in. Change one in its own settings and it becomes this site&apos;s
@@ -194,17 +207,27 @@ function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
       </p>
       <ul className="divide-y text-sm">
         {entries.map(([key, entry]) => (
-          <li key={key} className="flex flex-wrap items-center justify-between gap-2 py-2">
-            <span className="font-medium">{key}</span>
-            <span className="flex items-center gap-2">
-              <code className="rounded bg-muted px-1.5 py-0.5 text-xs" dir="ltr">
-                {JSON.stringify(entry.value)}
-              </code>
+          <li key={key} className="flex flex-col gap-1 py-2">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="font-medium">{label(key)}</span>
               <PackDefaultBadge pack={entry.pack} />
             </span>
+            <PackValue value={entry.value} raw={raw} />
           </li>
         ))}
       </ul>
+      {canRaw ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          aria-pressed={raw}
+          onClick={() => setRaw((r) => !r)}
+        >
+          <Trans>Raw</Trans>
+        </Button>
+      ) : null}
     </section>
   )
 }
@@ -314,46 +337,50 @@ export function SiteBankTab({
         <Trans>Residents see these details when they pay by bank transfer.</Trans>
       </p>
       {bank && !showForm ? (
-        <dl className="grid gap-3 text-sm">
-          <div>
-            <dt className="text-muted-foreground">
-              <Trans>IBAN</Trans>
-            </dt>
-            <dd className="flex items-center gap-2 font-mono" dir="ltr">
-              <span data-testid="iban" className="iban">{reveal ? groupIban(bank.iban) : maskIban(bank.iban)}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                aria-pressed={reveal}
-                onClick={() => setReveal((r) => !r)}
-              >
-                {reveal ? <Trans>Hide</Trans> : <Trans>Show</Trans>}
-              </Button>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">
-              <Trans>Account holder</Trans>
-            </dt>
-            <dd>{bank.holder}</dd>
-          </div>
-          {bank.bank_name ? (
+        <div className="grid gap-3 text-sm">
+          <dl className="grid gap-3">
             <div>
               <dt className="text-muted-foreground">
-                <Trans>Bank</Trans>
+                <Trans>IBAN</Trans>
               </dt>
-              <dd>{bank.bank_name}</dd>
+              <dd className="flex items-center gap-2 font-mono" dir="ltr">
+                <span data-testid="iban" className="iban">
+                  {reveal ? groupIban(bank.iban) : maskIban(bank.iban)}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={reveal}
+                  onClick={() => setReveal((r) => !r)}
+                >
+                  {reveal ? <Trans>Hide</Trans> : <Trans>Show</Trans>}
+                </Button>
+              </dd>
             </div>
-          ) : null}
-          {bank.reference_hint ? (
             <div>
               <dt className="text-muted-foreground">
-                <Trans>Payers should write</Trans>
+                <Trans>Account holder</Trans>
               </dt>
-              <dd>{bank.reference_hint}</dd>
+              <dd>{bank.holder}</dd>
             </div>
-          ) : null}
+            {bank.bank_name ? (
+              <div>
+                <dt className="text-muted-foreground">
+                  <Trans>Bank</Trans>
+                </dt>
+                <dd>{bank.bank_name}</dd>
+              </div>
+            ) : null}
+            {bank.reference_hint ? (
+              <div>
+                <dt className="text-muted-foreground">
+                  <Trans>Payers should write</Trans>
+                </dt>
+                <dd>{bank.reference_hint}</dd>
+              </div>
+            ) : null}
+          </dl>
           {canEdit ? (
             <div>
               <Button variant="outline" onClick={() => setEditing(true)}>
@@ -361,7 +388,7 @@ export function SiteBankTab({
               </Button>
             </div>
           ) : null}
-        </dl>
+        </div>
       ) : null}
       {!bank && !showForm ? (
         <EmptyState

@@ -156,7 +156,7 @@ describe('an enabled pack', () => {
     const card = (await screen.findByText('Pack defaults on your sites')).closest(
       'div[class*="rounded"]',
     )!
-    expect(await within(card as HTMLElement).findByText('late_fee_policy')).toBeInTheDocument()
+    expect(await within(card as HTMLElement).findByText('Late fee policy')).toBeInTheDocument()
     expect(within(card as HTMLElement).getByText('Pack default')).toBeInTheDocument()
     expect(within(card as HTMLElement).queryByText('other')).not.toBeInTheDocument()
   })
