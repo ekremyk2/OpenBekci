@@ -56,7 +56,7 @@ describe('audit viewer', () => {
   it('sends the filters to the API', async () => {
     const queries: string[] = []
     server.use(
-      http.get('*/v1/orgs/:org/audit-events', ({ request }) => {
+      http.get('*/v1/orgs/:org/audit', ({ request }) => {
         queries.push(new URL(request.url).search)
         return undefined
       }),
@@ -89,7 +89,7 @@ describe('audit viewer', () => {
 
   it('shows the no-permission state on a 403 from the API', async () => {
     server.use(
-      http.get('*/v1/orgs/:org/audit-events', () =>
+      http.get('*/v1/orgs/:org/audit', () =>
         HttpResponse.json({ status: 403, code: 'insufficient_permission' }, { status: 403 }),
       ),
     )

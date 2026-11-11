@@ -228,15 +228,14 @@ describe('unit claims queue', () => {
 })
 
 describe('move-out flow', () => {
-  it('previews the balance, keeps the default disposition, confirms and links the documents', async () => {
+  it('keeps the default disposition, confirms and links the documents', async () => {
     const keys: (string | null)[] = []
     server.events.on('request:start', ({ request }) => {
       if (request.method === 'POST' && request.url.endsWith('/move-out'))
         keys.push(request.headers.get('Idempotency-Key'))
     })
     await mountApp('/orgs/org-1/move-out/occ-2')
-    expect(await screen.findByText(/6.180,00|6,180\.00/)).toBeInTheDocument()
-    expect(screen.getByText(/closing statement for the leaving person/)).toBeInTheDocument()
+    expect(await screen.findByText(/closing statement for the leaving person/)).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Confirm move-out' }))
     expect(await screen.findByRole('link', { name: 'Closing statement' })).toHaveAttribute(
       'href',
@@ -252,8 +251,7 @@ describe('move-out flow', () => {
 
   it('needs a reason and a person when the debt is handled differently', async () => {
     await mountApp('/orgs/org-1/move-out/occ-2')
-    await screen.findByText(/Balance when they leave/)
-    await screen.findByText(/Late fees/)
+    await screen.findByText(/closing statement for the leaving person/)
     await userEvent.click(screen.getByRole('radio', { name: /Write them off/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Confirm move-out' }))
     expect(screen.getByText('Say why the debt is handled differently')).toBeInTheDocument()
@@ -270,6 +268,17 @@ describe('site qr page', () => {
     ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'New code' }))
     await waitFor(() => expect(db.joinCode.code).not.toBe('GUNES-7QK2'))
+  })
+
+  it('offers to create the first code when the site has none (404)', async () => {
+    server.use(
+      http.get('*/v1/orgs/:orgId/sites/:siteId/join-code', () =>
+        HttpResponse.json({ status: 404, code: 'not_found' }, { status: 404 }),
+      ),
+    )
+    await mountApp('/orgs/org-1/sites/site-a/qr')
+    expect(await screen.findByText(/no join code yet/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Create code' })).toBeInTheDocument()
   })
 
   it('has no poster while the code is switched off', async () => {

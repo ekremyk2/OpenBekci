@@ -181,11 +181,11 @@ function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
   return (
     <section
       aria-labelledby="pack-defaults-title"
-      className="flex flex-col gap-2 rounded-md border p-3"
+      className="flex min-w-0 flex-col gap-2 rounded-md border p-3"
     >
-      <h3 id="pack-defaults-title" className="text-sm font-semibold">
+      <h2 id="pack-defaults-title" className="text-sm font-semibold">
         <Trans>Values from a pack</Trans>
-      </h3>
+      </h2>
       <p className="text-xs text-muted-foreground">
         <Trans>
           A pack filled these in. Change one in its own settings and it becomes this site&apos;s
@@ -194,10 +194,10 @@ function PackDefaultsList({ settings }: { settings: Schema<'SiteSettings'> }) {
       </p>
       <ul className="divide-y text-sm">
         {entries.map(([key, entry]) => (
-          <li key={key} className="flex flex-wrap items-center justify-between gap-2 py-2">
-            <span className="font-medium">{key}</span>
-            <span className="flex items-center gap-2">
-              <code className="rounded bg-muted px-1.5 py-0.5 text-xs" dir="ltr">
+          <li key={key} className="flex min-w-0 flex-wrap items-center justify-between gap-2 py-2">
+            <span className="min-w-0 break-all font-medium">{key}</span>
+            <span className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+              <code className="max-w-full whitespace-pre-wrap break-all rounded bg-muted px-1.5 py-0.5 text-xs" dir="ltr">
                 {JSON.stringify(entry.value)}
               </code>
               <PackDefaultBadge pack={entry.pack} />
@@ -354,14 +354,14 @@ export function SiteBankTab({
               <dd>{bank.reference_hint}</dd>
             </div>
           ) : null}
-          {canEdit ? (
-            <div>
-              <Button variant="outline" onClick={() => setEditing(true)}>
-                <Trans>Edit bank details</Trans>
-              </Button>
-            </div>
-          ) : null}
         </dl>
+      ) : null}
+      {bank && !showForm && canEdit ? (
+        <div>
+          <Button variant="outline" onClick={() => setEditing(true)}>
+            <Trans>Edit bank details</Trans>
+          </Button>
+        </div>
       ) : null}
       {!bank && !showForm ? (
         <EmptyState

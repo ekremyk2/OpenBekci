@@ -57,25 +57,9 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
     defaultValues: { open_charges: 'carry_to_person', disposition_reason: '' },
   })
   const choice = useWatch({ control: form.control, name: 'open_charges' })
-  const previewQ = useQuery({
-    queryKey: ['people.previewMoveOut', orgId, occupancyId, asOf, choice],
-    enabled: !!org && /^\d{4}-\d{2}-\d{2}$/.test(asOf),
-    queryFn: async () => {
-      const { data } = await draftApi.POST(
-        '/v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out:preview',
-        {
-          params: { path: { org_id: orgId, occupancy_id: occupancyId } },
-          body: { as_of: asOf, open_charges: choice as 'carry_to_person' },
-          ...withIdempotencyKey(crypto.randomUUID()),
-        },
-      )
-      return data!
-    },
-  })
-  const preview = previewQ.data
-  const owes = !!preview && preview.total.amount > 0
-
-  const changed = !!preview && choice !== preview.default_open_charges
+  // The preview endpoint is not served: carry_to_person is the default and any other choice
+  // needs a reason (the server requires it for write_off and keep_on_unit).
+  const changed = choice !== 'carry_to_person'
   const [formError, setFormError] = useState<Record<string, string>>({})
 
   const submit = useMutation({
@@ -193,7 +177,7 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
         className="grid max-w-2xl gap-5"
         onSubmit={form.handleSubmit((v) => {
           const next: Record<string, string> = {}
-          if (changed && owes && !v.disposition_reason)
+          if (changed && !v.disposition_reason)
             next.reason = t`Say why the debt is handled differently`
           setFormError(next)
           if (Object.keys(next).length) return
@@ -210,50 +194,12 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
           />
         </Field>
 
-        <section className="grid gap-2" aria-labelledby="mo-bal">
-          <h2 id="mo-bal" className="text-base font-semibold">
-            <Trans>Balance when they leave</Trans>
-          </h2>
-          {previewQ.isLoading ? <PageSkeleton /> : null}
-          {previewQ.error ? (
-            <ErrorState error={previewQ.error} onRetry={() => void previewQ.refetch()} />
-          ) : null}
-          {preview ? (
-            <dl className="grid grid-cols-2 gap-2 rounded-md border p-4 text-sm sm:max-w-sm">
-              <dt>
-                <Trans>Dues and charges</Trans>
-              </dt>
-              <dd className="text-end">
-                <Money minor={preview.principal.amount} currency={preview.principal.currency} />
-              </dd>
-              <dt>
-                <Trans>Late fees</Trans>
-              </dt>
-              <dd className="text-end">
-                <Money minor={preview.late_fee.amount} currency={preview.late_fee.currency} />
-              </dd>
-              <dt>
-                <Trans>Credit</Trans>
-              </dt>
-              <dd className="text-end">
-                <Money minor={preview.credit.amount} currency={preview.credit.currency} />
-              </dd>
-              <dt className="font-semibold">
-                <Trans>Total</Trans>
-              </dt>
-              <dd className="text-end font-semibold">
-                <Money minor={preview.total.amount} currency={preview.total.currency} />
-              </dd>
-            </dl>
-          ) : null}
-          {preview && preview.carried.length > 0 ? <CarriedList items={preview.carried} /> : null}
-          <p className="text-xs text-muted-foreground">
-            <Trans>
-              When you confirm, a closing statement for the leaving person and a debt status
-              certificate are created and filed with the unit.
-            </Trans>
-          </p>
-        </section>
+        <p className="text-xs text-muted-foreground">
+          <Trans>
+            When you confirm, a closing statement for the leaving person and a debt status
+            certificate are created and filed with the unit.
+          </Trans>
+        </p>
 
         <fieldset className="grid gap-2">
           <legend className="text-base font-semibold">
@@ -268,7 +214,7 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
                 {...form.register('open_charges')}
               />
               {openChargesLabel(d, i18n)}
-              {preview?.default_open_charges === d ? (
+              {d === 'carry_to_person' ? (
                 <span className="text-xs text-muted-foreground">
                   (<Trans>default</Trans>)
                 </span>
@@ -307,7 +253,7 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
 
         <FormError message={errors.root?.message ?? errors.open_charges?.message} />
         <div>
-          <SubmitButton busy={submit.isPending} disabled={!preview}>
+          <SubmitButton busy={submit.isPending}>
             <Trans>Confirm move-out</Trans>
           </SubmitButton>
         </div>

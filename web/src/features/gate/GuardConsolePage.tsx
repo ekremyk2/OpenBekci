@@ -42,7 +42,7 @@ function Clock({ timeZone }: { timeZone: string }) {
 export function GuardConsolePage() {
   const ctx = useSiteCtx()!
   const guard = useGuardSession()
-  const cq = useConsole(ctx)
+  const cq = useConsole(ctx, !!guard)
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background" data-testid="guard-console">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background px-4 py-3">

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatchOf, ifMatch, type Schema } from '@/api/draft'
+import { draftApi, ifMatchOf } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -9,7 +9,6 @@ import { PageSkeleton } from '@/components/data/Skeletons'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { occupancyKindLabel } from '@/lib/labels'
 import { UnitForm } from './UnitForm'
 import { unitTypeLabel } from './labels'
@@ -195,8 +194,6 @@ export function UnitDetailPage({ unitId }: { unitId: string }) {
         </section>
       ) : null}
 
-      <UnitTagsPanel orgId={orgId} siteId={siteId} unitId={unitId} canEdit={canManage} />
-
       {can('vehicles.read', scope) ? (
         <VehiclesPanel
           orgId={orgId}
@@ -207,57 +204,5 @@ export function UnitDetailPage({ unitId }: { unitId: string }) {
         />
       ) : null}
     </div>
-  )
-}
-
-/** Cost-group tags (lift, pool …) of this unit; toggling rewrites the tag's member list. */
-function UnitTagsPanel({
-  orgId,
-  siteId,
-  unitId,
-  canEdit,
-}: {
-  orgId: string
-  siteId: string
-  unitId: string
-  canEdit: boolean
-}) {
-  const queryClient = useQueryClient()
-  const tagsQ = useQuery(unitQueries.tags(orgId, siteId))
-  const tags = tagsQ.data?.items ?? []
-  const members = useQueries({ queries: tags.map((tag) => unitQueries.tagMembers(orgId, tag.id)) })
-  const toggle = useMutation({
-    mutationFn: async (v: { tag: Schema<'UnitTag'>; current: string[]; on: boolean }) => {
-      const unit_ids = v.on ? [...v.current, unitId] : v.current.filter((id) => id !== unitId)
-      await draftApi.PUT('/v1/orgs/{org_id}/unit-tags/{tag_id}/units', {
-        params: { path: { org_id: orgId, tag_id: v.tag.id }, header: ifMatch(v.tag.version) },
-        body: { unit_ids },
-      })
-    },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['tenancy.getUnitTagMembers', orgId] }),
-  })
-  if (tags.length === 0) return null
-  return (
-    <section className="grid gap-2" aria-labelledby="tag-h">
-      <h2 id="tag-h" className="text-base font-semibold">
-        <Trans>Cost groups</Trans>
-      </h2>
-      <div className="flex flex-wrap gap-4">
-        {tags.map((tag, i) => {
-          const current = members[i]?.data?.unit_ids ?? []
-          return (
-            <label key={tag.id} className="flex items-center gap-2 text-sm">
-              <Checkbox
-                disabled={!canEdit || toggle.isPending || !members[i]?.data}
-                checked={current.includes(unitId)}
-                onChange={(e) => toggle.mutate({ tag, current, on: e.target.checked })}
-              />
-              {tag.name}
-            </label>
-          )
-        })}
-      </div>
-    </section>
   )
 }

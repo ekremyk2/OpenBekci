@@ -7801,3 +7801,15 @@ msgstr "Giriş bağlantınız burada tamamlanacak."
 
 msgid "Your unit has used its bookings for this period."
 msgstr "Bağımsız bölümünüz bu dönem için rezervasyon hakkını kullandı."
+
+msgid "Create code"
+msgstr "Kod oluştur"
+
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "Bu sitenin henüz katılım kodu yok. Afiş için bir kod oluşturun."
+
+msgid "Pick your name, then enter your PIN."
+msgstr "Adınızı seçin, sonra PIN kodunuzu girin."
+
+msgid "User {0}"
+msgstr "Kullanıcı {0}"

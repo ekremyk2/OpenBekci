@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { ChevronDownIcon, ChevronRightIcon, LockIcon, ScrollTextIcon } from 'lucide-react'
-import { draftApi, type AuditEvent } from '@/api/draft'
+import { draftApi, type Schema } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -16,6 +16,7 @@ import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
 import { zonedLocalToIso } from '@/lib/zoned'
 import { formatValue, parseDiff } from './diff'
 import type { AuditSearch } from './search'
+type AuditEvent = Schema<'AuditEvent-2'>
 
 /** Values show as text; hashed PII fields are marked and never rendered as values. */
 export function DiffView({ diff }: { diff: unknown }) {
@@ -79,7 +80,7 @@ function EventRow({ event, timeZone }: { event: AuditEvent; timeZone: string }) 
         <span className="font-mono text-sm font-medium">{event.action}</span>
         <Badge variant="outline">{event.target_type}</Badge>
         <span className="text-sm text-muted-foreground">
-          {event.actor_display_name ?? t`System`}
+          {event.actor_user_id ? t`User ${event.actor_user_id.slice(0, 8)}` : t`System`}
         </span>
         <SiteDate
           value={event.at}
@@ -122,13 +123,13 @@ export function AuditPage({
     ['audit.listEvents', orgId, search],
     async (cursor) =>
       must(
-        await draftApi.GET('/v1/orgs/{org_id}/audit-events', {
+        await draftApi.GET('/v1/orgs/{org_id}/audit', {
           params: {
             path: { org_id: orgId },
             query: {
               action: search.action,
               target_type: search.target,
-              actor_user_id: search.actor,
+              actor: search.actor,
               from: search.from ? zonedLocalToIso(`${search.from}T00:00`, tz) : undefined,
               to: search.to ? zonedLocalToIso(`${search.to}T23:59`, tz) : undefined,
               limit: 25,

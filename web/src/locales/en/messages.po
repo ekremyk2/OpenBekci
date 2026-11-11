@@ -7801,3 +7801,15 @@ msgstr "Your sign-in link will be completed here."
 
 msgid "Your unit has used its bookings for this period."
 msgstr "Your unit has used its bookings for this period."
+
+msgid "Create code"
+msgstr "Create code"
+
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "This site has no join code yet. Create one to get a poster."
+
+msgid "Pick your name, then enter your PIN."
+msgstr "Pick your name, then enter your PIN."
+
+msgid "User {0}"
+msgstr "User {0}"
