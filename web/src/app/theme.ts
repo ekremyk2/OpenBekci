@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from 'react'
 
 export type ThemePreference = 'system' | 'light' | 'dark'
+export type Look = 'kiremit' | 'tas'
 const KEY = 'ob.theme' // keep in sync with public/theme-init.js
+const LOOK_KEY = 'ob.look'
 
 const listeners = new Set<() => void>()
 const media =
@@ -16,7 +18,16 @@ function readPreference(): ThemePreference {
   }
 }
 
+function readLook(): Look {
+  try {
+    return localStorage.getItem(LOOK_KEY) === 'tas' ? 'tas' : 'kiremit'
+  } catch {
+    return 'kiremit'
+  }
+}
+
 let preference: ThemePreference = readPreference()
+let look: Look = readLook()
 
 function resolve(p: ThemePreference): 'light' | 'dark' {
   return p === 'system' ? (media?.matches ? 'dark' : 'light') : p
@@ -24,6 +35,20 @@ function resolve(p: ThemePreference): 'light' | 'dark' {
 
 function apply() {
   document.documentElement.classList.toggle('dark', resolve(preference) === 'dark')
+  if (look === 'tas') document.documentElement.dataset.look = 'tas'
+  else delete document.documentElement.dataset.look
+}
+
+export function setLook(next: Look) {
+  look = next
+  try {
+    if (next === 'tas') localStorage.setItem(LOOK_KEY, next)
+    else localStorage.removeItem(LOOK_KEY)
+  } catch {
+    /* storage blocked: look lasts for this page load */
+  }
+  apply()
+  listeners.forEach((l) => l())
 }
 
 export function setThemePreference(next: ThemePreference) {
@@ -44,12 +69,12 @@ media?.addEventListener('change', () => {
 })
 
 let snapshotKey = ''
-let snapshot = { preference, resolved: resolve(preference) }
+let snapshot = { preference, resolved: resolve(preference), look }
 function getSnapshot() {
-  const key = `${preference}:${resolve(preference)}`
+  const key = `${preference}:${resolve(preference)}:${look}`
   if (key !== snapshotKey) {
     snapshotKey = key
-    snapshot = { preference, resolved: resolve(preference) }
+    snapshot = { preference, resolved: resolve(preference), look }
   }
   return snapshot
 }
@@ -63,7 +88,7 @@ export function useTheme() {
     getSnapshot,
     getSnapshot,
   )
-  return { ...s, setPreference: setThemePreference }
+  return { ...s, setPreference: setThemePreference, setLook }
 }
 
 /** Relative luminance of #rgb / #rrggbb, or null when the string is not a hex color. */

@@ -11,8 +11,15 @@ for (const [, sel, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
   blocks.set(sel!.split(';').pop()!.trim().replace(/\s+/g, ' '), vars)
 }
 
-function tokens(dark: boolean): Record<string, string> {
-  return Object.assign({}, blocks.get(':root'), dark ? blocks.get('.dark') : {})
+function tokens(dark: boolean, look: 'kiremit' | 'tas' = 'kiremit'): Record<string, string> {
+  const tas = look === 'tas'
+  return Object.assign(
+    {},
+    blocks.get(':root'),
+    dark ? blocks.get('.dark') : {},
+    tas ? blocks.get('[data-look="tas"]') : {},
+    tas && dark ? blocks.get('[data-look="tas"].dark') : {},
+  )
 }
 
 function luminance(token: string, vars: Record<string, string>): number {
@@ -64,15 +71,21 @@ const NON_TEXT: [string, string][] = [
 ]
 
 describe('brand palette contrast', () => {
-  for (const dark of [false, true]) {
-    it(`${dark ? 'dark' : 'light'}: text pairs reach 4.5:1`, () => {
-      const vars = tokens(dark)
+  for (const [look, dark] of [
+    ['kiremit', false],
+    ['kiremit', true],
+    ['tas', false],
+    ['tas', true],
+  ] as const) {
+    const name = `${look} ${dark ? 'dark' : 'light'}`
+    it(`${name}: text pairs reach 4.5:1`, () => {
+      const vars = tokens(dark, look)
       for (const [fg, bg] of TEXT) {
         expect(ratio(fg, bg, vars), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5)
       }
     })
-    it(`${dark ? 'dark' : 'light'}: controls, focus and placeholders reach 3:1`, () => {
-      const vars = tokens(dark)
+    it(`${name}: controls, focus and placeholders reach 3:1`, () => {
+      const vars = tokens(dark, look)
       for (const [fg, bg] of NON_TEXT) {
         expect(ratio(fg, bg, vars), `${fg} on ${bg}`).toBeGreaterThanOrEqual(3)
       }
