@@ -41,7 +41,19 @@ export function formatMoney(
   const digits = currencyDigits(currency)
   const nf = new Intl.NumberFormat(locale, { style: 'currency', currency, ...options })
   // Intl accepts exact decimal strings; the cast bridges lib.d.ts, which only declares number|bigint.
-  return nf.format(minorToDecimalString(minor, digits) as unknown as number)
+  const text = nf.format(minorToDecimalString(minor, digits) as unknown as number)
+  // Turkish convention: the symbol trails the number ("1.234,56 ₺").
+  if (!locale.startsWith('tr')) return text
+  const symbol = currencySymbol(currency, locale)
+  return text.includes(symbol) ? `${text.replace(symbol, '').trim()} ${symbol}` : text
+}
+
+/** The symbol Intl shows for this currency in this locale, e.g. "₺" for TRY in tr. */
+export function currencySymbol(currency: string, locale: string): string {
+  const part = new Intl.NumberFormat(locale, { style: 'currency', currency })
+    .formatToParts(0)
+    .find((p) => p.type === 'currency')
+  return part?.value ?? currency
 }
 
 /** The locale's group and decimal separator characters. */
