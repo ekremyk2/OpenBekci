@@ -105,6 +105,8 @@ html[data-ground="sky"] { --ground-bg: #ffc8ad; --ground-surface: #ffe3d2; --gro
   .install-chips { display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-5); }
   .install-chips .ic-chip { min-height: 44px; }
   .install-chips .ic-chip > .ic { --ic-s: 28px; }
+  /* the primary only changes its fill on hover: no colour transition to start when the page repaints the ink */
+  .closing__cta .btn { transition-property: background-color, border-color, text-decoration-color; }
   /* Bricolage is wider than the face the kit sized the closing name for */
   .close__word { font-size: clamp(64px, 12.4vw, 190px); }
   @media (max-width: 639px) { .close__word { font-size: clamp(56px, 16.2vw, 96px); } }
