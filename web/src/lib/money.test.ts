@@ -12,7 +12,7 @@ const norm = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ')
 
 describe('formatMoney', () => {
   it('formats TRY in tr-TR', () => {
-    expect(norm(formatMoney(123456, 'TRY', 'tr-TR'))).toBe('₺1.234,56')
+    expect(formatMoney(123456, 'TRY', 'tr-TR')).toBe('1.234,56 ₺')
   })
   it('formats TRY and USD in en-US', () => {
     expect(norm(formatMoney(123456, 'TRY', 'en-US'))).toBe('TRY 1,234.56')

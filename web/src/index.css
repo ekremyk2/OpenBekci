@@ -315,6 +315,10 @@
 .money {
   font-weight: 500;
 }
+/* Plex Mono has no U+20BA (₺); the symbol falls back to Plex Sans, which has it. */
+.money__symbol {
+  font-family: var(--font-sans);
+}
 td:has(> .money),
 td:has(> .iban) {
   text-align: end;
