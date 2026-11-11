@@ -281,9 +281,6 @@ msgstr ""
 msgid "Abstain"
 msgstr ""
 
-#~ msgid "Accent"
-#~ msgstr ""
-
 msgid "Accept"
 msgstr ""
 
@@ -844,9 +841,6 @@ msgid "Backups"
 msgstr ""
 
 msgid "Balance"
-msgstr ""
-
-msgid "Balance when they leave"
 msgstr ""
 
 msgid "Balances as of"
@@ -1582,9 +1576,6 @@ msgstr ""
 msgid "Correspondent"
 msgstr ""
 
-msgid "Cost groups"
-msgstr ""
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr ""
 
@@ -1909,6 +1900,9 @@ msgid "Create budget"
 msgstr ""
 
 msgid "Create charges"
+msgstr ""
+
+msgid "Create code"
 msgstr ""
 
 msgid "Create endpoint"
@@ -2312,9 +2306,6 @@ msgid "Due from"
 msgstr ""
 
 msgid "Dues (aidat)"
-msgstr ""
-
-msgid "Dues and charges"
 msgstr ""
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
@@ -2898,9 +2889,6 @@ msgstr ""
 
 msgid "For this site"
 msgstr ""
-
-#~ msgid "Forest"
-#~ msgstr ""
 
 msgid "Four fifths"
 msgstr ""
@@ -3768,9 +3756,6 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
-#~ msgid "Navy"
-#~ msgstr ""
-
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
 msgid "Needed: at least {0} yes votes{1}"
@@ -4616,9 +4601,6 @@ msgstr ""
 msgid "Organization collects"
 msgstr ""
 
-#~ msgid "Organization color"
-#~ msgstr ""
-
 msgid "Organization created."
 msgstr ""
 
@@ -4879,6 +4861,9 @@ msgstr ""
 #. placeholder {0}: index + 1
 #. placeholder {1}: images.length
 msgid "Photo {0} of {1}"
+msgstr ""
+
+msgid "Pick your name, then enter your PIN."
 msgstr ""
 
 msgid "PIN"
@@ -6015,9 +6000,6 @@ msgstr ""
 msgid "Skip to content"
 msgstr ""
 
-#~ msgid "Slate"
-#~ msgstr ""
-
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr ""
 
@@ -6276,9 +6258,6 @@ msgstr ""
 
 msgid "Terms ending soon"
 msgstr ""
-
-#~ msgid "Terracotta"
-#~ msgstr ""
 
 msgid "Test ping sent"
 msgstr ""
@@ -6882,6 +6861,9 @@ msgstr ""
 msgid "This site has its own workflow."
 msgstr ""
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr ""
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr ""
 
@@ -7255,6 +7237,10 @@ msgid "Use lowercase letters, digits and underscores, for example heating"
 msgstr ""
 
 msgid "Use my password"
+msgstr ""
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
 msgstr ""
 
 msgid "Utility"

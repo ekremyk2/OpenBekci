@@ -42,7 +42,9 @@ describe('people list', () => {
 
   it('shows the no-permission page without people.read', async () => {
     await mountApp('/orgs/org-1/people', { permissions: ['sites.read'] })
-    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' }),
+    ).toBeInTheDocument()
   })
 })
 
@@ -223,7 +225,9 @@ describe('unit claims queue', () => {
 
   it('is not available without claims.decide', async () => {
     await mountApp('/orgs/org-1/claims', { permissions: ['people.read'] })
-    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' }),
+    ).toBeInTheDocument()
   })
 })
 
@@ -326,7 +330,9 @@ describe('directory, vendors, portfolio', () => {
 
   it('portfolio needs dashboard.portfolio', async () => {
     await mountApp('/orgs/org-1/portfolio', { permissions: ['sites.read'] })
-    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' }),
+    ).toBeInTheDocument()
   })
 })
 

@@ -281,9 +281,6 @@ msgstr "Yok"
 msgid "Abstain"
 msgstr "Çekimser"
 
-#~ msgid "Accent"
-#~ msgstr "Vurgu rengi"
-
 msgid "Accept"
 msgstr "Kabul et"
 
@@ -845,9 +842,6 @@ msgstr "Yedekler"
 
 msgid "Balance"
 msgstr "Bakiye"
-
-msgid "Balance when they leave"
-msgstr "Ayrılırken bakiye"
 
 msgid "Balances as of"
 msgstr "Bakiyelerin tarihi"
@@ -1582,9 +1576,6 @@ msgstr "Anahtarı kopyala"
 msgid "Correspondent"
 msgstr "Yazışma kişisi"
 
-msgid "Cost groups"
-msgstr "Maliyet grupları"
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr "Giderler bir bloğun birimleri arasında ya da tüm site genelinde paylaştırılabilir."
 
@@ -1910,6 +1901,9 @@ msgstr "Bütçe oluştur"
 
 msgid "Create charges"
 msgstr "Tahakkukları oluştur"
+
+msgid "Create code"
+msgstr "Kod oluştur"
 
 msgid "Create endpoint"
 msgstr "Uç nokta oluştur"
@@ -2313,9 +2307,6 @@ msgstr "Başlangıç tarihi"
 
 msgid "Dues (aidat)"
 msgstr "Aidat"
-
-msgid "Dues and charges"
-msgstr "Aidat ve giderler"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Birimde kiracı varsa aidat kiracıya, demirbaş ve olağanüstü gider malike aittir. Burada plan bazında değiştirebilirsiniz."
@@ -2898,9 +2889,6 @@ msgstr "Bilgi için"
 
 msgid "For this site"
 msgstr "Bu site için"
-
-#~ msgid "Forest"
-#~ msgstr "Orman"
 
 msgid "Four fifths"
 msgstr "Beşte dört"
@@ -3768,9 +3756,6 @@ msgstr "Kimlik numarası"
 msgid "Navigation"
 msgstr "Gezinme"
 
-#~ msgid "Navy"
-#~ msgstr "Lacivert"
-
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
 msgid "Needed: at least {0} yes votes{1}"
@@ -4616,9 +4601,6 @@ msgstr "Kurum yöneticisi"
 msgid "Organization collects"
 msgstr "Kuruluş tahsil eder"
 
-#~ msgid "Organization color"
-#~ msgstr "Kuruluş rengi"
-
 msgid "Organization created."
 msgstr "Kuruluş oluşturuldu."
 
@@ -4880,6 +4862,9 @@ msgstr "Fotoğraf"
 #. placeholder {1}: images.length
 msgid "Photo {0} of {1}"
 msgstr "Fotoğraf {0} / {1}"
+
+msgid "Pick your name, then enter your PIN."
+msgstr "Adınızı seçin, sonra PIN kodunuzu girin."
 
 msgid "PIN"
 msgstr "PIN"
@@ -6015,9 +6000,6 @@ msgstr "Boyut"
 msgid "Skip to content"
 msgstr "İçeriğe geç"
 
-#~ msgid "Slate"
-#~ msgstr "Arduvaz"
-
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr "Başkalarının rezerve ettiği saatler yalnızca \"dolu\" olarak görünür."
 
@@ -6276,9 +6258,6 @@ msgstr "Görev başlangıcı"
 
 msgid "Terms ending soon"
 msgstr "Yakında biten görev süreleri"
-
-#~ msgid "Terracotta"
-#~ msgstr "Kiremit"
 
 msgid "Test ping sent"
 msgstr "Test ping gönderildi"
@@ -6882,6 +6861,9 @@ msgstr "Bu site kendi hesabına tahsil eder"
 msgid "This site has its own workflow."
 msgstr "Bu sitenin kendi iş akışı var."
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "Bu sitenin henüz katılım kodu yok. Afiş için bir kod oluşturun."
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr "Bu site tek bir binadır, bu yüzden tek bloğu her yerde gizlenir. Çok bloklu bir siteye dönüştürmek için bir blok ekleyin."
 
@@ -7256,6 +7238,10 @@ msgstr "Küçük harf, rakam ve alt çizgi kullanın, örneğin isitma"
 
 msgid "Use my password"
 msgstr "Parolamı kullan"
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
+msgstr "Kullanıcı {0}"
 
 msgid "Utility"
 msgstr "Kullanım gideri"
@@ -7804,15 +7790,3 @@ msgstr "Giriş bağlantınız burada tamamlanacak."
 
 msgid "Your unit has used its bookings for this period."
 msgstr "Bağımsız bölümünüz bu dönem için rezervasyon hakkını kullandı."
-
-msgid "Create code"
-msgstr "Kod oluştur"
-
-msgid "This site has no join code yet. Create one to get a poster."
-msgstr "Bu sitenin henüz katılım kodu yok. Afiş için bir kod oluşturun."
-
-msgid "Pick your name, then enter your PIN."
-msgstr "Adınızı seçin, sonra PIN kodunuzu girin."
-
-msgid "User {0}"
-msgstr "Kullanıcı {0}"

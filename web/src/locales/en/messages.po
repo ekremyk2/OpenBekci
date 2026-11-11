@@ -281,9 +281,6 @@ msgstr "Absent"
 msgid "Abstain"
 msgstr "Abstain"
 
-#~ msgid "Accent"
-#~ msgstr "Accent"
-
 msgid "Accept"
 msgstr "Accept"
 
@@ -845,9 +842,6 @@ msgstr "Backups"
 
 msgid "Balance"
 msgstr "Balance"
-
-msgid "Balance when they leave"
-msgstr "Balance when they leave"
 
 msgid "Balances as of"
 msgstr "Balances as of"
@@ -1582,9 +1576,6 @@ msgstr "Copy the token"
 msgid "Correspondent"
 msgstr "Correspondent"
 
-msgid "Cost groups"
-msgstr "Cost groups"
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr "Costs can be split among one block's units or across the whole site."
 
@@ -1910,6 +1901,9 @@ msgstr "Create budget"
 
 msgid "Create charges"
 msgstr "Create charges"
+
+msgid "Create code"
+msgstr "Create code"
 
 msgid "Create endpoint"
 msgstr "Create endpoint"
@@ -2313,9 +2307,6 @@ msgstr "Due from"
 
 msgid "Dues (aidat)"
 msgstr "Dues (aidat)"
-
-msgid "Dues and charges"
-msgstr "Dues and charges"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
@@ -2898,9 +2889,6 @@ msgstr "For information"
 
 msgid "For this site"
 msgstr "For this site"
-
-#~ msgid "Forest"
-#~ msgstr "Forest"
 
 msgid "Four fifths"
 msgstr "Four fifths"
@@ -3768,9 +3756,6 @@ msgstr "National id"
 msgid "Navigation"
 msgstr "Navigation"
 
-#~ msgid "Navy"
-#~ msgstr "Navy"
-
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
 msgid "Needed: at least {0} yes votes{1}"
@@ -4616,9 +4601,6 @@ msgstr "Organization admin"
 msgid "Organization collects"
 msgstr "Organization collects"
 
-#~ msgid "Organization color"
-#~ msgstr "Organization color"
-
 msgid "Organization created."
 msgstr "Organization created."
 
@@ -4880,6 +4862,9 @@ msgstr "Photo"
 #. placeholder {1}: images.length
 msgid "Photo {0} of {1}"
 msgstr "Photo {0} of {1}"
+
+msgid "Pick your name, then enter your PIN."
+msgstr "Pick your name, then enter your PIN."
 
 msgid "PIN"
 msgstr "PIN"
@@ -6015,9 +6000,6 @@ msgstr "Size"
 msgid "Skip to content"
 msgstr "Skip to content"
 
-#~ msgid "Slate"
-#~ msgstr "Slate"
-
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr "Slots booked by others are shown only as \"taken\"."
 
@@ -6276,9 +6258,6 @@ msgstr "Term starts"
 
 msgid "Terms ending soon"
 msgstr "Terms ending soon"
-
-#~ msgid "Terracotta"
-#~ msgstr "Terracotta"
 
 msgid "Test ping sent"
 msgstr "Test ping sent"
@@ -6882,6 +6861,9 @@ msgstr "This site collects into its own account"
 msgid "This site has its own workflow."
 msgstr "This site has its own workflow."
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "This site has no join code yet. Create one to get a poster."
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 
@@ -7256,6 +7238,10 @@ msgstr "Use lowercase letters, digits and underscores, for example heating"
 
 msgid "Use my password"
 msgstr "Use my password"
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
+msgstr "User {0}"
 
 msgid "Utility"
 msgstr "Utility"
@@ -7804,15 +7790,3 @@ msgstr "Your sign-in link will be completed here."
 
 msgid "Your unit has used its bookings for this period."
 msgstr "Your unit has used its bookings for this period."
-
-msgid "Create code"
-msgstr "Create code"
-
-msgid "This site has no join code yet. Create one to get a poster."
-msgstr "This site has no join code yet. Create one to get a poster."
-
-msgid "Pick your name, then enter your PIN."
-msgstr "Pick your name, then enter your PIN."
-
-msgid "User {0}"
-msgstr "User {0}"
