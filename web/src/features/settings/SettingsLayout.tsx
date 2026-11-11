@@ -1,4 +1,5 @@
-import { Link, Outlet } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { cn } from '@/lib/utils'
@@ -34,6 +35,15 @@ export function SettingsLayout() {
     },
     { to: '/orgs/$orgId/settings/codes', label: t`Codes`, show: DEBUG && can('codes.read') },
   ] as const
+  const path = useRouterState({ select: (r) => r.location.pathname })
+  const active = tabs
+    .filter((x) => x.show && path.replace(/\/$/, '').endsWith(x.to.replace('$orgId', orgId)))
+    .sort((a, b) => b.to.length - a.to.length)[0]
+  const settings = t`Settings`
+  // the page h1 is the area name; the active tab shows in the document title
+  useEffect(() => {
+    if (active) document.title = `${active.label} - ${settings}`
+  }, [active, settings])
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold">
@@ -49,7 +59,7 @@ export function SettingsLayout() {
               params={{ orgId }}
               activeOptions={{ exact: 'exact' in tab }}
               className={cn(
-                '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                '-mb-px flex min-h-11 items-center border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 '[&.active]:border-primary [&.active]:text-foreground',
               )}
             >

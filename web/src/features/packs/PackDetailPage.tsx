@@ -21,7 +21,12 @@ import { siteQueries } from '@/features/sites/queries'
 import { usePayloadKeys, withIdempotencyKey } from '@/lib/idempotency'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
-import { packDefaultEntries, PackDefaultBadge } from './PackDefaultBadge'
+import {
+  packDefaultEntries,
+  PackDefaultBadge,
+  PackValue,
+  useSettingLabel,
+} from './PackDefaultBadge'
 import { countryName } from './PacksPage'
 import { packQueries, schemaOf, usePackLabels, type Pack } from './queries'
 
@@ -418,6 +423,8 @@ function PackDefaultsCard({ pack, orgId }: { pack: Pack; orgId: string }) {
   const { org, can } = useSession()
   const sites = org?.sites ?? []
   const canRead = can('sites.read')
+  const label = useSettingLabel()
+  const [raw, setRaw] = useState(false)
   const results = useQueries({
     queries: sites.map((s) => ({ ...siteQueries.settings(orgId, s.id), enabled: canRead })),
   })
@@ -456,19 +463,29 @@ function PackDefaultsCard({ pack, orgId }: { pack: Pack; orgId: string }) {
                 className="flex flex-wrap items-center justify-between gap-2 p-3"
               >
                 <span className="flex flex-col">
-                  <span className="font-medium">{r.key}</span>
+                  <span className="font-medium">{label(r.key)}</span>
                   <span className="text-xs text-muted-foreground">{r.site}</span>
                 </span>
-                <span className="flex items-center gap-2">
-                  <code className="rounded bg-muted px-1.5 py-0.5 text-xs" dir="ltr">
-                    {JSON.stringify(r.value)}
-                  </code>
+                <span className="flex min-w-0 flex-col items-start gap-1">
                   <PackDefaultBadge pack={pack.id} />
+                  <PackValue value={r.value} raw={raw} />
                 </span>
               </li>
             ))}
           </ul>
         )}
+        {rows.length > 0 && can('sites.manage') ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mt-2"
+            aria-pressed={raw}
+            onClick={() => setRaw((r) => !r)}
+          >
+            <Trans>Raw</Trans>
+          </Button>
+        ) : null}
       </CardContent>
     </Card>
   )

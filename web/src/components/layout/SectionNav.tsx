@@ -19,7 +19,10 @@ export function SectionNav({ links, label }: { links: SectionLink[]; label: stri
   if (!org) return null
   const visible = links.filter((l) => !l.permission || can(l.permission))
   return (
-    <nav aria-label={label || t`Section`} className="flex flex-wrap gap-1 border-b pb-2">
+    <nav
+      aria-label={label || t`Section`}
+      className="flex gap-1 overflow-x-auto border-b pb-2 [scrollbar-width:thin]"
+    >
       {visible.map((l) => (
         <Link
           key={l.id}
@@ -27,7 +30,7 @@ export function SectionNav({ links, label }: { links: SectionLink[]; label: stri
           params={{ orgId: org.id }}
           search={l.search as never}
           className={cn(
-            'rounded-md px-3 py-1.5 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            'flex min-h-11 shrink-0 items-center rounded-md px-3 py-1.5 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
             '[&.active]:bg-accent [&.active]:text-accent-foreground',
           )}
         >

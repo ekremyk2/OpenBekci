@@ -165,6 +165,9 @@ msgstr "<0>{name}</0>: ödeme sağlayıcı henüz <1/> ödemedi (takas hesabı {
 msgid "1. Add @{bot} to your group as an administrator."
 msgstr "1. @{bot} botunu grubunuza yönetici olarak ekleyin."
 
+msgid "16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update."
+msgstr "16 ile 256 arası harf, rakam, - veya _. Telegram her güncellemede bunu bir başlıkta geri gönderir."
+
 msgid "2. Send this message in the group. The code works for 10 minutes."
 msgstr "2. Bu mesajı grupta gönderin. Kod 10 dakika geçerlidir."
 
@@ -281,9 +284,6 @@ msgstr "Yok"
 msgid "Abstain"
 msgstr "Çekimser"
 
-#~ msgid "Accent"
-#~ msgstr "Vurgu rengi"
-
 msgid "Accept"
 msgstr "Kabul et"
 
@@ -301,6 +301,9 @@ msgstr "Erişim noktası"
 
 msgid "Access points"
 msgstr "Erişim noktaları"
+
+msgid "Access token"
+msgstr "Erişim anahtarı"
 
 msgid "Account"
 msgstr "Hesap"
@@ -664,6 +667,9 @@ msgstr "Uygulama ve e-posta"
 msgid "App and SMS"
 msgstr "Uygulama ve SMS"
 
+msgid "App secret"
+msgstr "Uygulama sırrı"
+
 #. placeholder {0}: labels.effect(decision.effect.kind)
 msgid "Applied: {0}"
 msgstr "Uygulandı: {0}"
@@ -970,6 +976,12 @@ msgstr "Rezervasyon için en az {0} dakika önceden haber vermek gerekir."
 msgid "Bookings per unit"
 msgstr "Bağımsız bölüm başına rezervasyon"
 
+msgid "Bot token"
+msgstr "Bot anahtarı"
+
+msgid "Bot username"
+msgstr "Bot kullanıcı adı"
+
 msgid "Both"
 msgstr "Her ikisi"
 
@@ -990,6 +1002,9 @@ msgstr "Bütçe kaydedildi."
 
 msgid "Budget vs actual"
 msgstr "Bütçe ve gerçekleşen"
+
+msgid "Business number"
+msgstr "İşletme numarası"
 
 msgid "By"
 msgstr "Gönderim"
@@ -2899,9 +2914,6 @@ msgstr "Bilgi için"
 msgid "For this site"
 msgstr "Bu site için"
 
-#~ msgid "Forest"
-#~ msgstr "Orman"
-
 msgid "Four fifths"
 msgstr "Beşte dört"
 
@@ -2920,11 +2932,17 @@ msgstr "Sıklık"
 msgid "From"
 msgstr "Başlangıç"
 
+msgid "From @BotFather."
+msgstr "@BotFather'dan alınır."
+
 msgid "From a vehicle"
 msgstr "Araçtan"
 
 msgid "From a visitor"
 msgstr "Ziyaretçiden"
+
+msgid "From the Meta app's WhatsApp setup."
+msgstr "Meta uygulamasının WhatsApp kurulumundan alınır."
 
 msgid "Frozen"
 msgstr "Donduruldu"
@@ -3330,6 +3348,9 @@ msgstr "Gecikme tazminatı"
 msgid "Late fee accrued so far (not yet booked)"
 msgstr "Şimdiye kadar tahakkuk eden gecikme tazminatı (henüz kaydedilmedi)"
 
+msgid "Late fee policy"
+msgstr "Gecikme zammı politikası"
+
 msgid "Late fee waived."
 msgstr "Gecikme tazminatı affedildi."
 
@@ -3564,6 +3585,9 @@ msgstr "{0}. durumun anlamı"
 msgid "Meeting notices"
 msgstr "Toplantı bildirimleri"
 
+msgid "Meeting quorum"
+msgstr "Toplantı yeter sayısı"
+
 msgid "Meetings"
 msgstr "Toplantılar"
 
@@ -3632,6 +3656,9 @@ msgstr "Aylık"
 
 msgid "Monthly bookings"
 msgstr "Aylık kayıtlar"
+
+msgid "Monthly rate (%)"
+msgstr "Aylık oran (%)"
 
 msgid "Monthly recurring expenses"
 msgstr "Aylık tekrarlayan giderler"
@@ -3767,9 +3794,6 @@ msgstr "Kimlik numarası"
 
 msgid "Navigation"
 msgstr "Gezinme"
-
-#~ msgid "Navy"
-#~ msgstr "Lacivert"
 
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
@@ -4616,9 +4640,6 @@ msgstr "Kurum yöneticisi"
 msgid "Organization collects"
 msgstr "Kuruluş tahsil eder"
 
-#~ msgid "Organization color"
-#~ msgstr "Kuruluş rengi"
-
 msgid "Organization created."
 msgstr "Kuruluş oluşturuldu."
 
@@ -4869,6 +4890,9 @@ msgstr "Telefon"
 
 msgid "Phone number"
 msgstr "Telefon numarası"
+
+msgid "Phone number id"
+msgstr "Telefon numarası kimliği"
 
 msgid "Phone or email"
 msgstr "Telefon veya e-posta"
@@ -5137,6 +5161,9 @@ msgstr "Oranlar"
 
 msgid "Rates, split rules and live previews"
 msgstr "Oranlar, bölüştürme kuralları ve canlı önizlemeler"
+
+msgid "Raw"
+msgstr "Ham veri"
 
 msgid "Re-enrol"
 msgstr "Yeniden kaydet"
@@ -5985,6 +6012,9 @@ msgstr "İmza anahtarı"
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
 
+msgid "Signs the webhook (X-Hub-Signature-256)."
+msgstr "Webhook imzasını atar (X-Hub-Signature-256)."
+
 msgid "Site"
 msgstr "Site"
 
@@ -6014,9 +6044,6 @@ msgstr "Boyut"
 
 msgid "Skip to content"
 msgstr "İçeriğe geç"
-
-#~ msgid "Slate"
-#~ msgstr "Arduvaz"
 
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr "Başkalarının rezerve ettiği saatler yalnızca \"dolu\" olarak görünür."
@@ -6277,9 +6304,6 @@ msgstr "Görev başlangıcı"
 msgid "Terms ending soon"
 msgstr "Yakında biten görev süreleri"
 
-#~ msgid "Terracotta"
-#~ msgstr "Kiremit"
-
 msgid "Test ping sent"
 msgstr "Test ping gönderildi"
 
@@ -6348,6 +6372,9 @@ msgstr "Rezervasyon iptal edildi."
 
 msgid "The bot leaves the group and nothing is posted there any more."
 msgstr "Bot gruptan ayrılır ve orada artık hiçbir şey paylaşılmaz."
+
+msgid "The bot's username without @ (for the t.me link)."
+msgstr "Botun kullanıcı adı, @ işareti olmadan (t.me bağlantısı için)."
 
 msgid "The box does not hold that much."
 msgstr "Kasada o kadar para yok."
@@ -6692,6 +6719,9 @@ msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı).
 msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
 msgstr "Kuruluşunuzun verilerinizin nasıl işlendiğini anlatmak için kullandığı metinler, seçtiğiniz dilde. Her birini kabul edin veya reddedin."
 
+msgid "The token you enter in Meta's webhook setup."
+msgstr "Meta'nın webhook kurulumuna gireceğiniz anahtar."
+
 msgid "The transfer could not be started. Please try again."
 msgstr "Devir başlatılamadı. Lütfen yeniden deneyin."
 
@@ -6703,6 +6733,9 @@ msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
 
 msgid "The visit must end after it starts."
 msgstr "Ziyaret, başladıktan sonra bitmelidir."
+
+msgid "The WhatsApp number people write to, international format (for the wa.me link)."
+msgstr "İnsanların yazdığı WhatsApp numarası, uluslararası biçimde (wa.me bağlantısı için)."
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
 msgstr "Tutarın tamamı, <0/>, sağlayıcı aracılığıyla sakinin kartına iade edilir. Ödediği tahakkuklar yeniden açılır. Kısmi iade mümkün değildir."
@@ -7421,6 +7454,9 @@ msgstr "Oylanacak"
 msgid "Votes and proxies"
 msgstr "Oylar ve vekâletler"
 
+msgid "Voting thresholds"
+msgstr "Oylama eşikleri"
+
 msgid "Waiting"
 msgstr "Bekliyor"
 
@@ -7494,6 +7530,12 @@ msgstr "Webhook adresi"
 
 msgid "Webhook endpoints"
 msgstr "Webhook uç noktaları"
+
+msgid "Webhook secret"
+msgstr "Webhook sırrı"
+
+msgid "Webhook verify token"
+msgstr "Webhook doğrulama anahtarı"
 
 msgid "Webhooks"
 msgstr "Webhook'lar"

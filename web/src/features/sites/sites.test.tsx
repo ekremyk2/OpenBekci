@@ -64,6 +64,21 @@ describe('site detail', () => {
     expect(screen.getByTestId('iban')).toHaveTextContent('TR33 0006 1005 1978 6457 8413 26')
   })
 
+  it('shows pack defaults as labelled fields and raw JSON only behind Raw', async () => {
+    await mountApp('/orgs/org-1/sites/site-a?tab=settings', {
+      seed: () => {
+        ;(db.settings['site-a'] as unknown as Record<string, unknown>).pack_defaults = {
+          late_fee_policy: { pack: 'tr', value: { monthly_rate_percent: 5, grace_days: 0 } },
+        }
+      },
+    })
+    expect(await screen.findByText('Late fee policy')).toBeInTheDocument()
+    expect(screen.getByText('Monthly rate (%):')).toBeInTheDocument()
+    expect(screen.queryByText(/monthly_rate_percent/)).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Raw' }))
+    expect(screen.getByText(/"monthly_rate_percent": 5/)).toBeInTheDocument()
+  })
+
   it('hides the bank tab without sites.bank_details', async () => {
     await mountApp('/orgs/org-1/sites/site-a', { permissions: ['sites.read'] })
     await screen.findByRole('heading', { name: 'Güneş Sitesi' })
