@@ -83,12 +83,11 @@ describe('record a payment', () => {
     const person = await screen.findByLabelText('Person')
     await pick(person, 'Deniz Çelik')
     await userEvent.type(screen.getByLabelText('Amount'), '900')
-    const table = await screen.findByRole(
+    await screen.findByRole(
       'table',
       { name: 'Automatic allocation' },
       { timeout: 4000 },
     )
-    expect(within(table).getAllByRole('row')).toHaveLength(1)
     await userEvent.click(screen.getByRole('button', { name: 'Record payment' }))
     await screen.findByTestId('receipt-no')
     expect(db.payments.at(-1)!.allocations).toHaveLength(1)

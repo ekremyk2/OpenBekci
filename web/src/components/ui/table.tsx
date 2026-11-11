@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils'
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
+    // scrollable region must be keyboard-focusable
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
     <div className="relative max-h-[75vh] w-full overflow-auto" tabIndex={0}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>

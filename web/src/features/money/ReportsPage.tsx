@@ -34,7 +34,7 @@ import {
   type MoneyCtx,
   type S,
 } from './api'
-import { AccountPicker, useAccounts, useFunds } from './pickers'
+import { useAccounts, useFunds } from './pickers'
 import { ExportButtons, Field, Gate, PageHeader, QueryBoundary, Select, SideBadge } from './ui'
 
 export type ReportId =

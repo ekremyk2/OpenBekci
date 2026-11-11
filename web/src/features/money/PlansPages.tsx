@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { EmptyState } from '@/components/data/EmptyState'
 import { Money } from '@/components/data/Money'
-import { MoneyInput } from '@/components/forms/MoneyInput'
 import { SiteDate } from '@/components/data/SiteDate'
 import { SidePicker } from '@/components/forms/SidePicker'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -896,16 +895,3 @@ export function ExpenseSharingPage() {
   )
 }
 
-function MoneyFormFieldBare({
-  id,
-  currency,
-  value,
-  onChange,
-}: {
-  id: string
-  currency: string
-  value: bigint | null
-  onChange: (v: bigint | null) => void
-}) {
-  return <MoneyInput id={id} currency={currency} value={value} onChange={onChange} />
-}

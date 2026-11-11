@@ -14,9 +14,9 @@ function servedOperations(): Set<string> {
   let path = ''
   for (const line of readFileSync(resolve(root, '../api/openapi.yaml'), 'utf8').split('\n')) {
     const p = line.match(/^ {2}(\/\S+):\s*$/)
-    if (p) path = p[1]
+    if (p) path = p[1]!
     const m = line.match(/^ {4}(get|post|put|patch|delete):/)
-    if (m && path) served.add(`${m[1].toUpperCase()} ${path}`)
+    if (m && path) served.add(`${m[1]!.toUpperCase()} ${path}`)
   }
   return served
 }

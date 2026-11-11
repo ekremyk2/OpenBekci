@@ -51,7 +51,6 @@ import { useLabels } from './labels'
 import { useSession } from '@/app/session'
 import {
   AccountPicker,
-  CashOrBankPicker,
   PersonPicker,
   useAccounts,
   useCashBoxes,

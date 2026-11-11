@@ -12,6 +12,7 @@ import { PageSkeleton, TableSkeleton } from '@/components/data/Skeletons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,

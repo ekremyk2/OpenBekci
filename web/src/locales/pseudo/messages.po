@@ -281,9 +281,6 @@ msgstr ""
 msgid "Abstain"
 msgstr ""
 
-#~ msgid "Accent"
-#~ msgstr ""
-
 msgid "Accept"
 msgstr ""
 
@@ -458,12 +455,6 @@ msgid "Add vendor"
 msgstr ""
 
 msgid "Address line 2"
-msgstr ""
-
-msgid "Adjust"
-msgstr ""
-
-msgid "Adjust this charge"
 msgstr ""
 
 msgid "Adjustment"
@@ -879,9 +870,6 @@ msgstr ""
 msgid "Bank lines"
 msgstr ""
 
-msgid "Bank reconciliation"
-msgstr ""
-
 msgid "Bank statement import"
 msgstr ""
 
@@ -1199,9 +1187,6 @@ msgstr ""
 msgid "Charge"
 msgstr ""
 
-msgid "Charge adjusted; the difference is posted as a correction."
-msgstr ""
-
 msgid "Charge cancelled; a reversal was created."
 msgstr ""
 
@@ -1212,9 +1197,6 @@ msgid "Charge type"
 msgstr ""
 
 msgid "Charges"
-msgstr ""
-
-msgid "Charges created."
 msgstr ""
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
@@ -1491,9 +1473,6 @@ msgstr ""
 msgid "Collector"
 msgstr ""
 
-msgid "Collector reconciliation"
-msgstr ""
-
 msgid "Comment"
 msgstr ""
 
@@ -1603,9 +1582,6 @@ msgstr ""
 msgid "Could not add the stage."
 msgstr ""
 
-msgid "Could not adjust the charge."
-msgstr ""
-
 msgid "Could not apply the decision. You can try again; nothing is created twice."
 msgstr ""
 
@@ -1658,9 +1634,6 @@ msgid "Could not create the agent."
 msgstr ""
 
 msgid "Could not create the assembly."
-msgstr ""
-
-msgid "Could not create the charges."
 msgstr ""
 
 msgid "Could not create the credential."
@@ -1736,9 +1709,6 @@ msgid "Could not record the payout."
 msgstr ""
 
 msgid "Could not record the proxy."
-msgstr ""
-
-msgid "Could not record the refund."
 msgstr ""
 
 msgid "Could not record the transfer."
@@ -1908,9 +1878,6 @@ msgstr ""
 msgid "Create budget"
 msgstr ""
 
-msgid "Create charges"
-msgstr ""
-
 msgid "Create endpoint"
 msgstr ""
 
@@ -1953,9 +1920,6 @@ msgstr ""
 msgid "Credit"
 msgstr ""
 
-msgid "Credits (prepayments)"
-msgstr ""
-
 msgid "Currency"
 msgstr ""
 
@@ -1987,10 +1951,6 @@ msgid "Date you paid"
 msgstr ""
 
 msgid "day"
-msgstr ""
-
-#. placeholder {0}: r.day_of_month
-msgid "Day {0}"
 msgstr ""
 
 msgid "days"
@@ -2218,9 +2178,6 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-msgid "Dismiss"
-msgstr ""
-
 msgid "Display name"
 msgstr ""
 
@@ -2300,9 +2257,6 @@ msgid "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
 msgstr ""
 
 msgid "Due"
-msgstr ""
-
-msgid "Due date"
 msgstr ""
 
 msgid "Due day"
@@ -2684,7 +2638,7 @@ msgstr ""
 msgid "Every receivable by period, unit and side"
 msgstr ""
 
-msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 msgstr ""
 
 msgid "Every status needs a name."
@@ -2899,9 +2853,6 @@ msgstr ""
 msgid "For this site"
 msgstr ""
 
-#~ msgid "Forest"
-#~ msgstr ""
-
 msgid "Four fifths"
 msgstr ""
 
@@ -3019,9 +2970,6 @@ msgstr ""
 msgid "Hand over to"
 msgstr ""
 
-msgid "Handed over"
-msgstr ""
-
 msgid "Handover"
 msgstr ""
 
@@ -3109,9 +3057,6 @@ msgid "Import failed"
 msgstr ""
 
 msgid "Import finished"
-msgstr ""
-
-msgid "Import progress"
 msgstr ""
 
 msgid "Import units"
@@ -3226,6 +3171,9 @@ msgid "It starts with the visibility of the folder it is in. You can change it a
 msgstr ""
 
 msgid "It stops opening gates at once."
+msgstr ""
+
+msgid "It will come in a later release."
 msgstr ""
 
 msgid "Italic"
@@ -3367,9 +3315,6 @@ msgid "Leave empty to use the number or address on the person's record."
 msgstr ""
 
 msgid "Leave the guard console"
-msgstr ""
-
-msgid "Ledger balance"
 msgstr ""
 
 msgid "Ledger closing"
@@ -3633,9 +3578,6 @@ msgstr ""
 msgid "Monthly bookings"
 msgstr ""
 
-msgid "Monthly recurring expenses"
-msgstr ""
-
 msgid "Months overdue"
 msgstr ""
 
@@ -3767,9 +3709,6 @@ msgstr ""
 
 msgid "Navigation"
 msgstr ""
-
-#~ msgid "Navy"
-#~ msgstr ""
 
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
@@ -3915,9 +3854,6 @@ msgstr ""
 msgid "Next retry"
 msgstr ""
 
-msgid "Next: choose the split"
-msgstr ""
-
 msgid "No"
 msgstr ""
 
@@ -3993,13 +3929,7 @@ msgstr ""
 msgid "No claims waiting"
 msgstr ""
 
-msgid "No collectors"
-msgstr ""
-
 msgid "No credentials found"
-msgstr ""
-
-msgid "No credits"
 msgstr ""
 
 msgid "No debtors"
@@ -4247,9 +4177,6 @@ msgid "Non-binding"
 msgstr ""
 
 msgid "none"
-msgstr ""
-
-msgid "None"
 msgstr ""
 
 msgid "Not available"
@@ -4615,9 +4542,6 @@ msgstr ""
 
 msgid "Organization collects"
 msgstr ""
-
-#~ msgid "Organization color"
-#~ msgstr ""
 
 msgid "Organization created."
 msgstr ""
@@ -5186,9 +5110,6 @@ msgstr ""
 msgid "Receive notifications in Telegram or WhatsApp."
 msgstr ""
 
-msgid "Received"
-msgstr ""
-
 msgid "Received in"
 msgstr ""
 
@@ -5286,12 +5207,6 @@ msgid "Reference: {0}"
 msgstr ""
 
 msgid "Refund"
-msgstr ""
-
-msgid "Refund a credit"
-msgstr ""
-
-msgid "Refund recorded."
 msgstr ""
 
 msgid "Refund the payment"
@@ -5900,13 +5815,13 @@ msgstr ""
 msgid "Share %"
 msgstr ""
 
-msgid "Share an expense"
-msgstr ""
-
 msgid "Share of land present"
 msgstr ""
 
 msgid "Share of owners present"
+msgstr ""
+
+msgid "Sharing a one-off cost is not available yet"
 msgstr ""
 
 msgid "Shop"
@@ -6015,9 +5930,6 @@ msgstr ""
 msgid "Skip to content"
 msgstr ""
 
-#~ msgid "Slate"
-#~ msgstr ""
-
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr ""
 
@@ -6116,9 +6028,6 @@ msgstr ""
 msgid "Statement"
 msgstr ""
 
-msgid "Statement balance"
-msgstr ""
-
 msgid "Statement closing"
 msgstr ""
 
@@ -6157,16 +6066,10 @@ msgstr ""
 msgid "Steps"
 msgstr ""
 
-msgid "Still in the box"
-msgstr ""
-
 msgid "Still waiting for the provider"
 msgstr ""
 
 msgid "Stop camera"
-msgstr ""
-
-msgid "Stop repeating"
 msgstr ""
 
 msgid "Storage"
@@ -6276,9 +6179,6 @@ msgstr ""
 
 msgid "Terms ending soon"
 msgstr ""
-
-#~ msgid "Terracotta"
-#~ msgstr ""
 
 msgid "Test ping sent"
 msgstr ""
@@ -6466,9 +6366,6 @@ msgstr ""
 msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
 msgstr ""
 
-msgid "The import did not finish. Nothing was posted; check the file and try again."
-msgstr ""
-
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr ""
 
@@ -6518,9 +6415,6 @@ msgid "The number guards may call when a visitor arrives. Leave empty to use the
 msgstr ""
 
 msgid "The old key no longer works. Use this one from now on."
-msgstr ""
-
-msgid "The opening balances were imported."
 msgstr ""
 
 msgid "The opening log is not available."
@@ -6919,9 +6813,6 @@ msgstr ""
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr ""
 
-msgid "Tick “Repeat every month” on a new expense to add one."
-msgstr ""
-
 msgid "Ticket settings"
 msgstr ""
 
@@ -7047,9 +6938,6 @@ msgstr ""
 msgid "Total <0/> across {0} units"
 msgstr ""
 
-msgid "Total amount"
-msgstr ""
-
 msgid "Totals"
 msgstr ""
 
@@ -7087,9 +6975,6 @@ msgid "Try again"
 msgstr ""
 
 msgid "Try widening the filters."
-msgstr ""
-
-msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
 msgstr ""
 
 msgid "Type"
@@ -7136,9 +7021,6 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
-msgid "Units with a tag"
-msgstr ""
-
 msgid "unknown permission"
 msgstr ""
 
@@ -7155,12 +7037,6 @@ msgid "Unmatch"
 msgstr ""
 
 msgid "Unmatched"
-msgstr ""
-
-msgid "Unmatched money in"
-msgstr ""
-
-msgid "Unmatched money out"
 msgstr ""
 
 msgid "Unread"
@@ -7514,9 +7390,6 @@ msgid "What each unit would pay"
 msgstr ""
 
 msgid "What happens to open charges"
-msgstr ""
-
-msgid "What is it for?"
 msgstr ""
 
 msgid "What is it? (optional)"

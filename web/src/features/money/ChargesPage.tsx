@@ -3,7 +3,6 @@ import { useLingui, Trans } from '@lingui/react/macro'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
-import { MoneyInput } from '@/components/forms/MoneyInput'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -28,7 +26,6 @@ import { toast } from '@/lib/toast'
 import { AppError } from '@/api/errors'
 import {
   idemHeader,
-  minorMoney,
   moneyApi,
   monthOf,
   todayIn,

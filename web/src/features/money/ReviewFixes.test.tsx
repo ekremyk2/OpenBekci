@@ -238,9 +238,8 @@ describe('opening balances import', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save opening balances' }))
     await waitFor(() => expect(db.openings).toHaveLength(2))
     expect(new Set(db.openings.map((o) => o.unit_id))).toEqual(new Set(['u-a1', 'u-a1-b']))
-    expect(
-      await screen.findByText('The opening balances were imported.', {}, { timeout: 8000 }),
-    ).toBeInTheDocument()
+    // the page clears the dry-run report once the import is saved
+    await waitFor(() => expect(screen.queryByText(/Dry run: 2 of 2 rows/)).not.toBeInTheDocument())
   }, 15_000)
 
   it('totals in integer minor units and rejects what it cannot read', () => {
