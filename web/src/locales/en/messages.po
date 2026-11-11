@@ -3513,6 +3513,9 @@ msgstr "Longest"
 msgid "Longest booking (minutes)"
 msgstr "Longest booking (minutes)"
 
+msgid "Look"
+msgstr "Look"
+
 msgid "Looking up the number…"
 msgstr "Looking up the number…"
 

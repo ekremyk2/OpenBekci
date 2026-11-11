@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useLocale } from '@/app/locale'
-import { useTheme, type ThemePreference } from '@/app/theme'
+import { useTheme, type Look, type ThemePreference } from '@/app/theme'
 import { USER_LOCALES, isLocale } from '@/lib/i18n'
 
 const LOCALE_NAMES: Record<string, string> = { en: 'English', tr: 'Türkçe' }
@@ -45,7 +47,7 @@ export function LocaleToggle() {
 }
 
 export function ThemeToggle() {
-  const { preference, resolved, setPreference } = useTheme()
+  const { preference, resolved, look, setPreference, setLook } = useTheme()
   const { t } = useLingui()
   return (
     <DropdownMenu>
@@ -68,6 +70,14 @@ export function ThemeToggle() {
           <DropdownMenuRadioItem value="dark">
             <MoonIcon className="size-4" /> <Trans>Dark</Trans>
           </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>
+          <Trans>Look</Trans>
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={look} onValueChange={(v) => setLook(v as Look)}>
+          <DropdownMenuRadioItem value="kiremit">Kiremit</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="tas">Taş</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

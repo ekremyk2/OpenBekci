@@ -3513,6 +3513,9 @@ msgstr "En uzun"
 msgid "Longest booking (minutes)"
 msgstr "En uzun rezervasyon (dakika)"
 
+msgid "Look"
+msgstr "Görünüm"
+
 msgid "Looking up the number…"
 msgstr "Numara aranıyor…"
 
