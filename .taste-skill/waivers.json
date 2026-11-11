@@ -1,0 +1,17 @@
+[
+  {
+    "check": "one-heading",
+    "target": "h2#turkey-h",
+    "reason": "section is 3.4% over the one-screen limit at 1440; content height, not layout"
+  },
+  {
+    "check": "section-gaps",
+    "target": "hero--centred / section#money",
+    "reason": "a phone hero ends 24px above the screen's foot by the layout spec, so the gap to the next h2 is the next section's 96px padding plus that 24px"
+  },
+  {
+    "check": "section-gaps",
+    "target": "section#questions / footer#contact",
+    "reason": "five open FAQ answers are 1,060px on a phone, past one screen, so the section takes two screens and keeps its air before the footer"
+  }
+]
