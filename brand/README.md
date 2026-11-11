@@ -23,7 +23,7 @@ OpenBekci speaks like a good site manager: plain, exact, calm. Money and rules a
 
 ## Colour
 
-Palette: **Kiremit** is the brand (`tile` `#bd4e27` light / `#ee8a62` dark; `night` `#14284a` / `#bcd0ee`; `surface` `#fbf6f0` / `#181513`; `ink` `#1a2433` / `#f3ede6`). **Taş** is a second, selectable look (web `data-look="tas"`, mobile profile toggle): `tile` `#a8573e` / `#dc9378`, `surface` `#f6f5f3` / `#1e1d1b`; its values live in `web/docs/palettes/tokens-C.json`. `brand/tokens.json` holds Kiremit only.
+Palette: **Kiremit** is the brand (`tile` `#bd4e27` light / `#ee8a62` dark; `night` `#14284a` / `#bcd0ee`; `surface` `#fbf6f0` / `#181513`; `ink` `#1a2433` / `#f3ede6`). **Taş** is a second, selectable look (web `data-look="tas"`, mobile profile toggle): `tile` `#a8573e` / `#dc9378`, `surface` `#f6f5f3` / `#1e1d1b`; its values live in `brand/tokens-tas.json`. `brand/tokens.json` holds Kiremit only.
 
 Light is the primary theme; the dark theme is a true dark, not an inversion, and every pair below is checked in both.
 

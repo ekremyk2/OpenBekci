@@ -1,0 +1,7 @@
+[
+  {
+    "check": "one-heading",
+    "target": "h2#turkey-h",
+    "reason": "section is 3.4% over the one-screen limit at 1440; content height, not layout"
+  }
+]

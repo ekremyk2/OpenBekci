@@ -1,0 +1,226 @@
+{
+ "name": "OpenBekci - Taş",
+ "version": 1,
+ "color": {
+  "themes": [
+   {
+    "id": "light",
+    "name": "Light"
+   },
+   {
+    "id": "dark",
+    "name": "Dark"
+   }
+  ],
+  "tokens": [
+   {
+    "name": "surface",
+    "value": {
+     "light": "#f6f5f3",
+     "dark": "#1e1d1b"
+    },
+    "usage": "Page background. Warm paper, never pure white, in light; near-black blue-slate in dark. `ink` and `ink-muted` read on it in both themes."
+   },
+   {
+    "name": "surface-raised",
+    "value": {
+     "light": "#fdfcfb",
+     "dark": "#272624"
+    },
+    "usage": "Cards, dialogs, popovers, the sidebar. One step lighter than `surface` in light, one step lighter in dark; separated by `line`, not by shadow."
+   },
+   {
+    "name": "surface-sunken",
+    "value": {
+     "light": "#edebe8",
+     "dark": "#171614"
+    },
+    "usage": "Table headers, code blocks, wells, the ledger's closed periods. One step darker than `surface`."
+   },
+   {
+    "name": "line",
+    "value": {
+     "light": "#dad7d2",
+     "dark": "#3a3835"
+    },
+    "usage": "Hairline borders between surfaces, table rules, dividers. Decorative only: 1px, never carries meaning."
+   },
+   {
+    "name": "line-strong",
+    "value": {
+     "light": "#85807a",
+     "dark": "#7b7873"
+    },
+    "usage": "Borders of inputs, checkboxes and other controls (3:1 on `surface` and `surface-raised` in both themes). Also the resting outline of the secondary button."
+   },
+   {
+    "name": "ink",
+    "value": {
+     "light": "#1c1d20",
+     "dark": "#f1efec"
+    },
+    "usage": "Body and heading text on `surface`, `surface-raised`, `surface-sunken` and `tile-tint`."
+   },
+   {
+    "name": "ink-muted",
+    "value": {
+     "light": "#55575c",
+     "dark": "#b1aea9"
+    },
+    "usage": "Secondary text: captions, table headers, helper text, timestamps. On `surface` and `surface-raised` (≥6.5:1)."
+   },
+   {
+    "name": "ink-faint",
+    "value": {
+     "light": "#84868b",
+     "dark": "#7e7b76"
+    },
+    "usage": "Placeholders and disabled text only (≥3:1 on `surface`); never for content a person must read."
+   },
+   {
+    "name": "night",
+    "value": {
+     "light": "#232b36",
+     "dark": "#d3d8de"
+    },
+    "usage": "The brand's dark: the app-icon tile, the dark slab behind the wordmark, primary buttons' resting fill in light, hero and footer grounds. Dark theme lightens it to a pale blue-slate, so use `on-night` for text on it, never literal white."
+   },
+   {
+    "name": "night-deep",
+    "value": {
+     "light": "#12161d",
+     "dark": "#e6e9ed"
+    },
+    "usage": "Pressed state of `night` fills; the shadow side of a `night` slab."
+   },
+   {
+    "name": "on-night",
+    "value": {
+     "light": "#f6f5f3",
+     "dark": "#14171c"
+    },
+    "usage": "Text and icons on `night` and `night-deep` (≥11:1 in both themes)."
+   },
+   {
+    "name": "tile",
+    "value": {
+     "light": "#a8573e",
+     "dark": "#dc9378"
+    },
+    "usage": "The brand colour, terracotta roof tile: the door mark, primary actions, links, active navigation, selected tabs, the focused side of a toggle. As text only on `surface` and `surface-raised` (4.8:1 light, 7.4:1 dark). Never as a large background behind body text."
+   },
+   {
+    "name": "tile-deep",
+    "value": {
+     "light": "#874330",
+     "dark": "#e8ab94"
+    },
+    "usage": "Hover and pressed state of `tile` fills; link hover; the wordmark when it prints in one colour on paper. Dark theme goes lighter, not darker."
+   },
+   {
+    "name": "tile-tint",
+    "value": {
+     "light": "#f1e4de",
+     "dark": "#372a25"
+    },
+    "usage": "Soft brand ground: selected rows, the active sidebar item, the brand callout. `ink`, `night` and `tile-deep` all read on it."
+   },
+   {
+    "name": "tile-wash",
+    "value": {
+     "light": "#e4cfc5",
+     "dark": "#4a362e"
+    },
+    "usage": "A stronger brand ground for illustration blocks and the cover; no text on it below 24px."
+   },
+   {
+    "name": "on-tile",
+    "value": {
+     "light": "#fbf9f7",
+     "dark": "#1a1210"
+    },
+    "usage": "Text and icons on `tile` and `tile-deep` fills: paper in light, `night-deep` in dark (≥4.7:1 both themes). Never literal white."
+   },
+   {
+    "name": "shadow-ink",
+    "value": {
+     "light": "#0a0c10",
+     "dark": "#080706"
+    },
+    "usage": "The dark gap behind the door in the mark; the only shadow the brand draws. Not a UI colour."
+   },
+   {
+    "name": "success",
+    "value": {
+     "light": "#1a7449",
+     "dark": "#6fd29a"
+    },
+    "usage": "Paid, confirmed, matched, quorum reached. Text and icon on `surface`; fill of the success badge with `success-tint`. Always paired with a word or icon, never hue alone."
+   },
+   {
+    "name": "success-tint",
+    "value": {
+     "light": "#d5f2e1",
+     "dark": "#12301f"
+    },
+    "usage": "Ground of the success badge and row highlight; `success` reads on it (≥5:1)."
+   },
+   {
+    "name": "warning",
+    "value": {
+     "light": "#946000",
+     "dark": "#f0bd4c"
+    },
+    "usage": "Overdue soon, pending declared payment, needs attention. Text and icon on `surface` (5.2:1 light); on `warning-tint` in badges."
+   },
+   {
+    "name": "warning-tint",
+    "value": {
+     "light": "#fff0c9",
+     "dark": "#3a2a0c"
+    },
+    "usage": "Ground of the warning badge and banner."
+   },
+   {
+    "name": "danger",
+    "value": {
+     "light": "#c0143c",
+     "dark": "#ff8587"
+    },
+    "usage": "Destructive actions, overdue, failed deliveries, validation errors. Text on `surface`; fill of the danger button with `on-tile`. Bluish-red so it sits apart from the terracotta `tile`."
+   },
+   {
+    "name": "danger-tint",
+    "value": {
+     "light": "#ffe0e3",
+     "dark": "#4a2022"
+    },
+    "usage": "Ground of the danger badge, the error banner and invalid fields' helper text."
+   },
+   {
+    "name": "info",
+    "value": {
+     "light": "#1f6aa5",
+     "dark": "#8cc2f2"
+    },
+    "usage": "Neutral notices, announcements, scheduled items. Text and icon on `surface`; on `info-tint` in badges."
+   },
+   {
+    "name": "info-tint",
+    "value": {
+     "light": "#dcecfb",
+     "dark": "#1a2d40"
+    },
+    "usage": "Ground of the info badge and the announcement banner."
+   },
+   {
+    "name": "focus",
+    "value": {
+     "light": "#1f4f8f",
+     "dark": "#8cc3fc"
+    },
+    "usage": "Keyboard focus ring: solid 2px, offset 2px from the control, on every surface (≥8:1). The one blue in the system besides `info`; never used for anything else."
+   }
+  ]
+ }
+}
