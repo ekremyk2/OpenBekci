@@ -165,6 +165,9 @@ msgstr ""
 msgid "1. Add @{bot} to your group as an administrator."
 msgstr ""
 
+msgid "16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update."
+msgstr ""
+
 msgid "2. Send this message in the group. The code works for 10 minutes."
 msgstr ""
 
@@ -297,6 +300,9 @@ msgid "Access point"
 msgstr ""
 
 msgid "Access points"
+msgstr ""
+
+msgid "Access token"
 msgstr ""
 
 msgid "Account"
@@ -655,6 +661,9 @@ msgstr ""
 msgid "App and SMS"
 msgstr ""
 
+msgid "App secret"
+msgstr ""
+
 #. placeholder {0}: labels.effect(decision.effect.kind)
 msgid "Applied: {0}"
 msgstr ""
@@ -958,6 +967,12 @@ msgstr ""
 msgid "Bookings per unit"
 msgstr ""
 
+msgid "Bot token"
+msgstr ""
+
+msgid "Bot username"
+msgstr ""
+
 msgid "Both"
 msgstr ""
 
@@ -977,6 +992,9 @@ msgid "Budget saved."
 msgstr ""
 
 msgid "Budget vs actual"
+msgstr ""
+
+msgid "Business number"
 msgstr ""
 
 msgid "By"
@@ -2871,10 +2889,16 @@ msgstr ""
 msgid "From"
 msgstr ""
 
+msgid "From @BotFather."
+msgstr ""
+
 msgid "From a vehicle"
 msgstr ""
 
 msgid "From a visitor"
+msgstr ""
+
+msgid "From the Meta app's WhatsApp setup."
 msgstr ""
 
 msgid "Frozen"
@@ -3278,6 +3302,9 @@ msgstr ""
 msgid "Late fee accrued so far (not yet booked)"
 msgstr ""
 
+msgid "Late fee policy"
+msgstr ""
+
 msgid "Late fee waived."
 msgstr ""
 
@@ -3509,6 +3536,9 @@ msgstr ""
 msgid "Meeting notices"
 msgstr ""
 
+msgid "Meeting quorum"
+msgstr ""
+
 msgid "Meetings"
 msgstr ""
 
@@ -3576,6 +3606,9 @@ msgid "Monthly"
 msgstr ""
 
 msgid "Monthly bookings"
+msgstr ""
+
+msgid "Monthly rate (%)"
 msgstr ""
 
 msgid "Months overdue"
@@ -4794,6 +4827,9 @@ msgstr ""
 msgid "Phone number"
 msgstr ""
 
+msgid "Phone number id"
+msgstr ""
+
 msgid "Phone or email"
 msgstr ""
 
@@ -5060,6 +5096,9 @@ msgid "Rates"
 msgstr ""
 
 msgid "Rates, split rules and live previews"
+msgstr ""
+
+msgid "Raw"
 msgstr ""
 
 msgid "Re-enrol"
@@ -5900,6 +5939,9 @@ msgstr ""
 msgid "Signing you in"
 msgstr ""
 
+msgid "Signs the webhook (X-Hub-Signature-256)."
+msgstr ""
+
 msgid "Site"
 msgstr ""
 
@@ -6249,6 +6291,9 @@ msgstr ""
 msgid "The bot leaves the group and nothing is posted there any more."
 msgstr ""
 
+msgid "The bot's username without @ (for the t.me link)."
+msgstr ""
+
 msgid "The box does not hold that much."
 msgstr ""
 
@@ -6586,6 +6631,9 @@ msgstr ""
 msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
 msgstr ""
 
+msgid "The token you enter in Meta's webhook setup."
+msgstr ""
+
 msgid "The transfer could not be started. Please try again."
 msgstr ""
 
@@ -6596,6 +6644,9 @@ msgid "The values could not be saved. Check them and try again."
 msgstr ""
 
 msgid "The visit must end after it starts."
+msgstr ""
+
+msgid "The WhatsApp number people write to, international format (for the wa.me link)."
 msgstr ""
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
@@ -7297,6 +7348,9 @@ msgstr ""
 msgid "Votes and proxies"
 msgstr ""
 
+msgid "Voting thresholds"
+msgstr ""
+
 msgid "Waiting"
 msgstr ""
 
@@ -7369,6 +7423,12 @@ msgid "Webhook address"
 msgstr ""
 
 msgid "Webhook endpoints"
+msgstr ""
+
+msgid "Webhook secret"
+msgstr ""
+
+msgid "Webhook verify token"
 msgstr ""
 
 msgid "Webhooks"
