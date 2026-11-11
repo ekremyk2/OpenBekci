@@ -82,10 +82,12 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
         <MenuIcon />
       </Button>
       <OrgSwitcher />
-      <div className="ms-auto flex items-center gap-1">
+      <div className="ms-auto flex shrink-0 items-center gap-1">
         {org && can('notifications.read') ? <NotificationBell orgId={org.id} /> : null}
-        <LocaleToggle />
-        <ThemeToggle />
+        <div className="hidden items-center gap-1 sm:flex">
+          <LocaleToggle />
+          <ThemeToggle />
+        </div>
         <Button variant="ghost" size="icon" onClick={() => void signOut()} aria-label={t`Sign out`}>
           <LogOutIcon className="rtl-flip" />
         </Button>
@@ -108,7 +110,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </a>
       <aside className="hidden w-60 shrink-0 border-e bg-sidebar text-sidebar-foreground md:block">
         <div className="flex h-14 items-center gap-3 px-6">
-          <img src="/brand/logos/openbekci-wordmark.svg" alt="OpenBekci" className="h-7 dark:hidden" />
+          <img
+            src="/brand/logos/openbekci-wordmark.svg"
+            alt="OpenBekci"
+            className="h-7 dark:hidden"
+          />
           <img
             src="/brand/logos/openbekci-wordmark-on-dark.svg"
             alt="OpenBekci"
@@ -126,6 +132,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </SheetDescription>
           </SheetHeader>
           <Sidebar onNavigate={() => setOpen(false)} />
+          <div className="flex items-center gap-1 border-t p-3 sm:hidden">
+            <LocaleToggle />
+            <ThemeToggle />
+          </div>
         </SheetContent>
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">

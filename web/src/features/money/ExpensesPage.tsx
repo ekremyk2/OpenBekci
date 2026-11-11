@@ -22,7 +22,6 @@ import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import {
   idemHeader,
-  ifMatch,
   minorMoney,
   moneyApi,
   todayIn,
@@ -207,7 +206,6 @@ export function ExpensesPage() {
           </Table>
         )}
       </QueryBoundary>
-      <RecurringCard ctx={ctx} />
       <Card>
         <CardHeader>
           <CardTitle>
@@ -306,12 +304,10 @@ async function uploadReceipt(ctx: MoneyCtx, file: File, key: string): Promise<st
 function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
   const { t } = useLingui()
   const msg = useZodMessages()
-  // One logical save is up to three POSTs (receipt, expense, recurring). Each has its own key, kept
-  // across retries and renewed together once the whole save went through, so a lost response or a
-  // second click replays instead of creating a second recurring expense.
+  // One logical save is up to two POSTs (receipt, expense); each key is kept across retries and
+  // renewed together once the whole save went through.
   const idem = useIdempotencyKey()
   const uploadIdem = useIdempotencyKey()
-  const recurringIdem = useIdempotencyKey()
   const funds = useFunds(ctx)
   const [photo, setPhoto] = useState<File | null>(null)
   const [recurring, setRecurring] = useState(false)
@@ -364,31 +360,11 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
         description: values.description,
         document_no: values.document_no || null,
         file_id: fileId,
+        recurring: recurring
+          ? { frequency: 'monthly', day: Math.min(28, Number(values.paid_at.slice(8, 10))) }
+          : null,
       },
     })
-    if (recurring) {
-      const next = new Date(
-        Date.UTC(
-          Number(values.paid_at.slice(0, 4)),
-          Number(values.paid_at.slice(5, 7)),
-          Math.min(28, Number(values.paid_at.slice(8, 10))),
-        ),
-      )
-      await moneyApi.POST('/v1/orgs/{org_id}/recurring-expenses', {
-        params: { path: { org_id: ctx.orgId }, header: idemHeader(recurringIdem.key) },
-        body: {
-          site_id: ctx.siteId,
-          category_account_id: values.category_account_id,
-          fund_id: fund,
-          amount: minorMoney(values.amount, ctx.currency),
-          paid_from_account_id: values.paid_from_account_id,
-          vendor_id: values.vendor_id || null,
-          description: values.description,
-          day_of_month: Math.min(28, Number(values.paid_at.slice(8, 10))),
-          start: next.toISOString().slice(0, 10),
-        },
-      })
-    }
     return res.data!
   })
   const err = form.formState.errors
@@ -409,7 +385,6 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
                 await create.mutateAsync(values)
                 idem.renew()
                 uploadIdem.renew()
-                recurringIdem.renew()
                 toast.info(t`Expense recorded.`)
                 onClose()
               } catch (er) {
@@ -501,74 +476,6 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function RecurringCard({ ctx }: { ctx: MoneyCtx }) {
-  const { t } = useLingui()
-  const q = useMoneyQuery(['recurring', ctx.siteId], () =>
-    unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/recurring-expenses', {
-        params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, status: 'active' } },
-      }),
-    ).then((r) => r.items),
-  )
-  const end = useMoneyMutation(async (r: S['RecurringExpense']) => {
-    await moneyApi.DELETE('/v1/orgs/{org_id}/recurring-expenses/{recurring_expense_id}', {
-      params: {
-        path: { org_id: ctx.orgId, recurring_expense_id: r.id },
-        header: ifMatch(r.version),
-      },
-    })
-  })
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <Trans>Monthly recurring expenses</Trans>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <QueryBoundary
-          query={q}
-          isEmpty={(d) => d.length === 0}
-          emptyTitle={t`None`}
-          emptyDescription={t`Tick “Repeat every month” on a new expense to add one.`}
-        >
-          {(items) => (
-            <Table>
-              <TableBody>
-                {items.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell>{r.description}</TableCell>
-                    <TableCell>
-                      <Trans>Day {r.day_of_month}</Trans>
-                    </TableCell>
-                    <TableCell>
-                      {r.next_run_on ? (
-                        <SiteDate value={r.next_run_on} timeZone={ctx.timeZone} />
-                      ) : (
-                        '–'
-                      )}
-                    </TableCell>
-                    <TableCell className="text-end">
-                      <Money minor={r.amount.amount} currency={ctx.currency} />
-                    </TableCell>
-                    <TableCell className="text-end">
-                      <Gate permission="money.post" fallback={null}>
-                        <Button size="sm" variant="ghost" onClick={() => end.mutate(r)}>
-                          <Trans>Stop repeating</Trans>
-                        </Button>
-                      </Gate>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </QueryBoundary>
-      </CardContent>
-    </Card>
   )
 }
 

@@ -165,6 +165,9 @@ msgstr ""
 msgid "1. Add @{bot} to your group as an administrator."
 msgstr ""
 
+msgid "16 to 256 letters, digits, - or _. Telegram sends it back in a header on every update."
+msgstr ""
+
 msgid "2. Send this message in the group. The code works for 10 minutes."
 msgstr ""
 
@@ -281,9 +284,6 @@ msgstr ""
 msgid "Abstain"
 msgstr ""
 
-#~ msgid "Accent"
-#~ msgstr ""
-
 msgid "Accept"
 msgstr ""
 
@@ -300,6 +300,9 @@ msgid "Access point"
 msgstr ""
 
 msgid "Access points"
+msgstr ""
+
+msgid "Access token"
 msgstr ""
 
 msgid "Account"
@@ -458,12 +461,6 @@ msgid "Add vendor"
 msgstr ""
 
 msgid "Address line 2"
-msgstr ""
-
-msgid "Adjust"
-msgstr ""
-
-msgid "Adjust this charge"
 msgstr ""
 
 msgid "Adjustment"
@@ -662,6 +659,9 @@ msgid "App and email"
 msgstr ""
 
 msgid "App and SMS"
+msgstr ""
+
+msgid "App secret"
 msgstr ""
 
 #. placeholder {0}: labels.effect(decision.effect.kind)
@@ -879,9 +879,6 @@ msgstr ""
 msgid "Bank lines"
 msgstr ""
 
-msgid "Bank reconciliation"
-msgstr ""
-
 msgid "Bank statement import"
 msgstr ""
 
@@ -970,6 +967,12 @@ msgstr ""
 msgid "Bookings per unit"
 msgstr ""
 
+msgid "Bot token"
+msgstr ""
+
+msgid "Bot username"
+msgstr ""
+
 msgid "Both"
 msgstr ""
 
@@ -989,6 +992,9 @@ msgid "Budget saved."
 msgstr ""
 
 msgid "Budget vs actual"
+msgstr ""
+
+msgid "Business number"
 msgstr ""
 
 msgid "By"
@@ -1199,9 +1205,6 @@ msgstr ""
 msgid "Charge"
 msgstr ""
 
-msgid "Charge adjusted; the difference is posted as a correction."
-msgstr ""
-
 msgid "Charge cancelled; a reversal was created."
 msgstr ""
 
@@ -1212,9 +1215,6 @@ msgid "Charge type"
 msgstr ""
 
 msgid "Charges"
-msgstr ""
-
-msgid "Charges created."
 msgstr ""
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
@@ -1491,9 +1491,6 @@ msgstr ""
 msgid "Collector"
 msgstr ""
 
-msgid "Collector reconciliation"
-msgstr ""
-
 msgid "Comment"
 msgstr ""
 
@@ -1603,9 +1600,6 @@ msgstr ""
 msgid "Could not add the stage."
 msgstr ""
 
-msgid "Could not adjust the charge."
-msgstr ""
-
 msgid "Could not apply the decision. You can try again; nothing is created twice."
 msgstr ""
 
@@ -1658,9 +1652,6 @@ msgid "Could not create the agent."
 msgstr ""
 
 msgid "Could not create the assembly."
-msgstr ""
-
-msgid "Could not create the charges."
 msgstr ""
 
 msgid "Could not create the credential."
@@ -1736,9 +1727,6 @@ msgid "Could not record the payout."
 msgstr ""
 
 msgid "Could not record the proxy."
-msgstr ""
-
-msgid "Could not record the refund."
 msgstr ""
 
 msgid "Could not record the transfer."
@@ -1908,9 +1896,6 @@ msgstr ""
 msgid "Create budget"
 msgstr ""
 
-msgid "Create charges"
-msgstr ""
-
 msgid "Create endpoint"
 msgstr ""
 
@@ -1953,9 +1938,6 @@ msgstr ""
 msgid "Credit"
 msgstr ""
 
-msgid "Credits (prepayments)"
-msgstr ""
-
 msgid "Currency"
 msgstr ""
 
@@ -1987,10 +1969,6 @@ msgid "Date you paid"
 msgstr ""
 
 msgid "day"
-msgstr ""
-
-#. placeholder {0}: r.day_of_month
-msgid "Day {0}"
 msgstr ""
 
 msgid "days"
@@ -2218,9 +2196,6 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-msgid "Dismiss"
-msgstr ""
-
 msgid "Display name"
 msgstr ""
 
@@ -2300,9 +2275,6 @@ msgid "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
 msgstr ""
 
 msgid "Due"
-msgstr ""
-
-msgid "Due date"
 msgstr ""
 
 msgid "Due day"
@@ -2684,7 +2656,7 @@ msgstr ""
 msgid "Every receivable by period, unit and side"
 msgstr ""
 
-msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 msgstr ""
 
 msgid "Every status needs a name."
@@ -2899,9 +2871,6 @@ msgstr ""
 msgid "For this site"
 msgstr ""
 
-#~ msgid "Forest"
-#~ msgstr ""
-
 msgid "Four fifths"
 msgstr ""
 
@@ -2920,10 +2889,16 @@ msgstr ""
 msgid "From"
 msgstr ""
 
+msgid "From @BotFather."
+msgstr ""
+
 msgid "From a vehicle"
 msgstr ""
 
 msgid "From a visitor"
+msgstr ""
+
+msgid "From the Meta app's WhatsApp setup."
 msgstr ""
 
 msgid "Frozen"
@@ -3019,9 +2994,6 @@ msgstr ""
 msgid "Hand over to"
 msgstr ""
 
-msgid "Handed over"
-msgstr ""
-
 msgid "Handover"
 msgstr ""
 
@@ -3109,9 +3081,6 @@ msgid "Import failed"
 msgstr ""
 
 msgid "Import finished"
-msgstr ""
-
-msgid "Import progress"
 msgstr ""
 
 msgid "Import units"
@@ -3228,6 +3197,9 @@ msgstr ""
 msgid "It stops opening gates at once."
 msgstr ""
 
+msgid "It will come in a later release."
+msgstr ""
+
 msgid "Italic"
 msgstr ""
 
@@ -3330,6 +3302,9 @@ msgstr ""
 msgid "Late fee accrued so far (not yet booked)"
 msgstr ""
 
+msgid "Late fee policy"
+msgstr ""
+
 msgid "Late fee waived."
 msgstr ""
 
@@ -3367,9 +3342,6 @@ msgid "Leave empty to use the number or address on the person's record."
 msgstr ""
 
 msgid "Leave the guard console"
-msgstr ""
-
-msgid "Ledger balance"
 msgstr ""
 
 msgid "Ledger closing"
@@ -3564,6 +3536,9 @@ msgstr ""
 msgid "Meeting notices"
 msgstr ""
 
+msgid "Meeting quorum"
+msgstr ""
+
 msgid "Meetings"
 msgstr ""
 
@@ -3633,7 +3608,7 @@ msgstr ""
 msgid "Monthly bookings"
 msgstr ""
 
-msgid "Monthly recurring expenses"
+msgid "Monthly rate (%)"
 msgstr ""
 
 msgid "Months overdue"
@@ -3767,9 +3742,6 @@ msgstr ""
 
 msgid "Navigation"
 msgstr ""
-
-#~ msgid "Navy"
-#~ msgstr ""
 
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
@@ -3915,9 +3887,6 @@ msgstr ""
 msgid "Next retry"
 msgstr ""
 
-msgid "Next: choose the split"
-msgstr ""
-
 msgid "No"
 msgstr ""
 
@@ -3993,13 +3962,7 @@ msgstr ""
 msgid "No claims waiting"
 msgstr ""
 
-msgid "No collectors"
-msgstr ""
-
 msgid "No credentials found"
-msgstr ""
-
-msgid "No credits"
 msgstr ""
 
 msgid "No debtors"
@@ -4247,9 +4210,6 @@ msgid "Non-binding"
 msgstr ""
 
 msgid "none"
-msgstr ""
-
-msgid "None"
 msgstr ""
 
 msgid "Not available"
@@ -4616,9 +4576,6 @@ msgstr ""
 msgid "Organization collects"
 msgstr ""
 
-#~ msgid "Organization color"
-#~ msgstr ""
-
 msgid "Organization created."
 msgstr ""
 
@@ -4868,6 +4825,9 @@ msgid "Phone"
 msgstr ""
 
 msgid "Phone number"
+msgstr ""
+
+msgid "Phone number id"
 msgstr ""
 
 msgid "Phone or email"
@@ -5138,6 +5098,9 @@ msgstr ""
 msgid "Rates, split rules and live previews"
 msgstr ""
 
+msgid "Raw"
+msgstr ""
+
 msgid "Re-enrol"
 msgstr ""
 
@@ -5184,9 +5147,6 @@ msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
 msgstr ""
 
 msgid "Receive notifications in Telegram or WhatsApp."
-msgstr ""
-
-msgid "Received"
 msgstr ""
 
 msgid "Received in"
@@ -5286,12 +5246,6 @@ msgid "Reference: {0}"
 msgstr ""
 
 msgid "Refund"
-msgstr ""
-
-msgid "Refund a credit"
-msgstr ""
-
-msgid "Refund recorded."
 msgstr ""
 
 msgid "Refund the payment"
@@ -5900,13 +5854,13 @@ msgstr ""
 msgid "Share %"
 msgstr ""
 
-msgid "Share an expense"
-msgstr ""
-
 msgid "Share of land present"
 msgstr ""
 
 msgid "Share of owners present"
+msgstr ""
+
+msgid "Sharing a one-off cost is not available yet"
 msgstr ""
 
 msgid "Shop"
@@ -5985,6 +5939,9 @@ msgstr ""
 msgid "Signing you in"
 msgstr ""
 
+msgid "Signs the webhook (X-Hub-Signature-256)."
+msgstr ""
+
 msgid "Site"
 msgstr ""
 
@@ -6014,9 +5971,6 @@ msgstr ""
 
 msgid "Skip to content"
 msgstr ""
-
-#~ msgid "Slate"
-#~ msgstr ""
 
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr ""
@@ -6116,9 +6070,6 @@ msgstr ""
 msgid "Statement"
 msgstr ""
 
-msgid "Statement balance"
-msgstr ""
-
 msgid "Statement closing"
 msgstr ""
 
@@ -6157,16 +6108,10 @@ msgstr ""
 msgid "Steps"
 msgstr ""
 
-msgid "Still in the box"
-msgstr ""
-
 msgid "Still waiting for the provider"
 msgstr ""
 
 msgid "Stop camera"
-msgstr ""
-
-msgid "Stop repeating"
 msgstr ""
 
 msgid "Storage"
@@ -6277,9 +6222,6 @@ msgstr ""
 msgid "Terms ending soon"
 msgstr ""
 
-#~ msgid "Terracotta"
-#~ msgstr ""
-
 msgid "Test ping sent"
 msgstr ""
 
@@ -6347,6 +6289,9 @@ msgid "The booking was cancelled."
 msgstr ""
 
 msgid "The bot leaves the group and nothing is posted there any more."
+msgstr ""
+
+msgid "The bot's username without @ (for the t.me link)."
 msgstr ""
 
 msgid "The box does not hold that much."
@@ -6466,9 +6411,6 @@ msgstr ""
 msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
 msgstr ""
 
-msgid "The import did not finish. Nothing was posted; check the file and try again."
-msgstr ""
-
 msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 msgstr ""
 
@@ -6518,9 +6460,6 @@ msgid "The number guards may call when a visitor arrives. Leave empty to use the
 msgstr ""
 
 msgid "The old key no longer works. Use this one from now on."
-msgstr ""
-
-msgid "The opening balances were imported."
 msgstr ""
 
 msgid "The opening log is not available."
@@ -6692,6 +6631,9 @@ msgstr ""
 msgid "The texts your organization uses to tell you how your data is handled, in the language you pick. Accept or decline each one."
 msgstr ""
 
+msgid "The token you enter in Meta's webhook setup."
+msgstr ""
+
 msgid "The transfer could not be started. Please try again."
 msgstr ""
 
@@ -6702,6 +6644,9 @@ msgid "The values could not be saved. Check them and try again."
 msgstr ""
 
 msgid "The visit must end after it starts."
+msgstr ""
+
+msgid "The WhatsApp number people write to, international format (for the wa.me link)."
 msgstr ""
 
 msgid "The whole amount, <0/>, goes back to the resident's card through the provider. The charges it paid become open again. A partial refund is not possible."
@@ -6919,9 +6864,6 @@ msgstr ""
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr ""
 
-msgid "Tick “Repeat every month” on a new expense to add one."
-msgstr ""
-
 msgid "Ticket settings"
 msgstr ""
 
@@ -7047,9 +6989,6 @@ msgstr ""
 msgid "Total <0/> across {0} units"
 msgstr ""
 
-msgid "Total amount"
-msgstr ""
-
 msgid "Totals"
 msgstr ""
 
@@ -7087,9 +7026,6 @@ msgid "Try again"
 msgstr ""
 
 msgid "Try widening the filters."
-msgstr ""
-
-msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
 msgstr ""
 
 msgid "Type"
@@ -7136,9 +7072,6 @@ msgstr ""
 msgid "Units"
 msgstr ""
 
-msgid "Units with a tag"
-msgstr ""
-
 msgid "unknown permission"
 msgstr ""
 
@@ -7155,12 +7088,6 @@ msgid "Unmatch"
 msgstr ""
 
 msgid "Unmatched"
-msgstr ""
-
-msgid "Unmatched money in"
-msgstr ""
-
-msgid "Unmatched money out"
 msgstr ""
 
 msgid "Unread"
@@ -7421,6 +7348,9 @@ msgstr ""
 msgid "Votes and proxies"
 msgstr ""
 
+msgid "Voting thresholds"
+msgstr ""
+
 msgid "Waiting"
 msgstr ""
 
@@ -7495,6 +7425,12 @@ msgstr ""
 msgid "Webhook endpoints"
 msgstr ""
 
+msgid "Webhook secret"
+msgstr ""
+
+msgid "Webhook verify token"
+msgstr ""
+
 msgid "Webhooks"
 msgstr ""
 
@@ -7514,9 +7450,6 @@ msgid "What each unit would pay"
 msgstr ""
 
 msgid "What happens to open charges"
-msgstr ""
-
-msgid "What is it for?"
 msgstr ""
 
 msgid "What is it? (optional)"

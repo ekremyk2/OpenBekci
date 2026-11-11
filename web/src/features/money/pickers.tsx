@@ -184,19 +184,6 @@ export function useBlocks(ctx: MoneyCtx) {
   )
 }
 
-export function useUnitTags(ctx: MoneyCtx) {
-  return useMoneyQuery(
-    ['unit-tags', ctx.siteId],
-    () =>
-      unwrap(
-        moneyApi.GET('/v1/orgs/{org_id}/unit-tags', {
-          params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, limit: 100 } },
-        }),
-      ).then((r) => r.items),
-    { staleTime: REFERENCE_STALE },
-  )
-}
-
 type PickerProps = {
   id?: string
   value: string
@@ -420,7 +407,7 @@ export function AllocationKeyPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx
   )
 }
 
-/** Scope of a cost split: the whole site, one block, or the units carrying a tag. */
+/** Scope of a cost split: the whole site, or one block (unit tags are not served). */
 export function ScopePicker({
   ctx,
   value,
@@ -434,7 +421,6 @@ export function ScopePicker({
 }) {
   const { t } = useLingui()
   const blocks = useBlocks(ctx)
-  const tags = useUnitTags(ctx)
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       <Select
@@ -445,7 +431,6 @@ export function ScopePicker({
       >
         <option value="site">{t`Whole site`}</option>
         <option value="block">{t`One block`}</option>
-        <option value="unit_tag">{t`Units with a tag`}</option>
       </Select>
       {value.type === 'block' ? (
         <ListPicker
@@ -454,15 +439,6 @@ export function ScopePicker({
           value={value.id ?? ''}
           onChange={(id) => onChange({ type: 'block', id: id || null })}
           items={(blocks.data ?? []).map((b) => ({ id: b.id, label: b.name }))}
-        />
-      ) : null}
-      {value.type === 'unit_tag' ? (
-        <ListPicker
-          aria-label={t`Tag`}
-          queryKey={['tag-picker', ctx.siteId]}
-          value={value.id ?? ''}
-          onChange={(id) => onChange({ type: 'unit_tag', id: id || null })}
-          items={(tags.data ?? []).map((g) => ({ id: g.id, label: g.name }))}
         />
       ) : null}
     </div>

@@ -5,8 +5,8 @@ import { useForm, useWatch } from 'react-hook-form'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { useIdempotencyKey } from '@/lib/idempotency'
+import { EmptyState } from '@/components/data/EmptyState'
 import { Money } from '@/components/data/Money'
-import { MoneyInput } from '@/components/forms/MoneyInput'
 import { SiteDate } from '@/components/data/SiteDate'
 import { SidePicker } from '@/components/forms/SidePicker'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -82,13 +82,6 @@ export function PlansListPage() {
   const keyName = (id: string) => keys.data?.find((k) => k.id === id)?.name ?? id
   const actions = (
     <Gate permission="money.manage" fallback={null}>
-      <Link
-        to="/orgs/$orgId/money/expense-sharing"
-        params={{ orgId: ctx.orgId }}
-        className={buttonVariants({ variant: 'outline' })}
-      >
-        <Trans>Share an expense</Trans>
-      </Link>
       <Link
         to="/orgs/$orgId/money/plans/new"
         params={{ orgId: ctx.orgId }}
@@ -891,207 +884,14 @@ function RatesCard({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
 
 /* ───────────────────────────── one-off expense sharing ───────────────────────────── */
 
+/** The server does not serve cost-sharing yet (`expense-allocations` is in the draft only). */
 export function ExpenseSharingPage() {
-  const ctx = useMoneyCtx()!
-  return (
-    <Gate permission="money.post">
-      <ExpenseSharingWizard ctx={ctx} />
-    </Gate>
-  )
-}
-
-function ExpenseSharingWizard({ ctx }: { ctx: MoneyCtx }) {
   const { t } = useLingui()
-  const labels = useLabels()
-  const navigate = useNavigate()
-  const idem = useIdempotencyKey()
-  const keys = useAllocationKeys(ctx)
-  const [step, setStep] = useState<1 | 2 | 3>(1)
-  const [description, setDescription] = useState('')
-  const [total, setTotal] = useState<bigint | null>(null)
-  const [due, setDue] = useState(todayIn(ctx.timeZone))
-  const [chargeType, setChargeType] = useState<string>('special_assessment')
-  const [side, setSide] = useState<'owner' | 'tenant'>('owner')
-  const [keyId, setKeyId] = useState('')
-  const [scope, setScope] = useState<S['ChargeScope']>({ type: 'site', id: null })
-  const [touched, setTouched] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const effectiveKey = keyId || keys.data?.find((k) => k.kind === 'share')?.id || ''
-
-  const body: S['ExpenseAllocationRequest'] | null =
-    total && total > 0n && description.trim() && effectiveKey && (scope.type === 'site' || scope.id)
-      ? {
-          site_id: ctx.siteId,
-          total: minorToMoney(total, ctx.currency),
-          description: description.trim(),
-          allocation_key_id: effectiveKey,
-          scope,
-          debtor_kind: side,
-          due_date: due,
-          charge_type: chargeType as S['ExpenseAllocationRequest']['charge_type'],
-        }
-      : null
-  const preview = useMoneyQuery(
-    ['expense-share-preview', body],
-    () =>
-      unwrap(
-        moneyApi.POST('/v1/orgs/{org_id}/expense-allocations:preview', {
-          params: { path: { org_id: ctx.orgId } },
-          body: body!,
-        }),
-      ),
-    { enabled: body !== null && step >= 2, retry: false },
-  )
-  const create = useMoneyMutation(async () => {
-    const res = await moneyApi.POST('/v1/orgs/{org_id}/expense-allocations', {
-      params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
-      body: body!,
-    })
-    return res.data!
-  })
-  const step1Ok = !!total && total > 0n && description.trim() !== ''
   return (
-    <div className="flex flex-col gap-4">
-      <PageHeader
-        title={t`Share an expense`}
-        description={t`Turn one cost into charges on units with the same split rules as dues. Step ${step} of 3.`}
-      />
-      {step === 1 ? (
-        <form
-          className="flex max-w-xl flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault()
-            setTouched(true)
-            if (step1Ok) setStep(2)
-          }}
-          noValidate
-        >
-          <Field
-            label={t`What is it for?`}
-            htmlFor="es-desc"
-            error={touched && !description.trim() ? t`This field is required.` : undefined}
-          >
-            <Input
-              id="es-desc"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </Field>
-          <Field
-            label={t`Total amount`}
-            htmlFor="es-total"
-            error={
-              touched && !(total && total > 0n) ? t`Enter an amount greater than zero.` : undefined
-            }
-          >
-            <MoneyFormFieldBare
-              id="es-total"
-              currency={ctx.currency}
-              value={total}
-              onChange={setTotal}
-            />
-          </Field>
-          <Field label={t`Due date`} htmlFor="es-due">
-            <Input
-              id="es-due"
-              type="date"
-              dir="ltr"
-              value={due}
-              onChange={(e) => setDue(e.target.value)}
-            />
-          </Field>
-          <Field label={t`Charge type`} htmlFor="es-type">
-            <Select
-              id="es-type"
-              value={chargeType}
-              onChange={(e) => {
-                setChargeType(e.target.value)
-                setSide(defaultDebtorFor(e.target.value))
-              }}
-            >
-              {CHARGE_TYPES.map((c) => (
-                <option key={c} value={c}>
-                  {labels.chargeType[c]}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t`Paid by`}>
-            <SidePicker value={side} onChange={setSide} />
-          </Field>
-          <div>
-            <Button type="submit">
-              <Trans>Next: choose the split</Trans>
-            </Button>
-          </div>
-        </form>
-      ) : null}
-      {step >= 2 ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="flex flex-col gap-4">
-            <Field label={t`Split rule`} htmlFor="es-key">
-              <AllocationKeyPicker ctx={ctx} id="es-key" value={effectiveKey} onChange={setKeyId} />
-            </Field>
-            <Field label={t`Applies to`}>
-              <ScopePicker ctx={ctx} value={scope} onChange={setScope} idPrefix="es-scope" />
-            </Field>
-            <FormRootError message={error ?? undefined} />
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setStep(1)}>
-                <Trans>Back</Trans>
-              </Button>
-              <Button
-                disabled={!body || create.isPending || !preview.data}
-                onClick={() => {
-                  setError(null)
-                  create.mutateAsync().then(
-                    async () => {
-                      idem.renew()
-                      toast.info(t`Charges created.`)
-                      await navigate({
-                        to: '/orgs/$orgId/money/charges',
-                        params: { orgId: ctx.orgId },
-                      })
-                    },
-                    () => setError(t`Could not create the charges.`),
-                  )
-                }}
-              >
-                <Trans>Create charges</Trans>
-              </Button>
-            </div>
-          </div>
-          <Card className="self-start">
-            <CardHeader>
-              <CardTitle>
-                <Trans>Preview</Trans>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PreviewTable
-                preview={preview.data}
-                ctx={ctx}
-                loading={preview.isFetching}
-                error={preview.isError}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
-    </div>
+    <EmptyState
+      title={t`Sharing a one-off cost is not available yet`}
+      description={t`It will come in a later release.`}
+    />
   )
 }
 
-function MoneyFormFieldBare({
-  id,
-  currency,
-  value,
-  onChange,
-}: {
-  id: string
-  currency: string
-  value: bigint | null
-  onChange: (v: bigint | null) => void
-}) {
-  return <MoneyInput id={id} currency={currency} value={value} onChange={onChange} />
-}

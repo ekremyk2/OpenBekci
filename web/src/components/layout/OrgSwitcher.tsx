@@ -21,7 +21,7 @@ export function OrgSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="max-w-56 justify-between"
+          className="min-w-0 max-w-56 shrink justify-between"
           aria-label={t`Switch organization`}
         >
           <span className="truncate">{org.name}</span>

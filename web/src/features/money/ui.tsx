@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { UseQueryResult } from '@tanstack/react-query'
 import { DownloadIcon, LockIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form'
 import { AppError } from '@/api/errors'
+import { useLocale } from '@/app/locale'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -11,6 +12,7 @@ import { PageSkeleton, TableSkeleton } from '@/components/data/Skeletons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -75,6 +77,53 @@ export function Field({
           {error}
         </p>
       ) : null}
+    </div>
+  )
+}
+
+/** Month as `YYYY-MM` in the app language (the native month input follows the browser locale instead). */
+export function MonthPicker({
+  id,
+  value,
+  onChange,
+}: {
+  id?: string
+  value: string
+  onChange: (v: string) => void
+}) {
+  const { intl } = useLocale()
+  const { t } = useLingui()
+  const [y, m] = value.split('-')
+  const names = useMemo(() => {
+    const f = new Intl.DateTimeFormat(intl, { month: 'long', timeZone: 'UTC' })
+    return Array.from({ length: 12 }, (_, i) => f.format(Date.UTC(2000, i, 1)))
+  }, [intl])
+  const year = Number(y) || new Date().getFullYear()
+  return (
+    <div className="flex gap-2">
+      <Select
+        id={id}
+        aria-label={t`Month`}
+        value={m ?? ''}
+        onChange={(e) => onChange(`${year}-${e.target.value}`)}
+      >
+        {names.map((n, i) => (
+          <option key={n} value={String(i + 1).padStart(2, '0')}>
+            {n}
+          </option>
+        ))}
+      </Select>
+      <Select
+        aria-label={t`Year`}
+        value={String(year)}
+        onChange={(e) => onChange(`${e.target.value}-${m ?? '01'}`)}
+      >
+        {Array.from({ length: 12 }, (_, i) => year - 8 + i).map((yy) => (
+          <option key={yy} value={yy}>
+            {yy}
+          </option>
+        ))}
+      </Select>
     </div>
   )
 }
