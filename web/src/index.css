@@ -58,33 +58,34 @@
  * components use. The organization's branding.primary_color (src/app/theme.ts) overrides --tile only.
  */
 :root {
-  --surface: #fcfaf6;
-  --surface-raised: #ffffff;
-  --surface-sunken: #f5f1ec;
-  --line: #dfdad4;
-  --line-strong: #8f847a;
-  --ink: #15202d;
-  --ink-muted: #525c69;
-  --ink-faint: #7e8792;
-  --night: #17273c;
-  --night-deep: #0b1726;
-  --on-night: #faf6f1;
-  --tile: #b75131;
-  --tile-deep: #953920;
-  --tile-tint: #ffe9de;
-  --tile-wash: #fed3c0;
-  --on-tile: #fcfaf6;
-  --success: #1f744f;
-  --success-tint: #d9f7e5;
-  --warning: #935f00;
-  --warning-tint: #fff0cc;
-  --danger: #b61537;
-  --danger-tint: #ffe7e6;
-  --info: #1f689d;
-  --info-tint: #e1f1ff;
-  --focus: #164781;
-  --shadow-popover: 0 4px 16px rgba(21, 32, 45, 0.10), 0 1px 2px rgba(21, 32, 45, 0.08);
-  --shadow-dialog: 0 16px 48px rgba(21, 32, 45, 0.16);
+  --surface: #fbf6f0;
+  --surface-raised: #fffdfa;
+  --surface-sunken: #f4ebe1;
+  --line: #e6d9cb;
+  --line-strong: #8c7a69;
+  --ink: #1a2433;
+  --ink-muted: #4f5a6a;
+  --ink-faint: #7f8794;
+  --night: #14284a;
+  --night-deep: #0a1730;
+  --on-night: #fbf4ea;
+  --tile: #bd4e27;
+  --tile-deep: #963718;
+  --tile-tint: #ffe3d2;
+  --tile-wash: #ffc8ad;
+  --on-tile: #fffaf4;
+  --shadow-ink: #07101f;
+  --success: #17744a;
+  --success-tint: #d3f5df;
+  --warning: #8f5b00;
+  --warning-tint: #ffecbd;
+  --danger: #b4123a;
+  --danger-tint: #ffe1e1;
+  --info: #1b62a8;
+  --info-tint: #dcedff;
+  --focus: #153f87;
+  --shadow-popover: 0 4px 16px color-mix(in srgb, var(--shadow-ink) 10%, transparent), 0 1px 2px color-mix(in srgb, var(--shadow-ink) 8%, transparent);
+  --shadow-dialog: 0 16px 48px color-mix(in srgb, var(--shadow-ink) 16%, transparent);
   --density: 1; /* 1 = comfortable, 0.75 = compact (tables) */
 
   --primary: var(--brand-seed, var(--tile));
@@ -112,33 +113,97 @@
 }
 
 .dark {
-  --surface: #101419;
-  --surface-raised: #181d23;
-  --surface-sunken: #0a0f13;
-  --line: #2e3339;
-  --line-strong: #6e757e;
-  --ink: #f2f0ec;
-  --ink-muted: #a4acb4;
-  --ink-faint: #747b83;
-  --night: #c3d3e4;
-  --night-deep: #dee9f5;
-  --on-night: #0b1726;
-  --tile: #e78d6a;
-  --tile-deep: #f4a988;
-  --tile-tint: #3a221a;
-  --tile-wash: #522c1f;
-  --on-tile: #0b1726;
-  --success: #76cf8a;
-  --success-tint: #0f2d1f;
-  --warning: #eebc4a;
-  --warning-tint: #3b2b0d;
-  --danger: #ff7c80;
-  --danger-tint: #451e1f;
-  --info: #86beee;
-  --info-tint: #172b3b;
+  --surface: #181513;
+  --surface-raised: #211d1a;
+  --surface-sunken: #110f0d;
+  --line: #35302b;
+  --line-strong: #7f756c;
+  --ink: #f3ede6;
+  --ink-muted: #b0a69c;
+  --ink-faint: #80766d;
+  --night: #bcd0ee;
+  --night-deep: #dbe7f8;
+  --on-night: #0a1730;
+  --tile: #ee8a62;
+  --tile-deep: #f6a98a;
+  --tile-tint: #3b2118;
+  --tile-wash: #55301f;
+  --on-tile: #1b0f0a;
+  --shadow-ink: #060403;
+  --success: #7ad68f;
+  --success-tint: #12301f;
+  --warning: #f0bd4c;
+  --warning-tint: #3a2a0c;
+  --danger: #ff8083;
+  --danger-tint: #4a2022;
+  --info: #8cc2f2;
+  --info-tint: #1a2d40;
+  --focus: #9ccbff;
+  --shadow-popover: 0 4px 16px color-mix(in srgb, var(--shadow-ink) 45%, transparent), 0 1px 2px color-mix(in srgb, var(--shadow-ink) 40%, transparent);
+  --shadow-dialog: 0 16px 48px color-mix(in srgb, var(--shadow-ink) 60%, transparent);
+}
+
+/* Taş: the second selectable look (html[data-look="tas"], src/app/theme.ts). */
+[data-look="tas"] {
+  --surface: #f6f5f3;
+  --surface-raised: #fdfcfb;
+  --surface-sunken: #edebe8;
+  --line: #dad7d2;
+  --line-strong: #85807a;
+  --ink: #1c1d20;
+  --ink-muted: #55575c;
+  --ink-faint: #84868b;
+  --night: #232b36;
+  --night-deep: #12161d;
+  --on-night: #f6f5f3;
+  --tile: #a8573e;
+  --tile-deep: #874330;
+  --tile-tint: #f1e4de;
+  --tile-wash: #e4cfc5;
+  --on-tile: #fbf9f7;
+  --shadow-ink: #0a0c10;
+  --success: #1a7449;
+  --success-tint: #d5f2e1;
+  --warning: #946000;
+  --warning-tint: #fff0c9;
+  --danger: #c0143c;
+  --danger-tint: #ffe0e3;
+  --info: #1f6aa5;
+  --info-tint: #dcecfb;
+  --focus: #1f4f8f;
+  --shadow-popover: 0 4px 16px color-mix(in srgb, var(--shadow-ink) 10%, transparent), 0 1px 2px color-mix(in srgb, var(--shadow-ink) 8%, transparent);
+  --shadow-dialog: 0 16px 48px color-mix(in srgb, var(--shadow-ink) 16%, transparent);
+}
+
+[data-look="tas"].dark {
+  --surface: #1e1d1b;
+  --surface-raised: #272624;
+  --surface-sunken: #171614;
+  --line: #3a3835;
+  --line-strong: #7b7873;
+  --ink: #f1efec;
+  --ink-muted: #b1aea9;
+  --ink-faint: #7e7b76;
+  --night: #d3d8de;
+  --night-deep: #e6e9ed;
+  --on-night: #14171c;
+  --tile: #dc9378;
+  --tile-deep: #e8ab94;
+  --tile-tint: #372a25;
+  --tile-wash: #4a362e;
+  --on-tile: #1a1210;
+  --shadow-ink: #080706;
+  --success: #6fd29a;
+  --success-tint: #12301f;
+  --warning: #f0bd4c;
+  --warning-tint: #3a2a0c;
+  --danger: #ff8587;
+  --danger-tint: #4a2022;
+  --info: #8cc2f2;
+  --info-tint: #1a2d40;
   --focus: #8cc3fc;
-  --shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-dialog: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-popover: 0 4px 16px color-mix(in srgb, var(--shadow-ink) 45%, transparent), 0 1px 2px color-mix(in srgb, var(--shadow-ink) 40%, transparent);
+  --shadow-dialog: 0 16px 48px color-mix(in srgb, var(--shadow-ink) 60%, transparent);
 }
 
 @theme inline {
