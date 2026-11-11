@@ -846,9 +846,6 @@ msgstr "Backups"
 msgid "Balance"
 msgstr "Balance"
 
-msgid "Balance when they leave"
-msgstr "Balance when they leave"
-
 msgid "Balances as of"
 msgstr "Balances as of"
 
@@ -1579,9 +1576,6 @@ msgstr "Copy the token"
 msgid "Correspondent"
 msgstr "Correspondent"
 
-msgid "Cost groups"
-msgstr "Cost groups"
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr "Costs can be split among one block's units or across the whole site."
 
@@ -1895,6 +1889,9 @@ msgstr "Create assembly"
 
 msgid "Create budget"
 msgstr "Create budget"
+
+msgid "Create code"
+msgstr "Create code"
 
 msgid "Create endpoint"
 msgstr "Create endpoint"
@@ -2285,9 +2282,6 @@ msgstr "Due from"
 
 msgid "Dues (aidat)"
 msgstr "Dues (aidat)"
-
-msgid "Dues and charges"
-msgstr "Dues and charges"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
@@ -4841,6 +4835,9 @@ msgstr "Photo"
 msgid "Photo {0} of {1}"
 msgstr "Photo {0} of {1}"
 
+msgid "Pick your name, then enter your PIN."
+msgstr "Pick your name, then enter your PIN."
+
 msgid "PIN"
 msgstr "PIN"
 
@@ -6827,6 +6824,9 @@ msgstr "This site collects into its own account"
 msgid "This site has its own workflow."
 msgstr "This site has its own workflow."
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "This site has no join code yet. Create one to get a poster."
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 
@@ -7183,6 +7183,10 @@ msgstr "Use lowercase letters, digits and underscores, for example heating"
 
 msgid "Use my password"
 msgstr "Use my password"
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
+msgstr "User {0}"
 
 msgid "Utility"
 msgstr "Utility"

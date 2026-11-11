@@ -1456,7 +1456,7 @@ route('GET', `${O}/jobs`, ({ url }) =>
 )
 
 // -- audit
-route('GET', `${O}/audit-events`, ({ url }) => {
+route('GET', `${O}/audit`, ({ url }) => {
   if (!can('audit.read')) return forbidden()
   const q = url.searchParams
   let items = db.audit
@@ -1464,7 +1464,7 @@ route('GET', `${O}/audit-events`, ({ url }) => {
     const v = q.get(param)
     if (v) items = items.filter((e) => e[field] === v)
   }
-  eq('actor_user_id', 'actor_user_id')
+  eq('actor', 'actor_user_id')
   eq('action', 'action')
   eq('target_type', 'target_type')
   eq('target_id', 'target_id')
@@ -1474,7 +1474,7 @@ route('GET', `${O}/audit-events`, ({ url }) => {
   if (to) items = items.filter((e) => String(e.at) <= to)
   return page(items, url)
 })
-route('GET', `${O}/audit-events/{id}`, ({ p }) => {
+route('GET', `${O}/audit/{id}`, ({ p }) => {
   const e = db.audit.find((x) => x.id === p[0])
   return e ? json(e) : notFound()
 })

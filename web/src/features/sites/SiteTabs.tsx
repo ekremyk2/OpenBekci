@@ -194,7 +194,7 @@ function PackDefaultsList({
   return (
     <section
       aria-labelledby="pack-defaults-title"
-      className="flex flex-col gap-2 rounded-md border p-3"
+      className="flex min-w-0 flex-col gap-2 rounded-md border p-3"
     >
       <h2 id="pack-defaults-title" className="text-sm font-semibold">
         <Trans>Values from a pack</Trans>

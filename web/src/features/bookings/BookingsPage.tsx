@@ -621,13 +621,13 @@ export function BookingsPage() {
                 'grid gap-px overflow-hidden rounded-md border bg-border',
                 'grid-cols-7',
               )}
-              role="grid"
+              role="group"
               aria-label={t`Calendar`}
             >
               {names.map((n) => (
                 <div
                   key={n}
-                  role="columnheader"
+                  aria-hidden="true"
                   className="bg-muted px-2 py-1 text-center text-xs font-medium"
                 >
                   {n}
@@ -639,9 +639,10 @@ export function BookingsPage() {
               {days.map((d) => (
                 <div
                   key={d}
-                  role="gridcell"
+                  role="group"
+                  aria-label={d}
                   className={cn(
-                    'flex min-h-24 flex-col gap-1 bg-background p-1',
+                    'flex min-h-14 sm:min-h-24 flex-col gap-1 bg-background p-1',
                     d === todayIn(ctx.timeZone) && 'ring-2 ring-inset ring-primary',
                   )}
                 >

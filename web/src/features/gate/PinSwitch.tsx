@@ -81,10 +81,13 @@ export function PinSwitch({
 
   if (!guard) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
-        <h1 className="text-3xl font-semibold">
+      <div className="mx-auto my-8 flex w-full max-w-3xl flex-col gap-6 p-6 sm:my-16">
+        <h2 className="text-3xl font-semibold">
           <Trans>Who is on the gate?</Trans>
-        </h1>
+        </h2>
+        <p className="text-muted-foreground">
+          <Trans>Pick your name, then enter your PIN.</Trans>
+        </p>
         {guards.isPending ? (
           <div role="status" aria-busy="true" className="grid gap-3 sm:grid-cols-2">
             <Skeleton className="h-20" />
@@ -129,7 +132,7 @@ export function PinSwitch({
         void submit()
       }}
     >
-      <h1 className="text-2xl font-semibold">{guard.display_name}</h1>
+      <h2 className="text-2xl font-semibold">{guard.display_name}</h2>
       <label className="sr-only" htmlFor="guard-pin">
         <Trans>PIN</Trans>
       </label>

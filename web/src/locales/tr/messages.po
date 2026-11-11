@@ -846,9 +846,6 @@ msgstr "Yedekler"
 msgid "Balance"
 msgstr "Bakiye"
 
-msgid "Balance when they leave"
-msgstr "Ayrılırken bakiye"
-
 msgid "Balances as of"
 msgstr "Bakiyelerin tarihi"
 
@@ -1579,9 +1576,6 @@ msgstr "Anahtarı kopyala"
 msgid "Correspondent"
 msgstr "Yazışma kişisi"
 
-msgid "Cost groups"
-msgstr "Maliyet grupları"
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr "Giderler bir bloğun birimleri arasında ya da tüm site genelinde paylaştırılabilir."
 
@@ -1895,6 +1889,9 @@ msgstr "Toplantı oluştur"
 
 msgid "Create budget"
 msgstr "Bütçe oluştur"
+
+msgid "Create code"
+msgstr "Kod oluştur"
 
 msgid "Create endpoint"
 msgstr "Uç nokta oluştur"
@@ -2285,9 +2282,6 @@ msgstr "Başlangıç tarihi"
 
 msgid "Dues (aidat)"
 msgstr "Aidat"
-
-msgid "Dues and charges"
-msgstr "Aidat ve giderler"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Birimde kiracı varsa aidat kiracıya, demirbaş ve olağanüstü gider malike aittir. Burada plan bazında değiştirebilirsiniz."
@@ -4841,6 +4835,9 @@ msgstr "Fotoğraf"
 msgid "Photo {0} of {1}"
 msgstr "Fotoğraf {0} / {1}"
 
+msgid "Pick your name, then enter your PIN."
+msgstr "Adınızı seçin, sonra PIN kodunuzu girin."
+
 msgid "PIN"
 msgstr "PIN"
 
@@ -6827,6 +6824,9 @@ msgstr "Bu site kendi hesabına tahsil eder"
 msgid "This site has its own workflow."
 msgstr "Bu sitenin kendi iş akışı var."
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr "Bu sitenin henüz katılım kodu yok. Afiş için bir kod oluşturun."
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr "Bu site tek bir binadır, bu yüzden tek bloğu her yerde gizlenir. Çok bloklu bir siteye dönüştürmek için bir blok ekleyin."
 
@@ -7183,6 +7183,10 @@ msgstr "Küçük harf, rakam ve alt çizgi kullanın, örneğin isitma"
 
 msgid "Use my password"
 msgstr "Parolamı kullan"
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
+msgstr "Kullanıcı {0}"
 
 msgid "Utility"
 msgstr "Kullanım gideri"

@@ -39,9 +39,10 @@ export function useRefresh(ctx: SiteCtx) {
   return () => qc.invalidateQueries({ queryKey: okey(ctx.orgId, 'gate', ctx.siteId) })
 }
 
-export function useConsole(ctx: SiteCtx) {
+export function useConsole(ctx: SiteCtx, enabled = true) {
   return useQuery({
     queryKey: key(ctx, 'console'),
+    enabled,
     queryFn: () =>
       unwrap(
         guardApi.GET('/v1/orgs/{org_id}/gate/console', {

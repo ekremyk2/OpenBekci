@@ -91,7 +91,9 @@ describe('units table', () => {
 
   it('renders the no-permission page without units.read', async () => {
     await mountApp('/orgs/org-1/units', { permissions: ['sites.read'] })
-    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' }),
+    ).toBeInTheDocument()
   })
 })
 

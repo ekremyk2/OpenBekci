@@ -91,6 +91,6 @@ describe('platform', () => {
 
   it('is forbidden for non platform admins', async () => {
     mountApp('/platform', 'manager')
-    expect(await screen.findByText(/access/i)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: /access/i })).toBeInTheDocument()
   })
 })

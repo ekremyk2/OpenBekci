@@ -53,7 +53,7 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
       <Link
         to="/orgs/$orgId/tickets"
         params={{ orgId }}
-        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="inline-flex min-h-11 w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4 rtl-flip" aria-hidden="true" />
         <Trans>All tickets</Trans>

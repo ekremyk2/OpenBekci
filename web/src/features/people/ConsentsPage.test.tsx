@@ -13,7 +13,7 @@ describe('privacy notice and consents', () => {
     ).toBeInTheDocument()
     expect((await screen.findAllByText('Version 2026-03')).length).toBe(2)
     expect(
-      await screen.findByRole('heading', { name: 'Privacy notice', level: 2 }),
+      await screen.findByRole('heading', { name: /^Privacy notice/, level: 2 }),
     ).toBeInTheDocument()
     expect(screen.getByText('Consent directory')).toBeInTheDocument()
 

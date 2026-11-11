@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { PrinterIcon, RefreshCwIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi } from '@/api/draft'
+import { AppError } from '@/api/errors'
 import { useSession } from '@/app/session'
 import { runWithReauth } from '@/app/reauth'
 import { withIdempotencyKey } from '@/lib/idempotency'
@@ -51,10 +52,16 @@ export function SiteQrPage({ siteId }: { siteId: string }) {
     queryKey: ['people.getJoinCode', orgId, siteId],
     enabled: !!org,
     queryFn: async () => {
-      const { data } = await draftApi.GET('/v1/orgs/{org_id}/sites/{site_id}/join-code', {
-        params: { path: { org_id: orgId, site_id: siteId } },
-      })
-      return data!
+      try {
+        const { data } = await draftApi.GET('/v1/orgs/{org_id}/sites/{site_id}/join-code', {
+          params: { path: { org_id: orgId, site_id: siteId } },
+        })
+        return data!
+      } catch (e) {
+        // 404 = no code created yet; the page offers to create the first one.
+        if (e instanceof AppError && e.status === 404) return null
+        throw e
+      }
     },
   })
   const invalidate = () =>
@@ -91,7 +98,7 @@ export function SiteQrPage({ siteId }: { siteId: string }) {
 
   if (codeQ.isLoading || siteQ.isLoading) return <PageSkeleton />
   if (codeQ.error) return <ErrorState error={codeQ.error} onRetry={() => void codeQ.refetch()} />
-  const code = codeQ.data!
+  const code = codeQ.data ?? null
   const siteName = siteQ.data?.name ?? ''
   return (
     <div className="flex flex-col gap-6">
@@ -113,28 +120,36 @@ export function SiteQrPage({ siteId }: { siteId: string }) {
             <>
               <Button variant="outline" onClick={() => rotate.mutate()} disabled={rotate.isPending}>
                 <RefreshCwIcon aria-hidden="true" />
-                <Trans>New code</Trans>
+                {code ? <Trans>New code</Trans> : <Trans>Create code</Trans>}
               </Button>
-              <Button onClick={print} disabled={!code.enabled}>
+              <Button onClick={print} disabled={!code?.enabled}>
                 <PrinterIcon aria-hidden="true" />
                 <Trans>Print poster</Trans>
               </Button>
             </>
           }
         />
-        <label className="flex items-center gap-2 text-sm">
-          <Checkbox
-            checked={code.enabled}
-            disabled={toggle.isPending}
-            onChange={(e) => toggle.mutate(e.target.checked)}
-          />
-          <Trans>Residents can join with this code</Trans>
-        </label>
-        <p className="text-xs text-muted-foreground">
-          <Trans>Creating a new code stops the old poster from working.</Trans>
-        </p>
+        {code ? (
+          <>
+            <label className="flex min-h-11 items-center gap-2 text-sm">
+              <Checkbox
+                checked={code.enabled}
+                disabled={toggle.isPending}
+                onChange={(e) => toggle.mutate(e.target.checked)}
+              />
+              <Trans>Residents can join with this code</Trans>
+            </label>
+            <p className="text-xs text-muted-foreground">
+              <Trans>Creating a new code stops the old poster from working.</Trans>
+            </p>
+          </>
+        ) : null}
       </div>
-      {code.enabled ? (
+      {!code ? (
+        <p role="status" className="text-sm text-muted-foreground">
+          <Trans>This site has no join code yet. Create one to get a poster.</Trans>
+        </p>
+      ) : code.enabled ? (
         <article
           aria-label={t`Poster`}
           className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 rounded-lg border bg-white p-10 text-center text-black print:border-0"

@@ -13,6 +13,10 @@ export default function MarkdownView({ source }: { source: string }) {
         skipHtml
         disallowedElements={['img']}
         components={{
+          // the page owns the one h1: document headings start at h2
+          h1: ({ children }) => <h2 className="text-xl font-semibold">{children}</h2>,
+          h2: ({ children }) => <h3 className="text-lg font-semibold">{children}</h3>,
+          h3: ({ children }) => <h4 className="font-semibold">{children}</h4>,
           // a blocked protocol (javascript:, data:, ...) leaves no href: show the text, not a link
           // (an empty href would reload this page in a new tab)
           a: ({ href, children }) =>

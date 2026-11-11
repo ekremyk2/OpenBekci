@@ -846,9 +846,6 @@ msgstr ""
 msgid "Balance"
 msgstr ""
 
-msgid "Balance when they leave"
-msgstr ""
-
 msgid "Balances as of"
 msgstr ""
 
@@ -1579,9 +1576,6 @@ msgstr ""
 msgid "Correspondent"
 msgstr ""
 
-msgid "Cost groups"
-msgstr ""
-
 msgid "Costs can be split among one block's units or across the whole site."
 msgstr ""
 
@@ -1894,6 +1888,9 @@ msgid "Create assembly"
 msgstr ""
 
 msgid "Create budget"
+msgstr ""
+
+msgid "Create code"
 msgstr ""
 
 msgid "Create endpoint"
@@ -2284,9 +2281,6 @@ msgid "Due from"
 msgstr ""
 
 msgid "Dues (aidat)"
-msgstr ""
-
-msgid "Dues and charges"
 msgstr ""
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
@@ -4841,6 +4835,9 @@ msgstr ""
 msgid "Photo {0} of {1}"
 msgstr ""
 
+msgid "Pick your name, then enter your PIN."
+msgstr ""
+
 msgid "PIN"
 msgstr ""
 
@@ -6827,6 +6824,9 @@ msgstr ""
 msgid "This site has its own workflow."
 msgstr ""
 
+msgid "This site has no join code yet. Create one to get a poster."
+msgstr ""
+
 msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
 msgstr ""
 
@@ -7182,6 +7182,10 @@ msgid "Use lowercase letters, digits and underscores, for example heating"
 msgstr ""
 
 msgid "Use my password"
+msgstr ""
+
+#. placeholder {0}: event.actor_user_id.slice(0, 8)
+msgid "User {0}"
 msgstr ""
 
 msgid "Utility"
