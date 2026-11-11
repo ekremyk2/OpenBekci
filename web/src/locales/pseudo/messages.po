@@ -281,8 +281,8 @@ msgstr ""
 msgid "Abstain"
 msgstr ""
 
-msgid "Accent"
-msgstr ""
+#~ msgid "Accent"
+#~ msgstr ""
 
 msgid "Accept"
 msgstr ""
@@ -2899,8 +2899,8 @@ msgstr ""
 msgid "For this site"
 msgstr ""
 
-msgid "Forest"
-msgstr ""
+#~ msgid "Forest"
+#~ msgstr ""
 
 msgid "Four fifths"
 msgstr ""
@@ -3492,6 +3492,9 @@ msgstr ""
 msgid "Longest booking (minutes)"
 msgstr ""
 
+msgid "Look"
+msgstr ""
+
 msgid "Looking up the number…"
 msgstr ""
 
@@ -3765,8 +3768,8 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
-msgid "Navy"
-msgstr ""
+#~ msgid "Navy"
+#~ msgstr ""
 
 #. placeholder {0}: evaln.neededYes
 #. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
@@ -4613,8 +4616,8 @@ msgstr ""
 msgid "Organization collects"
 msgstr ""
 
-msgid "Organization color"
-msgstr ""
+#~ msgid "Organization color"
+#~ msgstr ""
 
 msgid "Organization created."
 msgstr ""
@@ -6012,8 +6015,8 @@ msgstr ""
 msgid "Skip to content"
 msgstr ""
 
-msgid "Slate"
-msgstr ""
+#~ msgid "Slate"
+#~ msgstr ""
 
 msgid "Slots booked by others are shown only as \"taken\"."
 msgstr ""
@@ -6274,8 +6277,8 @@ msgstr ""
 msgid "Terms ending soon"
 msgstr ""
 
-msgid "Terracotta"
-msgstr ""
+#~ msgid "Terracotta"
+#~ msgstr ""
 
 msgid "Test ping sent"
 msgstr ""
