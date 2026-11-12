@@ -107,6 +107,6 @@ describe('site defaults for automatic messages', () => {
 
   it('is not available to residents', async () => {
     mountApp('/orgs/org-1/settings/notifications', 'resident')
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 })

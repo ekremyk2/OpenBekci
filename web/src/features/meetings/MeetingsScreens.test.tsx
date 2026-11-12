@@ -214,7 +214,7 @@ describe('governance settings', () => {
 describe('no permission', () => {
   it('shows the access message without meetings permissions', async () => {
     mountGov('/orgs/org-1/meetings', ['bookings.read'])
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' })).toBeInTheDocument()
   })
   it('keeps the community db reachable for other suites', () => {
     expect(communityDb()).toBeDefined()

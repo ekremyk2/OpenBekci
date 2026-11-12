@@ -33,7 +33,7 @@ describe('packs list', () => {
 
   it('refuses the page without packs.read', async () => {
     await mountApp('/orgs/org-1/settings/packs', { permissions: ['org.read'] })
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 })
 

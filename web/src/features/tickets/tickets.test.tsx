@@ -155,7 +155,7 @@ describe('tickets', () => {
       ),
     )
     mountApp(base, 'manager')
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 
   it('shows the staff queue only to staff', async () => {
