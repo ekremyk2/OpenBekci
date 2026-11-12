@@ -1,9 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { DownloadIcon } from 'lucide-react'
 import { useLingui } from '@lingui/react/macro'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/lib/toast'
+import { ScrollStrip } from '@/components/layout/ScrollStrip'
 import { cn } from '@/lib/utils'
 import { downloadFile, type DownloadRequest } from '@/api/download'
 
@@ -97,7 +98,7 @@ export function SectionNav({
   orgId: string
 }) {
   return (
-    <nav aria-label={label} className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+    <ScrollStrip label={label}>
       {items.map((tab) => (
         <Link
           key={tab.to}
@@ -112,6 +113,6 @@ export function SectionNav({
           {tab.label}
         </Link>
       ))}
-    </nav>
+    </ScrollStrip>
   )
 }

@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { cn } from '@/lib/utils'
+import { ScrollStrip } from './ScrollStrip'
 
 export interface SectionLink {
   id: string
@@ -19,10 +20,7 @@ export function SectionNav({ links, label }: { links: SectionLink[]; label: stri
   if (!org) return null
   const visible = links.filter((l) => !l.permission || can(l.permission))
   return (
-    <nav
-      aria-label={label || t`Section`}
-      className="flex gap-1 overflow-x-auto border-b pb-2 [scrollbar-width:thin]"
-    >
+    <ScrollStrip label={label || t`Section`} className="border-b pb-2">
       {visible.map((l) => (
         <Link
           key={l.id}
@@ -37,6 +35,6 @@ export function SectionNav({ links, label }: { links: SectionLink[]; label: stri
           {l.label}
         </Link>
       ))}
-    </nav>
+    </ScrollStrip>
   )
 }

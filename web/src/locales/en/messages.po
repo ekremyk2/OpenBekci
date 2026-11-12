@@ -6042,6 +6042,12 @@ msgstr "Scope"
 msgid "Scopes"
 msgstr "Scopes"
 
+msgid "Scroll left"
+msgstr "Scroll left"
+
+msgid "Scroll right"
+msgstr "Scroll right"
+
 msgid "Search"
 msgstr "Search"
 
