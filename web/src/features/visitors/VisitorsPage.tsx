@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { CarIcon, PlusIcon, RefreshCwIcon } from 'lucide-react'
+import { CarIcon, PlusIcon, RefreshCwIcon, ScanLineIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
@@ -270,6 +270,16 @@ export function VisitorsPage() {
               <CarIcon />
               <Trans>My vehicles</Trans>
             </Link>
+            {can('gate.operate') ? (
+              <Link
+                to="/orgs/$orgId/visitors/gate"
+                params={{ orgId: ctx.orgId }}
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                <ScanLineIcon />
+                <Trans>Open guard console</Trans>
+              </Link>
+            ) : null}
             {canManage ? (
               <Button onClick={() => setAdding(true)}>
                 <PlusIcon />

@@ -287,6 +287,9 @@ msgstr "Abstain"
 msgid "Accept"
 msgstr "Accept"
 
+msgid "Accept card payments with iyzico"
+msgstr "Accept card payments with iyzico"
+
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
 
@@ -322,9 +325,6 @@ msgstr "Accounting"
 
 msgid "Accounting export"
 msgstr "Accounting export"
-
-msgid "Accrual, monthly bookings, waivers, freezes"
-msgstr "Accrual, monthly bookings, waivers, freezes"
 
 msgid "Accrued fee"
 msgstr "Accrued fee"
@@ -459,6 +459,9 @@ msgstr "Add vehicle"
 
 msgid "Add vendor"
 msgstr "Add vendor"
+
+msgid "Address"
+msgstr "Address"
 
 msgid "Address line 2"
 msgstr "Address line 2"
@@ -651,6 +654,9 @@ msgstr "Any year"
 
 msgid "Anyone"
 msgstr "Anyone"
+
+msgid "API key"
+msgstr "API key"
 
 msgid "API keys"
 msgstr "API keys"
@@ -876,6 +882,9 @@ msgstr "Bank line it arrived as"
 msgid "Bank lines"
 msgstr "Bank lines"
 
+msgid "Bank statement formats"
+msgstr "Bank statement formats"
+
 msgid "Bank statement import"
 msgstr "Bank statement import"
 
@@ -884,6 +893,9 @@ msgstr "Bank transfer"
 
 msgid "Bank transfer reference"
 msgstr "Bank transfer reference"
+
+msgid "Basis"
+msgstr "Basis"
 
 msgid "Becomes a charge when the booking is confirmed. Empty: free."
 msgstr "Becomes a charge when the booking is confirmed. Empty: free."
@@ -1018,6 +1030,9 @@ msgstr "By proxy: {holder}"
 msgid "By share"
 msgstr "By share"
 
+msgid "By topic"
+msgstr "By topic"
+
 msgid "Calculating…"
 msgstr "Calculating…"
 
@@ -1035,6 +1050,9 @@ msgstr "Call the assembly"
 
 msgid "Call the resident"
 msgstr "Call the resident"
+
+msgid "Callback base URL"
+msgstr "Callback base URL"
 
 msgid "Called"
 msgstr "Called"
@@ -1135,9 +1153,6 @@ msgstr "Cash goes into a cash box, not a bank account."
 
 msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
 msgstr "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
-
-msgid "Cash receipts, cash boxes, declared transfers"
-msgstr "Cash receipts, cash boxes, declared transfers"
 
 msgid "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
 msgstr "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
@@ -1451,6 +1466,9 @@ msgstr "Closing must be after opening."
 msgid "Closing statement"
 msgstr "Closing statement"
 
+msgid "Co-owner representation"
+msgstr "Co-owner representation"
+
 msgid "Code"
 msgstr "Code"
 
@@ -1499,6 +1517,9 @@ msgstr "Common"
 
 msgid "Common area"
 msgstr "Common area"
+
+msgid "Common area change"
+msgstr "Common area change"
 
 msgid "Common areas"
 msgstr "Common areas"
@@ -1557,6 +1578,9 @@ msgstr "Confirmed. Receipt {0}"
 
 msgid "Confirming your payment with the provider. This usually takes a few seconds."
 msgstr "Confirming your payment with the provider. This usually takes a few seconds."
+
+msgid "Contact"
+msgstr "Contact"
 
 msgid "Continue to payment"
 msgstr "Continue to payment"
@@ -1953,6 +1977,9 @@ msgstr "Custom table"
 msgid "Dark"
 msgstr "Dark"
 
+msgid "Data controller"
+msgstr "Data controller"
+
 msgid "Date"
 msgstr "Date"
 
@@ -1983,6 +2010,9 @@ msgstr "Dead letters: {0}"
 
 msgid "Debit"
 msgstr "Debit"
+
+msgid "Debt on move-out"
+msgstr "Debt on move-out"
 
 msgid "Debt status certificate"
 msgstr "Debt status certificate"
@@ -2052,12 +2082,18 @@ msgstr "Declined"
 msgid "default"
 msgstr "default"
 
+msgid "Default"
+msgstr "Default"
+
 #. placeholder {0}: category.name
 msgid "Default assignee role of {0}"
 msgstr "Default assignee role of {0}"
 
 msgid "Default language"
 msgstr "Default language"
+
+msgid "Default monthly rate (bps)"
+msgstr "Default monthly rate (bps)"
 
 #. placeholder {0}: category.name
 msgid "Default visibility of {0}"
@@ -2146,6 +2182,9 @@ msgstr "Delta"
 
 msgid "Denied"
 msgstr "Denied"
+
+msgid "Denominator"
+msgstr "Denominator"
 
 msgid "Deny"
 msgstr "Deny"
@@ -2355,6 +2394,9 @@ msgstr "Elected person"
 
 msgid "Elected role with a term"
 msgstr "Elected role with a term"
+
+msgid "Election"
+msgstr "Election"
 
 msgid "Election of the auditor"
 msgstr "Election of the auditor"
@@ -2647,9 +2689,6 @@ msgstr "Every card payment residents started for this site. A payment that arriv
 msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 msgstr "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 
-msgid "Every receivable by period, unit and side"
-msgstr "Every receivable by period, unit and side"
-
 msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 msgstr "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 
@@ -2676,6 +2715,9 @@ msgstr "Existing bookings stay in the history."
 
 msgid "Exit"
 msgstr "Exit"
+
+msgid "Exit console"
+msgstr "Exit console"
 
 msgid "Expected"
 msgstr "Expected"
@@ -2918,9 +2960,6 @@ msgstr "Gate control"
 
 msgid "Gates"
 msgstr "Gates"
-
-msgid "Gelir-gider, debtors, budget, aging"
-msgstr "Gelir-gider, debtors, budget, aging"
 
 msgid "General"
 msgstr "General"
@@ -3269,6 +3308,9 @@ msgstr "Kind"
 msgid "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
 msgstr "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
 
+msgid "KVKK"
+msgstr "KVKK"
+
 msgid "Land share (arsa payı)"
 msgstr "Land share (arsa payı)"
 
@@ -3352,6 +3394,12 @@ msgstr "Legal cost"
 
 msgid "Legal costs to charge back to the debtor (optional)"
 msgstr "Legal costs to charge back to the debtor (optional)"
+
+msgid "Legal name"
+msgstr "Legal name"
+
+msgid "Legal preset"
+msgstr "Legal preset"
 
 msgid "Letter"
 msgstr "Letter"
@@ -3476,6 +3524,9 @@ msgstr "Mail: {0}. SMS: {1}."
 msgid "Main"
 msgstr "Main"
 
+msgid "Main structure change"
+msgstr "Main structure change"
+
 msgid "Majority by number and by share"
 msgstr "Majority by number and by share"
 
@@ -3533,6 +3584,9 @@ msgstr "Meeting notices"
 msgid "Meeting quorum"
 msgstr "Meeting quorum"
 
+msgid "Meeting schedule"
+msgstr "Meeting schedule"
+
 msgid "Meetings"
 msgstr "Meetings"
 
@@ -3565,6 +3619,9 @@ msgstr "Method"
 
 msgid "Method for the selected owners"
 msgstr "Method for the selected owners"
+
+msgid "Minimum notice (days)"
+msgstr "Minimum notice (days)"
 
 msgid "Minutes"
 msgstr "Minutes"
@@ -3604,6 +3661,9 @@ msgstr "Monthly bookings"
 
 msgid "Monthly rate (%)"
 msgstr "Monthly rate (%)"
+
+msgid "Monthly rate ceiling (bps)"
+msgstr "Monthly rate ceiling (bps)"
 
 msgid "Months overdue"
 msgstr "Months overdue"
@@ -4206,6 +4266,9 @@ msgstr "Non-binding"
 msgid "none"
 msgstr "none"
 
+msgid "None"
+msgstr "None"
+
 msgid "Not available"
 msgstr "Not available"
 
@@ -4341,6 +4404,9 @@ msgstr "Number"
 msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
 msgstr "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
 
+msgid "Numerator"
+msgstr "Numerator"
+
 msgid "Occupancy"
 msgstr "Occupancy"
 
@@ -4352,6 +4418,9 @@ msgstr "Occupied"
 
 msgid "Occupied only"
 msgstr "Occupied only"
+
+msgid "Of"
+msgstr "Of"
 
 msgid "Off: expenses are recorded as paid when they happen."
 msgstr "Off: expenses are recorded as paid when they happen."
@@ -4450,6 +4519,9 @@ msgstr "Open common tickets"
 
 msgid "Open for booking"
 msgstr "Open for booking"
+
+msgid "Open guard console"
+msgstr "Open guard console"
 
 msgid "Open it from the link the payment provider sent you back to, or start again from Pay."
 msgstr "Open it from the link the payment provider sent you back to, or start again from Pay."
@@ -4560,6 +4632,9 @@ msgstr "Or upload a spreadsheet instead (CSV or XLSX)"
 
 msgid "Ordinary assembly"
 msgstr "Ordinary assembly"
+
+msgid "Ordinary assembly month"
+msgstr "Ordinary assembly month"
 
 msgid "Organization"
 msgstr "Organization"
@@ -4803,8 +4878,17 @@ msgstr "per"
 msgid "per unit"
 msgstr "per unit"
 
-msgid "Per unit side or per person, PDF"
-msgstr "Per unit side or per person, PDF"
+msgid "Per unit"
+msgstr "Per unit"
+
+msgid "Per-person cap (%)"
+msgstr "Per-person cap (%)"
+
+msgid "Per-person cap, denominator"
+msgstr "Per-person cap, denominator"
+
+msgid "Per-person cap, numerator"
+msgstr "Per-person cap, numerator"
 
 msgid "Period"
 msgstr "Period"
@@ -4849,6 +4933,9 @@ msgstr "Pinned"
 
 msgid "Place"
 msgstr "Place"
+
+msgid "Plan amendment"
+msgstr "Plan amendment"
 
 msgid "Plan an assembly"
 msgstr "Plan an assembly"
@@ -4995,6 +5082,9 @@ msgstr "Private to the unit"
 msgid "Private: that unit and management"
 msgstr "Private: that unit and management"
 
+msgid "Pro rata"
+msgstr "Pro rata"
+
 msgid "Profile"
 msgstr "Profile"
 
@@ -5025,8 +5115,14 @@ msgstr "Provider payouts"
 msgid "Provides"
 msgstr "Provides"
 
+msgid "Proxies per person"
+msgstr "Proxies per person"
+
 msgid "Proxy"
 msgstr "Proxy"
+
+msgid "Proxy cap (%)"
+msgstr "Proxy cap (%)"
 
 msgid "Publish"
 msgstr "Publish"
@@ -5091,9 +5187,6 @@ msgstr "Rate per month (%)"
 
 msgid "Rates"
 msgstr "Rates"
-
-msgid "Rates, split rules and live previews"
-msgstr "Rates, split rules and live previews"
 
 msgid "Raw"
 msgstr "Raw"
@@ -5307,9 +5400,6 @@ msgstr "Reminder stages, the history of what was sent to a debtor, and legal cas
 msgid "Reminders sent: {0}."
 msgstr "Reminders sent: {0}."
 
-msgid "Reminders, ihtarname and legal cases"
-msgstr "Reminders, ihtarname and legal cases"
-
 msgid "Remove"
 msgstr "Remove"
 
@@ -5515,6 +5605,9 @@ msgstr "Rotate token"
 msgid "Rounding remainder was distributed to the largest shares."
 msgstr "Rounding remainder was distributed to the largest shares."
 
+msgid "Routine"
+msgstr "Routine"
+
 msgid "Row"
 msgstr "Row"
 
@@ -5531,6 +5624,9 @@ msgstr "Rule"
 #. placeholder {0}: labels.topic(th.topic)
 msgid "Rule for {0}"
 msgstr "Rule for {0}"
+
+msgid "Sandbox (test mode)"
+msgstr "Sandbox (test mode)"
 
 msgid "Save"
 msgstr "Save"
@@ -5697,6 +5793,12 @@ msgstr "Second call"
 msgid "Second meeting"
 msgstr "Second meeting"
 
+msgid "Second meeting, earliest (days)"
+msgstr "Second meeting, earliest (days)"
+
+msgid "Second meeting, latest (days)"
+msgstr "Second meeting, latest (days)"
+
 msgid "Second meeting:"
 msgstr "Second meeting:"
 
@@ -5705,6 +5807,9 @@ msgstr "Second meeting: earliest, days after the first"
 
 msgid "Second meeting: latest, days after the first"
 msgstr "Second meeting: latest, days after the first"
+
+msgid "Secret key"
+msgstr "Secret key"
 
 msgid "Section"
 msgstr "Section"
@@ -5750,6 +5855,9 @@ msgstr "Send receipt"
 msgid "Send reminders"
 msgstr "Send reminders"
 
+msgid "Send SMS with İleti Merkezi"
+msgstr "Send SMS with İleti Merkezi"
+
 msgid "Send test"
 msgstr "Send test"
 
@@ -5776,6 +5884,9 @@ msgstr "Send to (optional)"
 
 msgid "Send to resident"
 msgstr "Send to resident"
+
+msgid "Sender ID"
+msgstr "Sender ID"
 
 msgid "Sent"
 msgstr "Sent"
@@ -5939,6 +6050,9 @@ msgstr "Signing you in"
 msgid "Signs the webhook (X-Hub-Signature-256)."
 msgstr "Signs the webhook (X-Hub-Signature-256)."
 
+msgid "Single representative"
+msgstr "Single representative"
+
 msgid "Site"
 msgstr "Site"
 
@@ -5974,6 +6088,9 @@ msgstr "Slots booked by others are shown only as \"taken\"."
 
 msgid "Slug"
 msgstr "Slug"
+
+msgid "Small building (units)"
+msgstr "Small building (units)"
 
 msgid "Small building: most proxies per person"
 msgstr "Small building: most proxies per person"
@@ -6101,6 +6218,9 @@ msgstr "Status updated."
 #. placeholder {0}: policy.max_rate_pct_per_month
 msgid "Statutory cap: {0}% per month."
 msgstr "Statutory cap: {0}% per month."
+
+msgid "Stays with the person"
+msgstr "Stays with the person"
 
 msgid "Steps"
 msgstr "Steps"
@@ -7013,6 +7133,9 @@ msgstr "Tracking number (optional)"
 msgid "Transfer recorded."
 msgstr "Transfer recorded."
 
+msgid "Transfer rule"
+msgstr "Transfer rule"
+
 msgid "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
 msgstr "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
 
@@ -7027,6 +7150,9 @@ msgstr "Try again"
 
 msgid "Try widening the filters."
 msgstr "Try widening the filters."
+
+msgid "Türkiye"
+msgstr "Türkiye"
 
 msgid "Type"
 msgstr "Type"
@@ -7071,6 +7197,9 @@ msgstr "Unit receivable"
 
 msgid "Units"
 msgstr "Units"
+
+msgid "Units and share"
+msgstr "Units and share"
 
 msgid "unknown permission"
 msgstr "unknown permission"
@@ -7132,9 +7261,6 @@ msgstr "Upload a statement"
 msgid "Upload a statement above to start matching."
 msgstr "Upload a statement above to start matching."
 
-msgid "Upload a statement and match lines to units"
-msgstr "Upload a statement and match lines to units"
-
 msgid "Upload failed."
 msgstr "Upload failed."
 
@@ -7187,6 +7313,9 @@ msgstr "Use my password"
 #. placeholder {0}: event.actor_user_id.slice(0, 8)
 msgid "User {0}"
 msgstr "User {0}"
+
+msgid "Username"
+msgstr "Username"
 
 msgid "Utility"
 msgstr "Utility"
@@ -7264,6 +7393,9 @@ msgstr "Vendor payable"
 
 msgid "Vendors"
 msgstr "Vendors"
+
+msgid "VERBIS number"
+msgstr "VERBIS number"
 
 #. placeholder {0}: c.version
 msgid "Version {0}"
@@ -7345,6 +7477,9 @@ msgstr "Void this opening entry?"
 
 msgid "Voided"
 msgstr "Voided"
+
+msgid "Vote weight"
+msgstr "Vote weight"
 
 msgid "Voted"
 msgstr "Voted"
@@ -7485,9 +7620,6 @@ msgstr "What to pay"
 
 msgid "What was it for?"
 msgstr "What was it for?"
-
-msgid "What was spent, from which account"
-msgstr "What was spent, from which account"
 
 msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
 msgstr "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."

@@ -287,6 +287,9 @@ msgstr "Çekimser"
 msgid "Accept"
 msgstr "Kabul et"
 
+msgid "Accept card payments with iyzico"
+msgstr "iyzico ile kartlı ödeme al"
+
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
@@ -322,9 +325,6 @@ msgstr "Muhasebe"
 
 msgid "Accounting export"
 msgstr "Muhasebe aktarımı"
-
-msgid "Accrual, monthly bookings, waivers, freezes"
-msgstr "Tahakkuk, aylık kayıtlar, affetmeler, dondurmalar"
 
 msgid "Accrued fee"
 msgstr "Tahakkuk eden tazminat"
@@ -459,6 +459,9 @@ msgstr "Araç ekle"
 
 msgid "Add vendor"
 msgstr "Tedarikçi ekle"
+
+msgid "Address"
+msgstr "Adres"
 
 msgid "Address line 2"
 msgstr "Adres satırı 2"
@@ -651,6 +654,9 @@ msgstr "Herhangi bir yıl"
 
 msgid "Anyone"
 msgstr "Herkes"
+
+msgid "API key"
+msgstr "API anahtarı"
 
 msgid "API keys"
 msgstr "API anahtarları"
@@ -876,6 +882,9 @@ msgstr "Geldiği banka satırı"
 msgid "Bank lines"
 msgstr "Banka satırları"
 
+msgid "Bank statement formats"
+msgstr "Banka ekstre biçimleri"
+
 msgid "Bank statement import"
 msgstr "Banka ekstresi aktarımı"
 
@@ -884,6 +893,9 @@ msgstr "Banka havalesi"
 
 msgid "Bank transfer reference"
 msgstr "Banka havalesi açıklaması"
+
+msgid "Basis"
+msgstr "Esas"
 
 msgid "Becomes a charge when the booking is confirmed. Empty: free."
 msgstr "Rezervasyon onaylandığında tahakkuk olur. Boş: ücretsiz."
@@ -1018,6 +1030,9 @@ msgstr "Vekâletle: {holder}"
 msgid "By share"
 msgstr "Paya göre"
 
+msgid "By topic"
+msgstr "Konuya göre"
+
 msgid "Calculating…"
 msgstr "Hesaplanıyor…"
 
@@ -1035,6 +1050,9 @@ msgstr "Toplantıyı çağır"
 
 msgid "Call the resident"
 msgstr "Sakini ara"
+
+msgid "Callback base URL"
+msgstr "Geri çağrı temel adresi"
 
 msgid "Called"
 msgstr "Çağrıldı"
@@ -1135,9 +1153,6 @@ msgstr "Nakit bir kasaya girer, banka hesabına değil."
 
 msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
 msgstr "Aldığınız nakit veya havale. Başka türlü seçmezseniz en eski borca, önce anapara sonra tazminat olacak şekilde uygulanır."
-
-msgid "Cash receipts, cash boxes, declared transfers"
-msgstr "Nakit tahsilatlar, kasalar, bildirilen havaleler"
 
 msgid "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
 msgstr "Tahsil ettiğiniz nakit. Kendi kasanıza girer ve önce en eski borca uygulanır."
@@ -1451,6 +1466,9 @@ msgstr "Kapanış saati açılıştan sonra olmalıdır."
 msgid "Closing statement"
 msgstr "Kapanış ekstresi"
 
+msgid "Co-owner representation"
+msgstr "Hissedar temsili"
+
 msgid "Code"
 msgstr "Kod"
 
@@ -1499,6 +1517,9 @@ msgstr "Ortak"
 
 msgid "Common area"
 msgstr "Ortak alan"
+
+msgid "Common area change"
+msgstr "Ortak alan değişikliği"
 
 msgid "Common areas"
 msgstr "Ortak alanlar"
@@ -1557,6 +1578,9 @@ msgstr "Onaylandı. Makbuz {0}"
 
 msgid "Confirming your payment with the provider. This usually takes a few seconds."
 msgstr "Ödemeniz sağlayıcıyla doğrulanıyor. Bu genellikle birkaç saniye sürer."
+
+msgid "Contact"
+msgstr "İletişim"
 
 msgid "Continue to payment"
 msgstr "Ödemeye devam et"
@@ -1953,6 +1977,9 @@ msgstr "Özel tablo"
 msgid "Dark"
 msgstr "Koyu"
 
+msgid "Data controller"
+msgstr "Veri sorumlusu"
+
 msgid "Date"
 msgstr "Tarih"
 
@@ -1983,6 +2010,9 @@ msgstr "Teslim edilemeyen ileti: {0}"
 
 msgid "Debit"
 msgstr "Borç"
+
+msgid "Debt on move-out"
+msgstr "Taşınırken borç"
 
 msgid "Debt status certificate"
 msgstr "Borç durum belgesi"
@@ -2052,12 +2082,18 @@ msgstr "Reddedildi"
 msgid "default"
 msgstr "varsayılan"
 
+msgid "Default"
+msgstr "Varsayılan"
+
 #. placeholder {0}: category.name
 msgid "Default assignee role of {0}"
 msgstr "{0} için varsayılan atanan rolü"
 
 msgid "Default language"
 msgstr "Varsayılan dil"
+
+msgid "Default monthly rate (bps)"
+msgstr "Varsayılan aylık oran (baz puan)"
 
 #. placeholder {0}: category.name
 msgid "Default visibility of {0}"
@@ -2146,6 +2182,9 @@ msgstr "Fark"
 
 msgid "Denied"
 msgstr "Reddedildi"
+
+msgid "Denominator"
+msgstr "Payda"
 
 msgid "Deny"
 msgstr "Reddet"
@@ -2355,6 +2394,9 @@ msgstr "Seçilen kişi"
 
 msgid "Elected role with a term"
 msgstr "Süreli görev"
+
+msgid "Election"
+msgstr "Seçim"
 
 msgid "Election of the auditor"
 msgstr "Denetçi seçimi"
@@ -2647,9 +2689,6 @@ msgstr "Sakinlerin bu site için başlattığı tüm kartlı ödemeler. Geç gel
 msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
 msgstr "Her makbuz, sitenin boşluksuz sırasında bir sonraki numarayı alır. Hata gerekçeyle iptal edilir, asla silinmez."
 
-msgid "Every receivable by period, unit and side"
-msgstr "Dönem, birim ve tarafa göre tüm alacaklar"
-
 msgid "Every receivable of a unit side. Charges are never edited: cancel with a reason and a reversal is posted."
 msgstr "Bir birim tarafının tüm alacakları. Tahakkuklar düzenlenmez: gerekçeyle iptal edilir ve ters kayıt atılır."
 
@@ -2676,6 +2715,9 @@ msgstr "Mevcut rezervasyonlar geçmişte kalır."
 
 msgid "Exit"
 msgstr "Çıkış"
+
+msgid "Exit console"
+msgstr "Konsoldan çık"
 
 msgid "Expected"
 msgstr "Bekleniyor"
@@ -2918,9 +2960,6 @@ msgstr "Kapı kontrolü"
 
 msgid "Gates"
 msgstr "Kapılar"
-
-msgid "Gelir-gider, debtors, budget, aging"
-msgstr "Gelir-gider, borçlular, bütçe, yaşlandırma"
 
 msgid "General"
 msgstr "Genel"
@@ -3269,6 +3308,9 @@ msgstr "Tür"
 msgid "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
 msgstr "kind: <0>unit_receivable</0>, <1>bank</1> veya <2>cash</2>."
 
+msgid "KVKK"
+msgstr "KVKK"
+
 msgid "Land share (arsa payı)"
 msgstr "Arsa payı"
 
@@ -3352,6 +3394,12 @@ msgstr "Yasal masraf"
 
 msgid "Legal costs to charge back to the debtor (optional)"
 msgstr "Borçluya yansıtılacak yasal masraflar (isteğe bağlı)"
+
+msgid "Legal name"
+msgstr "Unvan"
+
+msgid "Legal preset"
+msgstr "Yasal ön ayar"
 
 msgid "Letter"
 msgstr "Mektup"
@@ -3476,6 +3524,9 @@ msgstr "E-posta: {0}. SMS: {1}."
 msgid "Main"
 msgstr "Ana"
 
+msgid "Main structure change"
+msgstr "Ana yapı değişikliği"
+
 msgid "Majority by number and by share"
 msgstr "Malik sayısı ve arsa payına göre çoğunluk"
 
@@ -3533,6 +3584,9 @@ msgstr "Toplantı bildirimleri"
 msgid "Meeting quorum"
 msgstr "Toplantı yeter sayısı"
 
+msgid "Meeting schedule"
+msgstr "Toplantı takvimi"
+
 msgid "Meetings"
 msgstr "Toplantılar"
 
@@ -3565,6 +3619,9 @@ msgstr "Yöntem"
 
 msgid "Method for the selected owners"
 msgstr "Seçilen malikler için yöntem"
+
+msgid "Minimum notice (days)"
+msgstr "En az bildirim (gün)"
 
 msgid "Minutes"
 msgstr "Tutanak"
@@ -3604,6 +3661,9 @@ msgstr "Aylık kayıtlar"
 
 msgid "Monthly rate (%)"
 msgstr "Aylık oran (%)"
+
+msgid "Monthly rate ceiling (bps)"
+msgstr "Aylık oran tavanı (baz puan)"
 
 msgid "Months overdue"
 msgstr "Gecikme ayı"
@@ -4206,6 +4266,9 @@ msgstr "Bağlayıcı değil"
 msgid "none"
 msgstr "yok"
 
+msgid "None"
+msgstr "Yok"
+
 msgid "Not available"
 msgstr "Kullanılamıyor"
 
@@ -4341,6 +4404,9 @@ msgstr "Numara"
 msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
 msgstr "Noter onaylı karar defterine geçirilecek numaralı taslaklar (karar defteri); bu liste defterin kendisi değildir."
 
+msgid "Numerator"
+msgstr "Pay"
+
 msgid "Occupancy"
 msgstr "Doluluk"
 
@@ -4352,6 +4418,9 @@ msgstr "Dolu"
 
 msgid "Occupied only"
 msgstr "Yalnızca dolu"
+
+msgid "Of"
+msgstr "Üzerinden"
 
 msgid "Off: expenses are recorded as paid when they happen."
 msgstr "Kapalı: giderler gerçekleştiği anda ödenmiş olarak kaydedilir."
@@ -4450,6 +4519,9 @@ msgstr "Açık ortak talepler"
 
 msgid "Open for booking"
 msgstr "Rezervasyona açık"
+
+msgid "Open guard console"
+msgstr "Bekçi konsolunu aç"
 
 msgid "Open it from the link the payment provider sent you back to, or start again from Pay."
 msgstr "Ödeme sağlayıcının sizi yönlendirdiği bağlantıdan açın ya da Öde bölümünden yeniden başlayın."
@@ -4560,6 +4632,9 @@ msgstr "Veya bunun yerine bir tablo yükleyin (CSV veya XLSX)"
 
 msgid "Ordinary assembly"
 msgstr "Olağan toplantı"
+
+msgid "Ordinary assembly month"
+msgstr "Olağan kurul ayı"
 
 msgid "Organization"
 msgstr "Kuruluş"
@@ -4803,8 +4878,17 @@ msgstr "her"
 msgid "per unit"
 msgstr "birim başına"
 
-msgid "Per unit side or per person, PDF"
-msgstr "Birim tarafı veya kişi bazında, PDF"
+msgid "Per unit"
+msgstr "Birim başına"
+
+msgid "Per-person cap (%)"
+msgstr "Kişi başı sınır (%)"
+
+msgid "Per-person cap, denominator"
+msgstr "Kişi başı sınır, payda"
+
+msgid "Per-person cap, numerator"
+msgstr "Kişi başı sınır, pay"
 
 msgid "Period"
 msgstr "Dönem"
@@ -4849,6 +4933,9 @@ msgstr "Sabitlendi"
 
 msgid "Place"
 msgstr "Yer"
+
+msgid "Plan amendment"
+msgstr "Plan değişikliği"
 
 msgid "Plan an assembly"
 msgstr "Toplantı planla"
@@ -4995,6 +5082,9 @@ msgstr "Daireye özel"
 msgid "Private: that unit and management"
 msgstr "Özel: o daire ve yönetim"
 
+msgid "Pro rata"
+msgstr "Gün oranlı"
+
 msgid "Profile"
 msgstr "Profil"
 
@@ -5025,8 +5115,14 @@ msgstr "Sağlayıcı ödemeleri"
 msgid "Provides"
 msgstr "Sağladıkları"
 
+msgid "Proxies per person"
+msgstr "Kişi başına vekâlet"
+
 msgid "Proxy"
 msgstr "Vekâlet"
+
+msgid "Proxy cap (%)"
+msgstr "Vekâlet sınırı (%)"
 
 msgid "Publish"
 msgstr "Yayımla"
@@ -5091,9 +5187,6 @@ msgstr "Aylık oran (%)"
 
 msgid "Rates"
 msgstr "Oranlar"
-
-msgid "Rates, split rules and live previews"
-msgstr "Oranlar, bölüştürme kuralları ve canlı önizlemeler"
 
 msgid "Raw"
 msgstr "Ham veri"
@@ -5307,9 +5400,6 @@ msgstr "Hatırlatma aşamaları, borçluya gönderilenlerin geçmişi ve yasal d
 msgid "Reminders sent: {0}."
 msgstr "Gönderilen hatırlatma: {0}."
 
-msgid "Reminders, ihtarname and legal cases"
-msgstr "Hatırlatmalar, ihtarname ve yasal dosyalar"
-
 msgid "Remove"
 msgstr "Kaldır"
 
@@ -5515,6 +5605,9 @@ msgstr "Anahtarı yenile"
 msgid "Rounding remainder was distributed to the largest shares."
 msgstr "Yuvarlama artığı en büyük paylara dağıtıldı."
 
+msgid "Routine"
+msgstr "Olağan işler"
+
 msgid "Row"
 msgstr "Satır"
 
@@ -5531,6 +5624,9 @@ msgstr "Kural"
 #. placeholder {0}: labels.topic(th.topic)
 msgid "Rule for {0}"
 msgstr "{0} için kural"
+
+msgid "Sandbox (test mode)"
+msgstr "Sanal ortam (test modu)"
 
 msgid "Save"
 msgstr "Kaydet"
@@ -5697,6 +5793,12 @@ msgstr "İkinci çağrı"
 msgid "Second meeting"
 msgstr "İkinci toplantı"
 
+msgid "Second meeting, earliest (days)"
+msgstr "İkinci toplantı, en erken (gün)"
+
+msgid "Second meeting, latest (days)"
+msgstr "İkinci toplantı, en geç (gün)"
+
 msgid "Second meeting:"
 msgstr "İkinci toplantı:"
 
@@ -5705,6 +5807,9 @@ msgstr "İkinci toplantı: en erken, ilkinden sonra kaç gün"
 
 msgid "Second meeting: latest, days after the first"
 msgstr "İkinci toplantı: en geç, ilkinden sonra kaç gün"
+
+msgid "Secret key"
+msgstr "Gizli anahtar"
 
 msgid "Section"
 msgstr "Bölüm"
@@ -5750,6 +5855,9 @@ msgstr "Makbuzu gönder"
 msgid "Send reminders"
 msgstr "Hatırlatma gönder"
 
+msgid "Send SMS with İleti Merkezi"
+msgstr "İleti Merkezi ile SMS gönder"
+
 msgid "Send test"
 msgstr "Test gönder"
 
@@ -5776,6 +5884,9 @@ msgstr "Gönderilecek yer (isteğe bağlı)"
 
 msgid "Send to resident"
 msgstr "Sakine gönder"
+
+msgid "Sender ID"
+msgstr "Gönderen adı"
 
 msgid "Sent"
 msgstr "Gönderildi"
@@ -5939,6 +6050,9 @@ msgstr "Giriş yapılıyor"
 msgid "Signs the webhook (X-Hub-Signature-256)."
 msgstr "Webhook imzasını atar (X-Hub-Signature-256)."
 
+msgid "Single representative"
+msgstr "Tek temsilci"
+
 msgid "Site"
 msgstr "Site"
 
@@ -5974,6 +6088,9 @@ msgstr "Başkalarının rezerve ettiği saatler yalnızca \"dolu\" olarak görü
 
 msgid "Slug"
 msgstr "Slug"
+
+msgid "Small building (units)"
+msgstr "Küçük bina (birim)"
 
 msgid "Small building: most proxies per person"
 msgstr "Küçük bina: kişi başına en çok vekâlet"
@@ -6101,6 +6218,9 @@ msgstr "Durum güncellendi."
 #. placeholder {0}: policy.max_rate_pct_per_month
 msgid "Statutory cap: {0}% per month."
 msgstr "Yasal sınır: ayda %{0}."
+
+msgid "Stays with the person"
+msgstr "Kişide kalır"
 
 msgid "Steps"
 msgstr "Adımlar"
@@ -7013,6 +7133,9 @@ msgstr "Takip numarası (isteğe bağlı)"
 msgid "Transfer recorded."
 msgstr "Virman kaydedildi."
 
+msgid "Transfer rule"
+msgstr "Devir kuralı"
+
 msgid "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
 msgstr "Tutarı aşağıdaki hesaba havale edin, sonra ödediğinizi bize bildirin. Para ulaşınca yöneticiniz onaylar."
 
@@ -7027,6 +7150,9 @@ msgstr "Tekrar dene"
 
 msgid "Try widening the filters."
 msgstr "Filtreleri genişletmeyi deneyin."
+
+msgid "Türkiye"
+msgstr "Türkiye"
 
 msgid "Type"
 msgstr "Tür"
@@ -7071,6 +7197,9 @@ msgstr "Bağımsız bölüm alacağı"
 
 msgid "Units"
 msgstr "Birimler"
+
+msgid "Units and share"
+msgstr "Birim ve arsa payı"
 
 msgid "unknown permission"
 msgstr "bilinmeyen yetki"
@@ -7132,9 +7261,6 @@ msgstr "Ekstre yükle"
 msgid "Upload a statement above to start matching."
 msgstr "Eşleştirmeye başlamak için yukarıdan bir ekstre yükleyin."
 
-msgid "Upload a statement and match lines to units"
-msgstr "Bir ekstre yükleyin ve satırları birimlerle eşleştirin"
-
 msgid "Upload failed."
 msgstr "Yükleme başarısız."
 
@@ -7187,6 +7313,9 @@ msgstr "Parolamı kullan"
 #. placeholder {0}: event.actor_user_id.slice(0, 8)
 msgid "User {0}"
 msgstr "Kullanıcı {0}"
+
+msgid "Username"
+msgstr "Kullanıcı adı"
 
 msgid "Utility"
 msgstr "Kullanım gideri"
@@ -7264,6 +7393,9 @@ msgstr "Tedarikçi borcu"
 
 msgid "Vendors"
 msgstr "Tedarikçiler"
+
+msgid "VERBIS number"
+msgstr "VERBİS numarası"
 
 #. placeholder {0}: c.version
 msgid "Version {0}"
@@ -7345,6 +7477,9 @@ msgstr "Bu açılış kaydı iptal edilsin mi?"
 
 msgid "Voided"
 msgstr "İptal edildi"
+
+msgid "Vote weight"
+msgstr "Oy ağırlığı"
 
 msgid "Voted"
 msgstr "Oylanacak"
@@ -7485,9 +7620,6 @@ msgstr "Ne ödenecek"
 
 msgid "What was it for?"
 msgstr "Ne için yapıldı?"
-
-msgid "What was spent, from which account"
-msgstr "Neye, hangi hesaptan harcandı"
 
 msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
 msgstr "Neye harcandığı, kime ödendiği ve hangi hesaptan. Harcama onayı toplantılarınızda verilir; burası sonucu kaydeder."

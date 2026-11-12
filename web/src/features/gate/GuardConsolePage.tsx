@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { UsersRoundIcon } from 'lucide-react'
+import { useRouter } from '@tanstack/react-router'
+import { ArrowLeftIcon, UsersRoundIcon } from 'lucide-react'
 import { Trans } from '@lingui/react/macro'
 import { useLocale } from '@/app/locale'
+import { useSession } from '@/app/session'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { Button } from '@/components/ui/button'
@@ -43,10 +45,25 @@ export function GuardConsolePage() {
   const ctx = useSiteCtx()!
   const guard = useGuardSession()
   const cq = useConsole(ctx, !!guard)
+  const { can } = useSession()
+  const router = useRouter()
+  // a booth user (guard only) leaves with a PIN; anyone who also manages visitors just goes back
+  const guardOnly = !can('visitors.read') && !can('visitors.manage') && !can('visitors.decide')
+  const back = () =>
+    router.history.length > 1
+      ? router.history.back()
+      : void router.navigate({ to: '/orgs/$orgId/visitors', params: { orgId: ctx.orgId } })
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background" data-testid="guard-console">
       <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background px-4 py-3">
-        {guard ? <ExitGate ctx={ctx} guard={guard} /> : null}
+        {!guardOnly ? (
+          <Button variant="ghost" size="xl" className="min-h-11" onClick={back}>
+            <ArrowLeftIcon className="rtl-flip" aria-hidden="true" />
+            <Trans>Exit console</Trans>
+          </Button>
+        ) : guard ? (
+          <ExitGate ctx={ctx} guard={guard} />
+        ) : null}
         <h1 className="text-2xl font-semibold">
           <Trans>Gate</Trans>
         </h1>

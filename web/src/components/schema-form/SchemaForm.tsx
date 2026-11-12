@@ -154,7 +154,12 @@ export function SchemaForm({
 
   const labelOf = (f: FieldDef): string => {
     const ui = uiOf(f.schema)
-    return (ui.label && resolveText?.(ui.label)) || f.schema.title || humanize(f.name, stripPrefix)
+    return (
+      (ui.label && resolveText?.(ui.label)) ||
+      f.schema.title ||
+      resolveText?.(f.name) ||
+      humanize(f.name, stripPrefix)
+    )
   }
   const helpOf = (f: FieldDef): string | undefined => {
     const ui = uiOf(f.schema)

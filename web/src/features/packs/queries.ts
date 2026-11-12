@@ -52,5 +52,28 @@ export function usePackLabels(): (key: string) => string | undefined {
     for (const list of Object.values(data.enums)) for (const c of list) m.set(c.code, c.label)
     return m
   }, [query.data])
-  return useCallback((key: string) => map.get(key), [map])
+  const { t } = useLingui()
+  // field names and groups the catalog has no label for (the server sends none for these yet)
+  const own = useMemo<Record<string, string>>(
+    () => ({
+      kvkk: t`KVKK`,
+      tr_kvkk_data_controller: t`Data controller`,
+      legal_name: t`Legal name`,
+      address: t`Address`,
+      contact: t`Contact`,
+      verbis_no: t`VERBIS number`,
+      tr_payments_iyzico_enabled: t`Accept card payments with iyzico`,
+      tr_payments_iyzico_api_key: t`API key`,
+      tr_payments_iyzico_secret_key: t`Secret key`,
+      tr_payments_iyzico_sandbox: t`Sandbox (test mode)`,
+      tr_payments_iyzico_callback_base_url: t`Callback base URL`,
+      tr_sms_iletimerkezi_enabled: t`Send SMS with İleti Merkezi`,
+      tr_sms_iletimerkezi_username: t`Username`,
+      tr_sms_iletimerkezi_password: t`Password`,
+      tr_sms_iletimerkezi_sender_id: t`Sender ID`,
+      tr_bank_formats: t`Bank statement formats`,
+    }),
+    [t],
+  )
+  return useCallback((key: string) => map.get(key) ?? own[key], [map, own])
 }

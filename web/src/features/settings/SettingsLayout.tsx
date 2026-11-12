@@ -44,8 +44,9 @@ export function SettingsLayout() {
   useEffect(() => {
     if (active) document.title = `${active.label} - ${settings}`
   }, [active, settings])
+  // one shell for every settings route: same width, header and tabs
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
       <h1 className="text-2xl font-semibold">
         <Trans>Settings</Trans>
       </h1>
