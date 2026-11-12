@@ -286,7 +286,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
   const errors = form.formState.errors
   const locked = existing && (existing.status === 'published' || existing.status === 'archived')
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold">
         {existing ? <Trans>Edit announcement</Trans> : <Trans>New announcement</Trans>}
       </h1>

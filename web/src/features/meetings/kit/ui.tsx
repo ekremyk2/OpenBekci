@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import type { UseQueryResult } from '@tanstack/react-query'
-import { LockIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form'
 import { AppError } from '@/api/errors'
 import { useSession } from '@/app/session'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton, TableSkeleton } from '@/components/data/Skeletons'
@@ -94,14 +94,7 @@ export function PageHeader({
 
 /** No permission for this screen (403 is also mapped by ErrorState). */
 export function NoPermission() {
-  const { t } = useLingui()
-  return (
-    <EmptyState
-      icon={LockIcon}
-      title={t`You do not have access to this`}
-      description={t`Ask your manager if you think you should.`}
-    />
-  )
+  return <AccessDenied />
 }
 
 /** Renders children only when the session grants `permission` in the current organization. */

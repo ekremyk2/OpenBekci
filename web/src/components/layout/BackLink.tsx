@@ -16,6 +16,7 @@ const PARENT: Record<string, string> = {
 
 /** Where a sub-page's Back goes when there is no in-app history (deep link, new tab). */
 export function backTarget(routeId: string): string | undefined {
+  if (routeId === '/platform') return '/'
   if (!routeId.startsWith(ORG)) return undefined
   const path = routeId.slice(ORG.length).replace(/\/$/, '')
   if (!SUBPAGE.test(path)) return undefined

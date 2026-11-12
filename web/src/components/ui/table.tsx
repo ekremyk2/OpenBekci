@@ -6,7 +6,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
     // scrollable region must be keyboard-focusable
     // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-    <div className="relative max-h-[75vh] w-full overflow-auto" tabIndex={0}>
+    <div className="relative w-full overflow-x-auto xl:overflow-visible" tabIndex={0}>
       <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   )
@@ -29,7 +29,7 @@ function TableHead({ className, children, ...props }: React.ComponentProps<'th'>
   return (
     <th
       className={cn(
-        'sticky top-0 z-10 h-11 bg-background px-2 text-start align-middle font-medium whitespace-nowrap text-muted-foreground',
+        'z-10 h-11 xl:sticky xl:top-0 bg-background px-2 text-start align-middle font-medium whitespace-nowrap text-muted-foreground',
         className,
       )}
       {...props}

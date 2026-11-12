@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ForbiddenError, requireSession } from '@/app/guards'
+import { AppShell } from '@/components/layout/AppShell'
 import { PlatformPage } from '@/features/platform/PlatformPage'
 
 // Platform administration: organizations, health, jobs, instance settings, backup status.
@@ -8,5 +9,9 @@ export const Route = createFileRoute('/platform')({
     const me = await requireSession(context, location)
     if (!me.user.is_platform_admin) throw new ForbiddenError()
   },
-  component: PlatformPage,
+  component: () => (
+    <AppShell>
+      <PlatformPage />
+    </AppShell>
+  ),
 })

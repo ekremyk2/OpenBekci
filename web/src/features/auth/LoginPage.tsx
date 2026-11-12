@@ -16,9 +16,9 @@ import { safeNext } from '@/app/guards'
 import { ErrorState } from '@/components/data/ErrorState'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { AuthShell } from './AuthShell'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 /*
@@ -325,65 +325,58 @@ function safeLogoUrl(url: string | undefined): string | undefined {
   return /^(https?:\/\/|\/(?![/\\]))/i.test(url) ? url : undefined
 }
 
-export function LoginPage({ next }: { next?: string }) {
+export function LoginPage({ next, method }: { next?: string; method?: KnownAuthMethod }) {
   const instance = useInstance()
   const methods = supportedAuthMethods(instance.data)
-  const first = methods[0]
+  const first = methods.find((m) => m === method) ?? methods[0]
   const logoUrl = safeLogoUrl(instance.data?.branding?.logo_url)
 
   return (
-    <div className="flex min-h-dvh items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          {logoUrl ? <img src={logoUrl} alt="" className="mb-2 h-12 w-auto self-start" /> : null}
-          <CardTitle className="text-xl">{instance.data?.instance_name || 'OpenBekci'}</CardTitle>
-          <CardDescription>
-            <Trans>Sign in to manage your building.</Trans>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {instance.isPending ? (
-            <div role="status" aria-busy="true" className="flex flex-col gap-3">
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-24" />
-            </div>
-          ) : instance.isError ? (
-            <ErrorState error={instance.error} onRetry={() => void instance.refetch()} />
-          ) : !first ? (
-            <p role="alert" className="text-sm">
-              <Trans>This server offers no sign-in method this app can use.</Trans>
-            </p>
-          ) : (
-            <Tabs defaultValue={first}>
-              {methods.length > 1 ? (
-                <TabsList className="w-full">
-                  {methods.map((m) => (
-                    <TabsTrigger key={m} value={m}>
-                      <MethodLabel method={m} />
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              ) : null}
-              {methods.includes('password') ? (
-                <TabsContent value="password">
-                  <PasswordForm next={next} />
-                </TabsContent>
-              ) : null}
-              {methods.includes('sms_otp') ? (
-                <TabsContent value="sms_otp">
-                  <SmsForm next={next} />
-                </TabsContent>
-              ) : null}
-              {methods.includes('magic_link') ? (
-                <TabsContent value="magic_link">
-                  <MagicLinkForm />
-                </TabsContent>
-              ) : null}
-            </Tabs>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      title={instance.data?.instance_name || 'OpenBekci'}
+      description={<Trans>Sign in to manage your building.</Trans>}
+      logo={logoUrl ? <img src={logoUrl} alt="" className="mb-2 h-12 w-auto self-start" /> : null}
+    >
+      {instance.isPending ? (
+        <div role="status" aria-busy="true" className="flex flex-col gap-3">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-24" />
+        </div>
+      ) : instance.isError ? (
+        <ErrorState error={instance.error} onRetry={() => void instance.refetch()} />
+      ) : !first ? (
+        <p role="alert" className="text-sm">
+          <Trans>This server offers no sign-in method this app can use.</Trans>
+        </p>
+      ) : (
+        <Tabs defaultValue={first}>
+          {methods.length > 1 ? (
+            <TabsList className="w-full">
+              {methods.map((m) => (
+                <TabsTrigger key={m} value={m}>
+                  <MethodLabel method={m} />
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          ) : null}
+          {methods.includes('password') ? (
+            <TabsContent value="password">
+              <PasswordForm next={next} />
+            </TabsContent>
+          ) : null}
+          {methods.includes('sms_otp') ? (
+            <TabsContent value="sms_otp">
+              <SmsForm next={next} />
+            </TabsContent>
+          ) : null}
+          {methods.includes('magic_link') ? (
+            <TabsContent value="magic_link">
+              <MagicLinkForm />
+            </TabsContent>
+          ) : null}
+        </Tabs>
+      )}
+    </AuthShell>
   )
 }

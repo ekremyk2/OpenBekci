@@ -55,32 +55,34 @@ export function GuardConsolePage() {
       : void router.navigate({ to: '/orgs/$orgId/visitors', params: { orgId: ctx.orgId } })
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background" data-testid="guard-console">
-      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b bg-background px-4 py-3">
-        {!guardOnly ? (
-          <Button variant="ghost" size="xl" className="min-h-11" onClick={back}>
-            <ArrowLeftIcon className="rtl-flip" aria-hidden="true" />
-            <Trans>Exit console</Trans>
-          </Button>
-        ) : guard ? (
-          <ExitGate ctx={ctx} guard={guard} />
-        ) : null}
-        <h1 className="text-2xl font-semibold">
-          <Trans>Gate</Trans>
-        </h1>
-        <span className="text-muted-foreground">{ctx.siteName}</span>
-        <div className="ms-auto flex items-center gap-4">
-          <Clock timeZone={ctx.timeZone} />
-          {guard ? (
-            <>
-              <span className="flex items-center gap-2 text-lg" data-testid="guard-name">
-                <UsersRoundIcon className="size-5" aria-hidden="true" />
-                {guard.displayName}
-              </span>
-              <Button variant="outline" size="xl" onClick={() => setGuardSession(null)}>
-                <Trans>Switch guard</Trans>
-              </Button>
-            </>
+      <header className="sticky top-0 z-10 border-b bg-background px-4 py-3">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3">
+          {!guardOnly ? (
+            <Button variant="ghost" size="xl" className="min-h-11" onClick={back}>
+              <ArrowLeftIcon className="rtl-flip" aria-hidden="true" />
+              <Trans>Exit console</Trans>
+            </Button>
+          ) : guard ? (
+            <ExitGate ctx={ctx} guard={guard} />
           ) : null}
+          <h1 className="text-2xl font-semibold">
+            <Trans>Gate</Trans>
+          </h1>
+          <span className="text-muted-foreground">{ctx.siteName}</span>
+          <div className="ms-auto flex items-center gap-4">
+            <Clock timeZone={ctx.timeZone} />
+            {guard ? (
+              <>
+                <span className="flex items-center gap-2 text-lg" data-testid="guard-name">
+                  <UsersRoundIcon className="size-5" aria-hidden="true" />
+                  {guard.displayName}
+                </span>
+                <Button variant="outline" size="xl" onClick={() => setGuardSession(null)}>
+                  <Trans>Switch guard</Trans>
+                </Button>
+              </>
+            ) : null}
+          </div>
         </div>
       </header>
       {!guard ? (
@@ -94,7 +96,7 @@ export function GuardConsolePage() {
           <ErrorState error={cq.error} onRetry={() => void cq.refetch()} />
         </div>
       ) : (
-        <div className="grid gap-8 p-4 lg:grid-cols-3">
+        <div className="mx-auto grid max-w-7xl gap-8 p-4 lg:grid-cols-3">
           {cq.data.pending_approvals.length > 0 ? (
             <div className="lg:col-span-3">
               <Callout tone="warning" role="status">

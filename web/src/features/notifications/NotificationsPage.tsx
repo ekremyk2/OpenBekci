@@ -185,7 +185,7 @@ export function NotificationsPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="me-auto text-2xl font-semibold">
           <Trans>Notifications</Trans>

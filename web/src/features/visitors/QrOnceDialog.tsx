@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { QrCode } from '@/features/meetings/kit/QrCode'
 import { Callout } from '@/features/meetings/kit/widgets'
+import { copyText } from '@/lib/clipboard'
 
 /** What the QR encodes: the token with the `obk1.` prefix the guard console expects. */
 export const qrValue = (token: string) => (token.startsWith('obk1.') ? token : `obk1.${token}`)
@@ -91,7 +92,7 @@ export function QrOnceDialog({
           <Button
             variant="outline"
             onClick={() => {
-              void navigator.clipboard?.writeText(message).then(() => setCopied(true))
+              void copyText(message).then((ok) => ok && setCopied(true))
             }}
           >
             {copied ? <CheckIcon /> : <CopyIcon />}

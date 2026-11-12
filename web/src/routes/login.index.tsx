@@ -5,7 +5,10 @@ import { defaultLanding, loadSession } from '@/app/session'
 import { LoginPage } from '@/features/auth/LoginPage'
 
 export const Route = createFileRoute('/login/')({
-  validateSearch: z.object({ next: z.string().optional().catch(undefined) }),
+  validateSearch: z.object({
+    next: z.string().optional().catch(undefined),
+    method: z.enum(['password', 'sms_otp', 'magic_link']).optional().catch(undefined),
+  }),
   beforeLoad: async ({ context, search }) => {
     const me = await loadSession(context.queryClient)
     if (!me) return
@@ -14,7 +17,7 @@ export const Route = createFileRoute('/login/')({
     throw redirect({ ...defaultLanding(me), replace: true })
   },
   component: function Login() {
-    const { next } = Route.useSearch()
-    return <LoginPage next={next} />
+    const { next, method } = Route.useSearch()
+    return <LoginPage next={next} method={method} />
   },
 })
