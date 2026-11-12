@@ -86,7 +86,7 @@ describe('charges', () => {
       ),
     )
     mountMoney('/orgs/org-1/money/charges')
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 })
 

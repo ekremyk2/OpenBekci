@@ -84,7 +84,7 @@ describe('audit viewer', () => {
 
   it('is not available without audit.read', async () => {
     mountApp('/orgs/org-1/settings/audit', 'resident')
-    expect(await screen.findByText('You do not have access to the audit log')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 
   it('shows the no-permission state on a 403 from the API', async () => {
@@ -94,6 +94,6 @@ describe('audit viewer', () => {
       ),
     )
     mountApp('/orgs/org-1/settings/audit', 'manager')
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 })

@@ -77,7 +77,7 @@ describe('cash collector', () => {
 
   it('the route is open to payments.record or money.read, not to residents', async () => {
     mountMoney('/orgs/org-1/money/payments/new', ['statements.read_own'])
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'You do not have access to this page' })).toBeInTheDocument()
   })
 })
 

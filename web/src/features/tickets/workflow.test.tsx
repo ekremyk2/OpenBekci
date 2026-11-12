@@ -99,7 +99,7 @@ describe('workflow editor', () => {
 
   it('shows no-permission for a resident', async () => {
     mountApp('/orgs/org-1/settings/tickets', 'resident')
-    expect(await screen.findByText('You do not have access to this')).toBeInTheDocument()
+    expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
   })
 
   it('shows an error state with retry when the workflow cannot load', async () => {
