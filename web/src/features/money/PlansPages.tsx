@@ -44,7 +44,7 @@ import {
   useIdempotencyKeys,
   useZodMessages,
 } from './forms'
-import { CHARGE_TYPES, defaultDebtorFor, useLabels } from './labels'
+import { CHARGE_TYPES, defaultDebtorFor, moneyErrorText, useLabels } from './labels'
 import { AllocationKeyPicker, FundPicker, ScopePicker, useAllocationKeys } from './pickers'
 import {
   applyServerErrors,
@@ -623,13 +623,12 @@ function PlanSettings({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
   const [name, setName] = useState(plan.name)
   const [dueDay, setDueDay] = useState(String(plan.due_day ?? 5))
   const [status, setStatus] = useState(plan.status)
-  const [key, setKey] = useState(plan.allocation_key_id)
-  const [scope, setScope] = useState(plan.scope)
   const [error, setError] = useState<string | null>(null)
   const save = useMoneyMutation(async () => {
     const res = await moneyApi.PATCH('/v1/orgs/{org_id}/charge-plans/{plan_id}', {
       params: { path: { org_id: ctx.orgId, plan_id: plan.id }, header: ifMatch(plan.version) },
-      body: { name, due_day: Number(dueDay), status, allocation_key_id: key, scope },
+      // the split rule and scope are fixed once the plan exists: the server refuses them in a PATCH
+      body: { name, due_day: Number(dueDay), status },
     })
     return res.data!
   })
@@ -649,7 +648,7 @@ function PlanSettings({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
               setError(null)
               save.mutateAsync().then(
                 () => toast.info(t`Plan saved.`),
-                () => setError(t`Could not save the plan.`),
+                (e) => setError(moneyErrorText(e, t`Could not save the plan.`)),
               )
             }}
           >
@@ -678,10 +677,22 @@ function PlanSettings({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
               />
             </Field>
             <Field label={t`Split rule`} htmlFor="ps-key">
-              <AllocationKeyPicker ctx={ctx} id="ps-key" value={key} onChange={setKey} />
+              <AllocationKeyPicker
+                ctx={ctx}
+                id="ps-key"
+                value={plan.allocation_key_id}
+                onChange={() => {}}
+                disabled
+              />
             </Field>
-            <Field label={t`Applies to`} className="sm:col-span-2">
-              <ScopePicker ctx={ctx} value={scope} onChange={setScope} idPrefix="ps-scope" />
+            <Field
+              label={t`Applies to`}
+              className="sm:col-span-2"
+              hint={t`The split rule and scope cannot change once a plan exists. Create a new plan to change them.`}
+            >
+              <fieldset disabled>
+                <ScopePicker ctx={ctx} value={plan.scope} onChange={() => {}} idPrefix="ps-scope" />
+              </fieldset>
             </Field>
             <div className="sm:col-span-2">
               <FormRootError message={error ?? undefined} />
@@ -894,4 +905,3 @@ export function ExpenseSharingPage() {
     />
   )
 }
-

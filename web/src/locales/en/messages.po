@@ -2555,6 +2555,9 @@ msgstr "Enter a date"
 msgid "Enter a date."
 msgstr "Enter a date."
 
+msgid "Enter a due day from 1 to 31."
+msgstr "Enter a due day from 1 to 31."
+
 msgid "Enter a full web address, for example https://example.org"
 msgstr "Enter a full web address, for example https://example.org"
 
@@ -2581,6 +2584,9 @@ msgstr "Enter a phone number in international format (+90 555 111 22 33) or a va
 
 msgid "Enter a plate like 34 ABC 123."
 msgstr "Enter a plate like 34 ABC 123."
+
+msgid "Enter a rate of zero or more."
+msgstr "Enter a rate of zero or more."
 
 msgid "Enter a rate."
 msgstr "Enter a rate."
@@ -2627,6 +2633,9 @@ msgstr "Enter a whole number."
 msgid "Enter an address starting with https://"
 msgstr "Enter an address starting with https://"
 
+msgid "Enter an amount above zero."
+msgstr "Enter an amount above zero."
+
 msgid "Enter an amount greater than zero."
 msgstr "Enter an amount greater than zero."
 
@@ -2645,6 +2654,9 @@ msgstr "Enter an email address"
 msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
 msgstr "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
 
+msgid "Enter grace days of zero or more."
+msgstr "Enter grace days of zero or more."
+
 msgid "Enter how much goes to each charge."
 msgstr "Enter how much goes to each charge."
 
@@ -2662,6 +2674,9 @@ msgstr "Enter the area in square metres"
 
 msgid "Enter the code from the SMS"
 msgstr "Enter the code from the SMS"
+
+msgid "Enter the date as year-month-day."
+msgstr "Enter the date as year-month-day."
 
 msgid "Enter the date it was sent."
 msgstr "Enter the date it was sent."
@@ -3092,6 +3107,9 @@ msgstr "Generated: receipt"
 
 msgid "Generated: statement"
 msgstr "Generated: statement"
+
+msgid "Generic CSV / Excel statement"
+msgstr "Generic CSV / Excel statement"
 
 msgid "Get link code"
 msgstr "Get link code"
@@ -4530,6 +4548,9 @@ msgstr "Nothing here yet"
 msgid "Nothing is open on this side."
 msgstr "Nothing is open on this side."
 
+msgid "Nothing is open, so there is nothing to pay. Choose an amount to prepay."
+msgstr "Nothing is open, so there is nothing to pay. Choose an amount to prepay."
+
 msgid "Nothing is waiting for you."
 msgstr "Nothing is waiting for you."
 
@@ -4639,6 +4660,9 @@ msgstr "One block"
 msgid "One currency per site."
 msgstr "One currency per site."
 
+msgid "One of the chosen charges is no longer open. Reload and choose again."
+msgstr "One of the chosen charges is no longer open. Reload and choose again."
+
 msgid "One row per unit side or account, with these columns in the first row:"
 msgstr "One row per unit side or account, with these columns in the first row:"
 
@@ -4648,8 +4672,14 @@ msgstr "One-off"
 msgid "Online"
 msgstr "Online"
 
+msgid "Only a confirmed payment can be refunded."
+msgstr "Only a confirmed payment can be refunded."
+
 msgid "Only an organization administrator can change this."
 msgstr "Only an organization administrator can change this."
+
+msgid "Only card payments can be refunded this way. Void a cash or bank payment instead."
+msgstr "Only card payments can be refunded this way. Void a cash or bank payment instead."
 
 msgid "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
 msgstr "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
@@ -6428,9 +6458,8 @@ msgstr "Status names must be different."
 msgid "Status updated."
 msgstr "Status updated."
 
-#. placeholder {0}: policy.max_rate_pct_per_month
-msgid "Statutory cap: {0}% per month."
-msgstr "Statutory cap: {0}% per month."
+msgid "Statutory cap: {cap} per month."
+msgstr "Statutory cap: {cap} per month."
 
 msgid "Stays with the person"
 msgstr "Stays with the person"
@@ -6600,9 +6629,6 @@ msgstr "The agent's clock is wrong."
 msgid "The amount cannot be more than the client money held for the site."
 msgstr "The amount cannot be more than the client money held for the site."
 
-msgid "The amount is more than the accrued fee."
-msgstr "The amount is more than the accrued fee."
-
 msgid "The amounts are more than the payment or a charge's balance."
 msgstr "The amounts are more than the payment or a charge's balance."
 
@@ -6750,6 +6776,9 @@ msgstr "The key stops working immediately and cannot be switched on again."
 msgid "The last day must not be before the first."
 msgstr "The last day must not be before the first."
 
+msgid "The late fee schedule already has an entry from this date or later. A new entry must start later."
+msgstr "The late fee schedule already has an entry from this date or later. A new entry must start later."
+
 msgid "The latest day must not be before the earliest day."
 msgstr "The latest day must not be before the earliest day."
 
@@ -6889,9 +6918,11 @@ msgstr "The QR code stops working at once."
 msgid "The QR code was rotated."
 msgstr "The QR code was rotated."
 
-#. placeholder {0}: policy.max_rate_pct_per_month
-msgid "The rate cannot be above the statutory cap of {0}% per month."
-msgstr "The rate cannot be above the statutory cap of {0}% per month."
+msgid "The rate cannot be above the statutory cap of {cap} per month."
+msgstr "The rate cannot be above the statutory cap of {cap} per month."
+
+msgid "The rate is above the statutory cap."
+msgstr "The rate is above the statutory cap."
 
 msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
 msgstr "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
@@ -6940,6 +6971,12 @@ msgstr "The site collects card payments into its own provider account, so the or
 msgid "The site has not published bank details yet. Ask your manager how to pay."
 msgstr "The site has not published bank details yet. Ask your manager how to pay."
 
+msgid "The split rule and scope cannot change once a plan exists. Create a new plan to change them."
+msgstr "The split rule and scope cannot change once a plan exists. Create a new plan to change them."
+
+msgid "The start date cannot be in the past."
+msgstr "The start date cannot be in the past."
+
 msgid "The statuses a ticket moves through at this site, in order."
 msgstr "The statuses a ticket moves through at this site, in order."
 
@@ -6976,6 +7013,9 @@ msgstr "The values could not be saved. Check them and try again."
 msgid "The visit must end after it starts."
 msgstr "The visit must end after it starts."
 
+msgid "The waiver is more than the unpaid late fee."
+msgstr "The waiver is more than the unpaid late fee."
+
 msgid "The WhatsApp number people write to, international format (for the wa.me link)."
 msgstr "The WhatsApp number people write to, international format (for the wa.me link)."
 
@@ -6990,6 +7030,9 @@ msgstr "Theme"
 
 msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
 msgstr "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
+
+msgid "There is no late fee to waive."
+msgstr "There is no late fee to waive."
 
 msgid "These apply to one site, for example a provider account per site."
 msgstr "These apply to one site, for example a provider account per site."
@@ -7040,6 +7083,9 @@ msgstr "This code is not valid for this assembly."
 msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
 msgstr "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
 
+msgid "This date cannot be in the past."
+msgstr "This date cannot be in the past."
+
 msgid "This date is on or before the lock date; the period is closed."
 msgstr "This date is on or before the lock date; the period is closed."
 
@@ -7048,6 +7094,9 @@ msgstr "This decision already has an applied change."
 
 msgid "This facility is not open to your kind of occupant."
 msgstr "This facility is not open to your kind of occupant."
+
+msgid "This field cannot be changed here."
+msgstr "This field cannot be changed here."
 
 msgid "This field is required"
 msgstr "This field is required"
@@ -7084,6 +7133,9 @@ msgstr "This link no longer works"
 
 msgid "This number is not valid. Check the digits."
 msgstr "This number is not valid. Check the digits."
+
+msgid "This option is not supported."
+msgstr "This option is not supported."
 
 msgid "This pack has no settings."
 msgstr "This pack has no settings."
@@ -7130,6 +7182,9 @@ msgstr "This person would hold more than the maximum share of all votes."
 msgid "This point is switched off."
 msgstr "This point is switched off."
 
+msgid "This rate overlaps another rate of the plan."
+msgstr "This rate overlaps another rate of the plan."
+
 msgid "This record changed"
 msgstr "This record changed"
 
@@ -7172,8 +7227,14 @@ msgstr "This site treats parking and storage as independent units. Choose a flat
 msgid "This site uses the default workflow. Edit it to add your own statuses."
 msgstr "This site uses the default workflow. Edit it to add your own statuses."
 
+msgid "This status is not allowed, or the end date is before the start."
+msgstr "This status is not allowed, or the end date is before the start."
+
 msgid "This step is not available in this build yet."
 msgstr "This step is not available in this build yet."
+
+msgid "This text is too long."
+msgstr "This text is too long."
 
 msgid "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
 msgstr "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
@@ -7190,8 +7251,17 @@ msgstr "This token is shown only now. If you lose it, re-enrol the agent to get 
 msgid "This value does not have the expected format"
 msgstr "This value does not have the expected format"
 
+msgid "This value is not in the expected format."
+msgstr "This value is not in the expected format."
+
 msgid "This value is not valid"
 msgstr "This value is not valid"
+
+msgid "This value is not valid."
+msgstr "This value is not valid."
+
+msgid "This value is too large."
+msgstr "This value is too large."
 
 msgid "This will be a common ticket, visible to the whole site."
 msgstr "This will be a common ticket, visible to the whole site."
@@ -7307,6 +7377,9 @@ msgstr "Token rotation started."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Too many attempts. Please wait and try again."
+
+msgid "Too many charges chosen. Choose fewer or pay an amount."
+msgstr "Too many charges chosen. Choose fewer or pay an amount."
 
 msgid "Too many files."
 msgstr "Too many files."

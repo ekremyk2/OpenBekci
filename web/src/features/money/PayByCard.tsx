@@ -19,10 +19,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useBodyIdempotencyKey } from '@/lib/idempotency'
-import { problemMessage } from '@/lib/labels'
 import { useSiteCard } from './checkout'
 import { idemHeader, moneyApi, unwrap, useMoneyMutation, type MoneyCtx, type S } from './api'
 import { FormRootError, Field, Select } from './ui'
+import { moneyErrorText } from './labels'
 
 /** The one place the page leaves for the provider (a top-level navigation, never an iframe). */
 export const navigation = {
@@ -180,7 +180,11 @@ function PayByCardDialog({
   })
 
   const missing =
-    mode === 'charges' ? chosen.length === 0 : mode === 'amount' ? !amount || amount <= 0n : false
+    mode === 'charges'
+      ? chosen.length === 0
+      : mode === 'amount'
+        ? !amount || amount <= 0n
+        : side.total.amount <= 0
 
   function submit() {
     setError(undefined)
@@ -190,11 +194,7 @@ function PayByCardDialog({
         navigation.go(url)
       },
       onError: (e) =>
-        setError(
-          (e instanceof AppError ? problemMessage(e.code, { _: (d) => t(d) }) : undefined) ??
-            (e instanceof AppError && e.isValidation ? e.message : undefined) ??
-            t`Could not start the card payment. Please try again.`,
-        ),
+        setError(moneyErrorText(e, t`Could not start the card payment. Please try again.`)),
     })
   }
 
@@ -266,6 +266,14 @@ function PayByCardDialog({
                 Your open charges are paid oldest first. Today you owe{' '}
                 <Money minor={side.total.amount} currency={ctx.currency} />.
               </Trans>
+              {side.total.amount <= 0 ? (
+                <>
+                  {' '}
+                  <Trans>
+                    Nothing is open, so there is nothing to pay. Choose an amount to prepay.
+                  </Trans>
+                </>
+              ) : null}
             </p>
           ) : null}
           {mode === 'charges' ? (

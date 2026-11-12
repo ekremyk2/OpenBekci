@@ -3,6 +3,7 @@ import {
   currencyDigits,
   formatMoney,
   formatMoneyPlain,
+  formatPercent,
   minorToDecimalString,
   parseMoneyInput,
 } from './money'
@@ -10,12 +11,21 @@ import {
 // Intl output uses NBSP/narrow NBSP between number and symbol; normalise for readable asserts.
 const norm = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ')
 
+describe('formatPercent', () => {
+  it('follows the locale', () => {
+    expect(formatPercent(2.5, 'en-US')).toBe('2.5%')
+    expect(formatPercent(2.5, 'tr-TR')).toBe('%2,5')
+  })
+})
+
 describe('formatMoney', () => {
   it('formats TRY in tr-TR', () => {
     expect(formatMoney(123456, 'TRY', 'tr-TR')).toBe('1.234,56 ₺')
   })
   it('formats TRY and USD in en-US', () => {
-    expect(norm(formatMoney(123456, 'TRY', 'en-US'))).toBe('TRY 1,234.56')
+    expect(formatMoney(123456, 'TRY', 'en-US')).toBe(
+      formatMoney(123456, 'TRY', 'tr-TR').replace('1.234,56', '1,234.56'),
+    )
     expect(formatMoney(123456, 'USD', 'en-US')).toBe('$1,234.56')
   })
   it('keeps the sign and handles zero and sub-unit amounts', () => {

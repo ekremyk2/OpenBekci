@@ -2555,6 +2555,9 @@ msgstr "Bir tarih girin"
 msgid "Enter a date."
 msgstr "Bir tarih girin."
 
+msgid "Enter a due day from 1 to 31."
+msgstr "1 ile 31 arasında bir vade günü girin."
+
 msgid "Enter a full web address, for example https://example.org"
 msgstr "Tam bir web adresi girin, örneğin https://example.org"
 
@@ -2581,6 +2584,9 @@ msgstr "Uluslararası biçimde bir telefon numarası (+90 555 111 22 33) veya ge
 
 msgid "Enter a plate like 34 ABC 123."
 msgstr "34 ABC 123 gibi bir plaka girin."
+
+msgid "Enter a rate of zero or more."
+msgstr "Sıfır veya daha büyük bir oran girin."
 
 msgid "Enter a rate."
 msgstr "Bir oran girin."
@@ -2627,6 +2633,9 @@ msgstr "Tam sayı girin."
 msgid "Enter an address starting with https://"
 msgstr "https:// ile başlayan bir adres girin"
 
+msgid "Enter an amount above zero."
+msgstr "Sıfırdan büyük bir tutar girin."
+
 msgid "Enter an amount greater than zero."
 msgstr "Sıfırdan büyük bir tutar girin."
 
@@ -2645,6 +2654,9 @@ msgstr "Bir e-posta adresi girin"
 msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
 msgstr "Her birimin tapudaki arsa payını girin. Yalnızca oranlar önemlidir: 1000'de 100 ile 100'de 10 aynıdır."
 
+msgid "Enter grace days of zero or more."
+msgstr "Sıfır veya daha fazla ek gün girin."
+
 msgid "Enter how much goes to each charge."
 msgstr "Her tahakkuka ne kadar gideceğini girin."
 
@@ -2662,6 +2674,9 @@ msgstr "Alanı metrekare olarak girin"
 
 msgid "Enter the code from the SMS"
 msgstr "SMS ile gelen kodu girin"
+
+msgid "Enter the date as year-month-day."
+msgstr "Tarihi yıl-ay-gün olarak girin."
 
 msgid "Enter the date it was sent."
 msgstr "Gönderildiği tarihi girin."
@@ -3092,6 +3107,9 @@ msgstr "Otomatik: makbuz"
 
 msgid "Generated: statement"
 msgstr "Otomatik: ekstre"
+
+msgid "Generic CSV / Excel statement"
+msgstr "Genel CSV / Excel ekstresi"
 
 msgid "Get link code"
 msgstr "Bağlantı kodu al"
@@ -4530,6 +4548,9 @@ msgstr "Henüz burada bir şey yok"
 msgid "Nothing is open on this side."
 msgstr "Bu tarafta açık bir şey yok."
 
+msgid "Nothing is open, so there is nothing to pay. Choose an amount to prepay."
+msgstr "Açık borç yok, ödenecek bir şey yok. Peşin ödemek için bir tutar seçin."
+
 msgid "Nothing is waiting for you."
 msgstr "Sizi bekleyen bir şey yok."
 
@@ -4639,6 +4660,9 @@ msgstr "Tek blok"
 msgid "One currency per site."
 msgstr "Site başına tek para birimi."
 
+msgid "One of the chosen charges is no longer open. Reload and choose again."
+msgstr "Seçilen borçlardan biri artık açık değil. Sayfayı yenileyip yeniden seçin."
+
 msgid "One row per unit side or account, with these columns in the first row:"
 msgstr "Her bağımsız bölüm tarafı veya hesap için bir satır; ilk satırda şu sütunlar bulunur:"
 
@@ -4648,8 +4672,14 @@ msgstr "Tek seferlik"
 msgid "Online"
 msgstr "Çevrim içi"
 
+msgid "Only a confirmed payment can be refunded."
+msgstr "Yalnızca onaylanmış bir ödeme iade edilebilir."
+
 msgid "Only an organization administrator can change this."
 msgstr "Bunu yalnızca kuruluş yöneticisi değiştirebilir."
+
+msgid "Only card payments can be refunded this way. Void a cash or bank payment instead."
+msgstr "Bu yolla yalnızca kart ödemeleri iade edilebilir. Nakit veya banka ödemesini iptal edin."
 
 msgid "Only https addresses that resolve to a public address are accepted. A signing secret is shown once after you create the endpoint."
 msgstr "Yalnızca herkese açık bir adrese çözümlenen https adresleri kabul edilir. İmza anahtarı, uç noktayı oluşturduktan sonra bir kez gösterilir."
@@ -6428,9 +6458,8 @@ msgstr "Durum adları farklı olmalı."
 msgid "Status updated."
 msgstr "Durum güncellendi."
 
-#. placeholder {0}: policy.max_rate_pct_per_month
-msgid "Statutory cap: {0}% per month."
-msgstr "Yasal sınır: ayda %{0}."
+msgid "Statutory cap: {cap} per month."
+msgstr "Yasal üst sınır: ayda {cap}."
 
 msgid "Stays with the person"
 msgstr "Kişide kalır"
@@ -6600,9 +6629,6 @@ msgstr "Ajanın saati yanlış."
 msgid "The amount cannot be more than the client money held for the site."
 msgstr "Tutar, site için tutulan müşteri parasından fazla olamaz."
 
-msgid "The amount is more than the accrued fee."
-msgstr "Tutar, tahakkuk eden tazminattan fazla."
-
 msgid "The amounts are more than the payment or a charge's balance."
 msgstr "Tutarlar ödemeden veya bir tahakkukun bakiyesinden fazla."
 
@@ -6750,6 +6776,9 @@ msgstr "Anahtar hemen çalışmayı bırakır ve yeniden açılamaz."
 msgid "The last day must not be before the first."
 msgstr "Son gün ilk günden önce olamaz."
 
+msgid "The late fee schedule already has an entry from this date or later. A new entry must start later."
+msgstr "Gecikme bedeli takviminde bu tarihten itibaren zaten bir kayıt var. Yeni kayıt daha sonra başlamalı."
+
 msgid "The latest day must not be before the earliest day."
 msgstr "Son gün, ilk günden önce olamaz."
 
@@ -6889,9 +6918,11 @@ msgstr "QR kod hemen çalışmaz hale gelir."
 msgid "The QR code was rotated."
 msgstr "QR kodu yenilendi."
 
-#. placeholder {0}: policy.max_rate_pct_per_month
-msgid "The rate cannot be above the statutory cap of {0}% per month."
-msgstr "Oran, ayda %{0} olan yasal sınırın üzerinde olamaz."
+msgid "The rate cannot be above the statutory cap of {cap} per month."
+msgstr "Oran, ayda {cap} olan yasal üst sınırı aşamaz."
+
+msgid "The rate is above the statutory cap."
+msgstr "Oran yasal üst sınırın üzerinde."
 
 msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
 msgstr "Makbuz numarası sırada kalır, iptal edildi olarak işaretlenir. Ödediği tahakkuklar yeniden açılır."
@@ -6940,6 +6971,12 @@ msgstr "Site kartlı ödemeleri kendi sağlayıcı hesabına tahsil eder; bu ned
 msgid "The site has not published bank details yet. Ask your manager how to pay."
 msgstr "Site henüz banka bilgilerini yayımlamadı. Nasıl ödeyeceğinizi yöneticinize sorun."
 
+msgid "The split rule and scope cannot change once a plan exists. Create a new plan to change them."
+msgstr "Plan oluşturulduktan sonra dağıtım kuralı ve kapsam değişmez. Değiştirmek için yeni plan oluşturun."
+
+msgid "The start date cannot be in the past."
+msgstr "Başlangıç tarihi geçmişte olamaz."
+
 msgid "The statuses a ticket moves through at this site, in order."
 msgstr "Bu sitede bir talebin sırayla geçtiği durumlar."
 
@@ -6976,6 +7013,9 @@ msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
 msgid "The visit must end after it starts."
 msgstr "Ziyaret, başladıktan sonra bitmelidir."
 
+msgid "The waiver is more than the unpaid late fee."
+msgstr "Silinen tutar ödenmemiş gecikme bedelinden fazla."
+
 msgid "The WhatsApp number people write to, international format (for the wa.me link)."
 msgstr "İnsanların yazdığı WhatsApp numarası, uluslararası biçimde (wa.me bağlantısı için)."
 
@@ -6990,6 +7030,9 @@ msgstr "Tema"
 
 msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
 msgstr "Bu yıl için henüz bütçe yok. Aidatı belirlemez; yalnızca harcamalarla karşılaştırılır."
+
+msgid "There is no late fee to waive."
+msgstr "Silinecek gecikme bedeli yok."
 
 msgid "These apply to one site, for example a provider account per site."
 msgstr "Bunlar tek bir site için geçerlidir; örneğin site başına bir sağlayıcı hesabı."
@@ -7040,6 +7083,9 @@ msgstr "Bu kod bu toplantı için geçerli değil."
 msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
 msgstr "Bu kod yalnızca şimdi gösterilir. Bu pencereyi kapatmadan önce misafirinize gönderin. WhatsApp, SMS ve e-posta kodu bu hizmetler üzerinden iletir."
 
+msgid "This date cannot be in the past."
+msgstr "Bu tarih geçmişte olamaz."
+
 msgid "This date is on or before the lock date; the period is closed."
 msgstr "Bu tarih kilit tarihinde veya öncesinde; dönem kapalı."
 
@@ -7048,6 +7094,9 @@ msgstr "Bu kararın zaten uygulanmış bir değişikliği var."
 
 msgid "This facility is not open to your kind of occupant."
 msgstr "Bu tesis, sizin türünüzdeki kullanıcılara açık değil."
+
+msgid "This field cannot be changed here."
+msgstr "Bu alan burada değiştirilemez."
 
 msgid "This field is required"
 msgstr "Bu alan zorunlu"
@@ -7084,6 +7133,9 @@ msgstr "Bu bağlantı artık çalışmıyor"
 
 msgid "This number is not valid. Check the digits."
 msgstr "Bu numara geçerli değil. Rakamları kontrol edin."
+
+msgid "This option is not supported."
+msgstr "Bu seçenek desteklenmiyor."
 
 msgid "This pack has no settings."
 msgstr "Bu paketin ayarı yok."
@@ -7130,6 +7182,9 @@ msgstr "Bu kişi, tüm oyların izin verilen azami payından fazlasını taşıy
 msgid "This point is switched off."
 msgstr "Bu nokta kapalı."
 
+msgid "This rate overlaps another rate of the plan."
+msgstr "Bu tutar planın başka bir tutarıyla çakışıyor."
+
 msgid "This record changed"
 msgstr "Bu kayıt değişti"
 
@@ -7172,8 +7227,14 @@ msgstr "Bu site otopark ve depoyu bağımsız birim sayar. Bunun bir müştemila
 msgid "This site uses the default workflow. Edit it to add your own statuses."
 msgstr "Bu site varsayılan iş akışını kullanıyor. Kendi durumlarınızı eklemek için düzenleyin."
 
+msgid "This status is not allowed, or the end date is before the start."
+msgstr "Bu duruma izin verilmiyor ya da bitiş tarihi başlangıçtan önce."
+
 msgid "This step is not available in this build yet."
 msgstr "Bu adım henüz bu sürümde kullanılamıyor."
+
+msgid "This text is too long."
+msgstr "Bu metin çok uzun."
 
 msgid "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
 msgstr "Bu talep, seçtiğiniz talebin tekrarı olarak kapatılır. +1 oyları aktarılır."
@@ -7190,8 +7251,17 @@ msgstr "Bu anahtar yalnızca şimdi gösteriliyor. Kaybederseniz yeni almak içi
 msgid "This value does not have the expected format"
 msgstr "Bu değer beklenen biçimde değil"
 
+msgid "This value is not in the expected format."
+msgstr "Bu değer beklenen biçimde değil."
+
 msgid "This value is not valid"
 msgstr "Bu değer geçerli değil"
+
+msgid "This value is not valid."
+msgstr "Bu değer geçerli değil."
+
+msgid "This value is too large."
+msgstr "Bu değer çok büyük."
 
 msgid "This will be a common ticket, visible to the whole site."
 msgstr "Bu ortak bir talep olacak ve tüm site tarafından görülecek."
@@ -7307,6 +7377,9 @@ msgstr "Anahtar yenileme başlatıldı."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
+
+msgid "Too many charges chosen. Choose fewer or pay an amount."
+msgstr "Çok fazla borç seçildi. Daha azını seçin ya da bir tutar ödeyin."
 
 msgid "Too many files."
 msgstr "Çok fazla dosya."

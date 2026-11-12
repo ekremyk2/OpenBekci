@@ -230,7 +230,7 @@ func (s *Service) GetPlan(ctx context.Context, orgID, planID uuid.UUID) (Plan, e
 	return p, err
 }
 
-// UpdatePlan changes a plan's name, end date or status (money.manage). Billing
+// UpdatePlan changes a plan's name, due day, end date or status (money.manage). Billing
 // terms (key, scope, mode, frequency) are fixed once created: change them with a new plan.
 func (s *Service) UpdatePlan(ctx context.Context, orgID, planID uuid.UUID, version int, d tenancy.Doc) (Plan, error) {
 	var out Plan
@@ -245,22 +245,25 @@ func (s *Service) UpdatePlan(ctx context.Context, orgID, planID uuid.UUID, versi
 		if before.Version != version {
 			return tenancy.ErrVersion
 		}
-		if u := d.Unknown("name", "end", "status"); len(u) > 0 {
+		if u := d.Unknown("name", "due_day", "end", "status"); len(u) > 0 {
 			return problem.Validation(u...)
 		}
 		next := before
-		for k, dst := range map[string]any{"name": &next.Name, "end": &next.End, "status": &next.Status} {
+		for k, dst := range map[string]any{"name": &next.Name, "due_day": &next.DueDay, "end": &next.End, "status": &next.Status} {
 			if d.Has(k) {
 				if err := d.Get(k, dst); err != nil {
 					return err
 				}
 			}
 		}
+		if next.DueDay < 1 || next.DueDay > 31 {
+			return bad("due_day", "invalid_value")
+		}
 		if !in(next.Status, "active", "paused", "archived") || (next.End != nil && *next.End < next.Start) {
 			return bad("status", "invalid_value")
 		}
-		if out, err = scanPlan(tx.QueryRow(ctx, `UPDATE charge_plan SET name=$3, end_on=$4::date, status=$5, updated_at=now(), version=version+1 WHERE org_id=$1 AND id=$2 RETURNING `+planCols,
-			orgID, planID, next.Name, next.End, next.Status)); err != nil {
+		if out, err = scanPlan(tx.QueryRow(ctx, `UPDATE charge_plan SET name=$3, end_on=$4::date, status=$5, due_day=$6, updated_at=now(), version=version+1 WHERE org_id=$1 AND id=$2 RETURNING `+planCols,
+			orgID, planID, next.Name, next.End, next.Status, next.DueDay)); err != nil {
 			return err
 		}
 		return ledger.Audit(ctx, tx, orgID, out.SiteID, "charge_plan.update", "charge_plan", planID, before, out)
