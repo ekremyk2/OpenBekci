@@ -6042,6 +6042,12 @@ msgstr "Kapsam"
 msgid "Scopes"
 msgstr "Kapsamlar"
 
+msgid "Scroll left"
+msgstr "Sola kaydır"
+
+msgid "Scroll right"
+msgstr "Sağa kaydır"
+
 msgid "Search"
 msgstr "Ara"
 
