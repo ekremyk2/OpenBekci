@@ -98,7 +98,6 @@ export function ReceiptActions({ ctx, payment }: { ctx: MoneyCtx; payment: S['Pa
             {
               endpoint: '/v1/orgs/{org_id}/payments/{payment_id}/receipt',
               path: { org_id: ctx.orgId, payment_id: payment.id },
-              format: 'pdf',
             },
             `receipt-${payment.receipt_no!.replace('/', '-')}.pdf`,
           ).catch(() => toast.error(t`The download failed. Please try again.`))
@@ -339,7 +338,6 @@ export function PaymentsPage() {
                                     {
                                       endpoint: '/v1/orgs/{org_id}/payments/{payment_id}/receipt',
                                       path: { org_id: ctx.orgId, payment_id: p.id },
-                                      format: 'pdf',
                                     },
                                     `receipt-${(p.receipt_no ?? p.id).replace('/', '-')}.pdf`,
                                   ).catch(() =>
@@ -685,7 +683,9 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
     const allocations = open.data.flatMap((c) => {
       const take = left < BigInt(c.balance.amount) ? left : BigInt(c.balance.amount)
       left -= take
-      return take > 0n ? [{ charge_id: c.id, charge_description: c.description ?? c.period, amount: Number(take) }] : []
+      return take > 0n
+        ? [{ charge_id: c.id, charge_description: c.description ?? c.period, amount: Number(take) }]
+        : []
     })
     return { allocations, credit: Number(left) }
   }, [open.data, amount])
@@ -693,9 +693,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   // Manual rows start from the automatic allocation; typed amounts override it per charge.
   const rows = useMemo<AllocRow[]>(() => {
     if (!manual || !open.data) return []
-    const auto = new Map(
-      (preview?.allocations ?? []).map((al) => [al.charge_id, al.amount]),
-    )
+    const auto = new Map((preview?.allocations ?? []).map((al) => [al.charge_id, al.amount]))
     return open.data.map((c) => ({
       charge_id: c.id,
       description: c.description ?? c.period,

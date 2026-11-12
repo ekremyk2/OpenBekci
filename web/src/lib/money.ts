@@ -41,15 +41,32 @@ export function formatMoney(
   const digits = currencyDigits(currency)
   const nf = new Intl.NumberFormat(locale, { style: 'currency', currency, ...options })
   // Intl accepts exact decimal strings; the cast bridges lib.d.ts, which only declares number|bigint.
-  const text = nf.format(minorToDecimalString(minor, digits) as unknown as number)
-  // Turkish convention: the symbol trails the number ("1.234,56 ₺").
-  if (!locale.startsWith('tr')) return text
-  const symbol = currencySymbol(currency, locale)
-  return text.includes(symbol) ? `${text.replace(symbol, '').trim()}\u2009${symbol}` : text
+  const value = minorToDecimalString(minor, digits) as unknown as number
+  // Turkish convention, also used for the lira in English: the symbol trails the number ("1,500.00 ₺").
+  if (!locale.startsWith('tr') && currency !== 'TRY') return nf.format(value)
+  const number = nf
+    .formatToParts(value)
+    .filter((p) => p.type !== 'currency' && !(p.type === 'literal' && p.value.trim() === ''))
+    .map((p) => p.value)
+    .join('')
+  return `${number}\u2009${currencySymbol(currency, locale)}`
 }
 
-/** The symbol Intl shows for this currency in this locale, e.g. "₺" for TRY in tr. */
+/** A percentage given in percent (2.5 -> "2.5%" in en, "%2,5" in tr), by the locale's own rules. */
+export function formatPercent(percent: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 2 }).format(
+    percent / 100,
+  )
+}
+
+/** An area in square metres, by the locale's number rules ("1.234,5 m²" in tr). */
+export function formatArea(m2: number, locale: string): string {
+  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(m2)}\u00a0m\u00b2`
+}
+
+/** The symbol Intl shows for this currency in this locale; the lira is always "₺" (Intl says "TRY" in English). */
 export function currencySymbol(currency: string, locale: string): string {
+  if (currency === 'TRY') return '\u20ba'
   const part = new Intl.NumberFormat(locale, { style: 'currency', currency })
     .formatToParts(0)
     .find((p) => p.type === 'currency')

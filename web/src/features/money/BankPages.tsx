@@ -32,15 +32,25 @@ import {
 } from './api'
 import { useIdempotencyKeys } from './forms'
 import { DebtorPicker, debtorRef, emptyTarget, type DebtorTarget } from './DebtorPicker'
+import { usePackLabels } from '../packs/queries'
 import { AccountPicker, useAllUnits } from './pickers'
 import { Field, FormRootError, Gate, PageHeader, QueryBoundary, Select, StatusBadge } from './ui'
 import { Input } from '@/components/ui/input'
 
 /* ───────────────────────── imports list + upload ───────────────────────── */
 
+/** Statement importer names: the pack's label from /codes, the core importer's own text, else the id. */
+function useImporterLabel() {
+  const { t } = useLingui()
+  const packLabel = usePackLabels()
+  return (id: string) =>
+    id === 'core_csv' ? t`Generic CSV / Excel statement` : (packLabel(id) ?? id)
+}
+
 export function BankImportsPage() {
   const ctx = useMoneyCtx()!
   const { t } = useLingui()
+  const importerLabel = useImporterLabel()
   const q = useMoneyQuery(['bank-imports', ctx.siteId], () =>
     unwrap(
       moneyApi.GET('/v1/orgs/{org_id}/bank-statement-imports', {
@@ -106,7 +116,7 @@ export function BankImportsPage() {
                       )}
                     </Link>
                   </TableCell>
-                  <TableCell>{i.importer}</TableCell>
+                  <TableCell>{importerLabel(i.importer)}</TableCell>
                   <TableCell className="text-end tabular-nums">{i.transaction_count}</TableCell>
                   <TableCell className="text-end tabular-nums">{i.unmatched_count}</TableCell>
                   <TableCell className="text-end">
@@ -131,6 +141,7 @@ export function BankImportsPage() {
 
 function UploadCard({ ctx }: { ctx: MoneyCtx }) {
   const { t } = useLingui()
+  const importerLabel = useImporterLabel()
   const navigate = useNavigate()
   const idem = useIdempotencyKey()
   const importers = useMoneyQuery(['bank-importers'], () =>
@@ -207,7 +218,7 @@ function UploadCard({ ctx }: { ctx: MoneyCtx }) {
             <Select id="imp-importer" value={chosen} onChange={(e) => setImporter(e.target.value)}>
               {usable.map((i) => (
                 <option key={i.id} value={i.id}>
-                  {i.name}
+                  {importerLabel(i.id)}
                 </option>
               ))}
             </Select>

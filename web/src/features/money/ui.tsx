@@ -35,6 +35,7 @@ import {
 
 export { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { issueText, moneyErrorText } from './labels'
 export { Textarea }
 
 /** The shared checkbox with its text label (the checkbox itself lives in `components/ui`). */
@@ -314,13 +315,13 @@ export function applyServerErrors<T extends FieldValues>(
     if (error.isValidation && Object.keys(error.fieldErrors).length > 0) {
       for (const [field, issues] of Object.entries(error.fieldErrors)) {
         form.setError(field as Path<T>, {
-          message: issues[0]?.message ?? issues[0]?.code ?? fallback,
+          message: issueText(field, issues[0]?.code ?? '') ?? issues[0]?.message ?? fallback,
         })
       }
       return
     }
     const mapped = known?.[error.code]
-    form.setError('root', { message: mapped ?? error.message ?? fallback })
+    form.setError('root', { message: mapped ?? moneyErrorText(error, fallback) })
     return
   }
   form.setError('root', { message: fallback })
@@ -341,7 +342,7 @@ export function ExportButtons({
   pathParams,
   query,
   basename,
-  formats = ['csv', 'xlsx'],
+  formats = ['csv'],
 }: {
   endpoint: DownloadEndpoint
   /** Path parameters other than `org_id`, which comes from the current organization. */
