@@ -251,6 +251,9 @@ msgstr "<0>{0}</0> adresine bir ping olayı sıraya alındı."
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 msgstr "Plan, her dönemin tahakkuklarını oluşturur. Tutarlar geçmiş düzenlenerek değil, tarihli oranlarla değişir."
 
+msgid "A published announcement keeps its text. You can change the pin and the expiry."
+msgstr "Yayınlanmış bir duyurunun metni değişmez. Sabitlemeyi ve bitiş zamanını değiştirebilirsiniz."
+
 msgid "A reason is required."
 msgstr "Bir gerekçe gerekli."
 
@@ -350,8 +353,8 @@ msgstr "Etkin"
 msgid "Activity"
 msgstr "Etkinlik"
 
-msgid "Actor (user id)"
-msgstr "Yapan (kullanıcı kimliği)"
+msgid "Actor"
+msgstr "Yapan"
 
 msgid "Actual"
 msgstr "Gerçekleşen"
@@ -481,6 +484,12 @@ msgstr "Kaydettikten sonra operatör aşağıdaki adresi <0>openbekci admin chat
 msgid "Agenda"
 msgstr "Gündem"
 
+msgid "Agenda item"
+msgstr "Gündem maddesi"
+
+msgid "Agenda item added"
+msgstr "Gündem maddesi eklendi"
+
 msgid "Agent"
 msgstr "Ajan"
 
@@ -601,8 +610,23 @@ msgstr "Bir tutar"
 msgid "An announcement is published"
 msgstr "Bir duyuru yayımlanır"
 
+msgid "An archived announcement can no longer be edited."
+msgstr "Arşivlenmiş bir duyuru artık düzenlenemez."
+
 msgid "An inactive endpoint receives no new events."
 msgstr "Etkin olmayan bir uç nokta yeni olay almaz."
+
+msgid "Announcement"
+msgstr "Duyuru"
+
+msgid "Announcement archived"
+msgstr "Duyuru arşivlendi"
+
+msgid "Announcement drafted"
+msgstr "Duyuru taslağı oluşturuldu"
+
+msgid "Announcement published"
+msgstr "Duyuru yayınlandı"
 
 msgid "Announcement published."
 msgstr "Duyuru yayımlandı."
@@ -761,6 +785,9 @@ msgstr "Toplantılar"
 
 msgid "Assembly"
 msgstr "Genel kurul"
+
+msgid "Assembly due"
+msgstr "Kurul zamanı"
 
 msgid "Assembly settings"
 msgstr "Toplantı ayarları"
@@ -963,8 +990,20 @@ msgstr "Bugüne kadar kaydedilen"
 msgid "Booked. Your booking is confirmed."
 msgstr "Rezervasyon yapıldı. Rezervasyonunuz onaylandı."
 
+msgid "Booking"
+msgstr "Rezervasyon"
+
+msgid "Booking cancellations"
+msgstr "Rezervasyon iptalleri"
+
+msgid "Booking confirmations"
+msgstr "Rezervasyon onayları"
+
 msgid "Booking fee"
 msgstr "Rezervasyon bedeli"
+
+msgid "Booking made"
+msgstr "Rezervasyon yapıldı"
 
 msgid "Bookings"
 msgstr "Rezervasyonlar"
@@ -1142,6 +1181,9 @@ msgstr "Nakit"
 msgid "Cash balance"
 msgstr "Kasa bakiyesi"
 
+msgid "Cash box"
+msgstr "Kasa"
+
 msgid "Cash box added."
 msgstr "Kasa eklendi."
 
@@ -1220,6 +1262,9 @@ msgstr "Tahakkuk"
 msgid "Charge cancelled; a reversal was created."
 msgstr "Tahakkuk iptal edildi; bir ters kayıt oluşturuldu."
 
+msgid "Charge plan"
+msgstr "Borç planı"
+
 msgid "Charge to"
 msgstr "Tahakkuk edecek taraf"
 
@@ -1228,6 +1273,9 @@ msgstr "Gider türü"
 
 msgid "Charges"
 msgstr "Tahakkuklar"
+
+msgid "Charges generated"
+msgstr "Borçlar oluşturuldu"
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
 msgstr "Giderler varsayılan ödeyene gider (olağan aidatta kiracı, olağanüstü tahakkuklarda mal sahibi). Yalnızca bu birimin farklı olduğu durumlarda satır ekleyin."
@@ -1413,6 +1461,12 @@ msgstr "Seçilen daireler"
 msgid "City"
 msgstr "Şehir"
 
+msgid "Claim decisions"
+msgstr "Talep kararları"
+
+msgid "Claim requests"
+msgstr "Daire talepleri"
+
 #. placeholder {0}: occupancyKindLabel(claim.claimed_role, i18n)
 #. placeholder {1}: claim.unit_door_number
 msgid "Claims {0} of {1}."
@@ -1465,6 +1519,9 @@ msgstr "Kapanış saati açılıştan sonra olmalıdır."
 
 msgid "Closing statement"
 msgstr "Kapanış ekstresi"
+
+msgid "Closing statement {n}"
+msgstr "Kapanış ekstresi {n}"
 
 msgid "Co-owner representation"
 msgstr "Hissedar temsili"
@@ -1578,6 +1635,9 @@ msgstr "Onaylandı. Makbuz {0}"
 
 msgid "Confirming your payment with the provider. This usually takes a few seconds."
 msgstr "Ödemeniz sağlayıcıyla doğrulanıyor. Bu genellikle birkaç saniye sürer."
+
+msgid "Consent accepted"
+msgstr "Onay verildi"
 
 msgid "Contact"
 msgstr "İletişim"
@@ -1849,9 +1909,6 @@ msgstr "Toplantı başlatılamadı."
 msgid "Could not start the card payment. Please try again."
 msgstr "Kartlı ödeme başlatılamadı. Lütfen yeniden deneyin."
 
-msgid "Could not start the rebuild."
-msgstr "Yeniden oluşturma başlatılamadı."
-
 msgid "Could not update the document."
 msgstr "Belge güncellenemedi."
 
@@ -1980,6 +2037,12 @@ msgstr "Koyu"
 msgid "Data controller"
 msgstr "Veri sorumlusu"
 
+msgid "Data export ready"
+msgstr "Veri dışa aktarımı hazır"
+
+msgid "Data export requested"
+msgstr "Veri dışa aktarımı istendi"
+
 msgid "Date"
 msgstr "Tarih"
 
@@ -2016,6 +2079,9 @@ msgstr "Taşınırken borç"
 
 msgid "Debt status certificate"
 msgstr "Borç durum belgesi"
+
+msgid "Debt status certificate {n}"
+msgstr "Borç durum belgesi {n}"
 
 msgid "Debtors"
 msgstr "Borçlular"
@@ -2155,8 +2221,17 @@ msgstr "{0} teslimatları"
 msgid "Deliveries of <0>{0}</0>"
 msgstr "<0>{0}</0> teslimatları"
 
+msgid "Deliveries received"
+msgstr "Teslim alınan kargolar"
+
 msgid "Deliveries recorded."
 msgstr "Tebligatlar kaydedildi."
+
+msgid "Deliveries waiting"
+msgstr "Bekleyen kargolar"
+
+msgid "Delivery"
+msgstr "Kargo"
 
 msgid "Delivery of the call"
 msgstr "Çağrının tebliği"
@@ -2169,6 +2244,9 @@ msgstr "Gönderim önizlemesi"
 
 msgid "Delivery progress"
 msgstr "Tebliğ ilerlemesi"
+
+msgid "Delivery received"
+msgstr "Kargo teslim alındı"
 
 msgid "Delivery recorded."
 msgstr "Tebligat kaydedildi."
@@ -2250,6 +2328,12 @@ msgstr "İlçe"
 msgid "Document"
 msgstr "Belge"
 
+msgid "Document changed"
+msgstr "Belge değişti"
+
+msgid "Document generated"
+msgstr "Belge üretildi"
+
 msgid "Document number (optional)"
 msgstr "Belge numarası (isteğe bağlı)"
 
@@ -2324,6 +2408,9 @@ msgstr "Aidat"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Birimde kiracı varsa aidat kiracıya, demirbaş ve olağanüstü gider malike aittir. Burada plan bazında değiştirebilirsiniz."
+
+msgid "Dues due soon"
+msgstr "Yaklaşan aidatlar"
 
 msgid "Dues plan"
 msgstr "Aidat planı"
@@ -2811,8 +2898,17 @@ msgstr "Tazminat, gecikmiş anaparaya sürekli hesaplanır, ayda bir kaydedilir 
 msgid "Fees frozen"
 msgstr "Tazminatlar donduruldu"
 
+msgid "File"
+msgstr "Dosya"
+
 msgid "File (CSV or XLSX)"
 msgstr "Dosya (CSV veya XLSX)"
+
+msgid "File attached"
+msgstr "Dosya eklendi"
+
+msgid "File generated"
+msgstr "Dosya üretildi"
 
 msgid "File layout for a spreadsheet upload"
 msgstr "Tablo yüklemesi için dosya düzeni"
@@ -2846,6 +2942,9 @@ msgstr "Bitti."
 
 msgid "First call"
 msgstr "İlk çağrı"
+
+msgid "First call opened"
+msgstr "İlk çağrı açıldı"
 
 msgid "First call: more than this share of owners"
 msgstr "İlk çağrı: maliklerin şu oranından fazlası"
@@ -2952,6 +3051,15 @@ msgstr "Fon bakiyeleri"
 msgid "Gate"
 msgstr "Kapı"
 
+msgid "Gate agent clock off"
+msgstr "Kapı ajanı saati kaymış"
+
+msgid "Gate agent silent"
+msgstr "Kapı ajanı sessiz"
+
+msgid "Gate agent stopped"
+msgstr "Kapı ajanı durdu"
+
 msgid "Gate contact phone"
 msgstr "Kapı için irtibat telefonu"
 
@@ -3006,6 +3114,12 @@ msgstr "Girişe git"
 msgid "Governance sections"
 msgstr "Yönetişim bölümleri"
 
+msgid "Governance settings"
+msgstr "Toplantı ayarları"
+
+msgid "Governance settings changed"
+msgstr "Toplantı ayarları değişti"
+
 msgid "Grace days"
 msgstr "Ek gün (tolerans)"
 
@@ -3014,6 +3128,18 @@ msgstr "Brüt"
 
 msgid "Guard"
 msgstr "Güvenlik görevlisi"
+
+msgid "Guard PIN failed"
+msgstr "Bekçi PIN'i hatalı"
+
+msgid "Guard PIN set"
+msgstr "Bekçi PIN'i belirlendi"
+
+msgid "Guard session"
+msgstr "Bekçi oturumu"
+
+msgid "Guard signed in"
+msgstr "Bekçi giriş yaptı"
 
 msgid "Halls, courts and barbecue areas, each with its own booking rules."
 msgstr "Her biri kendi rezervasyon kurallarına sahip salonlar, kortlar ve mangal alanları."
@@ -3192,6 +3318,15 @@ msgstr "Kurulum ayarları"
 msgid "Internal note"
 msgstr "Dahili not"
 
+msgid "Invitation"
+msgstr "Davet"
+
+msgid "Invitation accepted"
+msgstr "Davet kabul edildi"
+
+msgid "Invitation sent"
+msgstr "Davet gönderildi"
+
 msgid "Invitations"
 msgstr "Davetler"
 
@@ -3253,6 +3388,9 @@ msgstr "İş"
 
 msgid "Jobs"
 msgstr "İşler"
+
+msgid "Join code changed"
+msgstr "Katılım kodu değişti"
 
 msgid "Join the site's WhatsApp group"
 msgstr "Sitenin WhatsApp grubuna katıl"
@@ -3355,6 +3493,12 @@ msgstr "Gecikme tazminatları donduruldu."
 
 msgid "Late-fee policy"
 msgstr "Gecikme tazminatı politikası"
+
+msgid "Late-fee policy set"
+msgstr "Gecikme zammı politikası belirlendi"
+
+msgid "Late-fee threshold set"
+msgstr "Gecikme zammı eşiği belirlendi"
 
 msgid "Law 634 default: one third."
 msgstr "Kanun 634 varsayılanı: üçte bir."
@@ -3578,6 +3722,15 @@ msgstr "Bende de var"
 msgid "Meaning of status {0}"
 msgstr "{0}. durumun anlamı"
 
+msgid "Meeting"
+msgstr "Toplantı"
+
+msgid "Meeting closed"
+msgstr "Toplantı kapatıldı"
+
+msgid "Meeting decisions"
+msgstr "Toplantı kararları"
+
 msgid "Meeting notices"
 msgstr "Toplantı bildirimleri"
 
@@ -3589,6 +3742,12 @@ msgstr "Toplantı takvimi"
 
 msgid "Meetings"
 msgstr "Toplantılar"
+
+msgid "Membership"
+msgstr "Üyelik"
+
+msgid "Membership added"
+msgstr "Üyelik eklendi"
 
 msgid "Merge"
 msgstr "Birleştir"
@@ -3725,6 +3884,15 @@ msgstr "Taşı…"
 
 msgid "Move up"
 msgstr "Yukarı taşı"
+
+msgid "Move-out"
+msgstr "Taşınma"
+
+msgid "Move-out charges settled"
+msgstr "Taşınma borçları işlendi"
+
+msgid "Move-out recorded"
+msgstr "Taşınma kaydedildi"
 
 msgid "Moves out on"
 msgstr "Taşınma tarihi"
@@ -4110,6 +4278,9 @@ msgstr "Açık alacak yok"
 msgid "No openings match"
 msgstr "Eşleşen açılış yok"
 
+msgid "No openings yet. They appear here as gates open."
+msgstr "Henüz açılış yok. Kapılar açıldıkça burada görünür."
+
 msgid "No organizations yet"
 msgstr "Henüz kuruluş yok"
 
@@ -4284,6 +4455,9 @@ msgstr "Belirlenmedi"
 msgid "Not enabled"
 msgstr "Etkin değil"
 
+msgid "Not found"
+msgstr "Bulunamadı"
+
 msgid "Not in my file"
 msgstr "Dosyamda yok"
 
@@ -4380,9 +4554,6 @@ msgstr "Bu dönem için gösterilecek bir şey yok"
 msgid "Nothing was lost. Check your statement or your notifications, or try again."
 msgstr "Hiçbir şey kaybolmadı. Ekstrenizi veya bildirimlerinizi kontrol edin ya da yeniden deneyin."
 
-msgid "Nothing yet."
-msgstr "Henüz bir şey yok."
-
 msgid "Notices from your management will appear here."
 msgstr "Yönetiminizden gelen duyurular burada görünecek."
 
@@ -4409,6 +4580,9 @@ msgstr "Pay"
 
 msgid "Occupancy"
 msgstr "Doluluk"
+
+msgid "Occupancy added"
+msgstr "Oturum eklendi"
 
 msgid "Occupancy timeline"
 msgstr "Doluluk geçmişi"
@@ -4672,6 +4846,9 @@ msgstr "Gecikmiş"
 msgid "Overdue (all sites)"
 msgstr "Gecikmiş (tüm siteler)"
 
+msgid "Overdue dues"
+msgstr "Gecikmiş aidatlar"
+
 msgid "Overdue principal"
 msgstr "Gecikmiş anapara"
 
@@ -4723,6 +4900,9 @@ msgstr "Çağrılan malikler otomatik olarak haberdar edilmez; iptali bir gerek�
 msgid "Ownership share (%)"
 msgstr "Hisse oranı (%)"
 
+msgid "Pack"
+msgstr "Paket"
+
 msgid "Pack default"
 msgstr "Paket varsayılanı"
 
@@ -4737,6 +4917,9 @@ msgstr "Paket etkinleştirildi."
 
 msgid "Pack not found"
 msgstr "Paket bulunamadı"
+
+msgid "Pack settings changed"
+msgstr "Paket ayarları değişti"
 
 msgid "Packs"
 msgstr "Paketler"
@@ -4836,6 +5019,9 @@ msgstr "Ödeme"
 msgid "Payment confirmed"
 msgstr "Ödeme onaylandı"
 
+msgid "Payment declared"
+msgstr "Ödeme bildirildi"
+
 msgid "Payment receipts"
 msgstr "Ödeme makbuzları"
 
@@ -4848,8 +5034,14 @@ msgstr "Ödeme kaydedildi"
 msgid "Payment rejected"
 msgstr "Ödeme reddedildi"
 
+msgid "Payment reminders"
+msgstr "Ödeme hatırlatmaları"
+
 msgid "Payments"
 msgstr "Ödemeler"
+
+msgid "Payments declared"
+msgstr "Bildirilen ödemeler"
 
 msgid "Pays"
 msgstr "Öder"
@@ -4895,6 +5087,12 @@ msgstr "Dönem"
 
 msgid "Person"
 msgstr "Kişi"
+
+msgid "Person added"
+msgstr "Kişi eklendi"
+
+msgid "Person changed"
+msgstr "Kişi değişti"
 
 msgid "Persons"
 msgstr "Kişiler"
@@ -4973,6 +5171,9 @@ msgstr "Politika"
 msgid "Policy saved."
 msgstr "Politika kaydedildi."
 
+msgid "Poll answered"
+msgstr "Oylama yanıtlandı"
+
 msgid "Poll saved."
 msgstr "Anket kaydedildi."
 
@@ -5027,7 +5228,7 @@ msgstr "Hazır"
 msgid "Preview"
 msgstr "Önizleme"
 
-#. placeholder {0}: doc.title
+#. placeholder {0}: docTitle(doc)
 msgid "Preview of {0}"
 msgstr "{0} önizlemesi"
 
@@ -5215,11 +5416,11 @@ msgstr "Gerekçe (denetlenir)"
 msgid "Reason (optional)"
 msgstr "Gerekçe (isteğe bağlı)"
 
-msgid "Rebuild the allow-list"
-msgstr "İzin listesini yeniden oluştur"
-
 msgid "Receipt"
 msgstr "Makbuz"
+
+msgid "Receipt {n}"
+msgstr "Makbuz {n}"
 
 msgid "Receipt number"
 msgstr "Makbuz numarası"
@@ -5318,6 +5519,12 @@ msgstr "Sitenin harcadıklarını kaydedin: elektrik, temizlik, onarım."
 
 msgid "Recurring"
 msgstr "Tekrarlayan"
+
+msgid "Recurring visitor"
+msgstr "Düzenli ziyaretçi"
+
+msgid "Recurring visitor added"
+msgstr "Düzenli ziyaretçi eklendi"
 
 msgid "Reference"
 msgstr "Referans"
@@ -6056,6 +6263,9 @@ msgstr "Tek temsilci"
 msgid "Site"
 msgstr "Site"
 
+msgid "Site changed"
+msgstr "Site değişti"
+
 msgid "Site collects"
 msgstr "Site tahsil eder"
 
@@ -6183,6 +6393,9 @@ msgstr "Durum"
 
 msgid "Statement"
 msgstr "Ekstre"
+
+msgid "Statement {n}"
+msgstr "Ekstre {n}"
 
 msgid "Statement closing"
 msgstr "Ekstre kapanışı"
@@ -6339,6 +6552,9 @@ msgstr "Görev başlangıcı"
 msgid "Terms ending soon"
 msgstr "Yakında biten görev süreleri"
 
+msgid "Terms expiring"
+msgstr "Biten görev süreleri"
+
 msgid "Test ping sent"
 msgstr "Test ping gönderildi"
 
@@ -6380,9 +6596,6 @@ msgstr "Ajan, kapıdaki bir bilgisayarda çalışır ve kapıyı açar. Kaydetme
 
 msgid "The agent's clock is wrong."
 msgstr "Ajanın saati yanlış."
-
-msgid "The allow-list is being rebuilt."
-msgstr "İzin listesi yeniden oluşturuluyor."
 
 msgid "The amount cannot be more than the client money held for the site."
 msgstr "Tutar, site için tutulan müşteri parasından fazla olamaz."
@@ -6878,6 +7091,9 @@ msgstr "Bu paketin ayarı yok."
 msgid "This pack has not filled in any site setting, or the sites changed them."
 msgstr "Bu paket hiçbir site ayarını doldurmadı veya siteler onları değiştirdi."
 
+msgid "This page does not exist, or it was removed."
+msgstr "Bu sayfa yok ya da kaldırılmış."
+
 msgid "This page needs a payment to look up"
 msgstr "Bu sayfanın sorgulayacağı bir ödeme gerekir"
 
@@ -6984,8 +7200,20 @@ msgstr "Bu ortak bir talep olacak ve tüm site tarafından görülecek."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "Bu işlem, bu kararla bağlantılı bir {0} oluşturur. Daha sonra düzeltilebilir ancak sessizce geri alınamaz."
 
+msgid "Ticket"
+msgstr "Talep"
+
+msgid "Ticket comments"
+msgstr "Talep yorumları"
+
+msgid "Ticket opened"
+msgstr "Talep açıldı"
+
 msgid "Ticket settings"
 msgstr "Talep ayarları"
+
+msgid "Ticket status changed"
+msgstr "Talep durumu değişti"
 
 msgid "Ticket updates"
 msgstr "Talep güncellemeleri"
@@ -7151,6 +7379,9 @@ msgstr "Tekrar dene"
 msgid "Try widening the filters."
 msgstr "Filtreleri genişletmeyi deneyin."
 
+msgid "Turkey"
+msgstr "Türkiye"
+
 msgid "Türkiye"
 msgstr "Türkiye"
 
@@ -7191,6 +7422,9 @@ msgstr "Onaylanacak daire talepleri: {0}"
 
 msgid "Unit column"
 msgstr "Birim sütunu"
+
+msgid "Unit imported"
+msgstr "Birim içe aktarıldı"
 
 msgid "Unit receivable"
 msgstr "Bağımsız bölüm alacağı"
@@ -7310,6 +7544,9 @@ msgstr "Küçük harf, rakam ve alt çizgi kullanın, örneğin isitma"
 msgid "Use my password"
 msgstr "Parolamı kullan"
 
+msgid "User"
+msgstr "Kullanıcı"
+
 #. placeholder {0}: event.actor_user_id.slice(0, 8)
 msgid "User {0}"
 msgstr "Kullanıcı {0}"
@@ -7422,12 +7659,21 @@ msgstr "Ziyaret edilen bağımsız bölüm"
 msgid "Visitor"
 msgstr "Ziyaretçi"
 
+msgid "Visitor approvals"
+msgstr "Ziyaretçi onayları"
+
 #. placeholder {0}: query.data.pending_visitor_approvals
 msgid "Visitor approvals: {0}"
 msgstr "Ziyaretçi onayları: {0}"
 
 msgid "Visitor approved."
 msgstr "Ziyaretçi onaylandı."
+
+msgid "Visitor arrivals"
+msgstr "Ziyaretçi gelişleri"
+
+msgid "Visitor cancelled"
+msgstr "Ziyaretçi iptal edildi"
 
 msgid "Visitor code"
 msgstr "Ziyaretçi kodu"
@@ -7443,6 +7689,12 @@ msgstr "{name} için ziyaretçi geçişi"
 
 msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
 msgstr "{name} için ziyaretçi geçişi, geçerlilik: {validity}. Kapıda bu QR kodu gösterin veya güvenliğe şu kodu verin: {value}"
+
+msgid "Visitor QR changed"
+msgstr "Ziyaretçi QR'ı değişti"
+
+msgid "Visitor QR changes"
+msgstr "Ziyaretçi QR değişiklikleri"
 
 msgid "Visitor QR code"
 msgstr "Ziyaretçi QR kodu"
@@ -7563,6 +7815,9 @@ msgstr "Webhook adresi"
 
 msgid "Webhook endpoints"
 msgstr "Webhook uç noktaları"
+
+msgid "Webhook failing"
+msgstr "Webhook başarısız"
 
 msgid "Webhook secret"
 msgstr "Webhook sırrı"

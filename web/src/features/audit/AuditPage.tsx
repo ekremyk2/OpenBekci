@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { ChevronDownIcon, ChevronRightIcon, LockIcon, ScrollTextIcon } from 'lucide-react'
 import { draftApi, type Schema } from '@/api/draft'
@@ -11,10 +12,12 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select } from '@/components/ui/select'
 import { useSite } from '@/features/dashboard/site'
 import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
 import { zonedLocalToIso } from '@/lib/zoned'
 import { formatValue, parseDiff } from './diff'
+import { AUDIT_ACTIONS, AUDIT_TARGETS, auditActionLabel, auditTargetLabel } from './labels'
 import type { AuditSearch } from './search'
 type AuditEvent = Schema<'AuditEvent-2'>
 
@@ -61,9 +64,17 @@ export function DiffView({ diff }: { diff: unknown }) {
   )
 }
 
-function EventRow({ event, timeZone }: { event: AuditEvent; timeZone: string }) {
+function EventRow({
+  event,
+  timeZone,
+  actorName,
+}: {
+  event: AuditEvent
+  timeZone: string
+  actorName?: string
+}) {
   const [open, setOpen] = useState(false)
-  const { t } = useLingui()
+  const { t, i18n } = useLingui()
   return (
     <li className="p-3">
       <button
@@ -77,10 +88,16 @@ function EventRow({ event, timeZone }: { event: AuditEvent; timeZone: string }) 
         ) : (
           <ChevronRightIcon className="size-4 rtl-flip" aria-hidden="true" />
         )}
-        <span className="font-mono text-sm font-medium">{event.action}</span>
-        <Badge variant="outline">{event.target_type}</Badge>
+        <span className="text-sm font-medium" title={event.action}>
+          {auditActionLabel(event.action, i18n)}
+        </span>
+        <Badge variant="outline">{auditTargetLabel(event.target_type, i18n)}</Badge>
         <span className="text-sm text-muted-foreground">
-          {event.actor_user_id ? t`User ${event.actor_user_id.slice(0, 8)}` : t`System`}
+          {event.actor_user_id
+            ? (actorName ?? t`User ${event.actor_user_id.slice(0, 8)}`)
+            : event.actor_kind === 'api_key'
+              ? t`API key`
+              : t`System`}
         </span>
         <SiteDate
           value={event.at}
@@ -111,13 +128,37 @@ export function AuditPage({
   search: AuditSearch
   onSearch: (s: AuditSearch) => void
 }) {
-  const { t } = useLingui()
+  const { t, i18n } = useLingui()
   const { org, can } = useSession()
   const { site } = useSite()
   const orgId = org?.id ?? ''
   const tz = site?.timezone ?? 'UTC'
   const [draft, setDraft] = useState(search)
   const allowed = can('audit.read')
+  // shortcut: first 100 people only, enough for a site's staff; page it when orgs outgrow that.
+  const people = useQuery({
+    queryKey: ['audit.actors', orgId],
+    enabled: allowed && !!orgId,
+    queryFn: async () =>
+      must(
+        await draftApi.GET('/v1/orgs/{org_id}/persons', {
+          params: { path: { org_id: orgId }, query: { limit: 100 } },
+        }),
+      ).items,
+  })
+  const actors = new Map(
+    (people.data ?? []).flatMap((p) => (p.user_id ? [[p.user_id, p.display_name] as const] : [])),
+  )
+  const byLabel = (a: [string, string], b: [string, string]) => a[1].localeCompare(b[1])
+  const options: Record<'action' | 'target' | 'actor', [string, string][]> = {
+    action: Object.keys(AUDIT_ACTIONS)
+      .map((k): [string, string] => [k, auditActionLabel(k, i18n)])
+      .sort(byLabel),
+    target: Object.keys(AUDIT_TARGETS)
+      .map((k): [string, string] => [k, auditTargetLabel(k, i18n)])
+      .sort(byLabel),
+    actor: [...actors].sort(byLabel),
+  }
 
   const list = useCursorQuery<AuditEvent>(
     ['audit.listEvents', orgId, search],
@@ -165,21 +206,40 @@ export function AuditPage({
       >
         {(
           [
-            ['action', t`Action`, 'text'],
-            ['target', t`Target type`, 'text'],
-            ['actor', t`Actor (user id)`, 'text'],
+            ['action', t`Action`, 'select'],
+            ['target', t`Target type`, 'select'],
+            ['actor', t`Actor`, 'select'],
             ['from', t`From`, 'date'],
             ['to', t`To`, 'date'],
           ] as const
         ).map(([key, label, type]) => (
           <div key={key} className="flex flex-col gap-1">
             <Label htmlFor={`audit-${key}`}>{label}</Label>
-            <Input
-              id={`audit-${key}`}
-              type={type}
-              value={draft[key] ?? ''}
-              onChange={(e) => setDraft({ ...draft, [key]: e.target.value || undefined })}
-            />
+            {type === 'select' ? (
+              <Select
+                id={`audit-${key}`}
+                value={draft[key] ?? ''}
+                onChange={(e) => setDraft({ ...draft, [key]: e.target.value || undefined })}
+              >
+                <option value="">{t`Any`}</option>
+                {/* a filter from the address bar that has no label still shows */}
+                {draft[key] && !options[key as 'action'].some(([v]) => v === draft[key]) ? (
+                  <option value={draft[key]}>{draft[key]}</option>
+                ) : null}
+                {options[key as 'action'].map(([v, l]) => (
+                  <option key={v} value={v}>
+                    {l}
+                  </option>
+                ))}
+              </Select>
+            ) : (
+              <Input
+                id={`audit-${key}`}
+                type={type}
+                value={draft[key] ?? ''}
+                onChange={(e) => setDraft({ ...draft, [key]: e.target.value || undefined })}
+              />
+            )}
           </div>
         ))}
         <div className="flex gap-2 sm:col-span-2 lg:col-span-5">
@@ -213,7 +273,12 @@ export function AuditPage({
         <>
           <ul className="flex flex-col divide-y rounded-lg border" aria-label={t`Audit events`}>
             {list.items.map((e) => (
-              <EventRow key={e.id} event={e} timeZone={tz} />
+              <EventRow
+                key={e.id}
+                event={e}
+                timeZone={tz}
+                actorName={e.actor_user_id ? actors.get(e.actor_user_id) : undefined}
+              />
             ))}
           </ul>
           <LoadMore query={list} />

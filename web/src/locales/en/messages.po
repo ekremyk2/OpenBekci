@@ -251,6 +251,9 @@ msgstr "A ping event was queued for <0>{0}</0>."
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 msgstr "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 
+msgid "A published announcement keeps its text. You can change the pin and the expiry."
+msgstr "A published announcement keeps its text. You can change the pin and the expiry."
+
 msgid "A reason is required."
 msgstr "A reason is required."
 
@@ -350,8 +353,8 @@ msgstr "Active"
 msgid "Activity"
 msgstr "Activity"
 
-msgid "Actor (user id)"
-msgstr "Actor (user id)"
+msgid "Actor"
+msgstr "Actor"
 
 msgid "Actual"
 msgstr "Actual"
@@ -481,6 +484,12 @@ msgstr "After saving, the operator registers the address below with <0>openbekci
 msgid "Agenda"
 msgstr "Agenda"
 
+msgid "Agenda item"
+msgstr "Agenda item"
+
+msgid "Agenda item added"
+msgstr "Agenda item added"
+
 msgid "Agent"
 msgstr "Agent"
 
@@ -601,8 +610,23 @@ msgstr "An amount"
 msgid "An announcement is published"
 msgstr "An announcement is published"
 
+msgid "An archived announcement can no longer be edited."
+msgstr "An archived announcement can no longer be edited."
+
 msgid "An inactive endpoint receives no new events."
 msgstr "An inactive endpoint receives no new events."
+
+msgid "Announcement"
+msgstr "Announcement"
+
+msgid "Announcement archived"
+msgstr "Announcement archived"
+
+msgid "Announcement drafted"
+msgstr "Announcement drafted"
+
+msgid "Announcement published"
+msgstr "Announcement published"
 
 msgid "Announcement published."
 msgstr "Announcement published."
@@ -761,6 +785,9 @@ msgstr "Assemblies"
 
 msgid "Assembly"
 msgstr "Assembly"
+
+msgid "Assembly due"
+msgstr "Assembly due"
 
 msgid "Assembly settings"
 msgstr "Assembly settings"
@@ -963,8 +990,20 @@ msgstr "Booked to date"
 msgid "Booked. Your booking is confirmed."
 msgstr "Booked. Your booking is confirmed."
 
+msgid "Booking"
+msgstr "Booking"
+
+msgid "Booking cancellations"
+msgstr "Booking cancellations"
+
+msgid "Booking confirmations"
+msgstr "Booking confirmations"
+
 msgid "Booking fee"
 msgstr "Booking fee"
+
+msgid "Booking made"
+msgstr "Booking made"
 
 msgid "Bookings"
 msgstr "Bookings"
@@ -1142,6 +1181,9 @@ msgstr "Cash"
 msgid "Cash balance"
 msgstr "Cash balance"
 
+msgid "Cash box"
+msgstr "Cash box"
+
 msgid "Cash box added."
 msgstr "Cash box added."
 
@@ -1220,6 +1262,9 @@ msgstr "Charge"
 msgid "Charge cancelled; a reversal was created."
 msgstr "Charge cancelled; a reversal was created."
 
+msgid "Charge plan"
+msgstr "Charge plan"
+
 msgid "Charge to"
 msgstr "Charge to"
 
@@ -1228,6 +1273,9 @@ msgstr "Charge type"
 
 msgid "Charges"
 msgstr "Charges"
+
+msgid "Charges generated"
+msgstr "Charges generated"
 
 msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
 msgstr "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
@@ -1413,6 +1461,12 @@ msgstr "Chosen units"
 msgid "City"
 msgstr "City"
 
+msgid "Claim decisions"
+msgstr "Claim decisions"
+
+msgid "Claim requests"
+msgstr "Claim requests"
+
 #. placeholder {0}: occupancyKindLabel(claim.claimed_role, i18n)
 #. placeholder {1}: claim.unit_door_number
 msgid "Claims {0} of {1}."
@@ -1465,6 +1519,9 @@ msgstr "Closing must be after opening."
 
 msgid "Closing statement"
 msgstr "Closing statement"
+
+msgid "Closing statement {n}"
+msgstr "Closing statement {n}"
 
 msgid "Co-owner representation"
 msgstr "Co-owner representation"
@@ -1578,6 +1635,9 @@ msgstr "Confirmed. Receipt {0}"
 
 msgid "Confirming your payment with the provider. This usually takes a few seconds."
 msgstr "Confirming your payment with the provider. This usually takes a few seconds."
+
+msgid "Consent accepted"
+msgstr "Consent accepted"
 
 msgid "Contact"
 msgstr "Contact"
@@ -1849,9 +1909,6 @@ msgstr "Could not start the assembly."
 msgid "Could not start the card payment. Please try again."
 msgstr "Could not start the card payment. Please try again."
 
-msgid "Could not start the rebuild."
-msgstr "Could not start the rebuild."
-
 msgid "Could not update the document."
 msgstr "Could not update the document."
 
@@ -1980,6 +2037,12 @@ msgstr "Dark"
 msgid "Data controller"
 msgstr "Data controller"
 
+msgid "Data export ready"
+msgstr "Data export ready"
+
+msgid "Data export requested"
+msgstr "Data export requested"
+
 msgid "Date"
 msgstr "Date"
 
@@ -2016,6 +2079,9 @@ msgstr "Debt on move-out"
 
 msgid "Debt status certificate"
 msgstr "Debt status certificate"
+
+msgid "Debt status certificate {n}"
+msgstr "Debt status certificate {n}"
 
 msgid "Debtors"
 msgstr "Debtors"
@@ -2155,8 +2221,17 @@ msgstr "Deliveries of {0}"
 msgid "Deliveries of <0>{0}</0>"
 msgstr "Deliveries of <0>{0}</0>"
 
+msgid "Deliveries received"
+msgstr "Deliveries received"
+
 msgid "Deliveries recorded."
 msgstr "Deliveries recorded."
+
+msgid "Deliveries waiting"
+msgstr "Deliveries waiting"
+
+msgid "Delivery"
+msgstr "Delivery"
 
 msgid "Delivery of the call"
 msgstr "Delivery of the call"
@@ -2169,6 +2244,9 @@ msgstr "Delivery preview"
 
 msgid "Delivery progress"
 msgstr "Delivery progress"
+
+msgid "Delivery received"
+msgstr "Delivery received"
 
 msgid "Delivery recorded."
 msgstr "Delivery recorded."
@@ -2250,6 +2328,12 @@ msgstr "District"
 msgid "Document"
 msgstr "Document"
 
+msgid "Document changed"
+msgstr "Document changed"
+
+msgid "Document generated"
+msgstr "Document generated"
+
 msgid "Document number (optional)"
 msgstr "Document number (optional)"
 
@@ -2324,6 +2408,9 @@ msgstr "Dues (aidat)"
 
 msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
 msgstr "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
+
+msgid "Dues due soon"
+msgstr "Dues due soon"
 
 msgid "Dues plan"
 msgstr "Dues plan"
@@ -2811,8 +2898,17 @@ msgstr "Fees are computed continuously on overdue principal, booked once a month
 msgid "Fees frozen"
 msgstr "Fees frozen"
 
+msgid "File"
+msgstr "File"
+
 msgid "File (CSV or XLSX)"
 msgstr "File (CSV or XLSX)"
+
+msgid "File attached"
+msgstr "File attached"
+
+msgid "File generated"
+msgstr "File generated"
 
 msgid "File layout for a spreadsheet upload"
 msgstr "File layout for a spreadsheet upload"
@@ -2846,6 +2942,9 @@ msgstr "Finished."
 
 msgid "First call"
 msgstr "First call"
+
+msgid "First call opened"
+msgstr "First call opened"
 
 msgid "First call: more than this share of owners"
 msgstr "First call: more than this share of owners"
@@ -2952,6 +3051,15 @@ msgstr "Fund balances"
 msgid "Gate"
 msgstr "Gate"
 
+msgid "Gate agent clock off"
+msgstr "Gate agent clock off"
+
+msgid "Gate agent silent"
+msgstr "Gate agent silent"
+
+msgid "Gate agent stopped"
+msgstr "Gate agent stopped"
+
 msgid "Gate contact phone"
 msgstr "Gate contact phone"
 
@@ -3006,6 +3114,12 @@ msgstr "Go to sign in"
 msgid "Governance sections"
 msgstr "Governance sections"
 
+msgid "Governance settings"
+msgstr "Governance settings"
+
+msgid "Governance settings changed"
+msgstr "Governance settings changed"
+
 msgid "Grace days"
 msgstr "Grace days"
 
@@ -3014,6 +3128,18 @@ msgstr "Gross"
 
 msgid "Guard"
 msgstr "Guard"
+
+msgid "Guard PIN failed"
+msgstr "Guard PIN failed"
+
+msgid "Guard PIN set"
+msgstr "Guard PIN set"
+
+msgid "Guard session"
+msgstr "Guard session"
+
+msgid "Guard signed in"
+msgstr "Guard signed in"
 
 msgid "Halls, courts and barbecue areas, each with its own booking rules."
 msgstr "Halls, courts and barbecue areas, each with its own booking rules."
@@ -3192,6 +3318,15 @@ msgstr "Instance settings"
 msgid "Internal note"
 msgstr "Internal note"
 
+msgid "Invitation"
+msgstr "Invitation"
+
+msgid "Invitation accepted"
+msgstr "Invitation accepted"
+
+msgid "Invitation sent"
+msgstr "Invitation sent"
+
 msgid "Invitations"
 msgstr "Invitations"
 
@@ -3253,6 +3388,9 @@ msgstr "Job"
 
 msgid "Jobs"
 msgstr "Jobs"
+
+msgid "Join code changed"
+msgstr "Join code changed"
 
 msgid "Join the site's WhatsApp group"
 msgstr "Join the site's WhatsApp group"
@@ -3355,6 +3493,12 @@ msgstr "Late fees frozen."
 
 msgid "Late-fee policy"
 msgstr "Late-fee policy"
+
+msgid "Late-fee policy set"
+msgstr "Late-fee policy set"
+
+msgid "Late-fee threshold set"
+msgstr "Late-fee threshold set"
 
 msgid "Law 634 default: one third."
 msgstr "Law 634 default: one third."
@@ -3578,6 +3722,15 @@ msgstr "Me too"
 msgid "Meaning of status {0}"
 msgstr "Meaning of status {0}"
 
+msgid "Meeting"
+msgstr "Meeting"
+
+msgid "Meeting closed"
+msgstr "Meeting closed"
+
+msgid "Meeting decisions"
+msgstr "Meeting decisions"
+
 msgid "Meeting notices"
 msgstr "Meeting notices"
 
@@ -3589,6 +3742,12 @@ msgstr "Meeting schedule"
 
 msgid "Meetings"
 msgstr "Meetings"
+
+msgid "Membership"
+msgstr "Membership"
+
+msgid "Membership added"
+msgstr "Membership added"
 
 msgid "Merge"
 msgstr "Merge"
@@ -3725,6 +3884,15 @@ msgstr "Move to…"
 
 msgid "Move up"
 msgstr "Move up"
+
+msgid "Move-out"
+msgstr "Move-out"
+
+msgid "Move-out charges settled"
+msgstr "Move-out charges settled"
+
+msgid "Move-out recorded"
+msgstr "Move-out recorded"
 
 msgid "Moves out on"
 msgstr "Moves out on"
@@ -4110,6 +4278,9 @@ msgstr "No open receivables"
 msgid "No openings match"
 msgstr "No openings match"
 
+msgid "No openings yet. They appear here as gates open."
+msgstr "No openings yet. They appear here as gates open."
+
 msgid "No organizations yet"
 msgstr "No organizations yet"
 
@@ -4284,6 +4455,9 @@ msgstr "Not determined"
 msgid "Not enabled"
 msgstr "Not enabled"
 
+msgid "Not found"
+msgstr "Not found"
+
 msgid "Not in my file"
 msgstr "Not in my file"
 
@@ -4380,9 +4554,6 @@ msgstr "Nothing to show for this period"
 msgid "Nothing was lost. Check your statement or your notifications, or try again."
 msgstr "Nothing was lost. Check your statement or your notifications, or try again."
 
-msgid "Nothing yet."
-msgstr "Nothing yet."
-
 msgid "Notices from your management will appear here."
 msgstr "Notices from your management will appear here."
 
@@ -4409,6 +4580,9 @@ msgstr "Numerator"
 
 msgid "Occupancy"
 msgstr "Occupancy"
+
+msgid "Occupancy added"
+msgstr "Occupancy added"
 
 msgid "Occupancy timeline"
 msgstr "Occupancy timeline"
@@ -4672,6 +4846,9 @@ msgstr "Overdue"
 msgid "Overdue (all sites)"
 msgstr "Overdue (all sites)"
 
+msgid "Overdue dues"
+msgstr "Overdue dues"
+
 msgid "Overdue principal"
 msgstr "Overdue principal"
 
@@ -4723,6 +4900,9 @@ msgstr "Owners who were called are not notified automatically; record the cancel
 msgid "Ownership share (%)"
 msgstr "Ownership share (%)"
 
+msgid "Pack"
+msgstr "Pack"
+
 msgid "Pack default"
 msgstr "Pack default"
 
@@ -4737,6 +4917,9 @@ msgstr "Pack enabled."
 
 msgid "Pack not found"
 msgstr "Pack not found"
+
+msgid "Pack settings changed"
+msgstr "Pack settings changed"
 
 msgid "Packs"
 msgstr "Packs"
@@ -4836,6 +5019,9 @@ msgstr "Payment"
 msgid "Payment confirmed"
 msgstr "Payment confirmed"
 
+msgid "Payment declared"
+msgstr "Payment declared"
+
 msgid "Payment receipts"
 msgstr "Payment receipts"
 
@@ -4848,8 +5034,14 @@ msgstr "Payment recorded"
 msgid "Payment rejected"
 msgstr "Payment rejected"
 
+msgid "Payment reminders"
+msgstr "Payment reminders"
+
 msgid "Payments"
 msgstr "Payments"
+
+msgid "Payments declared"
+msgstr "Payments declared"
 
 msgid "Pays"
 msgstr "Pays"
@@ -4895,6 +5087,12 @@ msgstr "Period"
 
 msgid "Person"
 msgstr "Person"
+
+msgid "Person added"
+msgstr "Person added"
+
+msgid "Person changed"
+msgstr "Person changed"
 
 msgid "Persons"
 msgstr "Persons"
@@ -4973,6 +5171,9 @@ msgstr "Policy"
 msgid "Policy saved."
 msgstr "Policy saved."
 
+msgid "Poll answered"
+msgstr "Poll answered"
+
 msgid "Poll saved."
 msgstr "Poll saved."
 
@@ -5027,7 +5228,7 @@ msgstr "Present"
 msgid "Preview"
 msgstr "Preview"
 
-#. placeholder {0}: doc.title
+#. placeholder {0}: docTitle(doc)
 msgid "Preview of {0}"
 msgstr "Preview of {0}"
 
@@ -5215,11 +5416,11 @@ msgstr "Reason (audited)"
 msgid "Reason (optional)"
 msgstr "Reason (optional)"
 
-msgid "Rebuild the allow-list"
-msgstr "Rebuild the allow-list"
-
 msgid "Receipt"
 msgstr "Receipt"
+
+msgid "Receipt {n}"
+msgstr "Receipt {n}"
 
 msgid "Receipt number"
 msgstr "Receipt number"
@@ -5318,6 +5519,12 @@ msgstr "Record what the site spends: electricity, cleaning, repairs."
 
 msgid "Recurring"
 msgstr "Recurring"
+
+msgid "Recurring visitor"
+msgstr "Recurring visitor"
+
+msgid "Recurring visitor added"
+msgstr "Recurring visitor added"
 
 msgid "Reference"
 msgstr "Reference"
@@ -6056,6 +6263,9 @@ msgstr "Single representative"
 msgid "Site"
 msgstr "Site"
 
+msgid "Site changed"
+msgstr "Site changed"
+
 msgid "Site collects"
 msgstr "Site collects"
 
@@ -6183,6 +6393,9 @@ msgstr "State"
 
 msgid "Statement"
 msgstr "Statement"
+
+msgid "Statement {n}"
+msgstr "Statement {n}"
 
 msgid "Statement closing"
 msgstr "Statement closing"
@@ -6339,6 +6552,9 @@ msgstr "Term starts"
 msgid "Terms ending soon"
 msgstr "Terms ending soon"
 
+msgid "Terms expiring"
+msgstr "Terms expiring"
+
 msgid "Test ping sent"
 msgstr "Test ping sent"
 
@@ -6380,9 +6596,6 @@ msgstr "The agent runs on a computer at the gate and opens it. You get a one-tim
 
 msgid "The agent's clock is wrong."
 msgstr "The agent's clock is wrong."
-
-msgid "The allow-list is being rebuilt."
-msgstr "The allow-list is being rebuilt."
 
 msgid "The amount cannot be more than the client money held for the site."
 msgstr "The amount cannot be more than the client money held for the site."
@@ -6878,6 +7091,9 @@ msgstr "This pack has no settings."
 msgid "This pack has not filled in any site setting, or the sites changed them."
 msgstr "This pack has not filled in any site setting, or the sites changed them."
 
+msgid "This page does not exist, or it was removed."
+msgstr "This page does not exist, or it was removed."
+
 msgid "This page needs a payment to look up"
 msgstr "This page needs a payment to look up"
 
@@ -6984,8 +7200,20 @@ msgstr "This will be a common ticket, visible to the whole site."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 
+msgid "Ticket"
+msgstr "Ticket"
+
+msgid "Ticket comments"
+msgstr "Ticket comments"
+
+msgid "Ticket opened"
+msgstr "Ticket opened"
+
 msgid "Ticket settings"
 msgstr "Ticket settings"
+
+msgid "Ticket status changed"
+msgstr "Ticket status changed"
 
 msgid "Ticket updates"
 msgstr "Ticket updates"
@@ -7151,6 +7379,9 @@ msgstr "Try again"
 msgid "Try widening the filters."
 msgstr "Try widening the filters."
 
+msgid "Turkey"
+msgstr "Turkey"
+
 msgid "Türkiye"
 msgstr "Türkiye"
 
@@ -7191,6 +7422,9 @@ msgstr "Unit claims to approve: {0}"
 
 msgid "Unit column"
 msgstr "Unit column"
+
+msgid "Unit imported"
+msgstr "Unit imported"
 
 msgid "Unit receivable"
 msgstr "Unit receivable"
@@ -7310,6 +7544,9 @@ msgstr "Use lowercase letters, digits and underscores, for example heating"
 msgid "Use my password"
 msgstr "Use my password"
 
+msgid "User"
+msgstr "User"
+
 #. placeholder {0}: event.actor_user_id.slice(0, 8)
 msgid "User {0}"
 msgstr "User {0}"
@@ -7422,12 +7659,21 @@ msgstr "Visiting unit"
 msgid "Visitor"
 msgstr "Visitor"
 
+msgid "Visitor approvals"
+msgstr "Visitor approvals"
+
 #. placeholder {0}: query.data.pending_visitor_approvals
 msgid "Visitor approvals: {0}"
 msgstr "Visitor approvals: {0}"
 
 msgid "Visitor approved."
 msgstr "Visitor approved."
+
+msgid "Visitor arrivals"
+msgstr "Visitor arrivals"
+
+msgid "Visitor cancelled"
+msgstr "Visitor cancelled"
 
 msgid "Visitor code"
 msgstr "Visitor code"
@@ -7443,6 +7689,12 @@ msgstr "Visitor pass for {name}"
 
 msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
 msgstr "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+
+msgid "Visitor QR changed"
+msgstr "Visitor QR changed"
+
+msgid "Visitor QR changes"
+msgstr "Visitor QR changes"
 
 msgid "Visitor QR code"
 msgstr "Visitor QR code"
@@ -7563,6 +7815,9 @@ msgstr "Webhook address"
 
 msgid "Webhook endpoints"
 msgstr "Webhook endpoints"
+
+msgid "Webhook failing"
+msgstr "Webhook failing"
 
 msgid "Webhook secret"
 msgstr "Webhook secret"

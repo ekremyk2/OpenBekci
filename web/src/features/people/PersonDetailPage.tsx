@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
-import { ErrorState } from '@/components/data/ErrorState'
+import { PageError } from '@/components/data/PageError'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +24,7 @@ export function PersonDetailPage({ personId, tab }: { personId: string; tab: Per
   const orgId = org?.id ?? ''
   const query = useQuery({ ...personQueries.one(orgId, personId), enabled: !!org })
   if (query.isLoading) return <PageSkeleton />
-  if (query.error) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
+  if (query.error) return <PageError error={query.error} onRetry={() => void query.refetch()} />
   const person = query.data!
   const sites = org?.sites ?? []
   return (

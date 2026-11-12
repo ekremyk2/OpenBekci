@@ -141,7 +141,7 @@ function CreateAgentDialog({
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault()
-            if (!name.trim()) return
+            if (!name.trim()) return setError(t`Enter a name`)
             create.mutate(undefined, {
               onSuccess: onCreated,
               onError: () => setError(t`Could not create the agent.`),
@@ -160,14 +160,22 @@ function CreateAgentDialog({
             </DialogDescription>
           </DialogHeader>
           <Field label={t`Name`} htmlFor="ag-name">
-            <Input id="ag-name" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              id="ag-name"
+              value={name}
+              aria-invalid={!!error}
+              onChange={(e) => {
+                setName(e.target.value)
+                setError(null)
+              }}
+            />
           </Field>
           <FormRootError message={error ?? undefined} />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               <Trans>Cancel</Trans>
             </Button>
-            <Button type="submit" disabled={!name.trim() || create.isPending}>
+            <Button type="submit" disabled={create.isPending}>
               <Trans>Create</Trans>
             </Button>
           </DialogFooter>
@@ -235,13 +243,6 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
       return out
     },
   )
-  const rebuild = useOrgMutation(async () => {
-    await gApi.POST('/v1/orgs/{org_id}/access/allowlist:rebuild', {
-      params: { path: { org_id: ctx.orgId }, header: idemHeader(keys.get('rebuild')) },
-      body: { site_id: ctx.siteId },
-    })
-    keys.done('rebuild')
-  })
   const statusBadge = (a: S['Agent']) =>
     a.status === 'revoked' ? (
       <Badge variant="secondary">{t`Revoked`}</Badge>
@@ -259,18 +260,6 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
           <Button onClick={() => setCreating(true)}>
             <PlusIcon />
             <Trans>New agent</Trans>
-          </Button>
-          <Button
-            variant="outline"
-            disabled={rebuild.isPending}
-            onClick={() =>
-              rebuild.mutate(undefined, {
-                onSuccess: () => toast.info(t`The allow-list is being rebuilt.`),
-                onError: () => toast.error(t`Could not start the rebuild.`),
-              })
-            }
-          >
-            <Trans>Rebuild the allow-list</Trans>
           </Button>
         </div>
       ) : null}

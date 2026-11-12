@@ -823,8 +823,8 @@ export function OpenPanel({ ctx, console: c }: { ctx: SiteCtx; console: S['GateC
           <Trans>The opening log is not available.</Trans>
         </p>
       ) : (events.data ?? []).length === 0 ? (
-        <p className="text-muted-foreground">
-          <Trans>Nothing yet.</Trans>
+        <p className="rounded-md border border-dashed p-4 text-lg text-muted-foreground">
+          <Trans>No openings yet. They appear here as gates open.</Trans>
         </p>
       ) : (
         <ul className="flex flex-col gap-1" aria-label={t`Recent openings`}>

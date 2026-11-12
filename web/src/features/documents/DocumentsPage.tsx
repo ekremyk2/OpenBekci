@@ -60,16 +60,40 @@ function useVisibilityText() {
   }
 }
 
+/**
+ * Generated documents are titled by the server in English ("Receipt 2026-000004"); show them in
+ * the interface language. Anything that does not match keeps its stored title.
+ */
+function useDocTitle() {
+  const { t } = useLingui()
+  return (doc: Document) => {
+    if (doc.source !== 'generated') return doc.title
+    const m = /^(Receipt|Statement|Closing statement|Debt status certificate) (.+)$/.exec(doc.title)
+    if (!m) return doc.title
+    const n = m[2]
+    switch (m[1]) {
+      case 'Receipt':
+        return t`Receipt ${n}`
+      case 'Statement':
+        return t`Statement ${n}`
+      case 'Closing statement':
+        return t`Closing statement ${n}`
+      default:
+        return t`Debt status certificate ${n}`
+    }
+  }
+}
+
 function SourceBadge({ doc }: { doc: Document }) {
   if (doc.source !== 'generated') return null
   const type = doc.generated_from?.type
   return (
     <Badge variant="info">
-      {type === 'statement' ? (
+      {type === 'statement' || type === 'move_out_statement' ? (
         <Trans>Generated: statement</Trans>
-      ) : type === 'receipt' ? (
+      ) : type === 'receipt' || type === 'payment_receipt' ? (
         <Trans>Generated: receipt</Trans>
-      ) : type === 'certificate' ? (
+      ) : type === 'certificate' || type === 'move_out_certificate' ? (
         <Trans>Generated: certificate</Trans>
       ) : (
         <Trans>Generated</Trans>
@@ -185,6 +209,7 @@ function NewFolderDialog({
   parentId: string | null
   onClose: () => void
 }) {
+  const { t } = useLingui()
   const qc = useQueryClient()
   const idem = useIdempotencyKey()
   const describe = useApplyErrorMessage()
@@ -223,18 +248,27 @@ function NewFolderDialog({
           onSubmit={(e) => {
             e.preventDefault()
             if (name.trim()) create.mutate()
+            else setError(t`Enter a name`)
           }}
         >
           <Label htmlFor="new-folder-name">
             <Trans>Name</Trans>
           </Label>
-          <Input id="new-folder-name" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            id="new-folder-name"
+            value={name}
+            aria-invalid={!!error}
+            onChange={(e) => {
+              setName(e.target.value)
+              setError(undefined)
+            }}
+          />
           <FormError message={error} />
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               <Trans>Cancel</Trans>
             </Button>
-            <Button type="submit" disabled={!name.trim() || create.isPending}>
+            <Button type="submit" disabled={create.isPending}>
               <Trans>Create folder</Trans>
             </Button>
           </DialogFooter>
@@ -254,26 +288,27 @@ function PreviewDialog({
   onClose: () => void
 }) {
   const { t } = useLingui()
+  const docTitle = useDocTitle()
   const url = fileUrl(orgId, doc.file_id)
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{doc.title}</DialogTitle>
+          <DialogTitle>{docTitle(doc)}</DialogTitle>
           <DialogDescription className="sr-only">
             <Trans>Document preview</Trans>
           </DialogDescription>
         </DialogHeader>
         {doc.mime === 'application/pdf' ? (
           <iframe
-            title={t`Preview of ${doc.title}`}
+            title={t`Preview of ${docTitle(doc)}`}
             src={url}
             className="h-[70dvh] w-full rounded border"
           />
         ) : doc.mime.startsWith('image/') ? (
           <img
             src={fileUrl(orgId, doc.file_id, 'medium')}
-            alt={doc.title}
+            alt={docTitle(doc)}
             className="max-h-[70dvh] object-contain"
           />
         ) : (
@@ -283,7 +318,7 @@ function PreviewDialog({
         )}
         <a
           href={url}
-          download={doc.title}
+          download={docTitle(doc)}
           className="w-fit text-sm text-primary underline-offset-4 hover:underline"
         >
           <Trans>Download</Trans>
@@ -309,6 +344,7 @@ function DocumentRow({
   onPreview: () => void
 }) {
   const { t } = useLingui()
+  const docTitle = useDocTitle()
   const qc = useQueryClient()
   const [renaming, setRenaming] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -371,7 +407,7 @@ function DocumentRow({
           onClick={onPreview}
           className="min-w-0 flex-1 truncate text-start font-medium outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          {doc.title}
+          {docTitle(doc)}
         </button>
       )}
       <SourceBadge doc={doc} />

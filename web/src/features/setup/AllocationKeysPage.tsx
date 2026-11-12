@@ -21,12 +21,14 @@ import { Select } from '@/components/ui/select'
 import { useActiveSite } from '@/features/sites/useActiveSite'
 import { SetupNav } from '@/features/units/UnitsPage'
 import { cn } from '@/lib/utils'
+import { usePackLabels } from '@/features/packs/queries'
 import { KeyValuesEditor } from './KeyValuesEditor'
 import { keyQueries } from './keys'
 
 export function AllocationKeysPage({ search }: { search: { site?: string; key?: string } }) {
   const { org, can } = useSession()
   const { t } = useLingui()
+  const codeLabel = usePackLabels()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const applyError = useApplyFormError()
@@ -137,8 +139,10 @@ export function AllocationKeysPage({ search }: { search: { site?: string; key?: 
                       void navigate({ to: '.', search: { site: siteId, key: k.id } as never })
                     }
                   >
-                    <span className="text-sm font-medium">{k.name}</span>
-                    <span className="text-xs text-muted-foreground">{k.code}</span>
+                    <span className="text-sm font-medium">{codeLabel(k.code) ?? k.name}</span>
+                    {codeLabel(k.code) ? null : (
+                      <span className="text-xs text-muted-foreground">{k.code}</span>
+                    )}
                   </button>
                   <Badge variant="secondary">{kindLabel(k.kind)}</Badge>
                   {canManage && !k.is_system ? (
