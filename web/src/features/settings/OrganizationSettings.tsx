@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { LockIcon } from 'lucide-react'
 import { draftApi, ifMatch } from '@/api/draft'
 import { useSession } from '@/app/session'
-import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { FormError, FormField, SubmitButton, useApplyApiError } from '@/components/forms/FormField'
@@ -70,13 +69,7 @@ export function OrganizationSettings() {
   })
 
   if (!can('org.read') && !canManage) {
-    return (
-      <EmptyState
-        icon={LockIcon}
-        title={<Trans>You do not have access to this</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied heading="h2" />
   }
   if (query.isPending) return <PageSkeleton />
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />

@@ -290,6 +290,9 @@ msgstr "Çekimser"
 msgid "Accept"
 msgstr "Kabul et"
 
+msgid "Accept and sign in"
+msgstr "Kabul et ve giriş yap"
+
 msgid "Accept card payments with iyzico"
 msgstr "iyzico ile kartlı ödeme al"
 
@@ -768,6 +771,9 @@ msgstr "Bu kuruluşun sizin hakkınızda tuttuğu verilerin bir kopyasını iste
 msgid "Ask the resident"
 msgstr "Sakine sor"
 
+msgid "Ask to join this unit"
+msgstr "Bu daireye katılmayı iste"
+
 msgid "Ask your building manager to invite you."
 msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
 
@@ -804,6 +810,9 @@ msgstr "Size atanan"
 
 msgid "Assignee"
 msgstr "Atanan kişi"
+
+msgid "At least 10 characters."
+msgstr "En az 10 karakter."
 
 msgid "At least this many months overdue"
 msgstr "En az şu kadar ay gecikmiş"
@@ -866,9 +875,6 @@ msgstr "Hesabıma dön"
 
 msgid "Back to Pay"
 msgstr "Ödemeye dön"
-
-msgid "Back to sign in"
-msgstr "Girişe dön"
 
 msgid "Back to the assembly"
 msgstr "Toplantıya dön"
@@ -1343,6 +1349,9 @@ msgstr "Tarih ve saat seçin."
 msgid "Choose a key"
 msgstr "Bir anahtar seçin"
 
+msgid "Choose a password"
+msgstr "Bir parola seçin"
+
 msgid "Choose a person"
 msgstr "Bir kişi seçin"
 
@@ -1451,6 +1460,9 @@ msgstr "Ekstrenin kimin için olduğunu seçin."
 
 msgid "Choose who to invite"
 msgstr "Kimi davet edeceğinizi seçin"
+
+msgid "Choose your unit"
+msgstr "Dairenizi seçin"
 
 msgid "Choose…"
 msgstr "Seçin…"
@@ -1641,6 +1653,9 @@ msgstr "Onay verildi"
 
 msgid "Contact"
 msgstr "İletişim"
+
+msgid "Continue"
+msgstr "Devam"
 
 msgid "Continue to payment"
 msgstr "Ödemeye devam et"
@@ -2750,6 +2765,9 @@ msgstr "Parolanızı girin"
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
 
+msgid "Enter your phone number or email"
+msgstr "Telefon numaranızı veya e-postanızı girin"
+
 msgid "Enter your PIN"
 msgstr "PIN'inizi girin"
 
@@ -3023,6 +3041,9 @@ msgstr "Bilgi için"
 
 msgid "For this site"
 msgstr "Bu site için"
+
+msgid "Forgot your password?"
+msgstr "Parolanızı mı unuttunuz?"
 
 msgid "Four fifths"
 msgstr "Beşte dört"
@@ -3386,6 +3407,12 @@ msgstr "İçinde bulunduğu klasörün görünürlüğüyle başlar. Sonra deği
 msgid "It stops opening gates at once."
 msgstr "Kapıların hemen açılmasını durdurur."
 
+msgid "It was already used or has expired. Ask for a new one."
+msgstr "Davet kullanılmış veya süresi dolmuş. Yenisini isteyin."
+
+msgid "It was changed or switched off. Ask your manager for the new QR code."
+msgstr "Kod değiştirilmiş veya kapatılmış. Yöneticinizden yeni QR kodunu isteyin."
+
 msgid "It will come in a later release."
 msgstr "Sonraki bir sürümde gelecek."
 
@@ -3640,6 +3667,9 @@ msgstr "Daha fazla yükle"
 
 msgid "Load more lines"
 msgstr "Daha fazla satır yükle"
+
+msgid "Loading"
+msgstr "Yükleniyor"
 
 msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
 msgstr "Tüm bağımsız bölümler ve değerler yükleniyor: şimdiye kadar {loadedUnits} bölüm, {loadedValues} değer."
@@ -3964,9 +3994,6 @@ msgstr "Bağımsız bölümüm"
 
 msgid "My units"
 msgstr "Bağımsız bölümlerim"
-
-msgid "My vehicles"
-msgstr "Araçlarım"
 
 msgid "Myself"
 msgstr "Kendim"
@@ -5189,6 +5216,9 @@ msgstr "Plakalar ve ziyaretçi kodları araçlardan ve ziyaretçilerden oluştur
 msgid "Plates for the camera operator (CSV)"
 msgstr "Kamera operatörü için plakalar (CSV)"
 
+msgid "Platform"
+msgstr "Platform"
+
 msgid "Platform administration"
 msgstr "Platform yönetimi"
 
@@ -5707,9 +5737,6 @@ msgstr "Yedek akçe katkısı"
 
 msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
 msgstr "Salonları, kortları ve mangal alanlarını ayırtın. Kurallar içindeki rezervasyonlar hemen onaylanır."
-
-msgid "Reset your password"
-msgstr "Parolanızı sıfırlayın"
 
 msgid "Resident directory"
 msgstr "Sakin rehberi"
@@ -6272,6 +6299,9 @@ msgstr "Giriş yap"
 msgid "Sign in to manage your building."
 msgstr "Binanızı yönetmek için giriş yapın."
 
+msgid "Sign in with an e-mail link"
+msgstr "E-posta bağlantısıyla giriş yap"
+
 msgid "Sign out"
 msgstr "Çıkış yap"
 
@@ -6283,9 +6313,6 @@ msgstr "Elle imzalı"
 
 msgid "Signing secret"
 msgstr "İmza anahtarı"
-
-msgid "Signing you in"
-msgstr "Giriş yapılıyor"
 
 msgid "Signs the webhook (X-Hub-Signature-256)."
 msgstr "Webhook imzasını atar (X-Hub-Signature-256)."
@@ -6791,6 +6818,9 @@ msgstr "Yasal süreler sağlanmıyor."
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr "Satırlar toplamla tutmuyor. Bu planı kaydetmeyin."
 
+msgid "The link was already used or has expired. Ask for a new one on the sign-in page."
+msgstr "Bağlantı kullanılmış veya süresi dolmuş. Giriş sayfasından yenisini isteyin."
+
 msgid "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
 msgstr "Bağlantı daha önce kullanıldı, süresi doldu veya uygulamadan çıkış yapıldı. Uygulamadan yeniden açın ya da buradan giriş yapın."
 
@@ -7128,8 +7158,14 @@ msgstr "Bu geçişe ajan üzerinden ulaşılamıyor."
 msgid "This gate is switched off."
 msgstr "Bu kapı kapalı."
 
+msgid "This invitation no longer works"
+msgstr "Bu davet artık geçerli değil"
+
 msgid "This is the only time the secret is shown. It cannot be read back later."
 msgstr "Gizli anahtar yalnızca bu kez gösterilir. Sonradan geri okunamaz."
+
+msgid "This join code no longer works"
+msgstr "Bu katılım kodu artık geçerli değil"
 
 msgid "This link no longer works"
 msgstr "Bu bağlantı artık çalışmıyor"
@@ -7200,6 +7236,9 @@ msgstr "Bu sakin kapı için bir numara paylaşmadı."
 msgid "This role belongs to the site, so you will be asked to confirm it is you."
 msgstr "Bu rol siteye aittir, bu yüzden siz olduğunuzu doğrulamanız istenecek."
 
+msgid "This server does not reset passwords. Ask for a sign-in link by e-mail instead; it signs you in once."
+msgstr "Bu sunucu parola sıfırlamaz. Bunun yerine e-postayla bir giriş bağlantısı isteyin; bir kez giriş yapmanızı sağlar."
+
 msgid "This server has no pack with this id."
 msgstr "Bu sunucuda bu kimliğe sahip bir paket yok."
 
@@ -7232,9 +7271,6 @@ msgstr "Bu site varsayılan iş akışını kullanıyor. Kendi durumlarınızı 
 
 msgid "This status is not allowed, or the end date is before the start."
 msgstr "Bu duruma izin verilmiyor ya da bitiş tarihi başlangıçtan önce."
-
-msgid "This step is not available in this build yet."
-msgstr "Bu adım henüz bu sürümde kullanılamıyor."
 
 msgid "This text is too long."
 msgstr "Bu metin çok uzun."
@@ -7603,6 +7639,9 @@ msgstr "İki harfli bir ülke kodu kullanın, örneğin TR"
 msgid "Use at least {0} characters"
 msgstr "En az {0} karakter kullanın"
 
+msgid "Use at least 10 characters"
+msgstr "En az 10 karakter kullanın"
+
 #. placeholder {0}: p.max
 msgid "Use at most {0} characters"
 msgstr "En fazla {0} karakter kullanın"
@@ -7886,6 +7925,9 @@ msgstr "Bu ödemeyi bulamadık"
 msgid "We could not send the code. Please try again."
 msgstr "Kod gönderemedik. Lütfen yeniden deneyin."
 
+msgid "We sent a sign-in link to your email. Open it on this device to continue; it works once."
+msgstr "E-postanıza bir giriş bağlantısı gönderdik. Devam etmek için bu cihazda açın; bir kez çalışır."
+
 msgid "Webhook address"
 msgstr "Webhook adresi"
 
@@ -8089,6 +8131,15 @@ msgstr "Evet"
 msgid "Yes share of land (%)"
 msgstr "Evet oyu veren arsa payı (%)"
 
+msgid "You already asked for this unit."
+msgstr "Bu daire için zaten istekte bulundunuz."
+
+msgid "You already have an account. Accepting links this invitation to it."
+msgstr "Zaten bir hesabınız var. Kabul ederseniz bu davet hesabınıza bağlanır."
+
+msgid "You are"
+msgstr "Siz"
+
 msgid "You are all caught up"
 msgstr "Her şey güncel"
 
@@ -8114,26 +8165,8 @@ msgstr "Paketlere bakabilirsiniz ama değiştiremezsiniz."
 msgid "You can only give permissions you hold yourself. A key never gets the rights to manage keys or webhooks."
 msgstr "Yalnızca kendinizde olan yetkileri verebilirsiniz. Bir anahtar, anahtarları veya webhook'ları yönetme yetkisi alamaz."
 
-msgid "You do not have access to announcements"
-msgstr "Duyurulara erişiminiz yok"
-
-msgid "You do not have access to documents"
-msgstr "Belgelere erişiminiz yok"
-
-msgid "You do not have access to notifications"
-msgstr "Bildirimlere erişiminiz yok"
-
-msgid "You do not have access to the audit log"
-msgstr "Denetim kaydına erişiminiz yok"
-
-msgid "You do not have access to this"
-msgstr "Buna erişim yetkiniz yok"
-
 msgid "You do not have access to this page"
 msgstr "Bu sayfaya erişim yetkiniz yok"
-
-msgid "You do not have access to tickets"
-msgstr "Taleplere erişiminiz yok"
 
 msgid "You do not have permission to do this."
 msgstr "Bunu yapma yetkiniz yok."
@@ -8160,15 +8193,6 @@ msgstr "Müşteri parasını {0} sitesinin banka hesabına aktardınız. Kurulu�
 msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr "Yönetici olarak herkesi görürsünüz. Sakinler yalnızca listede yer almayı seçenleri görür."
 
-msgid "You will be able to choose a new password here."
-msgstr "Yeni parolanızı burada seçebileceksiniz."
-
-msgid "You will be able to claim your unit here. Your manager approves the request."
-msgstr "Bağımsız bölümünüzü burada talep edebileceksiniz. Talebi yöneticiniz onaylar."
-
-msgid "You will be able to create or link your account here."
-msgstr "Hesabınızı burada oluşturabilir veya bağlayabileceksiniz."
-
 msgid "You will be asked to confirm your password. The key is shown once after you create it."
 msgstr "Parolanızı onaylamanız istenecek. Anahtar, oluşturduktan sonra bir kez gösterilir."
 
@@ -8193,14 +8217,26 @@ msgstr "Panonuz hazırlanıyor"
 msgid "Your export is being prepared. You will be notified when it is ready."
 msgstr "Dışa aktarımınız hazırlanıyor. Hazır olduğunda bilgilendirileceksiniz."
 
+msgid "Your manager approves the request. You will see its status here."
+msgstr "Yöneticiniz isteği onaylar. Durumunu burada görürsünüz."
+
+msgid "Your name"
+msgstr "Adınız"
+
+msgid "Your name (optional)"
+msgstr "Adınız (isteğe bağlı)"
+
 msgid "Your new API key"
 msgstr "Yeni API anahtarınız"
 
 msgid "Your open charges are paid oldest first. Today you owe <0/>."
 msgstr "Açık tahakkuklarınız en eskisinden başlayarak ödenir. Bugün borcunuz <0/>."
 
-msgid "Your sign-in link will be completed here."
-msgstr "Giriş bağlantınız burada tamamlanacak."
+msgid "Your requests"
+msgstr "İstekleriniz"
+
+msgid "Your unit"
+msgstr "Daireniz"
 
 msgid "Your unit has used its bookings for this period."
 msgstr "Bağımsız bölümünüz bu dönem için rezervasyon hakkını kullandı."

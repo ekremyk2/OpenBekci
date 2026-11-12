@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { Link, Outlet } from '@tanstack/react-router'
 import { ChevronRightIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -119,12 +120,7 @@ export function MoneyLayout() {
       ]
 
   if (!access.any) {
-    return (
-      <EmptyState
-        title={t`You do not have access to this`}
-        description={t`Ask your manager if you think you should.`}
-      />
-    )
+    return <AccessDenied />
   }
 
   return (

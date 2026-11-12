@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useQuery } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { ChevronDownIcon, ChevronRightIcon, LockIcon, ScrollTextIcon } from 'lucide-react'
@@ -219,13 +220,7 @@ export function AuditPage({
   )
 
   if (!allowed) {
-    return (
-      <EmptyState
-        icon={LockIcon}
-        title={<Trans>You do not have access to the audit log</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied />
   }
 
   return (

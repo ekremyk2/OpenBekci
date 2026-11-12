@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -557,13 +558,7 @@ export function DocumentsPage({ folderId }: { folderId?: string }) {
     (canManage || (can('documents.upload_own') && folder.data.kind === 'unit'))
 
   if (!canRead) {
-    return (
-      <EmptyState
-        icon={FolderLockIcon}
-        title={<Trans>You do not have access to documents</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied />
   }
   const crumbs = folder.data?.breadcrumb ?? []
 

@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi, ifMatch, type Channel } from '@/api/draft'
 import { useSession } from '@/app/session'
-import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { TableSkeleton } from '@/components/data/Skeletons'
 import { FormError } from '@/components/forms/FormField'
@@ -13,7 +13,6 @@ import { SitePicker, useSite } from '@/features/dashboard/site'
 import { useApplyErrorMessage } from '@/features/tickets/errors'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
-import { LockIcon } from 'lucide-react'
 import { notificationTypeLabel, orderedTypes } from './types'
 
 const CHANNELS: Channel[] = ['in_app', 'email', 'sms']
@@ -78,13 +77,7 @@ export function DefaultsEditor() {
   })
 
   if (!allowed) {
-    return (
-      <EmptyState
-        icon={LockIcon}
-        title={<Trans>You do not have access to this</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied heading="h2" />
   }
   if (query.isPending) return <TableSkeleton rows={6} columns={4} />
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />

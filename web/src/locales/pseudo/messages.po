@@ -290,6 +290,9 @@ msgstr ""
 msgid "Accept"
 msgstr ""
 
+msgid "Accept and sign in"
+msgstr ""
+
 msgid "Accept card payments with iyzico"
 msgstr ""
 
@@ -768,6 +771,9 @@ msgstr ""
 msgid "Ask the resident"
 msgstr ""
 
+msgid "Ask to join this unit"
+msgstr ""
+
 msgid "Ask your building manager to invite you."
 msgstr ""
 
@@ -803,6 +809,9 @@ msgid "Assigned to you"
 msgstr ""
 
 msgid "Assignee"
+msgstr ""
+
+msgid "At least 10 characters."
 msgstr ""
 
 msgid "At least this many months overdue"
@@ -865,9 +874,6 @@ msgid "Back to my account"
 msgstr ""
 
 msgid "Back to Pay"
-msgstr ""
-
-msgid "Back to sign in"
 msgstr ""
 
 msgid "Back to the assembly"
@@ -1343,6 +1349,9 @@ msgstr ""
 msgid "Choose a key"
 msgstr ""
 
+msgid "Choose a password"
+msgstr ""
+
 msgid "Choose a person"
 msgstr ""
 
@@ -1450,6 +1459,9 @@ msgid "Choose who the statement is for."
 msgstr ""
 
 msgid "Choose who to invite"
+msgstr ""
+
+msgid "Choose your unit"
 msgstr ""
 
 msgid "Choose…"
@@ -1640,6 +1652,9 @@ msgid "Consent accepted"
 msgstr ""
 
 msgid "Contact"
+msgstr ""
+
+msgid "Continue"
 msgstr ""
 
 msgid "Continue to payment"
@@ -2750,6 +2765,9 @@ msgstr ""
 msgid "Enter your phone number"
 msgstr ""
 
+msgid "Enter your phone number or email"
+msgstr ""
+
 msgid "Enter your PIN"
 msgstr ""
 
@@ -3022,6 +3040,9 @@ msgid "For information"
 msgstr ""
 
 msgid "For this site"
+msgstr ""
+
+msgid "Forgot your password?"
 msgstr ""
 
 msgid "Four fifths"
@@ -3386,6 +3407,12 @@ msgstr ""
 msgid "It stops opening gates at once."
 msgstr ""
 
+msgid "It was already used or has expired. Ask for a new one."
+msgstr ""
+
+msgid "It was changed or switched off. Ask your manager for the new QR code."
+msgstr ""
+
 msgid "It will come in a later release."
 msgstr ""
 
@@ -3639,6 +3666,9 @@ msgid "Load more"
 msgstr ""
 
 msgid "Load more lines"
+msgstr ""
+
+msgid "Loading"
 msgstr ""
 
 msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
@@ -3963,9 +3993,6 @@ msgid "My unit"
 msgstr ""
 
 msgid "My units"
-msgstr ""
-
-msgid "My vehicles"
 msgstr ""
 
 msgid "Myself"
@@ -5189,6 +5216,9 @@ msgstr ""
 msgid "Plates for the camera operator (CSV)"
 msgstr ""
 
+msgid "Platform"
+msgstr ""
+
 msgid "Platform administration"
 msgstr ""
 
@@ -5706,9 +5736,6 @@ msgid "Reserve contribution"
 msgstr ""
 
 msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
-msgstr ""
-
-msgid "Reset your password"
 msgstr ""
 
 msgid "Resident directory"
@@ -6272,6 +6299,9 @@ msgstr ""
 msgid "Sign in to manage your building."
 msgstr ""
 
+msgid "Sign in with an e-mail link"
+msgstr ""
+
 msgid "Sign out"
 msgstr ""
 
@@ -6282,9 +6312,6 @@ msgid "Signed by hand"
 msgstr ""
 
 msgid "Signing secret"
-msgstr ""
-
-msgid "Signing you in"
 msgstr ""
 
 msgid "Signs the webhook (X-Hub-Signature-256)."
@@ -6791,6 +6818,9 @@ msgstr ""
 msgid "The lines do not add up to the total. Do not save this plan."
 msgstr ""
 
+msgid "The link was already used or has expired. Ask for a new one on the sign-in page."
+msgstr ""
+
 msgid "The link was already used, has expired, or the app was signed out. Open it again from the app, or sign in here."
 msgstr ""
 
@@ -7128,7 +7158,13 @@ msgstr ""
 msgid "This gate is switched off."
 msgstr ""
 
+msgid "This invitation no longer works"
+msgstr ""
+
 msgid "This is the only time the secret is shown. It cannot be read back later."
+msgstr ""
+
+msgid "This join code no longer works"
 msgstr ""
 
 msgid "This link no longer works"
@@ -7200,6 +7236,9 @@ msgstr ""
 msgid "This role belongs to the site, so you will be asked to confirm it is you."
 msgstr ""
 
+msgid "This server does not reset passwords. Ask for a sign-in link by e-mail instead; it signs you in once."
+msgstr ""
+
 msgid "This server has no pack with this id."
 msgstr ""
 
@@ -7231,9 +7270,6 @@ msgid "This site uses the default workflow. Edit it to add your own statuses."
 msgstr ""
 
 msgid "This status is not allowed, or the end date is before the start."
-msgstr ""
-
-msgid "This step is not available in this build yet."
 msgstr ""
 
 msgid "This text is too long."
@@ -7603,6 +7639,9 @@ msgstr ""
 msgid "Use at least {0} characters"
 msgstr ""
 
+msgid "Use at least 10 characters"
+msgstr ""
+
 #. placeholder {0}: p.max
 msgid "Use at most {0} characters"
 msgstr ""
@@ -7886,6 +7925,9 @@ msgstr ""
 msgid "We could not send the code. Please try again."
 msgstr ""
 
+msgid "We sent a sign-in link to your email. Open it on this device to continue; it works once."
+msgstr ""
+
 msgid "Webhook address"
 msgstr ""
 
@@ -8089,6 +8131,15 @@ msgstr ""
 msgid "Yes share of land (%)"
 msgstr ""
 
+msgid "You already asked for this unit."
+msgstr ""
+
+msgid "You already have an account. Accepting links this invitation to it."
+msgstr ""
+
+msgid "You are"
+msgstr ""
+
 msgid "You are all caught up"
 msgstr ""
 
@@ -8114,25 +8165,7 @@ msgstr ""
 msgid "You can only give permissions you hold yourself. A key never gets the rights to manage keys or webhooks."
 msgstr ""
 
-msgid "You do not have access to announcements"
-msgstr ""
-
-msgid "You do not have access to documents"
-msgstr ""
-
-msgid "You do not have access to notifications"
-msgstr ""
-
-msgid "You do not have access to the audit log"
-msgstr ""
-
-msgid "You do not have access to this"
-msgstr ""
-
 msgid "You do not have access to this page"
-msgstr ""
-
-msgid "You do not have access to tickets"
 msgstr ""
 
 msgid "You do not have permission to do this."
@@ -8160,15 +8193,6 @@ msgstr ""
 msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr ""
 
-msgid "You will be able to choose a new password here."
-msgstr ""
-
-msgid "You will be able to claim your unit here. Your manager approves the request."
-msgstr ""
-
-msgid "You will be able to create or link your account here."
-msgstr ""
-
 msgid "You will be asked to confirm your password. The key is shown once after you create it."
 msgstr ""
 
@@ -8193,13 +8217,25 @@ msgstr ""
 msgid "Your export is being prepared. You will be notified when it is ready."
 msgstr ""
 
+msgid "Your manager approves the request. You will see its status here."
+msgstr ""
+
+msgid "Your name"
+msgstr ""
+
+msgid "Your name (optional)"
+msgstr ""
+
 msgid "Your new API key"
 msgstr ""
 
 msgid "Your open charges are paid oldest first. Today you owe <0/>."
 msgstr ""
 
-msgid "Your sign-in link will be completed here."
+msgid "Your requests"
+msgstr ""
+
+msgid "Your unit"
 msgstr ""
 
 msgid "Your unit has used its bookings for this period."

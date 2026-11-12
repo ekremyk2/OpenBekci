@@ -1,8 +1,9 @@
-import { AlertTriangleIcon, LockIcon } from 'lucide-react'
+import { AlertTriangleIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { AppError } from '@/api/errors'
 import { problemMessage } from '@/lib/labels'
 import { Button } from '@/components/ui/button'
+import { AccessDenied } from './AccessDenied'
 import { EmptyState } from './EmptyState'
 
 /**
@@ -13,15 +14,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   const { t, i18n } = useLingui()
   const app = error instanceof AppError ? error : undefined
 
-  if (app?.isForbidden) {
-    return (
-      <EmptyState
-        icon={LockIcon}
-        title={t`You do not have access to this`}
-        description={t`Ask your manager if you think you should.`}
-      />
-    )
-  }
+  if (app?.isForbidden) return <AccessDenied heading="h2" />
   return (
     <EmptyState
       icon={AlertTriangleIcon}

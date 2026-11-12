@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { EmptyState } from '@/components/data/EmptyState'
 import { useSiteCtx } from './kit/api'
 import { Select } from './kit/ui'
@@ -19,12 +20,7 @@ export function MeetingsLayout() {
     ...(manager ? [{ to: '/orgs/$orgId/meetings/settings', label: t`Settings` }] : []),
   ]
   if (!readable) {
-    return (
-      <EmptyState
-        title={t`You do not have access to this`}
-        description={t`Ask your manager if you think you should.`}
-      />
-    )
+    return <AccessDenied />
   }
   return (
     <div className="flex flex-col gap-4">

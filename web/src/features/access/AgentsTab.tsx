@@ -35,6 +35,7 @@ import {
 } from '@/features/meetings/kit/api'
 import { ConfirmDialog, Field, FormRootError, QueryBoundary } from '@/features/meetings/kit/ui'
 import { Callout } from '@/features/meetings/kit/widgets'
+import { copyText } from '@/lib/clipboard'
 
 export function useAgents(ctx: SiteCtx) {
   return useOrgQuery(
@@ -96,9 +97,7 @@ export function EnrolTokenDialog({
           <Button
             variant="outline"
             onClick={() =>
-              void navigator.clipboard
-                ?.writeText(enrolment.enrolment_token)
-                .then(() => setCopied(true))
+              void copyText(enrolment.enrolment_token).then((ok) => ok && setCopied(true))
             }
           >
             {copied ? <CheckIcon /> : <CopyIcon />}

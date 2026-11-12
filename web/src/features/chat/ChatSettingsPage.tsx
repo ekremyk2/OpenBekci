@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
+import { copyText } from '@/lib/clipboard'
 
 type Provider = Schema<'ChatProviderSettings'>
 
@@ -133,7 +134,7 @@ function ProviderCard({ orgId, p }: { orgId: string; p: Provider }) {
             variant="outline"
             size="sm"
             onClick={() => {
-              void navigator.clipboard?.writeText(p.webhook_url).then(() => setCopied(true))
+              void copyText(p.webhook_url).then((ok) => ok && setCopied(true))
             }}
           >
             {copied ? <CheckIcon /> : <CopyIcon />}

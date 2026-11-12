@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { CarIcon, PlusIcon, RefreshCwIcon, ScanLineIcon } from 'lucide-react'
+import { PlusIcon, RefreshCwIcon, ScanLineIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
@@ -262,14 +262,6 @@ export function VisitorsPage() {
         description={t`Pre-register guests, share their QR code, and answer the guard's requests.`}
         actions={
           <>
-            <Link
-              to={'/orgs/$orgId/vehicles' as '/orgs/$orgId'}
-              params={{ orgId: ctx.orgId }}
-              className={buttonVariants({ variant: 'outline' })}
-            >
-              <CarIcon />
-              <Trans>My vehicles</Trans>
-            </Link>
             {can('gate.operate') ? (
               <Link
                 to="/orgs/$orgId/visitors/gate"

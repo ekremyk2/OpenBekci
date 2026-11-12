@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { must } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
+import { copyText } from '@/lib/clipboard'
 
 /** The site's Telegram group and WhatsApp invite link (`chatgroups.manage`). */
 export function useSiteChatGroup(orgId: string, siteId: string, enabled = true) {
@@ -140,7 +141,7 @@ export function SiteChatGroupCards({ siteId, siteName }: { siteId: string; siteN
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => void navigator.clipboard?.writeText(`/link ${started.code}`)}
+                  onClick={() => void copyText(`/link ${started.code}`)}
                 >
                   <Trans>Copy</Trans>
                 </Button>

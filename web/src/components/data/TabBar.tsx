@@ -38,7 +38,7 @@ export function TabBar<T extends string>({
           <TabsTrigger
             key={tab.id}
             value={tab.id}
-            className="-mb-px h-auto flex-none rounded-none border-b-2 border-transparent px-3 py-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+            className="-mb-px h-auto min-h-11 flex-none lg:min-h-9 rounded-none border-b-2 border-transparent px-3 py-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
             {tab.label}
           </TabsTrigger>

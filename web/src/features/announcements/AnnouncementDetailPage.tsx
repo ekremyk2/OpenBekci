@@ -197,7 +197,7 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
   const x = query.data
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <Link
         to="/orgs/$orgId/announcements"
         params={{ orgId }}

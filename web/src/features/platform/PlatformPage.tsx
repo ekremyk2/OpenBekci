@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -14,7 +13,7 @@ import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton, TableSkeleton } from '@/components/data/Skeletons'
 import { FormError, FormField, SubmitButton, useApplyApiError } from '@/components/forms/FormField'
 import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -480,15 +479,10 @@ export function PlatformPage() {
     ['settings', t`Instance settings`],
   ]
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-4 p-4 md:p-6">
-      <div className="flex items-center gap-2">
-        <h1 className="me-auto text-2xl font-semibold">
-          <Trans>Platform administration</Trans>
-        </h1>
-        <Link to="/" className={buttonVariants({ variant: 'outline' })}>
-          <Trans>Go home</Trans>
-        </Link>
-      </div>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-semibold">
+        <Trans>Platform administration</Trans>
+      </h1>
       <TabBar
         value={tab}
         onValueChange={setTab}

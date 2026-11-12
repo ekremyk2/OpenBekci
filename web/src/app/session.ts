@@ -7,14 +7,37 @@ import { emitApiEvent } from '@/api/events'
 import type { Me, MeOrganization } from '@/api/schema'
 import { can as canPure, findOrg, type PermissionScope } from '@/lib/permissions'
 
+// The session cookie is HttpOnly, so "have I ever been signed in here" is remembered by hand: a cold
+// visitor never calls /v1/me (a 401 there is a console error). shortcut: a cookie set by another
+// browser profile or tab-less sign-in is missed until the next sign-in through this app.
+const HINT_KEY = 'ob.session'
+export function setSessionHint(on: boolean) {
+  try {
+    if (on) localStorage.setItem(HINT_KEY, '1')
+    else localStorage.removeItem(HINT_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+function hasSessionHint() {
+  if (import.meta.env.MODE === 'test') return true // tests clear storage freely and sign in by MSW
+  try {
+    return localStorage.getItem(HINT_KEY) !== null
+  } catch {
+    return true
+  }
+}
+
 export const meQueryOptions = queryOptions({
   queryKey: ['me'],
   queryFn: async ({ client }): Promise<Me> => {
     try {
       const { data } = await api.GET('/v1/me')
       if (!data) throw new Error('Empty /v1/me response')
+      setSessionHint(true)
       return data
     } catch (e) {
+      if (e instanceof AppError && e.status === 401) setSessionHint(false)
       // /v1/me is exempt from the client's automatic 401 handling (loadSession treats it as "no
       // session"). A 401 on a *refetch* (window focus) means the session ended mid-use, so sign the
       // shell out instead of leaving stale data on screen.
@@ -30,6 +53,9 @@ export const meQueryOptions = queryOptions({
 
 /** The signed-in user's /v1/me document, or null when there is no session (401). */
 export async function loadSession(queryClient: QueryClient): Promise<Me | null> {
+  if (queryClient.getQueryData(meQueryOptions.queryKey) === undefined && !hasSessionHint()) {
+    return null
+  }
   try {
     return await queryClient.ensureQueryData(meQueryOptions)
   } catch (e) {
@@ -40,6 +66,7 @@ export async function loadSession(queryClient: QueryClient): Promise<Me | null> 
 
 /** Forgets everything cached for the signed-in user (sign-out and 401): nothing may leak to the next user. */
 export function clearSession(queryClient: QueryClient) {
+  setSessionHint(false)
   queryClient.clear()
 }
 

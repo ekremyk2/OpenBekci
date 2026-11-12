@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { LogOutIcon, MenuIcon } from 'lucide-react'
+import { LogOutIcon, MenuIcon, ServerIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { toast } from '@/lib/toast'
 import { api } from '@/api/client'
 import { AppError } from '@/api/errors'
 import { useInstanceName } from '@/app/InstanceEffects'
 import { filterNav, NAV_ITEMS } from '@/app/nav'
-import { clearSession, useSession } from '@/app/session'
+import { clearSession, useLastOrgId, useSession } from '@/app/session'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -17,35 +17,46 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { cn } from '@/lib/utils'
 import { BackLink } from './BackLink'
+import { ShellContext } from './ShellOrMain'
 import { OrgSwitcher } from './OrgSwitcher'
 import { NotificationBell } from '@/features/notifications/NotificationBell'
 import { LocaleToggle, ThemeToggle } from './Toggles'
 
+const NAV_LINK =
+  'flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&.active]:bg-tile-tint [&.active]:text-foreground'
+
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const { me, org } = useSession()
+  const { me, org: routeOrg, organizations } = useSession()
+  const lastOrgId = useLastOrgId()
   const { i18n, t } = useLingui()
-  if (!me || !org) return null
-  const items = filterNav(NAV_ITEMS, { me, orgId: org.id })
+  if (!me) return null
+  // outside /orgs/$orgId (platform, 404) the nav belongs to the organization used last
+  const org = routeOrg ?? organizations.find((o) => o.id === lastOrgId) ?? organizations[0]
+  const items = org ? filterNav(NAV_ITEMS, { me, orgId: org.id }) : []
   return (
     <nav aria-label={t`Main`} className="flex flex-col gap-1 p-3">
-      {items.map((item) => (
-        <Link
-          key={item.id}
-          to={item.to as '/orgs/$orgId'}
-          params={{ orgId: org.id }}
-          activeOptions={{ exact: item.to === '/orgs/$orgId' }}
-          onClick={onNavigate}
-          className={cn(
-            'flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-            '[&.active]:bg-tile-tint [&.active]:text-foreground',
-          )}
-        >
-          <item.icon className="size-4 shrink-0" aria-hidden="true" />
-          {i18n._(item.label)}
+      {org
+        ? items.map((item) => (
+            <Link
+              key={item.id}
+              to={item.to as '/orgs/$orgId'}
+              params={{ orgId: org.id }}
+              activeOptions={{ exact: item.to === '/orgs/$orgId' }}
+              onClick={onNavigate}
+              className={NAV_LINK}
+            >
+              <item.icon className="size-4 shrink-0" aria-hidden="true" />
+              {i18n._(item.label)}
+            </Link>
+          ))
+        : null}
+      {me.user.is_platform_admin ? (
+        <Link to="/platform" onClick={onNavigate} className={NAV_LINK}>
+          <ServerIcon className="size-4 shrink-0" aria-hidden="true" />
+          <Trans>Platform</Trans>
         </Link>
-      ))}
+      ) : null}
     </nav>
   )
 }
@@ -101,50 +112,54 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const instanceName = useInstanceName()
   return (
-    <div className="flex min-h-dvh">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-background focus:p-2"
-      >
-        <Trans>Skip to content</Trans>
-      </a>
-      <aside className="hidden w-60 shrink-0 border-e bg-sidebar text-sidebar-foreground md:block">
-        <div className="flex h-14 items-center gap-3 px-6">
-          <img
-            src="/brand/logos/openbekci-wordmark.svg"
-            alt="OpenBekci"
-            className="h-7 dark:hidden"
-          />
-          <img
-            src="/brand/logos/openbekci-wordmark-on-dark.svg"
-            alt="OpenBekci"
-            className="hidden h-7 dark:block"
-          />
-        </div>
-        <Sidebar />
-      </aside>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="start" className="bg-sidebar p-0">
-          <SheetHeader>
-            <SheetTitle>{instanceName}</SheetTitle>
-            <SheetDescription className="sr-only">
-              <Trans>Navigation</Trans>
-            </SheetDescription>
-          </SheetHeader>
-          <Sidebar onNavigate={() => setOpen(false)} />
-          <div className="flex items-center gap-1 border-t p-3 sm:hidden">
-            <LocaleToggle />
-            <ThemeToggle />
+    <ShellContext value={true}>
+      <div className="flex min-h-dvh">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-background focus:p-2"
+        >
+          <Trans>Skip to content</Trans>
+        </a>
+        <aside className="hidden w-60 shrink-0 border-e bg-sidebar text-sidebar-foreground md:block">
+          <div className="flex h-14 items-center gap-3 px-6">
+            <img
+              src="/brand/logos/openbekci-wordmark.svg"
+              alt="OpenBekci"
+              className="h-7 dark:hidden"
+            />
+            <img
+              src="/brand/logos/openbekci-wordmark-on-dark.svg"
+              alt="OpenBekci"
+              className="hidden h-7 dark:block"
+            />
           </div>
-        </SheetContent>
-      </Sheet>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar onMenu={() => setOpen(true)} />
-        <main id="main" tabIndex={-1} className="flex-1 p-4 outline-none md:p-6">
-          <BackLink />
-          {children}
-        </main>
+          <Sidebar />
+        </aside>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetContent side="start" className="bg-sidebar p-0">
+            <SheetHeader>
+              <SheetTitle>{instanceName}</SheetTitle>
+              <SheetDescription className="sr-only">
+                <Trans>Navigation</Trans>
+              </SheetDescription>
+            </SheetHeader>
+            <Sidebar onNavigate={() => setOpen(false)} />
+            <div className="flex items-center gap-1 border-t p-3 sm:hidden">
+              <LocaleToggle />
+              <ThemeToggle />
+            </div>
+          </SheetContent>
+        </Sheet>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Topbar onMenu={() => setOpen(true)} />
+          <main id="main" tabIndex={-1} className="flex-1 p-4 outline-none md:p-6">
+            <div className="mx-auto w-full max-w-7xl">
+              <BackLink />
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </ShellContext>
   )
 }
