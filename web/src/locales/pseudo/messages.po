@@ -469,6 +469,9 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
+msgid "Address format"
+msgstr ""
+
 msgid "Address line 2"
 msgstr ""
 
@@ -566,6 +569,9 @@ msgid "Allocated <0/> of <1/>"
 msgstr ""
 
 msgid "Allocation keys"
+msgstr ""
+
+msgid "Allocation policy"
 msgstr ""
 
 msgid "Allowed"
@@ -879,6 +885,9 @@ msgstr ""
 msgid "Back to the assembly"
 msgstr ""
 
+msgid "Background job"
+msgstr ""
+
 msgid "Backups"
 msgstr ""
 
@@ -913,6 +922,9 @@ msgid "Bank line it arrived as"
 msgstr ""
 
 msgid "Bank lines"
+msgstr ""
+
+msgid "Bank statement format"
 msgstr ""
 
 msgid "Bank statement formats"
@@ -1289,6 +1301,9 @@ msgstr ""
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr ""
 
+msgid "Chart of accounts"
+msgstr ""
+
 msgid "Chat"
 msgstr ""
 
@@ -1296,6 +1311,9 @@ msgid "Chat (Telegram/WhatsApp)"
 msgstr ""
 
 msgid "Chat link QR code"
+msgstr ""
+
+msgid "Chat provider"
 msgstr ""
 
 msgid "Chat settings"
@@ -1649,6 +1667,9 @@ msgid "Confirming your payment with the provider. This usually takes a few secon
 msgstr ""
 
 msgid "Consent accepted"
+msgstr ""
+
+msgid "Consent texts"
 msgstr ""
 
 msgid "Contact"
@@ -2355,6 +2376,9 @@ msgstr ""
 msgid "Document preview"
 msgstr ""
 
+msgid "Document template"
+msgstr ""
+
 msgid "Document title"
 msgstr ""
 
@@ -2558,6 +2582,9 @@ msgid "End membership"
 msgstr ""
 
 msgid "Ended"
+msgstr ""
+
+msgid "Endpoint"
 msgstr ""
 
 #. placeholder {0}: enrolment.agent.name
@@ -2804,6 +2831,9 @@ msgid "Error"
 msgstr ""
 
 msgid "Event"
+msgstr ""
+
+msgid "Event subscription"
 msgstr ""
 
 msgid "Events"
@@ -3497,6 +3527,9 @@ msgstr ""
 msgid "KVKK"
 msgstr ""
 
+msgid "Label catalog"
+msgstr ""
+
 msgid "Land share (arsa payı)"
 msgstr ""
 
@@ -3525,6 +3558,9 @@ msgid "Late fee accrued so far (not yet booked)"
 msgstr ""
 
 msgid "Late fee policy"
+msgstr ""
+
+msgid "Late fee preset"
 msgstr ""
 
 msgid "Late fee waived."
@@ -5076,10 +5112,16 @@ msgstr ""
 msgid "Payment"
 msgstr ""
 
+msgid "Payment allocation order"
+msgstr ""
+
 msgid "Payment confirmed"
 msgstr ""
 
 msgid "Payment declared"
+msgstr ""
+
+msgid "Payment provider"
 msgstr ""
 
 msgid "Payment receipts"
@@ -5431,6 +5473,9 @@ msgstr ""
 msgid "Quorum not reached"
 msgstr ""
 
+msgid "Quorum preset"
+msgstr ""
+
 msgid "Quorum reached"
 msgstr ""
 
@@ -5593,6 +5638,9 @@ msgid "Reference"
 msgstr ""
 
 msgid "Reference (optional)"
+msgstr ""
+
+msgid "Reference data"
 msgstr ""
 
 msgid "Reference to write"
@@ -5980,6 +6028,9 @@ msgid "Scan with camera"
 msgstr ""
 
 msgid "Schedule"
+msgstr ""
+
+msgid "Schedule preset"
 msgstr ""
 
 msgid "Scheduled"
@@ -6376,6 +6427,9 @@ msgstr ""
 
 #. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
+msgstr ""
+
+msgid "SMS provider"
 msgstr ""
 
 #. placeholder {0}: usage.data.sent
@@ -7309,6 +7363,9 @@ msgstr ""
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr ""
 
+msgid "Threshold preset"
+msgstr ""
+
 msgid "Ticket"
 msgstr ""
 
@@ -7696,6 +7753,9 @@ msgstr ""
 msgid "Valid until (optional)"
 msgstr ""
 
+msgid "Validator"
+msgstr ""
+
 msgid "Value"
 msgstr ""
 
@@ -7846,6 +7906,9 @@ msgid "Voided"
 msgstr ""
 
 msgid "Vote weight"
+msgstr ""
+
+msgid "Vote weight preset"
 msgstr ""
 
 msgid "Voted"

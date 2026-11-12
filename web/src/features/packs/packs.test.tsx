@@ -17,7 +17,7 @@ describe('packs list', () => {
     expect(tr).toBeTruthy()
     expect(within(tr).getByText('Not enabled')).toBeInTheDocument()
     expect(within(tr).getByText('Suggested for your country')).toBeInTheDocument()
-    expect(within(tr).getByText('sms_provider:netgsm')).toBeInTheDocument()
+    expect(within(tr).getByText('SMS provider: netgsm')).toBeInTheDocument()
     expect(within(tr).getByRole('link', { name: /Set up and enable/ })).toHaveAttribute(
       'href',
       '/orgs/org-1/settings/packs/tr',

@@ -18,4 +18,21 @@ describe('InstanceEffects', () => {
       '#ffffff',
     )
   })
+
+  it('titles differ per page: the main h1 wins over the header wordmark', async () => {
+    document.body.innerHTML =
+      '<header><h1>Test Instance</h1></header><main><h1 id="p">Home</h1></main>'
+    render(
+      <QueryClientProvider client={createQueryClient()}>
+        <InstanceEffects />
+      </QueryClientProvider>,
+    )
+    const titles: string[] = []
+    for (const name of ['Home', 'Money', 'Tickets']) {
+      document.getElementById('p')!.textContent = name
+      await waitFor(() => expect(document.title).toBe(`${name} · Test Instance`))
+      titles.push(document.title)
+    }
+    expect(new Set(titles).size).toBe(3)
+  })
 })

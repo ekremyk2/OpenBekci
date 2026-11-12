@@ -4,7 +4,7 @@ import { SiteGate } from '@/features/meetings/kit/SiteGate'
 
 export const Route = createFileRoute('/orgs/$orgId/visitors/gate')({
   component: () => (
-    <SiteGate anyOf={['gate.operate']}>
+    <SiteGate anyOf={['gate.operate', 'visitors.manage']}>
       <GuardConsolePage />
     </SiteGate>
   ),
