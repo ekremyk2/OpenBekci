@@ -335,20 +335,21 @@ export function BookingsPage() {
   )
   // residents see what is taken, not who took it: availability per facility
   const availability = useQueries({
-    queries: manager
-      ? []
-      : visible.map((f) => ({
-          queryKey: okey(orgId, 'availability', f.id, range.from, range.to),
-          queryFn: () =>
-            unwrap(
-              gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/availability', {
-                params: {
-                  path: { org_id: ctx.orgId, facility_id: f.id },
-                  query: { from: fromIso, to: toIso },
-                },
-              }),
-            ),
-        })),
+    queries:
+      manager || !can('bookings.create')
+        ? []
+        : visible.map((f) => ({
+            queryKey: okey(orgId, 'availability', f.id, range.from, range.to),
+            queryFn: () =>
+              unwrap(
+                gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/availability', {
+                  params: {
+                    path: { org_id: ctx.orgId, facility_id: f.id },
+                    query: { from: fromIso, to: toIso },
+                  },
+                }),
+              ),
+          })),
   })
   const blocksQ = useQueries({
     queries: manager

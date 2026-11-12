@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useSession } from '@/app/session'
 import { ErrorState } from '@/components/data/ErrorState'
+import { PageError } from '@/components/data/PageError'
 import { SiteDate } from '@/components/data/SiteDate'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { AttachmentGallery } from '@/components/files/AttachmentGallery'
@@ -41,7 +42,7 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
 
   if (ticket.isPending) return <PageSkeleton />
   if (ticket.isError) {
-    return <ErrorState error={ticket.error} onRetry={() => void ticket.refetch()} />
+    return <PageError error={ticket.error} onRetry={() => void ticket.refetch()} />
   }
   const t = ticket.data
   const closed = t.status_semantic === 'closed_like'

@@ -56,6 +56,7 @@ export function usePackLabels(): (key: string) => string | undefined {
   // field names and groups the catalog has no label for (the server sends none for these yet)
   const own = useMemo<Record<string, string>>(
     () => ({
+      'tr.name': t`Turkey`,
       kvkk: t`KVKK`,
       tr_kvkk_data_controller: t`Data controller`,
       legal_name: t`Legal name`,

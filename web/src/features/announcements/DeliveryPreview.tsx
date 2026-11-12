@@ -1,3 +1,4 @@
+import { useSession } from '@/app/session'
 import { useQuery } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { LoaderCircleIcon } from 'lucide-react'
@@ -22,7 +23,9 @@ export function useDeliveryPreview({
   channels: readonly AnnouncementChannel[]
   enabled?: boolean
 }) {
+  const { can } = useSession()
   const ready =
+    can('announcements.publish') &&
     !!siteId &&
     channels.length > 0 &&
     (audience.kind !== 'units' || (audience.unit_ids?.length ?? 0) > 0) &&

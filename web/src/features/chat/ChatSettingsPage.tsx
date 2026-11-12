@@ -127,7 +127,7 @@ function ProviderCard({ orgId, p }: { orgId: string; p: Provider }) {
             <Trans>Webhook address</Trans>
           </span>
           <code className="break-all rounded bg-muted px-2 py-1 text-xs" dir="ltr">
-            {p.webhook_url}
+            {p.webhook_url.replace(/\/orgs\/[0-9a-f-]{36}/i, '/orgs/…')}
           </code>
           <Button
             variant="outline"

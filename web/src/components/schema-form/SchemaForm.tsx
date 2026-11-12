@@ -206,7 +206,7 @@ export function SchemaForm({
         label={
           <span className="flex flex-wrap items-center gap-2">
             {labelOf(f)}
-            {f.required ? <RequiredMark /> : null}
+            {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
             <Badge variant={isSet && !clearing ? 'success' : 'secondary'}>
               {clearing ? (
                 <Trans>Will be cleared</Trans>
@@ -271,7 +271,7 @@ export function SchemaForm({
       return (
         <fieldset key={f.path} className="flex flex-col gap-2" aria-describedby={describedBy(f)}>
           <legend className="text-sm leading-none font-medium">
-            {labelOf(f)} {f.required ? <RequiredMark /> : null}
+            {labelOf(f)} {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
           </legend>
           {options.map((o) => (
             <label key={String(o)} className="flex items-center gap-2 text-sm">
@@ -296,7 +296,7 @@ export function SchemaForm({
         id={id}
         label={
           <>
-            {labelOf(f)} {f.required ? <RequiredMark /> : null}
+            {labelOf(f)} {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
           </>
         }
         error={errorFor(f.path)}
@@ -333,7 +333,7 @@ export function SchemaForm({
       return (
         <fieldset key={f.path} className="flex flex-col gap-2" aria-describedby={describedBy(f)}>
           <legend className="text-sm leading-none font-medium">
-            {labelOf(f)} {f.required ? <RequiredMark /> : null}
+            {labelOf(f)} {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
           </legend>
           {items.enum.map((o) => (
             <label key={String(o)} className="flex items-center gap-2 text-sm">
@@ -359,7 +359,7 @@ export function SchemaForm({
     return (
       <fieldset key={f.path} className="flex flex-col gap-2" aria-describedby={describedBy(f)}>
         <legend className="text-sm leading-none font-medium">
-          {labelOf(f)} {f.required ? <RequiredMark /> : null}
+          {labelOf(f)} {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
         </legend>
         {list.map((row, i) => {
           const rowPath = `${f.path}.${i}`
@@ -477,7 +477,7 @@ export function SchemaForm({
         id={id}
         label={
           <>
-            {labelOf(f)} {f.required ? <RequiredMark /> : null}
+            {labelOf(f)} {f.required && !errorFor(f.path) ? <RequiredMark /> : null}
           </>
         }
         error={errorFor(f.path)}

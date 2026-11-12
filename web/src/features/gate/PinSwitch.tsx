@@ -132,6 +132,9 @@ export function PinSwitch({
         void submit()
       }}
     >
+      <h1 className="sr-only">
+        <Trans>Enter your PIN</Trans>
+      </h1>
       <h2 className="text-2xl font-semibold">{guard.display_name}</h2>
       <label className="sr-only" htmlFor="guard-pin">
         <Trans>PIN</Trans>
@@ -165,7 +168,12 @@ export function PinSwitch({
             {d}
           </Button>
         ))}
-        <Button type="button" variant="ghost" className="h-16" onClick={() => setGuard(null)}>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-16 text-lg"
+          onClick={() => setGuard(null)}
+        >
           <Trans>Back</Trans>
         </Button>
         <Button
@@ -178,7 +186,7 @@ export function PinSwitch({
         </Button>
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           className="h-16"
           aria-label={t`Delete a digit`}
           onClick={() => setPin((p) => p.slice(0, -1))}

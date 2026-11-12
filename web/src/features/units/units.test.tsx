@@ -143,7 +143,7 @@ describe('vehicles', () => {
   it('shows the normalised plate and rejects a duplicate plate with a field error', async () => {
     await mountApp('/orgs/org-1/units/unit-a1')
     expect(await screen.findByText('34 ABC 123')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Export plates/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Download plates/ })).toHaveAttribute(
       'href',
       expect.stringContaining('vehicles:export'),
     )
