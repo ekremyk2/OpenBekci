@@ -2364,6 +2364,9 @@ msgstr ""
 msgid "Download original"
 msgstr ""
 
+msgid "Download plates (CSV)"
+msgstr ""
+
 msgid "Download receipt (PDF)"
 msgstr ""
 
@@ -2747,6 +2750,9 @@ msgstr ""
 msgid "Enter your phone number"
 msgstr ""
 
+msgid "Enter your PIN"
+msgstr ""
+
 #. placeholder {0}: guard.displayName
 msgid "Enter your PIN to leave. {0} is on the gate."
 msgstr ""
@@ -2861,9 +2867,6 @@ msgid "Export data"
 msgstr ""
 
 msgid "Export my data"
-msgstr ""
-
-msgid "Export plates (CSV)"
 msgstr ""
 
 msgid "Export site"

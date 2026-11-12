@@ -2364,6 +2364,9 @@ msgstr "İhtarnameyi indir"
 msgid "Download original"
 msgstr "Orijinali indir"
 
+msgid "Download plates (CSV)"
+msgstr "Plakaları indir (CSV)"
+
 msgid "Download receipt (PDF)"
 msgstr "Makbuzu indir (PDF)"
 
@@ -2747,6 +2750,9 @@ msgstr "Parolanızı girin"
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
 
+msgid "Enter your PIN"
+msgstr "PIN'inizi girin"
+
 #. placeholder {0}: guard.displayName
 msgid "Enter your PIN to leave. {0} is on the gate."
 msgstr "Çıkmak için PIN'inizi girin. Kapıda {0} görevli."
@@ -2862,9 +2868,6 @@ msgstr "Verileri dışa aktar"
 
 msgid "Export my data"
 msgstr "Verilerimi dışa aktar"
-
-msgid "Export plates (CSV)"
-msgstr "Plakaları dışa aktar (CSV)"
 
 msgid "Export site"
 msgstr "Siteyi dışa aktar"

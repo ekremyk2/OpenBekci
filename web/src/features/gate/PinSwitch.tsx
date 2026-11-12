@@ -132,6 +132,9 @@ export function PinSwitch({
         void submit()
       }}
     >
+      <h1 className="sr-only">
+        <Trans>Enter your PIN</Trans>
+      </h1>
       <h2 className="text-2xl font-semibold">{guard.display_name}</h2>
       <label className="sr-only" htmlFor="guard-pin">
         <Trans>PIN</Trans>

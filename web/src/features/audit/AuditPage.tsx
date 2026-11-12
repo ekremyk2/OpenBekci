@@ -21,6 +21,42 @@ import { AUDIT_ACTIONS, AUDIT_TARGETS, auditActionLabel, auditTargetLabel } from
 import type { AuditSearch } from './search'
 type AuditEvent = Schema<'AuditEvent-2'>
 
+/**
+ * A native date input shows the browser's format, not the app's. Turkish writes dd.mm.yyyy: type it
+ * that way; the search keeps the ISO date.
+ */
+function DateField({
+  id,
+  iso,
+  locale,
+  onChange,
+}: {
+  id: string
+  iso?: string
+  locale: string
+  onChange: (iso: string | undefined) => void
+}) {
+  const tr = locale.startsWith('tr')
+  const show = (v?: string) => (v && tr ? v.split('-').reverse().join('.') : (v ?? ''))
+  const [text, setText] = useState(show(iso))
+  return (
+    <Input
+      id={id}
+      inputMode="numeric"
+      autoComplete="off"
+      placeholder={tr ? 'gg.aa.yyyy' : 'yyyy-mm-dd'}
+      value={text}
+      aria-invalid={!!text && !iso}
+      onChange={(e) => {
+        const v = e.target.value
+        setText(v)
+        const m = tr ? /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v) : /^(\d{4})-(\d{2})-(\d{2})$/.exec(v)
+        onChange(m ? (tr ? `${m[3]}-${m[2]}-${m[1]}` : v) : undefined)
+      }}
+    />
+  )
+}
+
 /** Values show as text; hashed PII fields are marked and never rendered as values. */
 export function DiffView({ diff }: { diff: unknown }) {
   const { t } = useLingui()
@@ -233,11 +269,11 @@ export function AuditPage({
                 ))}
               </Select>
             ) : (
-              <Input
+              <DateField
                 id={`audit-${key}`}
-                type={type}
-                value={draft[key] ?? ''}
-                onChange={(e) => setDraft({ ...draft, [key]: e.target.value || undefined })}
+                iso={draft[key]}
+                locale={i18n.locale}
+                onChange={(v) => setDraft({ ...draft, [key]: v })}
               />
             )}
           </div>
