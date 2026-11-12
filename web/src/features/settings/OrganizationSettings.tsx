@@ -83,7 +83,7 @@ export function OrganizationSettings() {
   const errors = form.formState.errors
   return (
     <div className="flex flex-col gap-6">
-      <Card className="max-w-xl" key={saved}>
+      <Card key={saved}>
         <CardHeader>
           <CardTitle>
             <Trans>Organization</Trans>

@@ -155,7 +155,7 @@ export function OrgMerchantCard({
     },
   })
   return (
-    <Card className="max-w-xl">
+    <Card>
       <CardHeader>
         <CardTitle>
           <Trans>Card payments: who collects</Trans>
@@ -262,7 +262,7 @@ export function SiteMerchantCard({
     },
   })
   return (
-    <section aria-labelledby="site-merchant-title" className="flex max-w-xl flex-col gap-3">
+    <section aria-labelledby="site-merchant-title" className="flex flex-col gap-3">
       <h3 id="site-merchant-title" className="text-sm font-semibold">
         <Trans>Card payments: who collects</Trans>
       </h3>

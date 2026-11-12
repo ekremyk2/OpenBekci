@@ -40,17 +40,6 @@ function ManagerOverview() {
   )
   const cur = ctx.currency
   const kind: Record<string, string> = { operating: t`Operating`, reserve: t`Reserve` }
-  const links = [
-    { to: 'plans', label: t`Dues plans`, text: t`Rates, split rules and live previews` },
-    { to: 'charges', label: t`Charges`, text: t`Every receivable by period, unit and side` },
-    { to: 'late-fees', label: t`Late fees`, text: t`Accrual, monthly bookings, waivers, freezes` },
-    { to: 'payments', label: t`Payments`, text: t`Cash receipts, cash boxes, declared transfers` },
-    { to: 'bank', label: t`Bank import`, text: t`Upload a statement and match lines to units` },
-    { to: 'expenses', label: t`Expenses`, text: t`What was spent, from which account` },
-    { to: 'collections', label: t`Collections`, text: t`Reminders, ihtarname and legal cases` },
-    { to: 'statements', label: t`Statements`, text: t`Per unit side or per person, PDF` },
-    { to: 'reports', label: t`Reports`, text: t`Gelir-gider, debtors, budget, aging` },
-  ]
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -81,13 +70,11 @@ function ManagerOverview() {
                 <Stat label={t`Cash`}>
                   <Money minor={o.cash.amount} currency={cur} />
                 </Stat>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {o.funds.map((f) => (
                   <Stat
                     key={f.fund_id}
                     label={kind[f.kind] ? `${t`Fund`}: ${kind[f.kind]}` : f.name}
-                    hint={f.name}
+                    hint={kind[f.kind] ? undefined : f.name}
                   >
                     <Money minor={f.balance.amount} currency={cur} />
                   </Stat>
@@ -150,19 +137,6 @@ function ManagerOverview() {
                   </p>
                 </CardContent>
               </Card>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {links.map((l) => (
-                  <Link
-                    key={l.to}
-                    to={`/orgs/$orgId/money/${l.to}` as '/orgs/$orgId'}
-                    params={{ orgId: org?.id ?? '' }}
-                    className="rounded-lg border p-4 outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  >
-                    <div className="font-medium">{l.label}</div>
-                    <div className="text-sm text-muted-foreground">{l.text}</div>
-                  </Link>
-                ))}
-              </div>
             </>
           )
         }}

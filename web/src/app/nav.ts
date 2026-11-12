@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   LifeBuoy,
   MegaphoneIcon,
-  ScanLine,
   SettingsIcon,
   UserRound,
   Users,
@@ -163,13 +162,6 @@ export const NAV_ITEMS: NavItem[] = [
       can(me, orgId, 'visitors.read') ||
       can(me, orgId, 'visitors.manage') ||
       can(me, orgId, 'visitors.decide'),
-  },
-  {
-    id: 'gate',
-    label: msg`Gate`,
-    to: '/orgs/$orgId/visitors/gate',
-    icon: ScanLine,
-    permission: 'gate.operate',
   },
   {
     id: 'access',

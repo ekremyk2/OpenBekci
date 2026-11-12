@@ -13,7 +13,7 @@ export function SiteSettingsLinks() {
   const { org, can } = useSession()
   const orgId = org?.id ?? ''
   return (
-    <div className="flex max-w-xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
           <CardTitle>
