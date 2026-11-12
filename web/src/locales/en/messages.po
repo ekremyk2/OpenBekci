@@ -469,6 +469,9 @@ msgstr "Add vendor"
 msgid "Address"
 msgstr "Address"
 
+msgid "Address format"
+msgstr "Address format"
+
 msgid "Address line 2"
 msgstr "Address line 2"
 
@@ -567,6 +570,9 @@ msgstr "Allocated <0/> of <1/>"
 
 msgid "Allocation keys"
 msgstr "Allocation keys"
+
+msgid "Allocation policy"
+msgstr "Allocation policy"
 
 msgid "Allowed"
 msgstr "Allowed"
@@ -879,6 +885,9 @@ msgstr "Back to Pay"
 msgid "Back to the assembly"
 msgstr "Back to the assembly"
 
+msgid "Background job"
+msgstr "Background job"
+
 msgid "Backups"
 msgstr "Backups"
 
@@ -914,6 +923,9 @@ msgstr "Bank line it arrived as"
 
 msgid "Bank lines"
 msgstr "Bank lines"
+
+msgid "Bank statement format"
+msgstr "Bank statement format"
 
 msgid "Bank statement formats"
 msgstr "Bank statement formats"
@@ -1289,6 +1301,9 @@ msgstr "Charges go to the default payer (the tenant for regular dues, the owner 
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 
+msgid "Chart of accounts"
+msgstr "Chart of accounts"
+
 msgid "Chat"
 msgstr "Chat"
 
@@ -1297,6 +1312,9 @@ msgstr "Chat (Telegram/WhatsApp)"
 
 msgid "Chat link QR code"
 msgstr "Chat link QR code"
+
+msgid "Chat provider"
+msgstr "Chat provider"
 
 msgid "Chat settings"
 msgstr "Chat settings"
@@ -1650,6 +1668,9 @@ msgstr "Confirming your payment with the provider. This usually takes a few seco
 
 msgid "Consent accepted"
 msgstr "Consent accepted"
+
+msgid "Consent texts"
+msgstr "Consent texts"
 
 msgid "Contact"
 msgstr "Contact"
@@ -2355,6 +2376,9 @@ msgstr "Document number (optional)"
 msgid "Document preview"
 msgstr "Document preview"
 
+msgid "Document template"
+msgstr "Document template"
+
 msgid "Document title"
 msgstr "Document title"
 
@@ -2559,6 +2583,9 @@ msgstr "End membership"
 
 msgid "Ended"
 msgstr "Ended"
+
+msgid "Endpoint"
+msgstr "Endpoint"
 
 #. placeholder {0}: enrolment.agent.name
 msgid "Enrolment token for {0}"
@@ -2805,6 +2832,9 @@ msgstr "Error"
 
 msgid "Event"
 msgstr "Event"
+
+msgid "Event subscription"
+msgstr "Event subscription"
 
 msgid "Events"
 msgstr "Events"
@@ -3497,6 +3527,9 @@ msgstr "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
 msgid "KVKK"
 msgstr "KVKK"
 
+msgid "Label catalog"
+msgstr "Label catalog"
+
 msgid "Land share (arsa payı)"
 msgstr "Land share (arsa payı)"
 
@@ -3526,6 +3559,9 @@ msgstr "Late fee accrued so far (not yet booked)"
 
 msgid "Late fee policy"
 msgstr "Late fee policy"
+
+msgid "Late fee preset"
+msgstr "Late fee preset"
 
 msgid "Late fee waived."
 msgstr "Late fee waived."
@@ -5076,11 +5112,17 @@ msgstr "Paying for"
 msgid "Payment"
 msgstr "Payment"
 
+msgid "Payment allocation order"
+msgstr "Payment allocation order"
+
 msgid "Payment confirmed"
 msgstr "Payment confirmed"
 
 msgid "Payment declared"
 msgstr "Payment declared"
+
+msgid "Payment provider"
+msgstr "Payment provider"
 
 msgid "Payment receipts"
 msgstr "Payment receipts"
@@ -5431,6 +5473,9 @@ msgstr "Quorum"
 msgid "Quorum not reached"
 msgstr "Quorum not reached"
 
+msgid "Quorum preset"
+msgstr "Quorum preset"
+
 msgid "Quorum reached"
 msgstr "Quorum reached"
 
@@ -5594,6 +5639,9 @@ msgstr "Reference"
 
 msgid "Reference (optional)"
 msgstr "Reference (optional)"
+
+msgid "Reference data"
+msgstr "Reference data"
 
 msgid "Reference to write"
 msgstr "Reference to write"
@@ -5981,6 +6029,9 @@ msgstr "Scan with camera"
 
 msgid "Schedule"
 msgstr "Schedule"
+
+msgid "Schedule preset"
+msgstr "Schedule preset"
 
 msgid "Scheduled"
 msgstr "Scheduled"
@@ -6377,6 +6428,9 @@ msgstr "SMS code"
 #. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
 msgstr "SMS messages: {0} (billed to the site)"
+
+msgid "SMS provider"
+msgstr "SMS provider"
 
 #. placeholder {0}: usage.data.sent
 #. placeholder {1}: usage.data.delivered
@@ -7309,6 +7363,9 @@ msgstr "This will be a common ticket, visible to the whole site."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 
+msgid "Threshold preset"
+msgstr "Threshold preset"
+
 msgid "Ticket"
 msgstr "Ticket"
 
@@ -7696,6 +7753,9 @@ msgstr "Valid until"
 msgid "Valid until (optional)"
 msgstr "Valid until (optional)"
 
+msgid "Validator"
+msgstr "Validator"
+
 msgid "Value"
 msgstr "Value"
 
@@ -7847,6 +7907,9 @@ msgstr "Voided"
 
 msgid "Vote weight"
 msgstr "Vote weight"
+
+msgid "Vote weight preset"
+msgstr "Vote weight preset"
 
 msgid "Voted"
 msgstr "Voted"

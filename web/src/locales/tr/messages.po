@@ -469,6 +469,9 @@ msgstr "Tedarikçi ekle"
 msgid "Address"
 msgstr "Adres"
 
+msgid "Address format"
+msgstr "Adres biçimi"
+
 msgid "Address line 2"
 msgstr "Adres satırı 2"
 
@@ -567,6 +570,9 @@ msgstr "<1/> içinden <0/> dağıtıldı"
 
 msgid "Allocation keys"
 msgstr "Dağıtım anahtarları"
+
+msgid "Allocation policy"
+msgstr "Paylaştırma politikası"
 
 msgid "Allowed"
 msgstr "İzin verildi"
@@ -879,6 +885,9 @@ msgstr "Ödemeye dön"
 msgid "Back to the assembly"
 msgstr "Toplantıya dön"
 
+msgid "Background job"
+msgstr "Arka plan işi"
+
 msgid "Backups"
 msgstr "Yedekler"
 
@@ -914,6 +923,9 @@ msgstr "Geldiği banka satırı"
 
 msgid "Bank lines"
 msgstr "Banka satırları"
+
+msgid "Bank statement format"
+msgstr "Banka ekstre biçimi"
 
 msgid "Bank statement formats"
 msgstr "Banka ekstre biçimleri"
@@ -1289,6 +1301,9 @@ msgstr "Giderler varsayılan ödeyene gider (olağan aidatta kiracı, olağanüs
 msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
 msgstr "Bir birimin bir tarafı veya bir kişi için, yürüyen bakiyeli tahakkuklar, ödemeler ve tazminatlar."
 
+msgid "Chart of accounts"
+msgstr "Hesap planı"
+
 msgid "Chat"
 msgstr "Sohbet"
 
@@ -1297,6 +1312,9 @@ msgstr "Sohbet (Telegram/WhatsApp)"
 
 msgid "Chat link QR code"
 msgstr "Sohbet bağlantısı QR kodu"
+
+msgid "Chat provider"
+msgstr "Sohbet sağlayıcı"
 
 msgid "Chat settings"
 msgstr "Sohbet ayarları"
@@ -1650,6 +1668,9 @@ msgstr "Ödemeniz sağlayıcıyla doğrulanıyor. Bu genellikle birkaç saniye s
 
 msgid "Consent accepted"
 msgstr "Onay verildi"
+
+msgid "Consent texts"
+msgstr "Rıza metinleri"
 
 msgid "Contact"
 msgstr "İletişim"
@@ -2355,6 +2376,9 @@ msgstr "Belge numarası (isteğe bağlı)"
 msgid "Document preview"
 msgstr "Belge önizlemesi"
 
+msgid "Document template"
+msgstr "Belge şablonu"
+
 msgid "Document title"
 msgstr "Belge başlığı"
 
@@ -2559,6 +2583,9 @@ msgstr "Üyeliği bitir"
 
 msgid "Ended"
 msgstr "Sona erdi"
+
+msgid "Endpoint"
+msgstr "Uç nokta"
 
 #. placeholder {0}: enrolment.agent.name
 msgid "Enrolment token for {0}"
@@ -2805,6 +2832,9 @@ msgstr "Hata"
 
 msgid "Event"
 msgstr "Olay"
+
+msgid "Event subscription"
+msgstr "Olay aboneliği"
 
 msgid "Events"
 msgstr "Olaylar"
@@ -3497,6 +3527,9 @@ msgstr "kind: <0>unit_receivable</0>, <1>bank</1> veya <2>cash</2>."
 msgid "KVKK"
 msgstr "KVKK"
 
+msgid "Label catalog"
+msgstr "Etiket kataloğu"
+
 msgid "Land share (arsa payı)"
 msgstr "Arsa payı"
 
@@ -3526,6 +3559,9 @@ msgstr "Şimdiye kadar tahakkuk eden gecikme tazminatı (henüz kaydedilmedi)"
 
 msgid "Late fee policy"
 msgstr "Gecikme zammı politikası"
+
+msgid "Late fee preset"
+msgstr "Gecikme bedeli ön ayarı"
 
 msgid "Late fee waived."
 msgstr "Gecikme tazminatı affedildi."
@@ -5076,11 +5112,17 @@ msgstr "Ödenen birim"
 msgid "Payment"
 msgstr "Ödeme"
 
+msgid "Payment allocation order"
+msgstr "Ödeme mahsup sırası"
+
 msgid "Payment confirmed"
 msgstr "Ödeme onaylandı"
 
 msgid "Payment declared"
 msgstr "Ödeme bildirildi"
+
+msgid "Payment provider"
+msgstr "Ödeme sağlayıcı"
 
 msgid "Payment receipts"
 msgstr "Ödeme makbuzları"
@@ -5431,6 +5473,9 @@ msgstr "Toplantı yeter sayısı"
 msgid "Quorum not reached"
 msgstr "Toplantı yeter sayısı sağlanmadı"
 
+msgid "Quorum preset"
+msgstr "Toplantı nisabı ön ayarı"
+
 msgid "Quorum reached"
 msgstr "Toplantı yeter sayısı sağlandı"
 
@@ -5594,6 +5639,9 @@ msgstr "Referans"
 
 msgid "Reference (optional)"
 msgstr "Referans (isteğe bağlı)"
+
+msgid "Reference data"
+msgstr "Başvuru verisi"
 
 msgid "Reference to write"
 msgstr "Yazılacak referans"
@@ -5981,6 +6029,9 @@ msgstr "Kamerayla tara"
 
 msgid "Schedule"
 msgstr "Zamanla"
+
+msgid "Schedule preset"
+msgstr "Takvim ön ayarı"
 
 msgid "Scheduled"
 msgstr "Zamanlandı"
@@ -6377,6 +6428,9 @@ msgstr "SMS kodu"
 #. placeholder {0}: query.data.sms_count
 msgid "SMS messages: {0} (billed to the site)"
 msgstr "SMS mesajları: {0} (siteye faturalanır)"
+
+msgid "SMS provider"
+msgstr "SMS sağlayıcı"
 
 #. placeholder {0}: usage.data.sent
 #. placeholder {1}: usage.data.delivered
@@ -7309,6 +7363,9 @@ msgstr "Bu ortak bir talep olacak ve tüm site tarafından görülecek."
 msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
 msgstr "Bu işlem, bu kararla bağlantılı bir {0} oluşturur. Daha sonra düzeltilebilir ancak sessizce geri alınamaz."
 
+msgid "Threshold preset"
+msgstr "Karar çoğunluğu ön ayarı"
+
 msgid "Ticket"
 msgstr "Talep"
 
@@ -7696,6 +7753,9 @@ msgstr "Geçerlilik sonu"
 msgid "Valid until (optional)"
 msgstr "Geçerlilik sonu (isteğe bağlı)"
 
+msgid "Validator"
+msgstr "Doğrulayıcı"
+
 msgid "Value"
 msgstr "Değer"
 
@@ -7847,6 +7907,9 @@ msgstr "İptal edildi"
 
 msgid "Vote weight"
 msgstr "Oy ağırlığı"
+
+msgid "Vote weight preset"
+msgstr "Oy ağırlığı ön ayarı"
 
 msgid "Voted"
 msgstr "Oylanacak"

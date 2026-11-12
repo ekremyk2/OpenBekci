@@ -262,7 +262,7 @@ export function VisitorsPage() {
         description={t`Pre-register guests, share their QR code, and answer the guard's requests.`}
         actions={
           <>
-            {can('gate.operate') ? (
+            {can('gate.operate') || canManage ? (
               <Link
                 to="/orgs/$orgId/visitors/gate"
                 params={{ orgId: ctx.orgId }}

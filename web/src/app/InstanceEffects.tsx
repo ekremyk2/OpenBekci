@@ -19,7 +19,7 @@ export function InstanceEffects() {
   useEffect(() => {
     const base = name || DEFAULT_NAME
     const sync = () => {
-      const h1 = document.querySelector('h1')?.textContent?.trim()
+      const h1 = document.querySelector('main h1, [data-page-title]')?.textContent?.trim()
       document.title = h1 && h1 !== base ? `${h1} · ${base}` : base
     }
     sync()

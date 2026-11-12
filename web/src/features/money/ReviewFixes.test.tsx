@@ -15,9 +15,14 @@ import { extractIdempotent, render } from '../../../scripts/gen-idempotent.mjs'
 afterEach(() => server.events.removeAllListeners())
 
 const withHeaders = () => {
-  const seen: { method: string; url: string; headers: Headers }[] = []
+  const seen: { method: string; url: string; headers: Headers; body: Promise<string> }[] = []
   server.events.on('request:start', ({ request }) =>
-    seen.push({ method: request.method, url: request.url, headers: request.headers }),
+    seen.push({
+      method: request.method,
+      url: request.url,
+      headers: request.headers,
+      body: request.clone().text(),
+    }),
   )
   return seen
 }
@@ -129,6 +134,11 @@ describe('versioned writes and previews', () => {
       (r) => r.method === 'PATCH' && r.url.includes('/charge-plans/plan-dues'),
     )
     expect(patch?.headers.get('If-Match')).toBe('"1"')
+    expect(Object.keys(JSON.parse(await patch!.body) as object).sort()).toEqual([
+      'due_day',
+      'name',
+      'status',
+    ])
   })
 
   it('the preview lines add up to the plan total', async () => {
