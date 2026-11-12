@@ -26,7 +26,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
-import { problemMessage } from '@/lib/labels'
 import { toast } from '@/lib/toast'
 import {
   idemHeader,
@@ -51,6 +50,8 @@ import {
   StatusBadge,
   Textarea,
 } from './ui'
+import { usePackLabels } from '../packs/queries'
+import { moneyErrorText } from './labels'
 
 const STATUSES = ['pending', 'paid', 'failed', 'expired', 'refunded'] as const
 
@@ -153,6 +154,7 @@ export function MyCheckoutsPage() {
 export function CheckoutsPage() {
   const ctx = useMoneyCtx()!
   const { t } = useLingui()
+  const packLabel = usePackLabels()
   const [status, setStatus] = useState('')
   const units = useAllUnits(ctx)
   const door = (id: string) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
@@ -260,7 +262,7 @@ export function CheckoutsPage() {
                       <TableCell>
                         <SideBadge side={c.debtor_kind} />
                       </TableCell>
-                      <TableCell>{c.provider}</TableCell>
+                      <TableCell>{packLabel(c.provider) ?? c.provider}</TableCell>
                       <TableCell>
                         {c.merchant_of_record === 'organization' ? (
                           <Trans>Organization</Trans>
@@ -404,12 +406,12 @@ export function CardRefundDialog({
                   return
                 }
                 setError(
-                  (er instanceof AppError
-                    ? problemMessage(er.code, { _: (d) => t(d) })
-                    : undefined) ??
-                    (er instanceof AppError && er.status === 409
+                  moneyErrorText(
+                    er,
+                    er instanceof AppError && er.status === 409
                       ? t`This payment cannot be refunded (it is not a confirmed card payment, or it changed). Reload and try again.`
-                      : t`Could not refund the payment.`),
+                      : t`Could not refund the payment.`,
+                  ),
                 )
               },
             })

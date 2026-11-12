@@ -449,6 +449,17 @@ func (s *apiServer) MoneyGetDebtorReport(ctx context.Context, req gen.MoneyGetDe
 		}
 		return gen.MoneyGetDebtorReport200TextcsvResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
 	}
+	if f := req.Params.Format; f != nil && *f == gen.MoneyGetDebtorReportParamsFormatXlsx {
+		c, err := reports.DebtorCSV(rows)
+		if err != nil {
+			return nil, problem.Internal(err)
+		}
+		b, err := reports.CSVToXLSX(c, "Debtors")
+		if err != nil {
+			return nil, problem.Internal(err)
+		}
+		return gen.MoneyGetDebtorReport200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
+	}
 	if f := req.Params.Format; f != nil && *f != gen.MoneyGetDebtorReportParamsFormatJson {
 		return nil, problem.Validation(problem.Field{Field: "format", Code: "unsupported"})
 	}
@@ -523,6 +534,16 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 				return nil, problem.Internal(err)
 			}
 			return gen.MoneyGetUnitStatement200TextcsvResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
+		case gen.MoneyGetUnitStatementParamsFormatXlsx:
+			c, err := st.CSV()
+			if err != nil {
+				return nil, problem.Internal(err)
+			}
+			b, err := reports.CSVToXLSX(c, "Statement")
+			if err != nil {
+				return nil, problem.Internal(err)
+			}
+			return gen.MoneyGetUnitStatement200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
 		case gen.MoneyGetUnitStatementParamsFormatPdf:
 			b := r.StatementPDF(ctx, req.OrgId, st, "statement")
 			return gen.MoneyGetUnitStatement200ApplicationpdfResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil

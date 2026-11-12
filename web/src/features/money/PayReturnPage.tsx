@@ -174,7 +174,6 @@ function Outcome({
                     {
                       endpoint: '/v1/orgs/{org_id}/payments/{payment_id}/receipt',
                       path: { org_id: orgId, payment_id: c.payment_id! },
-                      format: 'pdf',
                     },
                     `receipt-${c.payment_id}.pdf`,
                   ).catch(() => toast.error(t`The download failed. Please try again.`))
