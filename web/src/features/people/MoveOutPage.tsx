@@ -13,7 +13,7 @@ import { useActiveSite } from '@/features/sites/useActiveSite'
 import { useSession } from '@/app/session'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { Money } from '@/components/data/Money'
-import { ErrorState } from '@/components/data/ErrorState'
+import { PageError } from '@/components/data/PageError'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { PersonPicker, type PickerOption } from '@/components/forms/EntityPicker'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
@@ -98,7 +98,7 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
 
   if (occQ.isLoading) return <PageSkeleton />
   if (occQ.error || !occQ.data)
-    return <ErrorState error={occQ.error} onRetry={() => void occQ.refetch()} />
+    return <PageError error={occQ.error} onRetry={() => void occQ.refetch()} />
   const occ = occQ.data
   const fileHref = (id: string) => `/v1/orgs/${orgId}/files/${id}`
   const { errors } = form.formState
@@ -184,11 +184,16 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
           return submit.mutateAsync(v).catch(() => undefined)
         })}
       >
-        <Field id="mo-date" label={<Trans>Moves out on</Trans>}>
+        <Field
+          id="mo-date"
+          label={<Trans>Moves out on</Trans>}
+          error={(errors as Record<string, { message?: string } | undefined>).as_of?.message}
+        >
           <Input
             id="mo-date"
             type="date"
             value={asOf}
+            aria-invalid={!!(errors as Record<string, unknown>).as_of}
             onChange={(e) => setAsOf(e.target.value)}
             className="w-auto"
           />

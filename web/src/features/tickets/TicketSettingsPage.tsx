@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi, ifMatch, type TicketCategory } from '@/api/draft'
 import { useSession } from '@/app/session'
-import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { Button } from '@/components/ui/button'
@@ -20,7 +20,6 @@ import { toast } from '@/lib/toast'
 import { useApplyErrorMessage } from './errors'
 import { useCategories, useWorkflow } from './queries'
 import { WorkflowEditor } from './WorkflowEditor'
-import { LockIcon } from 'lucide-react'
 
 type Role = 'site_manager' | 'staff' | 'board_member'
 
@@ -172,13 +171,7 @@ export function TicketSettingsPage() {
   const categories = useCategories(orgId, site?.id, 'all')
 
   if (!can('tickets.manage')) {
-    return (
-      <EmptyState
-        icon={LockIcon}
-        title={<Trans>You do not have access to this</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied heading="h2" />
   }
   return (
     <div className="flex max-w-3xl flex-col gap-6">

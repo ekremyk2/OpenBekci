@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import type { UseQueryResult } from '@tanstack/react-query'
-import { DownloadIcon, LockIcon } from 'lucide-react'
+import { DownloadIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import type { FieldValues, Path, UseFormReturn } from 'react-hook-form'
 import { AppError } from '@/api/errors'
@@ -35,6 +36,7 @@ import {
 
 export { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { issueText, moneyErrorText } from './labels'
 export { Textarea }
 
 /** The shared checkbox with its text label (the checkbox itself lives in `components/ui`). */
@@ -152,14 +154,7 @@ export function PageHeader({
 
 /** No permission for this screen (403 is also mapped by ErrorState). */
 export function NoPermission() {
-  const { t } = useLingui()
-  return (
-    <EmptyState
-      icon={LockIcon}
-      title={t`You do not have access to this`}
-      description={t`Ask your manager if you think you should.`}
-    />
-  )
+  return <AccessDenied />
 }
 
 /** Renders children only when the session grants `permission` in the current organization. */
@@ -314,13 +309,13 @@ export function applyServerErrors<T extends FieldValues>(
     if (error.isValidation && Object.keys(error.fieldErrors).length > 0) {
       for (const [field, issues] of Object.entries(error.fieldErrors)) {
         form.setError(field as Path<T>, {
-          message: issues[0]?.message ?? issues[0]?.code ?? fallback,
+          message: issueText(field, issues[0]?.code ?? '') ?? issues[0]?.message ?? fallback,
         })
       }
       return
     }
     const mapped = known?.[error.code]
-    form.setError('root', { message: mapped ?? error.message ?? fallback })
+    form.setError('root', { message: mapped ?? moneyErrorText(error, fallback) })
     return
   }
   form.setError('root', { message: fallback })
@@ -341,7 +336,7 @@ export function ExportButtons({
   pathParams,
   query,
   basename,
-  formats = ['csv', 'xlsx'],
+  formats = ['csv'],
 }: {
   endpoint: DownloadEndpoint
   /** Path parameters other than `org_id`, which comes from the current organization. */

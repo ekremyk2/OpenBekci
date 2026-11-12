@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -169,13 +170,7 @@ export function NotificationsPage() {
   })
 
   if (!can('notifications.read')) {
-    return (
-      <EmptyState
-        icon={BellIcon}
-        title={<Trans>You do not have access to notifications</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied />
   }
 
   function open(n: Notification) {

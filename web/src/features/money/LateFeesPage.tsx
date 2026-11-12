@@ -5,6 +5,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { AppError } from '@/api/errors'
 import { runWithReauth } from '@/app/reauth'
+import { useLocale } from '@/app/locale'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
@@ -21,6 +22,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
+import { formatPercent } from '@/lib/money'
 import { toast } from '@/lib/toast'
 import {
   idemHeader,
@@ -47,6 +49,7 @@ import {
   Textarea,
   applyServerErrors,
 } from './ui'
+import { moneyErrorText } from './labels'
 import { useAllUnits } from './pickers'
 
 type Accrual = S['LateFeeAccrual']
@@ -385,9 +388,7 @@ export function WaiveDialog({
               setError(
                 e instanceof AppError && e.isReauthRequired
                   ? undefined
-                  : e instanceof AppError && e.isValidation
-                    ? t`The amount is more than the accrued fee.`
-                    : t`Could not waive the fee.`,
+                  : moneyErrorText(e, t`Could not waive the fee.`),
               ),
           )
         }
@@ -564,6 +565,8 @@ function PolicyCard({ ctx }: { ctx: MoneyCtx }) {
 
 function PolicyForm({ ctx, policy }: { ctx: MoneyCtx; policy: S['LateFeePolicy'] }) {
   const { t } = useLingui()
+  const { intl } = useLocale()
+  const cap = formatPercent(policy.max_rate_pct_per_month, intl)
   const schema = useMemo(
     () =>
       z.object({
@@ -572,7 +575,7 @@ function PolicyForm({ ctx, policy }: { ctx: MoneyCtx; policy: S['LateFeePolicy']
           .min(0, t`Enter a rate.`)
           .max(
             policy.max_rate_pct_per_month,
-            t`The rate cannot be above the statutory cap of ${policy.max_rate_pct_per_month}% per month.`,
+            t`The rate cannot be above the statutory cap of ${cap} per month.`,
           ),
         grace: z
           .number({ error: t`Enter the grace days.` })
@@ -583,7 +586,7 @@ function PolicyForm({ ctx, policy }: { ctx: MoneyCtx; policy: S['LateFeePolicy']
           message: t`Enter an amount.`,
         }),
       }),
-    [t, policy.max_rate_pct_per_month],
+    [t, policy.max_rate_pct_per_month, cap],
   )
   type V = z.infer<typeof schema>
   const form = useForm<V>({
@@ -632,7 +635,7 @@ function PolicyForm({ ctx, policy }: { ctx: MoneyCtx; policy: S['LateFeePolicy']
         label={t`Rate per month (%)`}
         htmlFor="lf-rate"
         error={err.rate?.message}
-        hint={t`Statutory cap: ${policy.max_rate_pct_per_month}% per month.`}
+        hint={t`Statutory cap: ${cap} per month.`}
       >
         <Input
           id="lf-rate"

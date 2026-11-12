@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { Link, Outlet } from '@tanstack/react-router'
+import { ChevronRightIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
@@ -13,6 +16,56 @@ interface Tab {
   /** Any of these permissions shows the tab. */
   any: string[]
   exact?: boolean
+}
+
+/** A horizontally scrolling strip that fades out and shows an arrow on each edge that has more to scroll to. */
+function ScrollStrip({ label, children }: { label: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLElement>(null)
+  const [edge, setEdge] = useState({ start: false, end: false })
+  const update = useCallback(() => {
+    const el = ref.current
+    if (!el) return
+    const x = Math.abs(el.scrollLeft) // negative in right-to-left
+    setEdge({ start: x > 4, end: x < el.scrollWidth - el.clientWidth - 4 })
+  }, [])
+  useEffect(() => {
+    update()
+    const el = ref.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [update, children])
+  const cue =
+    'pointer-events-none absolute inset-y-0 flex w-10 items-center from-background to-transparent text-muted-foreground'
+  return (
+    <div className="relative">
+      <nav
+        ref={ref}
+        aria-label={label}
+        onScroll={update}
+        className="-mx-1 flex snap-x gap-1 overflow-x-auto px-1 pb-1"
+      >
+        {children}
+      </nav>
+      {edge.start ? (
+        <span
+          aria-hidden="true"
+          className={cn(cue, 'start-0 justify-start bg-linear-to-r rtl:bg-linear-to-l')}
+        >
+          <ChevronRightIcon className="size-4 rotate-180 rtl:rotate-0" />
+        </span>
+      ) : null}
+      {edge.end ? (
+        <span
+          aria-hidden="true"
+          className={cn(cue, 'end-0 justify-end bg-linear-to-l rtl:bg-linear-to-r')}
+        >
+          <ChevronRightIcon className="size-4 rtl:rotate-180" />
+        </span>
+      ) : null}
+    </div>
+  )
 }
 
 /** Money section frame: permission-filtered tabs, site switcher, breadcrumb-style heading. */
@@ -67,12 +120,7 @@ export function MoneyLayout() {
       ]
 
   if (!access.any) {
-    return (
-      <EmptyState
-        title={t`You do not have access to this`}
-        description={t`Ask your manager if you think you should.`}
-      />
-    )
+    return <AccessDenied />
   }
 
   return (
@@ -98,7 +146,7 @@ export function MoneyLayout() {
           <span className="text-sm text-muted-foreground">{ctx.siteName}</span>
         ) : null}
       </div>
-      <nav aria-label={t`Money sections`} className="-mx-1 flex snap-x gap-1 overflow-x-auto px-1 pb-1">
+      <ScrollStrip label={t`Money sections`}>
         {tabs.map((tab) => (
           <Link
             key={tab.to}
@@ -113,9 +161,12 @@ export function MoneyLayout() {
             {tab.label}
           </Link>
         ))}
-      </nav>
+      </ScrollStrip>
       {ctx ? (
-        <Outlet />
+        // under 640px a wide table scrolls sideways under its first column, which stays put
+        <div className="max-sm:[&_td:first-child]:sticky max-sm:[&_td:first-child]:start-0 max-sm:[&_td:first-child]:z-[1] max-sm:[&_td:first-child]:bg-background max-sm:[&_td:first-child]:shadow-[1px_0_0_var(--color-border)] max-sm:[&_th:first-child]:start-0 max-sm:[&_th:first-child]:z-20 max-sm:[&_th:first-child]:shadow-[1px_0_0_var(--color-border)] max-sm:[&_tr:hover_td:first-child]:bg-muted">
+          <Outlet />
+        </div>
       ) : (
         <EmptyState
           title={t`No site yet`}

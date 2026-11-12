@@ -37,13 +37,7 @@ import {
 import { useAccounts, useFunds } from './pickers'
 import { ExportButtons, Field, Gate, PageHeader, QueryBoundary, Select, SideBadge } from './ui'
 
-export type ReportId =
-  | 'income-expense'
-  | 'debtors'
-  | 'budget'
-  | 'trial-balance'
-  | 'aging'
-  | 'funds'
+export type ReportId = 'income-expense' | 'debtors' | 'budget' | 'trial-balance' | 'aging' | 'funds'
 
 export function ReportsPage({ report }: { report: ReportId }) {
   const ctx = useMoneyCtx()!
@@ -264,6 +258,7 @@ function Debtors({ ctx }: { ctx: MoneyCtx }) {
             endpoint="/v1/orgs/{org_id}/reports/debtors"
             query={{ site_id: ctx.siteId, as_of: asOf, min_months: minMonths }}
             basename="debtors"
+            formats={['csv', 'xlsx']}
           />
         </div>
         <QueryBoundary query={q} isEmpty={(d) => d.rows.length === 0} emptyTitle={t`No debtors`}>
@@ -377,7 +372,7 @@ function BudgetReport({ ctx }: { ctx: MoneyCtx }) {
         <Field label={t`Fiscal year`} htmlFor="b-year">
           <Select
             id="b-year"
-            className="w-auto"
+            className="w-auto min-w-32"
             value={year}
             onChange={(e) => setYearId(e.target.value)}
           >

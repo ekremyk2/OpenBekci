@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { EyeIcon, MegaphoneIcon, PinIcon, PlusIcon } from 'lucide-react'
 import { draftApi, type Announcement } from '@/api/draft'
@@ -80,13 +81,7 @@ export function AnnouncementsPage({
   )
 
   if (!can('announcements.read') && !canPublish) {
-    return (
-      <EmptyState
-        icon={MegaphoneIcon}
-        title={<Trans>You do not have access to announcements</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied />
   }
 
   return (

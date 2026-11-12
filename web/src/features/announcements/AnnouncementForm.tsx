@@ -231,7 +231,11 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
               path: { org_id: orgId, announcement_id: held.id },
               header: ifMatch(held.version),
             },
-            body: payload,
+            // A published announcement keeps its content server-side: only pin and expiry go.
+            body:
+              held.status === 'published'
+                ? { pinned: payload.pinned, expires_at: payload.expires_at }
+                : payload,
           }),
         )
         saved.current = { announcement: record, fingerprint }
@@ -284,7 +288,8 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
   })
 
   const errors = form.formState.errors
-  const locked = existing && (existing.status === 'published' || existing.status === 'archived')
+  const archived = existing?.status === 'archived'
+  const locked = existing && (existing.status === 'published' || archived)
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold">
@@ -295,116 +300,128 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
         noValidate
         onSubmit={(e) => void form.handleSubmit((v) => save.mutate(v))(e)}
       >
-        <FormField id="title" label={<Trans>Title</Trans>} error={errors.title?.message}>
-          <Input id="title" aria-invalid={!!errors.title} {...form.register('title')} />
-        </FormField>
+        {archived ? (
+          <p role="alert" className="rounded-md border p-3 text-sm">
+            <Trans>An archived announcement can no longer be edited.</Trans>
+          </p>
+        ) : existing?.status === 'published' ? (
+          <p className="rounded-md border p-3 text-sm text-muted-foreground">
+            <Trans>
+              A published announcement keeps its text. You can change the pin and the expiry.
+            </Trans>
+          </p>
+        ) : null}
+        <fieldset disabled={archived} className="flex flex-col gap-4 border-0 p-0">
+          <FormField id="title" label={<Trans>Title</Trans>} error={errors.title?.message}>
+            <Input id="title" aria-invalid={!!errors.title} {...form.register('title')} />
+          </FormField>
 
-        <FormField
-          id="body"
-          label={<Trans>Message (Markdown)</Trans>}
-          error={errors.body_md?.message}
-        >
-          <Controller
-            control={form.control}
-            name="body_md"
-            render={({ field }) => (
-              <Suspense fallback={<Skeleton className="h-60 w-full" />}>
-                <MarkdownEditor
-                  id="body"
-                  value={field.value}
+          <FormField
+            id="body"
+            label={<Trans>Message (Markdown)</Trans>}
+            error={errors.body_md?.message}
+          >
+            <Controller
+              control={form.control}
+              name="body_md"
+              render={({ field }) => (
+                <Suspense fallback={<Skeleton className="h-60 w-full" />}>
+                  <MarkdownEditor
+                    id="body"
+                    value={field.value}
+                    onChange={field.onChange}
+                    invalid={!!errors.body_md}
+                  />
+                </Suspense>
+              )}
+            />
+          </FormField>
+
+          <FormField
+            id="audience"
+            label={<Trans>Audience</Trans>}
+            error={(errors.audience as { message?: string } | undefined)?.message}
+          >
+            <Controller
+              control={form.control}
+              name="audience"
+              render={({ field }) => (
+                <AudiencePicker
+                  orgId={orgId}
+                  siteId={site?.id ?? ''}
+                  audience={field.value as AnnouncementAudience}
                   onChange={field.onChange}
-                  invalid={!!errors.body_md}
                 />
-              </Suspense>
-            )}
-          />
-        </FormField>
+              )}
+            />
+          </FormField>
 
-        <FormField
-          id="audience"
-          label={<Trans>Audience</Trans>}
-          error={(errors.audience as { message?: string } | undefined)?.message}
-        >
-          <Controller
-            control={form.control}
-            name="audience"
-            render={({ field }) => (
-              <AudiencePicker
-                orgId={orgId}
-                siteId={site?.id ?? ''}
-                audience={field.value as AnnouncementAudience}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </FormField>
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-sm font-medium">
+              <Trans>Channels</Trans>
+            </legend>
+            <div className="flex flex-wrap gap-4">
+              {CHANNELS.map((c) => (
+                <Label key={c} className="gap-2 font-normal">
+                  <Checkbox
+                    checked={channels.includes(c)}
+                    onChange={(e) =>
+                      form.setValue(
+                        'channels',
+                        e.target.checked ? [...channels, c] : channels.filter((x) => x !== c),
+                        { shouldValidate: true },
+                      )
+                    }
+                  />
+                  {c === 'in_app'
+                    ? t`In-app`
+                    : c === 'email'
+                      ? t`Email`
+                      : c === 'chat'
+                        ? t`Chat (Telegram/WhatsApp)`
+                        : c === 'telegram_group'
+                          ? t`Telegram group`
+                          : t`SMS`}
+                </Label>
+              ))}
+            </div>
+            {errors.channels?.message ? (
+              <p role="alert" className="text-sm text-destructive">
+                {errors.channels.message}
+              </p>
+            ) : null}
+            <DeliveryPreviewPanel preview={preview} channels={channels as AnnouncementChannel[]} />
+          </fieldset>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium">
-            <Trans>Channels</Trans>
-          </legend>
-          <div className="flex flex-wrap gap-4">
-            {CHANNELS.map((c) => (
-              <Label key={c} className="gap-2 font-normal">
-                <Checkbox
-                  checked={channels.includes(c)}
-                  onChange={(e) =>
-                    form.setValue(
-                      'channels',
-                      e.target.checked ? [...channels, c] : channels.filter((x) => x !== c),
-                      { shouldValidate: true },
-                    )
-                  }
-                />
-                {c === 'in_app'
-                  ? t`In-app`
-                  : c === 'email'
-                    ? t`Email`
-                    : c === 'chat'
-                      ? t`Chat (Telegram/WhatsApp)`
-                      : c === 'telegram_group'
-                        ? t`Telegram group`
-                        : t`SMS`}
-              </Label>
-            ))}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              id="publish_at"
+              label={<Trans>Publish at (optional)</Trans>}
+              hint={<Trans>Times are in the site's timezone ({tz}). Empty publishes now.</Trans>}
+            >
+              <Input id="publish_at" type="datetime-local" {...form.register('publish_at')} />
+            </FormField>
+            <FormField
+              id="expires_at"
+              label={<Trans>Expires at (optional)</Trans>}
+              error={errors.expires_at?.message}
+            >
+              <Input id="expires_at" type="datetime-local" {...form.register('expires_at')} />
+            </FormField>
           </div>
-          {errors.channels?.message ? (
-            <p role="alert" className="text-sm text-destructive">
-              {errors.channels.message}
-            </p>
-          ) : null}
-          <DeliveryPreviewPanel preview={preview} channels={channels as AnnouncementChannel[]} />
+
+          <Label className="gap-2">
+            <Checkbox {...form.register('pinned')} />
+            <Trans>Pin to the top</Trans>
+          </Label>
+
+          <UploadField
+            controller={uploads}
+            orgId={orgId}
+            label={<Trans>Attach files</Trans>}
+            hint={<Trans>PDF, images and office documents.</Trans>}
+          />
         </fieldset>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            id="publish_at"
-            label={<Trans>Publish at (optional)</Trans>}
-            hint={<Trans>Times are in the site's timezone ({tz}). Empty publishes now.</Trans>}
-          >
-            <Input id="publish_at" type="datetime-local" {...form.register('publish_at')} />
-          </FormField>
-          <FormField
-            id="expires_at"
-            label={<Trans>Expires at (optional)</Trans>}
-            error={errors.expires_at?.message}
-          >
-            <Input id="expires_at" type="datetime-local" {...form.register('expires_at')} />
-          </FormField>
-        </div>
-
-        <Label className="gap-2">
-          <Checkbox {...form.register('pinned')} />
-          <Trans>Pin to the top</Trans>
-        </Label>
-
-        <UploadField
-          controller={uploads}
-          orgId={orgId}
-          label={<Trans>Attach files</Trans>}
-          hint={<Trans>PDF, images and office documents.</Trans>}
-        />
-
         <FormError message={errors.root?.message} />
         <div className="flex flex-wrap gap-2">
           {!locked ? (
@@ -426,7 +443,7 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
                 <Trans>Save draft</Trans>
               </Button>
             </>
-          ) : (
+          ) : archived ? null : (
             <SubmitButton busy={save.isPending} onClick={() => setIntent('draft')}>
               <Trans>Save changes</Trans>
             </SubmitButton>

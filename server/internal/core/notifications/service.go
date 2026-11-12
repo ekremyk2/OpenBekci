@@ -104,6 +104,33 @@ func scanNotification(row pgx.Row) (Notification, error) {
 	return n, nil
 }
 
+// fillText adds the rendered title and body to each payload that lacks them, in the
+// caller's language, so clients show the template text rather than the type key.
+func fillText(ctx context.Context, tx pgx.Tx, orgID, person uuid.UUID, ns []Notification) error {
+	if len(ns) == 0 {
+		return nil
+	}
+	var userLocale, orgLocale string
+	if err := tx.QueryRow(ctx, `SELECT coalesce(u.locale, ''), (SELECT default_locale FROM organization WHERE id = $1)
+		FROM person p LEFT JOIN "user" u ON u.id = p.user_id WHERE p.id = $2`, orgID, person).Scan(&userLocale, &orgLocale); err != nil {
+		return err
+	}
+	loc := NormalizeLocale(userLocale)
+	if loc == "" {
+		loc = orgLocale
+	}
+	for i := range ns {
+		r := Render(ns[i].Type, loc, ns[i].Payload)
+		if _, ok := ns[i].Payload["title"]; !ok {
+			ns[i].Payload["title"] = r.Title
+		}
+		if _, ok := ns[i].Payload["body"]; !ok && r.Body != "" {
+			ns[i].Payload["body"] = r.Body
+		}
+	}
+	return nil
+}
+
 // ListFilter narrows List.
 type ListFilter struct {
 	SiteID *uuid.UUID
@@ -141,7 +168,11 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, f ListFilter, p ten
 			}
 			out = append(out, n)
 		}
-		return rows.Err()
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		rows.Close()
+		return fillText(ctx, tx, orgID, person, out)
 	})
 	if err != nil {
 		return nil, "", tenancy.DBProblem(err, "notifications")
@@ -194,6 +225,12 @@ func (s *Service) Get(ctx context.Context, orgID, id uuid.UUID) (Notification, e
 		if errors.Is(err, pgx.ErrNoRows) {
 			return problem.NotFound("no such notification")
 		}
+		if err != nil {
+			return err
+		}
+		ns := []Notification{n}
+		err = fillText(ctx, tx, orgID, person, ns)
+		n = ns[0]
 		return err
 	})
 	return n, tenancy.DBProblem(err, "notification")
@@ -217,6 +254,12 @@ func (s *Service) MarkRead(ctx context.Context, orgID, id uuid.UUID) (Notificati
 		if errors.Is(err, pgx.ErrNoRows) {
 			return problem.NotFound("no such notification")
 		}
+		if err != nil {
+			return err
+		}
+		ns := []Notification{n}
+		err = fillText(ctx, tx, orgID, person, ns)
+		n = ns[0]
 		return err
 	})
 	return n, tenancy.DBProblem(err, "notification")

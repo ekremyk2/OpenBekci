@@ -45,7 +45,7 @@ describe('audit viewer', () => {
     await waitFor(() => expect(within(list).getAllByRole('button')).toHaveLength(30))
 
     // ae-2 is a person.updated event: one plain value change and one hashed field
-    const person = within(list).getAllByRole('button', { name: /person\.updated/ })[0]!
+    const person = within(list).getAllByRole('button', { name: /Person changed/ })[0]!
     await userEvent.click(person)
     expect(await screen.findByText('Changed (private data, hashed)')).toBeInTheDocument()
     expect(screen.getByText('A. Yilmaz')).toBeInTheDocument()
@@ -63,8 +63,8 @@ describe('audit viewer', () => {
     )
     mountApp('/orgs/org-1/settings/audit', 'manager')
     await screen.findByRole('list', { name: 'Audit events' })
-    await userEvent.type(screen.getByLabelText('Action'), 'ticket.transitioned')
-    await userEvent.type(screen.getByLabelText('Target type'), 'ticket')
+    await userEvent.selectOptions(screen.getByLabelText('Action'), 'ticket.transitioned')
+    await userEvent.selectOptions(screen.getByLabelText('Target type'), 'ticket')
     await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }))
     await waitFor(() => expect(queries.at(-1)).toContain('action=ticket.transitioned'))
     expect(queries.at(-1)).toContain('target_type=ticket')
@@ -72,7 +72,7 @@ describe('audit viewer', () => {
       expect(
         within(screen.getByRole('list', { name: 'Audit events' }))
           .getAllByRole('button')
-          .every((b) => /ticket\.transitioned/.test(b.textContent ?? '')),
+          .every((b) => /Ticket status changed/.test(b.textContent ?? '')),
       ).toBe(true),
     )
   })

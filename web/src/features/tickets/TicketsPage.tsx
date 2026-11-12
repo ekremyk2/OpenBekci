@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AccessDenied } from '@/components/data/AccessDenied'
 import { Link } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { LifeBuoyIcon, MessageSquareIcon, PlusIcon, ThumbsUpIcon } from 'lucide-react'
@@ -89,13 +90,7 @@ export function TicketsPage({
   )
 
   if (!canReadAll && !canOpen && !canWork && !can('tickets.read_assigned')) {
-    return (
-      <EmptyState
-        icon={LifeBuoyIcon}
-        title={<Trans>You do not have access to tickets</Trans>}
-        description={<Trans>Ask your manager if you think you should.</Trans>}
-      />
-    )
+    return <AccessDenied />
   }
 
   // staff (work-only) land on their queue; the other views stay one click away

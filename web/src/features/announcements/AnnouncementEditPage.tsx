@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { draftApi } from '@/api/draft'
 import { useSession } from '@/app/session'
-import { ErrorState } from '@/components/data/ErrorState'
+import { PageError } from '@/components/data/PageError'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { must } from '@/lib/pagination'
 import { AnnouncementForm } from './AnnouncementForm'
@@ -19,6 +19,6 @@ export function AnnouncementEditPage({ announcementId }: { announcementId: strin
       ),
   })
   if (query.isPending) return <PageSkeleton />
-  if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
+  if (query.isError) return <PageError error={query.error} onRetry={() => void query.refetch()} />
   return <AnnouncementForm key={query.data.version} existing={query.data} />
 }

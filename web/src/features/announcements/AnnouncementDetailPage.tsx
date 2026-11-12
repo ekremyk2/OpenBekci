@@ -7,6 +7,7 @@ import { draftApi, ifMatch, type Channel } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { ConfirmDialog } from '@/components/data/ConfirmDialog'
 import { ErrorState } from '@/components/data/ErrorState'
+import { PageError } from '@/components/data/PageError'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { SiteDate } from '@/components/data/SiteDate'
 import { AttachmentGallery, type GalleryItem } from '@/components/files/AttachmentGallery'
@@ -192,7 +193,7 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
   })
 
   if (query.isPending) return <PageSkeleton />
-  if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
+  if (query.isError) return <PageError error={query.error} onRetry={() => void query.refetch()} />
   const x = query.data
 
   return (

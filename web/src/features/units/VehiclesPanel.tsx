@@ -108,7 +108,7 @@ export function VehiclesPanel({
             download
           >
             <DownloadIcon aria-hidden="true" />
-            <Trans>Export plates (CSV)</Trans>
+            <Trans>Download plates (CSV)</Trans>
           </a>
         ) : null}
       </div>

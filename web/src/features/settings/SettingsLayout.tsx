@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { cn } from '@/lib/utils'
 
@@ -40,16 +40,14 @@ export function SettingsLayout() {
     .filter((x) => x.show && path.replace(/\/$/, '').endsWith(x.to.replace('$orgId', orgId)))
     .sort((a, b) => b.to.length - a.to.length)[0]
   const settings = t`Settings`
-  // the page h1 is the area name; the active tab shows in the document title
+  // the page h1 is the active section; the document title adds the area name
   useEffect(() => {
     if (active) document.title = `${active.label} - ${settings}`
   }, [active, settings])
   // one shell for every settings route: same width, header and tabs
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">
-        <Trans>Settings</Trans>
-      </h1>
+      <h1 className="text-2xl font-semibold">{active?.label ?? settings}</h1>
       <nav aria-label={t`Settings sections`} className="flex flex-wrap gap-1 border-b">
         {tabs
           .filter((x) => x.show)

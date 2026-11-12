@@ -73,6 +73,16 @@ func (s *apiServer) MoneyGetPersonStatement(ctx context.Context, req gen.MoneyGe
 				return nil, problem.Internal(err)
 			}
 			return gen.MoneyGetPersonStatement200TextcsvResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
+		case gen.MoneyGetPersonStatementParamsFormatXlsx:
+			c, err := st.CSV()
+			if err != nil {
+				return nil, problem.Internal(err)
+			}
+			b, err := reports.CSVToXLSX(c, "Statement")
+			if err != nil {
+				return nil, problem.Internal(err)
+			}
+			return gen.MoneyGetPersonStatement200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil
 		case gen.MoneyGetPersonStatementParamsFormatPdf:
 			b := r.StatementPDF(ctx, req.OrgId, st, "statement")
 			return gen.MoneyGetPersonStatement200ApplicationpdfResponse{Body: bytes.NewReader(b), ContentLength: int64(len(b))}, nil

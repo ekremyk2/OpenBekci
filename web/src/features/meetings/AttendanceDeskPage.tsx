@@ -209,7 +209,7 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
             <Input
               aria-label={t`Search owners or units`}
               placeholder={t`Search owner or unit`}
-              className="max-w-xs"
+              className="h-11 max-w-xs"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -230,8 +230,10 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
                       <li key={o.personId} className="flex flex-col gap-2 py-3">
                         <div className="flex flex-wrap items-center gap-3">
                           <div className="flex min-w-0 flex-1 flex-col">
-                            <span className="text-base font-medium">{o.name}</span>
-                            <span className="text-sm text-muted-foreground">
+                            <span className="truncate text-base font-medium" title={o.name}>
+                              {o.name}
+                            </span>
+                            <span className="truncate text-sm text-muted-foreground">
                               {o.units.map((u) => u.label).join(', ')}
                               {o.sharePct !== null ? ` · ${o.sharePct}%` : ''}
                             </span>
@@ -261,6 +263,7 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
                             <>
                               <Button
                                 size="lg"
+                                variant="ghost"
                                 disabled={!open || record.isPending}
                                 onClick={() =>
                                   record.mutate(
